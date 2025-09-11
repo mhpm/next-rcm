@@ -27,7 +27,7 @@ export const Navbar = () => {
         </button>
       </div>
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl">daisyUI</a>
+        <a className="btn btn-ghost text-xl">RCM Admin</a>
       </div>
 
       <div className="flex-none gap-2">
