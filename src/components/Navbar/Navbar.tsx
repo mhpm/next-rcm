@@ -7,12 +7,21 @@ import { useEffect, useState } from 'react';
 export const Navbar = () => {
   const toggleDrawer = useDrawer((s) => s.toggleDrawer);
   const isOpen = useDrawer((s) => s.isDrawerOpen);
-  const [isdark, setIsdark] = useState(
-    JSON.parse(localStorage.getItem('isdark') || 'false')
-  );
+  const [isdark, setIsdark] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('isdark', JSON.stringify(isdark));
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('isdark');
+      if (stored !== null) {
+        setIsdark(JSON.parse(stored));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('isdark', JSON.stringify(isdark));
+    }
   }, [isdark]);
 
   return (
