@@ -13,7 +13,7 @@ const Breadcrumbs = () => {
     <div className="text-sm breadcrumbs">
       <ul>
         <li>
-          <Link href="/">Home</Link>
+          <Link href="/">Dashboard</Link>
         </li>
         {pathSegments.map((segment, index) => {
           const href = `/${pathSegments.slice(0, index + 1).join('/')}`;
