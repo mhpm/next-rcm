@@ -1,2 +1,4 @@
 export { Navbar } from './Navbar/Navbar';
 export { Drawer } from './Drawer/Drawer';
+export { StatCard } from './StatCard/StatCard';
+export { default as Breadcrumbs } from './Breadcrumbs/Breadcrumbs';
