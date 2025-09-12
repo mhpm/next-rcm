@@ -17,7 +17,7 @@ export const StatCard = ({
   period: string;
   iconBg: string;
 }) => (
-  <div className="card shadow-xl bg-base-100 rounded-xl">
+  <div className="card bg-base-100 rounded-xl border border-gray-200 dark:border-gray-700">
     <div className="card-body">
       <div className="flex justify-between items-start">
         <div>
