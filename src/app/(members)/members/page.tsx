@@ -1,6 +1,6 @@
 import { Breadcrumbs } from '@/components';
 import Link from 'next/link';
-import { RiAddLine, RiDeleteBinLine, RiEdit2Line } from 'react-icons/ri';
+import { RiAddLine, RiDeleteBinLine, RiEdit2Fill } from 'react-icons/ri';
 
 const members = [
   {
@@ -26,7 +26,10 @@ export default function MembersPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-xl sm:text-2xl font-bold">Miembros</h1>
         <div className="flex items-center gap-4">
-          <Link href="/members/new" className="btn btn-primary">
+          <Link
+            href="/members/new"
+            className="btn btn-soft btn-primary rounded"
+          >
             <RiAddLine />
             Añadir Miembro
           </Link>
@@ -55,11 +58,11 @@ export default function MembersPage() {
                 <td className="flex flex-col sm:flex-row gap-2">
                   <Link
                     href={`/members/${member.id}/edit`}
-                    className="btn btn-sm btn-ghost"
+                    className="btn btn-lg btn-ghost rounded-full"
                   >
-                    <RiEdit2Line />
+                    <RiEdit2Fill />
                   </Link>
-                  <button className="btn btn-sm btn-ghost text-error">
+                  <button className="btn btn-lg btn-ghost rounded-full">
                     <RiDeleteBinLine />
                   </button>
                 </td>
@@ -69,13 +72,18 @@ export default function MembersPage() {
         </table>
         <div className="sm:hidden flex flex-col gap-4">
           {members.map((member) => (
-            <div key={member.id} className="card bg-white shadow-lg rounded-xl w-full border border-gray-200">
+            <div
+              key={member.id}
+              className="card bg-white shadow-lg rounded-xl w-full border border-gray-200"
+            >
               <div className="card-body p-4 flex flex-col gap-2">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="bg-blue-100 text-blue-700 rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">
                     {member.name.charAt(0)}
                   </div>
-                  <h2 className="card-title text-base font-semibold text-gray-800">{member.name}</h2>
+                  <h2 className="card-title text-base font-semibold text-gray-800">
+                    {member.name}
+                  </h2>
                 </div>
                 <div className="flex flex-col gap-1 text-sm">
                   <div className="flex items-center gap-2">
@@ -92,10 +100,13 @@ export default function MembersPage() {
                   </div>
                 </div>
                 <div className="card-actions flex justify-end mt-3 gap-2">
-                  <Link href={`/members/${member.id}/edit`} className="btn btn-xs btn-outline btn-info">
-                    <RiEdit2Line />
+                  <Link
+                    href={`/members/${member.id}/edit`}
+                    className="btn btn-lg btn-circle text-lg"
+                  >
+                    <RiEdit2Fill />
                   </Link>
-                  <button className="btn btn-xs btn-outline btn-error">
+                  <button className="btn btn-lg btn-circle">
                     <RiDeleteBinLine />
                   </button>
                 </div>

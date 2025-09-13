@@ -2,6 +2,7 @@
 import { Breadcrumbs, StatCard } from '@/components';
 import { RiGroupLine, RiGroup2Fill } from 'react-icons/ri';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -12,7 +13,7 @@ export default function Dashboard() {
         <Breadcrumbs />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div onClick={() => router.push('/members')} className="cursor-pointer">
+        <Link href='/members' className="cursor-pointer">
           <StatCard
             title="Miembros"
             value="700"
@@ -22,8 +23,8 @@ export default function Dashboard() {
             icon={<RiGroupLine size={24} className="text-success" />}
             iconBg="bg-success/20"
           />
-        </div>
-        <div onClick={() => router.push('/cells')} className="cursor-pointer">
+        </Link>
+        <Link href='/cells' className="cursor-pointer">
           <StatCard
             title="Celulas"
             value="30"
@@ -33,8 +34,8 @@ export default function Dashboard() {
             icon={<RiGroup2Fill size={24} className="text-info" />}
             iconBg="bg-info/20"
           />
-        </div>
-        <div onClick={() => router.push('/sectors')} className="cursor-pointer">
+        </Link>
+        <Link href='/sectors' className="cursor-pointer">
           <StatCard
             title="Sectores"
             value="3"
@@ -44,8 +45,8 @@ export default function Dashboard() {
             icon={<RiGroup2Fill size={24} className="text-error" />}
             iconBg="bg-error/20"
           />
-        </div>
-        <div onClick={() => router.push('/subsectors')} className="cursor-pointer">
+        </Link>
+        <Link href='/subsectors' className="cursor-pointer">
           <StatCard
             title="Subsectores"
             value="10"
@@ -55,7 +56,7 @@ export default function Dashboard() {
             icon={<RiGroup2Fill size={24} className="text-warning" />}
             iconBg="bg-warning/20"
           />
-        </div>
+        </Link>
       </div>
     </div>
   );
