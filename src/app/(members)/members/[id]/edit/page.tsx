@@ -2,7 +2,6 @@
 
 import { Breadcrumbs, MemberForm } from '@/components';
 import { Member } from '@/types/member';
-import { useMemo } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 
 // FormValues type to match MemberForm
@@ -12,9 +11,9 @@ type FormValues = Omit<Member, 'birthDate' | 'baptismDate'> & {
 };
 
 type PageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 // Helper para formatear fechas a YYYY-MM-DD
@@ -28,12 +27,13 @@ const formatDateForInput = (date?: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
-const EditMemberPage = ({ params }: PageProps) => {
-  // Usamos useMemo para evitar que memberData se cree en cada render
-  const memberData = useMemo((): Partial<FormValues> => {
-    // Datos de ejemplo que coinciden con la interfaz FormValues
-    return {
-      id: params.id,
+// eslint-disable-next-line @next/next/no-async-client-component
+const EditMemberPage = async ({ params }: PageProps) => {
+  const resolvedParams = await params;
+  
+  // Datos de ejemplo que coinciden con la interfaz FormValues
+  const memberData: Partial<FormValues> = {
+    id: resolvedParams.id,
       firstName: 'Pedro',
       lastName: 'Doe (Datos de ejemplo)',
       email: 'jane.doe@example.com',
@@ -52,10 +52,9 @@ const EditMemberPage = ({ params }: PageProps) => {
       gender: 'femenino',
       ministerio: 'Alabanza',
     };
-  }, [params.id]);
 
   const handleSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log('Datos actualizados del miembro:', params.id, data);
+    console.log('Datos actualizados del miembro:', resolvedParams.id, data);
     alert('Miembro actualizado exitosamente (revisa la consola)');
   };
 
