@@ -10,13 +10,16 @@ export interface Member {
     city: string;
     state: string;
     zip: string;
+    country?: string;
   };
-  password?: string;
-  birthDate?: Date;
-  baptismDate?: Date;
+  birthDate?: string;
+  baptismDate?: string;
   role: 'miembro' | 'supervisor' | 'lider' | 'anfitrion';
   gender: 'masculino' | 'femenino';
   ministerio: string;
+  password?: string;
   confirmPassword?: string;
   picture?: File[]; // react-dropzone usa File[]
+  notes?: string;
+  skills?: string[];
 }
