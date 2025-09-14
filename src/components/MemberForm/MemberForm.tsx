@@ -241,7 +241,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
             <div className="card-body">
               <h2 className="card-title mb-4">Dirección</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <fieldset className="md:col-span-2">
+                <fieldset className="">
                   <label className="label">
                     <span className="label-text">Calle</span>
                   </label>
@@ -295,7 +295,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           {/* Image Upload */}
           <div className="card bg-base-100 shadow-sm">
             <div className="card-body">
-              <h2 className="card-title mb-4">Avatar</h2>
+              <h2 className="card-title mb-4">Picture</h2>
               <ImageUpload control={control} />
             </div>
           </div>

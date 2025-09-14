@@ -17,7 +17,6 @@ export interface Member {
   role: 'miembro' | 'supervisor' | 'lider' | 'anfitrion';
   gender: 'masculino' | 'femenino';
   ministerio: string;
-  avatar?: string;
   confirmPassword?: string;
-  image?: File[]; // react-dropzone usa File[]
+  picture?: File[]; // react-dropzone usa File[]
 }
