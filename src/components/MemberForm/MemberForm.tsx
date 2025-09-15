@@ -28,13 +28,8 @@ interface MemberFormProps {
 
 // 3. Actualizamos el componente ImageUpload para usar FormValues
 const ImageUpload = ({ control }: { control: Control<FormValues> }) => {
-  const [files, setFiles] = useState<File[]>([]);
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    setFiles(
-      acceptedFiles.map((file) =>
-        Object.assign(file, { preview: URL.createObjectURL(file) })
-      )
-    );
+  const onDrop = useCallback((_acceptedFiles: File[]) => {
+    // Files are handled by the form controller
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
@@ -46,7 +41,7 @@ const ImageUpload = ({ control }: { control: Control<FormValues> }) => {
       ${isDragActive ? 'border-primary' : 'border-base-300'}`}
     >
       <Controller
-        name="avatar"
+        name="picture"
         control={control}
         render={({ field }) => (
           <input

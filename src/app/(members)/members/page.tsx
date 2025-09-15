@@ -75,27 +75,24 @@ export default function MembersPage() {
       key: 'id',
       label: 'ID',
       sortable: true,
-      render: (value: any) => (
-        <span className="font-mono text-sm">{value}</span>
+      render: (value) => (
+        <span className="font-mono text-sm">{String(value)}</span>
       ),
     },
     {
       key: 'firstName',
       label: 'Nombre',
       sortable: true,
-      render: (value: any, row: any) => (
-        <div className="flex items-center gap-3">
-          <div className="avatar">
-            <div className="w-10 h-10 rounded-full bg-base-200 flex items-center justify-center">
-              <span className="text-lg">👤</span>
-            </div>
-          </div>
-          <div>
-            <div className="font-semibold">{`${value} ${row.lastName}`}</div>
-            <div className="text-sm text-base-content/70">{row.email}</div>
-          </div>
-        </div>
-      ),
+    },
+    {
+      key: 'lastName',
+      label: 'Apellido',
+      sortable: true,
+    },
+    {
+      key: 'email',
+      label: 'Email',
+      sortable: true,
     },
     {
       key: 'phone',
@@ -193,8 +190,7 @@ export default function MembersPage() {
 
   return (
     <div className="flex flex-col gap-6 p-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Miembros</h1>
+      <div className="flex justify-end items-center">
         <Link href="/members/new" className="btn btn-primary">
           <RiAddLine className="w-5 h-5" />
           Agregar Miembro

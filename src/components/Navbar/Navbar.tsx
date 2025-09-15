@@ -1,9 +1,8 @@
 'use client';
 
-import { RiMenuFill, RiMenuUnfold4Line, RiUser2Fill, RiUser3Fill, RiUserFill } from 'react-icons/ri';
+import { RiMenuFill, RiMenuUnfold4Line, RiUser3Fill } from 'react-icons/ri';
 import { useDrawer } from '../Drawer/useDrawer';
 import { useEffect, useState } from 'react';
-import Image from 'next/image'
 
 export const Navbar = () => {
   const toggleDrawer = useDrawer((s) => s.toggleDrawer);

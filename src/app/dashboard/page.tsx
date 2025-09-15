@@ -1,11 +1,9 @@
 'use client'
 import { Breadcrumbs, StatCard } from '@/components';
 import { RiGroupLine, RiGroup2Fill } from 'react-icons/ri';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function Dashboard() {
-  const router = useRouter();
   return (
     <div className="p-4 md:p-8">
       <div className="flex justify-between items-center mb-6">

@@ -1,4 +1,4 @@
-export interface TableColumn<T = any> {
+export interface TableColumn<T = Record<string, unknown>> {
   key: keyof T;
   label: string;
   sortable?: boolean;
@@ -7,7 +7,7 @@ export interface TableColumn<T = any> {
   type?: 'text' | 'number' | 'date' | 'custom';
 }
 
-export interface TableAction<T = any> {
+export interface TableAction<_T = Record<string, unknown>> {
   label: string;
   variant?:
     | 'primary'
@@ -29,7 +29,7 @@ export interface PaginationInfo {
   endItem: number;
 }
 
-export interface DataTableProps<T = any> {
+export interface DataTableProps<T = Record<string, unknown>> {
   data: T[];
   title?: string;
   subTitle?: string;

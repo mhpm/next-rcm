@@ -11,7 +11,7 @@ import {
 } from 'react-icons/ri';
 import { DataTableProps, PaginationInfo } from '@/types';
 
-function DataTable<T extends Record<string, any>>({
+function DataTable<T extends Record<string, unknown>>({
   data,
   title = '',
   subTitle = '',
@@ -112,7 +112,11 @@ function DataTable<T extends Record<string, any>>({
     paginatedData.every((item) => selectedRows.has(String(item.id || item.ID)));
 
   // Custom cell renderer
-  const renderCell = (column: any, value: any, row: any) => {
+  const renderCell = (
+    column: { render?: (value: T[keyof T], row: T) => React.ReactNode },
+    value: T[keyof T],
+    row: T
+  ) => {
     if (column.render) {
       return column.render(value, row);
     }
@@ -121,7 +125,7 @@ function DataTable<T extends Record<string, any>>({
   };
 
   // Handle action clicks
-  const handleAction = (actionLabel: string, row: any) => {
+  const handleAction = (actionLabel: string, row: T) => {
     switch (actionLabel) {
       case 'Ver':
         console.log('Ver miembro:', row.id);
@@ -132,7 +136,7 @@ function DataTable<T extends Record<string, any>>({
       case 'Eliminar':
         if (
           confirm(
-            `¿Estás seguro de eliminar a ${row.customer?.name || row.name}?`
+            `¿Estás seguro de eliminar a ${row.firstName} ${row.lastName}?`
           )
         ) {
           console.log('Eliminar miembro:', row.id);
@@ -225,7 +229,7 @@ function DataTable<T extends Record<string, any>>({
                 </th>
               )}
               {columns.map((column) => (
-                <th key={column.key} className={column.className}>
+                <th key={String(column.key)} className={column.className}>
                   {column.label}
                 </th>
               ))}
@@ -266,7 +270,7 @@ function DataTable<T extends Record<string, any>>({
                       </td>
                     )}
                     {columns.map((column) => (
-                      <td key={column.key} className={column.className}>
+                      <td key={String(column.key)} className={column.className}>
                         {renderCell(column, row[column.key], row)}
                       </td>
                     ))}
