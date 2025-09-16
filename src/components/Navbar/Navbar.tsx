@@ -2,27 +2,12 @@
 
 import { RiMenuFill, RiMenuUnfold4Line, RiUser3Fill } from 'react-icons/ri';
 import { useDrawer } from '../Drawer/useDrawer';
-import { useEffect, useState } from 'react';
+import { useTheme } from '../ThemeProvider';
 
 export const Navbar = () => {
   const toggleDrawer = useDrawer((s) => s.toggleDrawer);
   const isOpen = useDrawer((s) => s.isDrawerOpen);
-  const [isdark, setIsdark] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('isdark');
-      if (stored !== null) {
-        setIsdark(JSON.parse(stored));
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('isdark', JSON.stringify(isdark));
-    }
-  }, [isdark]);
+  const { isDark, toggleTheme } = useTheme();
 
   return (
     <div className="navbar bg-base-100 px-4 shadow">
@@ -46,9 +31,9 @@ export const Navbar = () => {
           <input
             type="checkbox"
             value={'dark'}
-            checked={isdark}
+            checked={isDark}
             className="theme-controller"
-            onChange={() => setIsdark(!isdark)}
+            onChange={toggleTheme}
           />
 
           {/* sun icon */}

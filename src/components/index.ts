@@ -5,3 +5,4 @@ export { default as Breadcrumbs } from './Breadcrumbs/Breadcrumbs';
 export { default as LoadingSkeleton } from './LoadingSkeleton/LoadingSkeleton';
 export { MemberForm } from './MemberForm/MemberForm';
 export { default as DataTable } from './DataTable/DataTable';
+export { ThemeProvider, useTheme } from './ThemeProvider';

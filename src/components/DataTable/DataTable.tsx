@@ -175,19 +175,19 @@ function DataTable<T extends Record<string, unknown>>({
   }
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm ${className}`}>
+    <div className={`bg-base-100 rounded-lg shadow-sm ${className}`}>
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-base-300">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-            <p className="text-sm text-gray-500 mt-1">{subTitle}</p>
+            <h3 className="text-lg font-semibold text-base-content">{title}</h3>
+            <p className="text-sm text-base-content/70 mt-1">{subTitle}</p>
           </div>
 
           <div className="flex items-center gap-3">
             {searchable && (
               <div className="relative">
-                <RiSearchLine className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <RiSearchLine className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50 w-4 h-4" />
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
@@ -199,11 +199,11 @@ function DataTable<T extends Record<string, unknown>>({
             )}
 
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Select a row</span>
+              <span className="text-sm text-base-content/70">Select a row</span>
               <button className="btn btn-ghost btn-sm">
                 <RiArrowLeftSLine className="w-4 h-4" />
               </button>
-              <span className="text-sm text-gray-600">Columns</span>
+              <span className="text-sm text-base-content/70">Columns</span>
               <button className="btn btn-ghost btn-sm">⋮</button>
             </div>
           </div>
@@ -214,7 +214,7 @@ function DataTable<T extends Record<string, unknown>>({
       <div className="overflow-x-auto">
         <table className="table table-zebra w-full">
           <thead>
-            <tr className="border-b border-gray-200">
+            <tr className="border-b border-base-300">
               {selectable && (
                 <th className="w-12">
                   <input
@@ -245,7 +245,7 @@ function DataTable<T extends Record<string, unknown>>({
                     (selectable ? 1 : 0) +
                     (actions.length > 0 ? 1 : 0)
                   }
-                  className="text-center py-8 text-gray-500"
+                  className="text-center py-8 text-base-content/70"
                 >
                   {emptyMessage}
                 </td>
@@ -318,7 +318,7 @@ function DataTable<T extends Record<string, unknown>>({
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Items per page</span>
+                <span className="text-sm text-base-content/70">Items per page</span>
                 <select
                   value={itemsPerPageState}
                   onChange={(e) => {
@@ -334,7 +334,7 @@ function DataTable<T extends Record<string, unknown>>({
                 </select>
               </div>
 
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-base-content/70">
                 Showing {paginationInfo.startItem}-{paginationInfo.endItem} out
                 of {paginationInfo.totalItems}
               </div>
