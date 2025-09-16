@@ -34,7 +34,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
         // Aplicar el tema inmediatamente
         document.documentElement.setAttribute(
           'data-theme',
-          darkMode ? 'dark' : 'corporate'
+          darkMode ? 'business' : 'cmyk'
         );
       }
     }
@@ -46,7 +46,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
       localStorage.setItem('isdark', JSON.stringify(isDark));
       document.documentElement.setAttribute(
         'data-theme',
-        isDark ? 'dark' : 'corporate'
+        isDark ? 'business' : 'cmyk'
       );
     }
   }, [isDark]);

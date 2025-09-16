@@ -256,7 +256,7 @@ function DataTable<T extends Record<string, unknown>>({
                 const isSelected = selectedRows.has(rowId);
 
                 return (
-                  <tr key={rowId} className={isSelected ? 'bg-blue-50' : ''}>
+                  <tr key={rowId} className={isSelected ? 'bg-primary/10' : ''}>
                     {selectable && (
                       <td>
                         <input

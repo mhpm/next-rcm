@@ -191,7 +191,7 @@ export default function MembersPage() {
   return (
     <div className="flex flex-col gap-6 p-8">
       <div className="flex justify-end items-center">
-        <Link href="/members/new" className="btn btn-primary">
+        <Link href="/members/new" className="btn btn-primary rounded">
           <RiAddLine className="w-5 h-5" />
           Agregar Miembro
         </Link>
