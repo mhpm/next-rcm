@@ -24,6 +24,7 @@ interface MemberFormProps {
   initialData?: Partial<FormValues>;
   onSubmit: SubmitHandler<FormValues>;
   isEditMode?: boolean;
+  isSubmitting?: boolean;
 }
 
 // 3. Actualizamos el componente ImageUpload para usar FormValues
@@ -62,6 +63,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   initialData,
   onSubmit,
   isEditMode = false,
+  isSubmitting = false,
 }) => {
   // 4. Usamos FormValues en useForm
   const {
@@ -414,8 +416,19 @@ export const MemberForm: React.FC<MemberFormProps> = ({
         <Link href="/members" className="btn btn-ghost">
           Cancelar
         </Link>
-        <button type="submit" className="btn btn-primary">
-          {isEditMode ? 'Actualizar Miembro' : 'Guardar Cambios'}
+        <button 
+          type="submit" 
+          className="btn btn-primary"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <span className="loading loading-spinner loading-sm"></span>
+              {isEditMode ? 'Actualizando...' : 'Guardando...'}
+            </>
+          ) : (
+            isEditMode ? 'Actualizar Miembro' : 'Guardar Cambios'
+          )}
         </button>
       </div>
     </form>
