@@ -25,13 +25,13 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    // Cargar el tema desde localStorage al inicializar
+    // Load theme from localStorage on initialization
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('isdark');
       if (stored !== null) {
         const darkMode = JSON.parse(stored);
         setIsDark(darkMode);
-        // Aplicar el tema inmediatamente
+        // Apply theme immediately
         document.documentElement.setAttribute(
           'data-theme',
           darkMode ? 'business' : 'cmyk'
@@ -41,7 +41,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   }, []);
 
   useEffect(() => {
-    // Guardar en localStorage y aplicar el tema cuando cambie
+    // Save to localStorage and apply theme when it changes
     if (typeof window !== 'undefined') {
       localStorage.setItem('isdark', JSON.stringify(isDark));
       document.documentElement.setAttribute(

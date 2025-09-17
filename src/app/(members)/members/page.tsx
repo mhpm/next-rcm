@@ -1,8 +1,8 @@
 'use client';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { RiAddLine } from 'react-icons/ri';
 import { DataTable } from '@/components';
-import { TableColumn, TableAction, Member } from '@/types';
+import { TableColumn, TableAction, Member, AddButtonConfig } from '@/types';
 import { useState, useEffect } from 'react';
 
 // Función para transformar Member a formato de tabla
@@ -32,6 +32,7 @@ const transformMemberToTableData = (member: Member) => ({
 });
 
 export default function MembersPage() {
+  const router = useRouter();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -137,6 +138,14 @@ export default function MembersPage() {
     },
   ];
 
+  // Configuración del botón de agregar (enfoque actual)
+  const addButtonConfig: AddButtonConfig = {
+    text: 'Agregar Miembro',
+    onClick: () => router.push('/members/new'),
+    variant: 'primary',
+    icon: <RiAddLine className="w-4 h-4" />,
+  };
+
   // Mostrar estado de carga
   if (loading) {
     return (
@@ -190,13 +199,6 @@ export default function MembersPage() {
 
   return (
     <div className="flex flex-col gap-6 p-8">
-      <div className="flex justify-end items-center">
-        <Link href="/members/new" className="btn btn-primary rounded">
-          <RiAddLine className="w-5 h-5" />
-          Agregar Miembro
-        </Link>
-      </div>
-
       <DataTable<Member>
         title="Miembros"
         subTitle="Lista de miembros de la iglesia"
@@ -208,6 +210,7 @@ export default function MembersPage() {
         pagination={true}
         itemsPerPage={5}
         className="bg-base-100 rounded-lg shadow-sm"
+        addButton={addButtonConfig}
       />
     </div>
   );

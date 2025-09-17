@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Member } from '@/types';
+import { generateUUID } from '@/lib/uuid';
 
-// Datos de ejemplo de miembros
+// Sample member data
 const members: Member[] = [
   {
-    id: '1',
+    id: 'a1b2c3d4-e5f6-4789-a012-123456789abc',
     firstName: 'John',
     lastName: 'Doe',
     email: 'john.doe@example.com',
@@ -25,7 +26,7 @@ const members: Member[] = [
     skills: ['Liderazgo', 'Música'],
   },
   {
-    id: '2',
+    id: 'b2c3d4e5-f6a7-4890-b123-234567890bcd',
     firstName: 'Jesus',
     lastName: 'Martinez',
     email: 'jesus.martinez@example.com',
@@ -47,7 +48,7 @@ const members: Member[] = [
     skills: ['Enseñanza', 'Tecnología'],
   },
   {
-    id: '3',
+    id: 'c3d4e5f6-a7b8-4901-c234-345678901cde',
     firstName: 'Maria',
     lastName: 'Garcia',
     email: 'maria.garcia@example.com',
@@ -69,7 +70,7 @@ const members: Member[] = [
     skills: ['Liderazgo', 'Consejería'],
   },
   {
-    id: '4',
+    id: 'd4e5f6a7-b8c9-4012-d345-456789012def',
     firstName: 'Carlos',
     lastName: 'Rodriguez',
     email: 'carlos.rodriguez@example.com',
@@ -91,7 +92,7 @@ const members: Member[] = [
     skills: ['Hospitalidad', 'Cocina'],
   },
   {
-    id: '5',
+    id: 'e5f6a7b8-c9d0-4123-e456-567890123efa',
     firstName: 'Ana',
     lastName: 'Lopez',
     email: 'ana.lopez@example.com',
@@ -189,7 +190,7 @@ export async function POST(request: NextRequest) {
 
     // Crear nuevo miembro
     const newMember: Member = {
-      id: (members.length + 1).toString(),
+      id: generateUUID(),
       firstName: body.firstName,
       lastName: body.lastName,
       email: body.email,

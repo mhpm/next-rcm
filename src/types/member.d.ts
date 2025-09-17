@@ -1,5 +1,7 @@
+import { UUID } from './uuid';
+
 export interface Member extends Record<string, unknown> {
-  id?: string;
+  id?: UUID;
   firstName: string;
   lastName: string;
   email: string;

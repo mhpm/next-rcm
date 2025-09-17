@@ -29,6 +29,14 @@ export interface PaginationInfo {
   endItem: number;
 }
 
+export interface AddButtonConfig {
+  text: string;
+  onClick: () => void;
+  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'error' | 'ghost';
+  className?: string;
+  icon?: React.ReactNode;
+}
+
 export interface DataTableProps<T = Record<string, unknown>> {
   data: T[];
   title?: string;
@@ -44,6 +52,7 @@ export interface DataTableProps<T = Record<string, unknown>> {
   emptyMessage?: string;
   className?: string;
   onSelectionChange?: (selectedRows: T[]) => void;
+  addButton?: AddButtonConfig | (() => React.ReactNode);
 }
 
 export interface OrderData {
