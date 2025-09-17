@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { Drawer, Navbar, ThemeProvider } from '@/components';
+import { Drawer, Navbar, ThemeProvider, QueryProvider } from '@/components';
 import { DrawerItem } from '@/types';
 import { RiDashboard3Line, RiGroup2Fill, RiUser3Fill } from 'react-icons/ri';
 import { ROUTES } from '@/routes';
@@ -63,12 +63,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <Drawer items={Items}>
-            <Navbar />
-            <main>{children}</main>
-          </Drawer>
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider>
+            <Drawer items={Items}>
+              <Navbar />
+              <main>{children}</main>
+            </Drawer>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

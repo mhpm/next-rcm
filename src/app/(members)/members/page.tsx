@@ -1,12 +1,18 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { RiAddLine } from 'react-icons/ri';
-import { DataTable } from '@/components';
+import { DataTable, LoadingSkeleton } from '@/components';
 import { TableColumn, TableAction, Member, AddButtonConfig } from '@/types';
-import { useState, useEffect } from 'react';
+import { useMembers } from '@/hooks/useMembers';
+
+// Tipo para los datos transformados de la tabla
+type MemberTableData = Omit<Member, 'birthDate' | 'baptismDate'> & {
+  birthDate: string;
+  baptismDate: string;
+};
 
 // Función para transformar Member a formato de tabla
-const transformMemberToTableData = (member: Member) => ({
+const transformMemberToTableData = (member: Member): MemberTableData => ({
   id: member.id,
   firstName: member.firstName,
   lastName: member.lastName,
@@ -33,53 +39,13 @@ const transformMemberToTableData = (member: Member) => ({
 
 export default function MembersPage() {
   const router = useRouter();
-  const [members, setMembers] = useState<Member[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: membersData, isLoading: loading, error, refetch } = useMembers();
 
-  // Fetch de datos de la API
-  useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/members');
-
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
-
-        if (result.success) {
-          // Transformar los datos de Member a formato de tabla
-          const transformedData = result.data.map(transformMemberToTableData);
-          setMembers(transformedData);
-        } else {
-          throw new Error(result.error || 'Error desconocido');
-        }
-      } catch (err) {
-        console.error('Error fetching members:', err);
-        setError(
-          err instanceof Error ? err.message : 'Error al cargar los miembros'
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMembers();
-  }, []);
+  // Transformar los datos de Member a formato de tabla
+  const members = membersData ? membersData.map(transformMemberToTableData) : [];
 
   // Configuración de columnas para la tabla
-  const columns: TableColumn<Member>[] = [
-    {
-      key: 'id',
-      label: 'ID',
-      sortable: true,
-      render: (value) => (
-        <span className="font-mono text-sm">{String(value)}</span>
-      ),
-    },
+  const columns: TableColumn<MemberTableData>[] = [
     {
       key: 'firstName',
       label: 'Nombre',
@@ -123,7 +89,7 @@ export default function MembersPage() {
   ];
 
   // Configuración de acciones para cada fila
-  const actions: TableAction<Member>[] = [
+  const actions: TableAction<MemberTableData>[] = [
     {
       label: 'Ver',
       variant: 'ghost',
@@ -150,10 +116,15 @@ export default function MembersPage() {
   if (loading) {
     return (
       <div className="container mx-auto p-6">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center gap-4">
-            <div className="loading loading-spinner loading-lg"></div>
-            <p className="text-gray-600">Cargando miembros...</p>
+        <div className="space-y-6">
+          <div className="skeleton h-8 w-48"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <LoadingSkeleton />
+            <LoadingSkeleton />
+            <LoadingSkeleton />
+            <LoadingSkeleton />
+            <LoadingSkeleton />
+            <LoadingSkeleton />
           </div>
         </div>
       </div>
@@ -182,12 +153,12 @@ export default function MembersPage() {
               </svg>
               <div>
                 <h3 className="font-bold">Error al cargar los datos</h3>
-                <div className="text-xs">{error}</div>
+                <div className="text-xs">{error?.message || 'Error desconocido'}</div>
               </div>
             </div>
             <button
               className="btn btn-primary mt-4"
-              onClick={() => window.location.reload()}
+              onClick={() => refetch()}
             >
               Reintentar
             </button>
@@ -199,7 +170,7 @@ export default function MembersPage() {
 
   return (
     <div className="flex flex-col gap-6 p-8">
-      <DataTable<Member>
+      <DataTable<MemberTableData>
         title="Miembros"
         subTitle="Lista de miembros de la iglesia"
         data={members}
