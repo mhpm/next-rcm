@@ -8,6 +8,29 @@ interface MemberResponse {
   message?: string;
 }
 
+interface MembersResponse {
+  success: boolean;
+  data: Member[];
+  error?: string;
+}
+
+// Fetch all members
+const fetchMembers = async (): Promise<Member[]> => {
+  const response = await fetch('/api/members');
+
+  if (!response.ok) {
+    throw new Error(`Error ${response.status}: ${response.statusText}`);
+  }
+
+  const result: MembersResponse = await response.json();
+
+  if (result.success) {
+    return result.data;
+  } else {
+    throw new Error(result.error || 'Error desconocido');
+  }
+};
+
 // Fetch individual member
 const fetchMember = async (id: string): Promise<Member> => {
   const response = await fetch(`/api/members/${id}`);
@@ -26,7 +49,13 @@ const fetchMember = async (id: string): Promise<Member> => {
 };
 
 // Update member
-const updateMember = async ({ id, data }: { id: string; data: UpdateMemberData }): Promise<Member> => {
+const updateMember = async ({
+  id,
+  data,
+}: {
+  id: string;
+  data: UpdateMemberData;
+}): Promise<Member> => {
   const response = await fetch(`/api/members/${id}`, {
     method: 'PUT',
     headers: {
@@ -65,6 +94,16 @@ const deleteMember = async (id: string): Promise<void> => {
   }
 };
 
+// Hook for fetching all members
+export const useMembers = () => {
+  return useQuery({
+    queryKey: ['members'],
+    queryFn: fetchMembers,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
 // Hook for fetching a single member
 export const useMember = (id: string) => {
   return useQuery({
@@ -85,7 +124,7 @@ export const useUpdateMember = () => {
     onSuccess: (updatedMember) => {
       // Update the individual member cache
       queryClient.setQueryData(['member', updatedMember.id], updatedMember);
-      
+
       // Invalidate and refetch the members list
       queryClient.invalidateQueries({ queryKey: ['members'] });
     },
@@ -104,7 +143,7 @@ export const useDeleteMember = () => {
     onSuccess: (_, deletedId) => {
       // Remove from individual member cache
       queryClient.removeQueries({ queryKey: ['member', deletedId] });
-      
+
       // Invalidate and refetch the members list
       queryClient.invalidateQueries({ queryKey: ['members'] });
     },
@@ -115,4 +154,4 @@ export const useDeleteMember = () => {
 };
 
 // Export types for use in components
-export type { MemberResponse };
+export type { MemberResponse, MembersResponse };

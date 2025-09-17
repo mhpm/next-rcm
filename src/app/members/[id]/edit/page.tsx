@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SubmitHandler } from 'react-hook-form';
 import { Breadcrumbs, MemberForm, LoadingSkeleton } from '@/components';
-import { useMember, useUpdateMember } from '@/hooks/useMember';
+import { useMember, useUpdateMember } from '@/app/members/hooks/useMembers';
 import { Member } from '@/types';
 
 // FormValues type to match MemberForm component
@@ -25,7 +25,7 @@ const formatDateForInput = (dateString?: string): string => {
   try {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return '';
-    
+
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -72,7 +72,7 @@ const formDataToMember = (formData: FormValues): Partial<Member> => ({
 const EditMemberPage = ({ params }: PageProps) => {
   const router = useRouter();
   const [memberId, setMemberId] = useState<string>('');
-  
+
   // Resolve params
   useEffect(() => {
     params.then((resolvedParams) => {
@@ -81,12 +81,7 @@ const EditMemberPage = ({ params }: PageProps) => {
   }, [params]);
 
   // Fetch member data
-  const {
-    data: member,
-    isLoading,
-    error,
-    isError,
-  } = useMember(memberId);
+  const { data: member, isLoading, error, isError } = useMember(memberId);
 
   // Update member mutation
   const updateMemberMutation = useUpdateMember();
@@ -101,7 +96,7 @@ const EditMemberPage = ({ params }: PageProps) => {
         id: memberId,
         data: memberData,
       });
-      
+
       // Show success message and redirect
       alert('Miembro actualizado exitosamente');
       router.push('/members');
@@ -159,7 +154,7 @@ const EditMemberPage = ({ params }: PageProps) => {
         </h1>
         <Breadcrumbs />
       </div>
-      
+
       <MemberForm
         initialData={initialFormData}
         onSubmit={handleSubmit}

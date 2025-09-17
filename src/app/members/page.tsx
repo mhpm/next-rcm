@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { RiAddLine } from 'react-icons/ri';
 import { DataTable, LoadingSkeleton } from '@/components';
 import { TableColumn, TableAction, Member, AddButtonConfig } from '@/types';
-import { useMembers } from '@/hooks/useMembers';
+import { useMembers } from '@/app/members/hooks/useMembers';
 
 // Tipo para los datos transformados de la tabla
 type MemberTableData = Omit<Member, 'birthDate' | 'baptismDate'> & {
