@@ -113,6 +113,28 @@ const members: Member[] = [
     notes: 'Pastora asociada',
     skills: ['Predicación', 'Consejería', 'Liderazgo'],
   },
+  {
+    id: 'f6a7b8c9-d0e1-4234-f567-678901234fga',
+    firstName: 'Luis',
+    lastName: 'Gomez',
+    email: 'luis.gomez@example.com',
+    phone: '4455667788',
+    age: 22,
+    address: {
+      street: '556 Cedar St',
+      city: 'Anywhere',
+      state: 'CA',
+      zip: '33445',
+      country: 'USA',
+    },
+    birthDate: '2000-07-15',
+    baptismDate: '2023-01-01',
+    role: 'miembro',
+    gender: 'masculino',
+    ministerio: 'Ministério A',
+    notes: 'Nuevo miembro',
+    skills: ['Hospitalidad', 'Cocina'],
+  },
 ];
 
 // GET - Obtener todos los miembros

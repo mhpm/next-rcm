@@ -127,31 +127,22 @@ function DataTable<T extends Record<string, unknown>>({
   };
 
   // Handle action clicks
-  const handleAction = (actionLabel: string, row: T) => {
-    switch (actionLabel) {
-      case 'Ver':
-        console.log('Ver miembro:', row.id);
-        break;
-      case 'Editar':
-        window.location.href = `/members/${row.id}/edit`;
-        break;
-      case 'Eliminar':
-        if (
-          confirm(
-            `¿Estás seguro de eliminar a ${row.firstName} ${row.lastName}?`
-          )
-        ) {
-          console.log('Eliminar miembro:', row.id);
-        }
-        break;
-      default:
-        console.log('Acción no reconocida:', actionLabel);
+  const handleAction = (action: typeof actions[0], row: T) => {
+    if (action.onClick) {
+      action.onClick(row);
+    } else {
+      console.log(`Acción "${action.label}" ejecutada para:`, row);
     }
   };
 
   // Get action icon
-  const getActionIcon = (actionLabel: string) => {
-    switch (actionLabel) {
+  const getActionIcon = (action: typeof actions[0]) => {
+    if (action.icon) {
+      return action.icon;
+    }
+    
+    // Fallback icons based on label
+    switch (action.label) {
       case 'Ver':
         return <RiEyeLine className="w-4 h-4" />;
       case 'Editar':
@@ -190,29 +181,35 @@ function DataTable<T extends Record<string, unknown>>({
             </div>
 
             <div className="flex items-center gap-2">
-              {addButton && (
-                typeof addButton === 'function' ? (
+              {addButton &&
+                (typeof addButton === 'function' ? (
                   addButton()
                 ) : (
                   <button
                     onClick={addButton.onClick}
                     className={`btn ${
-                      addButton.variant === 'primary' ? 'btn-primary' :
-                      addButton.variant === 'secondary' ? 'btn-secondary' :
-                      addButton.variant === 'success' ? 'btn-success' :
-                      addButton.variant === 'warning' ? 'btn-warning' :
-                      addButton.variant === 'info' ? 'btn-info' :
-                      addButton.variant === 'error' ? 'btn-error' :
-                      addButton.variant === 'ghost' ? 'btn-ghost' :
-                      'btn-primary'
+                      addButton.variant === 'primary'
+                        ? 'btn-primary'
+                        : addButton.variant === 'secondary'
+                        ? 'btn-secondary'
+                        : addButton.variant === 'success'
+                        ? 'btn-success'
+                        : addButton.variant === 'warning'
+                        ? 'btn-warning'
+                        : addButton.variant === 'info'
+                        ? 'btn-info'
+                        : addButton.variant === 'error'
+                        ? 'btn-error'
+                        : addButton.variant === 'ghost'
+                        ? 'btn-ghost'
+                        : 'btn-primary'
                     } btn-sm ${addButton.className || ''}`}
                   >
                     {addButton.icon || <RiAddLine className="w-4 h-4" />}
                     <span className="hidden sm:inline">{addButton.text}</span>
                   </button>
-                )
-              )}
-              
+                ))}
+
               <div className="hidden sm:flex items-center gap-2">
                 <span className="text-sm text-base-content/70">Columns</span>
                 <button className="btn btn-ghost btn-sm">⋮</button>
@@ -274,7 +271,7 @@ function DataTable<T extends Record<string, unknown>>({
                           {actions.map((action, actionIndex) => (
                             <button
                               key={actionIndex}
-                              onClick={() => handleAction(action.label, row)}
+                              onClick={() => handleAction(action, row)}
                               className={`btn btn-xs ${
                                 action.variant === 'error'
                                   ? 'btn-error'
@@ -292,7 +289,7 @@ function DataTable<T extends Record<string, unknown>>({
                               } ${action.className || ''}`}
                               title={action.label}
                             >
-                              {getActionIcon(action.label)}
+                              {getActionIcon(action)}
                             </button>
                           ))}
                         </div>
@@ -341,11 +338,20 @@ function DataTable<T extends Record<string, unknown>>({
                 </th>
               )}
               {columns.map((column) => (
-                <th key={String(column.key)} className={`font-semibold text-base-content ${column.className || ''}`}>
+                <th
+                  key={String(column.key)}
+                  className={`font-semibold text-base-content ${
+                    column.className || ''
+                  }`}
+                >
                   {column.label}
                 </th>
               ))}
-              {actions.length > 0 && <th className="text-right font-semibold text-base-content">Actions</th>}
+              {actions.length > 0 && (
+                <th className="text-right font-semibold text-base-content">
+                  Actions
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -392,7 +398,7 @@ function DataTable<T extends Record<string, unknown>>({
                           {actions.map((action, actionIndex) => (
                             <button
                               key={actionIndex}
-                              onClick={() => handleAction(action.label, row)}
+                              onClick={() => handleAction(action, row)}
                               className={`btn btn-sm ${
                                 action.variant === 'error'
                                   ? 'btn-error'
@@ -410,7 +416,7 @@ function DataTable<T extends Record<string, unknown>>({
                               } ${action.className || ''}`}
                               title={action.label}
                             >
-                              {getActionIcon(action.label)}
+                              {getActionIcon(action)}
                             </button>
                           ))}
                         </div>

@@ -7,7 +7,7 @@ export interface TableColumn<T = Record<string, unknown>> {
   type?: 'text' | 'number' | 'date' | 'custom';
 }
 
-export interface TableAction<_T = Record<string, unknown>> {
+export interface TableAction<T = Record<string, unknown>> {
   label: string;
   variant?:
     | 'primary'
@@ -18,6 +18,8 @@ export interface TableAction<_T = Record<string, unknown>> {
     | 'error'
     | 'ghost';
   className?: string;
+  onClick?: (row: T) => void;
+  icon?: React.ReactNode;
 }
 
 export interface PaginationInfo {

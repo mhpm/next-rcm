@@ -39,10 +39,17 @@ const transformMemberToTableData = (member: Member): MemberTableData => ({
 
 export default function MembersPage() {
   const router = useRouter();
-  const { data: membersData, isLoading: loading, error, refetch } = useMembers();
+  const {
+    data: membersData,
+    isLoading: loading,
+    error,
+    refetch,
+  } = useMembers();
 
   // Transformar los datos de Member a formato de tabla
-  const members = membersData ? membersData.map(transformMemberToTableData) : [];
+  const members = membersData
+    ? membersData.map(transformMemberToTableData)
+    : [];
 
   // Configuración de columnas para la tabla
   const columns: TableColumn<MemberTableData>[] = [
@@ -92,15 +99,31 @@ export default function MembersPage() {
   const actions: TableAction<MemberTableData>[] = [
     {
       label: 'Ver',
-      variant: 'ghost',
+      variant: 'info',
+      onClick: (row) => {
+        router.push(`/members/${row.id}`);
+      },
     },
     {
       label: 'Editar',
       variant: 'primary',
+      onClick: (row) => {
+        router.push(`/members/${row.id}/edit`);
+      },
     },
     {
       label: 'Eliminar',
       variant: 'error',
+      onClick: (row) => {
+        if (
+          confirm(
+            `¿Estás seguro de que quieres eliminar a ${row.firstName} ${row.lastName}?`
+          )
+        ) {
+          // Aquí iría la lógica para eliminar el miembro
+          console.log('Eliminando miembro:', row.id);
+        }
+      },
     },
   ];
 
@@ -153,13 +176,12 @@ export default function MembersPage() {
               </svg>
               <div>
                 <h3 className="font-bold">Error al cargar los datos</h3>
-                <div className="text-xs">{error?.message || 'Error desconocido'}</div>
+                <div className="text-xs">
+                  {error?.message || 'Error desconocido'}
+                </div>
               </div>
             </div>
-            <button
-              className="btn btn-primary mt-4"
-              onClick={() => refetch()}
-            >
+            <button className="btn btn-primary mt-4" onClick={() => refetch()}>
               Reintentar
             </button>
           </div>
