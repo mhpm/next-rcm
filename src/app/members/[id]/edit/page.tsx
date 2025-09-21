@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 import { SubmitHandler } from 'react-hook-form';
 import { Breadcrumbs, MemberForm, LoadingSkeleton } from '@/components';
 import { useMember, useUpdateMember } from '@/app/members/hooks/useMembers';
-import { Member } from '@/types';
+import { Member, MemberFormData } from '@/types';
 
-// FormValues type to match MemberForm component
-type FormValues = Omit<Member, 'birthDate' | 'baptismDate'> & {
+// FormValues type to match MemberForm component exactly
+type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
   birthDate?: string;
   baptismDate?: string;
 };
@@ -20,10 +20,9 @@ type PageProps = {
 };
 
 // Helper para formatear fechas a YYYY-MM-DD
-const formatDateForInput = (dateString?: string): string => {
-  if (!dateString) return '';
+const formatDateForInput = (date?: Date | null): string => {
+  if (!date) return '';
   try {
-    const date = new Date(dateString);
     if (isNaN(date.getTime())) return '';
 
     const year = date.getFullYear();
@@ -40,34 +39,75 @@ const memberToFormData = (member: Member): FormValues => ({
   firstName: member.firstName,
   lastName: member.lastName,
   email: member.email,
-  phone: member.phone,
-  age: member.age,
-  address: member.address,
+  phone: member.phone || undefined,
+  age: member.age || undefined,
+  street: member.street || undefined,
+  city: member.city || undefined,
+  state: member.state || undefined,
+  zip: member.zip || undefined,
+  country: member.country || undefined,
   birthDate: formatDateForInput(member.birthDate),
   baptismDate: formatDateForInput(member.baptismDate),
   role: member.role,
   gender: member.gender,
-  ministerio: member.ministerio,
-  notes: member.notes,
-  skills: member.skills,
+  ministerio: member.ministerio || undefined,
+  notes: member.notes || undefined,
+  skills: member.skills || undefined,
 });
 
-// Helper para convertir datos del formulario a formato de miembro
-const formDataToMember = (formData: FormValues): Partial<Member> => ({
-  firstName: formData.firstName as string,
-  lastName: formData.lastName as string,
-  email: formData.email as string,
-  phone: formData.phone as string,
-  age: formData.age as number,
-  address: formData.address as Member['address'],
-  birthDate: formData.birthDate || undefined,
-  baptismDate: formData.baptismDate || undefined,
-  role: formData.role as 'miembro' | 'supervisor' | 'lider' | 'anfitrion',
-  gender: formData.gender as 'masculino' | 'femenino',
-  ministerio: formData.ministerio as string,
-  notes: formData.notes as string,
-  skills: formData.skills as string[],
-});
+// Convert form data to member data for API
+const formDataToMember = (formData: FormValues): Partial<MemberFormData> => {
+  const memberData: Partial<MemberFormData> = {
+    firstName: formData.firstName,
+    lastName: formData.lastName,
+    email: formData.email,
+    role: formData.role as any, // Los valores ya están en mayúsculas desde el formulario
+    gender: formData.gender as any, // Los valores ya están en mayúsculas desde el formulario
+  };
+
+  // Handle optional string fields
+  if (formData.phone && formData.phone.trim()) memberData.phone = formData.phone.trim();
+  if (formData.street && formData.street.trim()) memberData.street = formData.street.trim();
+  if (formData.city && formData.city.trim()) memberData.city = formData.city.trim();
+  if (formData.state && formData.state.trim()) memberData.state = formData.state.trim();
+  if (formData.zip && formData.zip.trim()) memberData.zip = formData.zip.trim();
+  if (formData.country && formData.country.trim()) memberData.country = formData.country.trim();
+  if (formData.ministerio && formData.ministerio.trim()) memberData.ministerio = formData.ministerio.trim();
+  if (formData.notes && formData.notes.trim()) memberData.notes = formData.notes.trim();
+
+  // Handle numeric fields
+  if (formData.age && formData.age > 0) memberData.age = formData.age;
+
+  // Handle date fields with proper validation
+  if (formData.birthDate && formData.birthDate.trim()) {
+    try {
+      const birthDate = new Date(formData.birthDate);
+      if (!isNaN(birthDate.getTime())) {
+        memberData.birthDate = birthDate;
+      }
+    } catch (error) {
+      console.warn('Invalid birth date:', formData.birthDate);
+    }
+  }
+
+  if (formData.baptismDate && formData.baptismDate.trim()) {
+    try {
+      const baptismDate = new Date(formData.baptismDate);
+      if (!isNaN(baptismDate.getTime())) {
+        memberData.baptismDate = baptismDate;
+      }
+    } catch (error) {
+      console.warn('Invalid baptism date:', formData.baptismDate);
+    }
+  }
+
+  // Handle skills array
+  if (formData.skills && Array.isArray(formData.skills)) {
+    memberData.skills = formData.skills.filter(skill => skill && skill.trim());
+  }
+
+  return memberData;
+};
 
 const EditMemberPage = ({ params }: PageProps) => {
   const router = useRouter();
@@ -88,10 +128,15 @@ const EditMemberPage = ({ params }: PageProps) => {
 
   // Handle form submission
   const handleSubmit: SubmitHandler<FormValues> = async (formData) => {
-    if (!memberId) return;
+    if (!memberId) {
+      alert('Error: ID de miembro no encontrado');
+      return;
+    }
 
     try {
       const memberData = formDataToMember(formData);
+      console.log('Updating member with data:', memberData);
+      
       await updateMemberMutation.mutateAsync({
         id: memberId,
         data: memberData,
@@ -102,7 +147,23 @@ const EditMemberPage = ({ params }: PageProps) => {
       router.push('/members');
     } catch (error) {
       console.error('Error updating member:', error);
-      alert('Error al actualizar el miembro. Por favor, intenta de nuevo.');
+      
+      // Provide more specific error messages
+      let errorMessage = 'Error al actualizar el miembro. Por favor, intenta de nuevo.';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('email already exists')) {
+          errorMessage = 'Ya existe un miembro con este email.';
+        } else if (error.message.includes('Member not found')) {
+          errorMessage = 'El miembro no fue encontrado.';
+        } else if (error.message.includes('validation')) {
+          errorMessage = 'Los datos proporcionados no son válidos.';
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+      }
+      
+      alert(errorMessage);
     }
   };
 

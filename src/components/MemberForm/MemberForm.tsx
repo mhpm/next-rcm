@@ -11,10 +11,10 @@ import {
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Link from 'next/link';
-import { Member } from '@/types/member';
+import { MemberFormData } from '@/types/member';
 
-// 1. Creamos un tipo específico para los valores del formulario
-type FormValues = Omit<Member, 'birthDate' | 'baptismDate'> & {
+// 1. Definimos el tipo FormValues basado en MemberFormData pero con fechas como strings
+type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
   birthDate?: string;
   baptismDate?: string;
 };
@@ -205,7 +205,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     <label className="label cursor-pointer mr-4">
                       <input
                         type="radio"
-                        value="masculino"
+                        value="MASCULINO"
                         className="radio"
                         {...register('gender', {
                           required: 'Seleccione un género',
@@ -216,7 +216,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     <label className="label cursor-pointer">
                       <input
                         type="radio"
-                        value="femenino"
+                        value="FEMENINO"
                         className="radio"
                         {...register('gender')}
                       />
@@ -246,7 +246,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     type="text"
                     placeholder="Calle"
                     className="input input-bordered w-full"
-                    {...register('address.street')}
+                    {...register('street')}
                   />
                 </fieldset>
                 <fieldset>
@@ -257,7 +257,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     type="text"
                     placeholder="Ciudad"
                     className="input input-bordered w-full"
-                    {...register('address.city')}
+                    {...register('city')}
                   />
                 </fieldset>
                 <fieldset>
@@ -268,7 +268,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     type="text"
                     placeholder="Estado"
                     className="input input-bordered w-full"
-                    {...register('address.state')}
+                    {...register('state')}
                   />
                 </fieldset>
                 <fieldset>
@@ -279,7 +279,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     type="text"
                     placeholder="Código Postal"
                     className="input input-bordered w-full"
-                    {...register('address.zip')}
+                    {...register('zip')}
                   />
                 </fieldset>
               </div>
@@ -309,10 +309,10 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   className="select select-bordered w-full"
                   {...register('role', { required: 'El rol es requerido' })}
                 >
-                  <option value="miembro">Miembro</option>
-                  <option value="supervisor">Supervisor</option>
-                  <option value="lider">Líder</option>
-                  <option value="anfitrion">Anfitrión</option>
+                  <option value="MIEMBRO">Miembro</option>
+                  <option value="SUPERVISOR">Supervisor</option>
+                  <option value="LIDER">Líder</option>
+                  <option value="ANFITRION">Anfitrión</option>
                 </select>
                 {errors.role && (
                   <p className="text-error text-sm mt-1">

@@ -1,113 +1,66 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Member } from '@/types';
-import { generateUUID } from '@/lib/uuid';
-import { members } from '@/mock';
+import { getAllMembers, createMember } from '@/app/members/actions/members.actions';
+import { MemberFormData } from '@/types/member';
 
-// GET - Obtener todos los miembros
+// GET /api/members - Get all members
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
-    const role = searchParams.get('role');
-    const search = searchParams.get('search');
+    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 50;
+    const offset = searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : 0;
+    const search = searchParams.get('search') || undefined;
+    const role = searchParams.get('role') || undefined;
+    const orderBy = searchParams.get('orderBy') as 'firstName' | 'lastName' | 'createdAt' || 'lastName';
+    const orderDirection = searchParams.get('orderDirection') as 'asc' | 'desc' || 'asc';
 
-    let filteredMembers = [...members];
-
-    // Filtrar por status (usando role como equivalente)
-    if (status) {
-      filteredMembers = filteredMembers.filter(
-        (member) => member.role === status
-      );
-    }
-
-    // Filtrar por role
-    if (role) {
-      filteredMembers = filteredMembers.filter(
-        (member) => member.role === role
-      );
-    }
-
-    // Filtrar por búsqueda (nombre, email)
-    if (search) {
-      const searchLower = search.toLowerCase();
-      filteredMembers = filteredMembers.filter(
-        (member) =>
-          member.firstName.toLowerCase().includes(searchLower) ||
-          member.lastName.toLowerCase().includes(searchLower) ||
-          member.email.toLowerCase().includes(searchLower)
-      );
-    }
+    const result = await getAllMembers({
+      limit,
+      offset,
+      search,
+      role,
+      orderBy,
+      orderDirection,
+    });
 
     return NextResponse.json({
       success: true,
-      data: filteredMembers,
-      total: filteredMembers.length,
+      data: result.members,
+      total: result.total,
+      hasMore: result.hasMore,
     });
   } catch (error) {
-    console.error('Error fetching members:', error);
+    console.error('Error in GET /api/members:', error);
     return NextResponse.json(
-      { success: false, error: 'Error interno del servidor' },
+      {
+        success: false,
+        error: 'Failed to fetch members',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     );
   }
 }
 
-// POST - Crear un nuevo miembro
+// POST /api/members - Create a new member
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body: MemberFormData = await request.json();
+    
+    const member = await createMember(body);
 
-    // Validar datos requeridos
-    if (!body.firstName || !body.lastName || !body.email) {
-      return NextResponse.json(
-        { success: false, error: 'Faltan campos requeridos' },
-        { status: 400 }
-      );
-    }
-
-    // Verificar si el email ya existe
-    const existingMember = members.find(
-      (member) => member.email === body.email
-    );
-    if (existingMember) {
-      return NextResponse.json(
-        { success: false, error: 'El email ya está registrado' },
-        { status: 409 }
-      );
-    }
-
-    // Crear nuevo miembro
-    const newMember: Member = {
-      id: generateUUID(),
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: body.email,
-      phone: body.phone,
-      age: body.age,
-      address: body.address,
-      birthDate: body.birthDate,
-      baptismDate: body.baptismDate,
-      role: body.role || 'miembro',
-      gender: body.gender,
-      ministerio: body.ministerio,
-      notes: body.notes,
-      skills: body.skills || [],
-    };
-
-    members.push(newMember);
-
+    return NextResponse.json({
+      success: true,
+      data: member,
+      message: 'Member created successfully',
+    });
+  } catch (error) {
+    console.error('Error in POST /api/members:', error);
     return NextResponse.json(
       {
-        success: true,
-        data: newMember,
-        message: 'Miembro creado exitosamente',
+        success: false,
+        error: 'Failed to create member',
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error('Error creating member:', error);
-    return NextResponse.json(
-      { success: false, error: 'Error interno del servidor' },
       { status: 500 }
     );
   }

@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Member {
+  id           String     @id @default(cuid())
+  firstName    String     @map("first_name")
+  lastName     String     @map("last_name")
+  email        String     @unique
+  phone        String?
+  age          Int?
+  street       String?
+  city         String?
+  state        String?
+  zip          String?
+  country      String?    @default("México")
+  birthDate    DateTime?  @map("birth_date")
+  baptismDate  DateTime?  @map("baptism_date")
+  role         MemberRole @default(MIEMBRO)
+  gender       Gender
+  ministerio   String     @default("General")
+  pictureUrl   String?    @map("picture_url")
+  notes        String?
+  skills       String[]   @default([])
+  passwordHash String?    @map("password_hash")
+  church_id    String
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  churches     churches   @relation(fields: [church_id], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([role])
+  @@index([createdAt])
+  @@index([church_id])
+  @@map("members")
+}
+
+model churches {
+  id        String   @id
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  members   Member[]
+}
+
+enum MemberRole {
+  MIEMBRO
+  SUPERVISOR
+  LIDER
+  ANFITRION
+
+  @@map("member_role")
+}
+
+enum Gender {
+  MASCULINO
+  FEMENINO
+
+  @@map("gender")
+}
