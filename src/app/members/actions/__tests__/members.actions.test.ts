@@ -20,7 +20,7 @@ import { MemberFormData } from '@/types';
 jest.mock('@/lib/prisma');
 jest.mock('@/lib/uuid');
 jest.mock('bcryptjs', () => ({
-  hash: jest.fn(),
+  hash: jest.fn().mockResolvedValue('hashedPassword'),
   compare: jest.fn(),
 }));
 
@@ -54,9 +54,11 @@ const mockPrisma = {
   };
 };
 
-// Override the prisma import
-(prisma as any).member = mockPrisma.member;
-(prisma as any).churches = mockPrisma.churches;
+// Override the prisma import with proper typing
+Object.assign(prisma, {
+  member: mockPrisma.member,
+  churches: mockPrisma.churches,
+});
 
 const mockGenerateUUID = generateUUID as jest.MockedFunction<
   typeof generateUUID
@@ -123,7 +125,6 @@ describe('Members Actions', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGenerateUUID.mockReturnValue('test-uuid-123');
-    (mockBcrypt.hash as any).mockResolvedValue('hashedPassword');
     mockPrisma.churches.findFirst.mockResolvedValue(mockChurch);
   });
 
@@ -242,7 +243,7 @@ describe('Members Actions', () => {
       mockPrisma.member.create.mockRejectedValue(uniqueError);
 
       await expect(createMember(mockMemberFormData)).rejects.toThrow(
-        'A member with this email already exists'
+        'Ya existe un miembro registrado con este email'
       );
     });
   });
