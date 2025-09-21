@@ -3,11 +3,7 @@ import { PrismaClient } from '@prisma/client';
 // Cache for database connections
 const databaseConnections = new Map<string, PrismaClient>();
 
-// Configuration for different church databases
-interface ChurchDatabaseConfig {
-  churchSlug: string;
-  databaseUrl: string;
-}
+
 
 // Get database URL for a specific church
 function getDatabaseUrl(churchSlug: string): string {

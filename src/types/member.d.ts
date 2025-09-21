@@ -1,5 +1,3 @@
-import { UUID } from './uuid';
-
 // Prisma-generated enums
 export type MemberRole = 'MIEMBRO' | 'SUPERVISOR' | 'LIDER' | 'ANFITRION';
 export type Gender = 'MASCULINO' | 'FEMENINO';
@@ -12,31 +10,31 @@ export interface Member {
   email: string;
   phone: string | null;
   age: number | null;
-  
+
   // Address fields (flat structure from Prisma)
   street: string | null;
   city: string | null;
   state: string | null;
   zip: string | null;
   country: string | null;
-  
+
   // Important dates
   birthDate: Date | null;
   baptismDate: Date | null;
-  
+
   // Church-specific fields
   role: MemberRole;
   gender: Gender;
   ministerio: string;
-  
+
   // Additional fields
   pictureUrl: string | null;
   notes: string | null;
   skills: string[];
-  
+
   // Authentication
   passwordHash: string | null;
-  
+
   // Timestamps
   createdAt: Date;
   updatedAt: Date;

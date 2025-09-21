@@ -107,7 +107,7 @@ export function addHyphens(uuid: string): string {
 }
 
 // Default export
-export default {
+const uuidUtils = {
   generate: generateUUID,
   v4: uuidv4,
   isValid: isValidUUID,
@@ -119,3 +119,5 @@ export default {
   removeHyphens,
   addHyphens,
 };
+
+export default uuidUtils;

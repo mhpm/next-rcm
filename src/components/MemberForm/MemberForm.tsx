@@ -29,7 +29,7 @@ interface MemberFormProps {
 
 // 3. Actualizamos el componente ImageUpload para usar FormValues
 const ImageUpload = ({ control }: { control: Control<FormValues> }) => {
-  const onDrop = useCallback((_acceptedFiles: File[]) => {
+  const onDrop = useCallback(() => {
     // Files are handled by the form controller
   }, []);
 

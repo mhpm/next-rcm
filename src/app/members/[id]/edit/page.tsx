@@ -6,6 +6,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { Breadcrumbs, MemberForm, LoadingSkeleton } from '@/components';
 import { useMember, useUpdateMember } from '@/app/members/hooks/useMembers';
 import { Member, MemberFormData } from '@/types';
+import { MemberRole, Gender } from '@/generated/prisma';
 
 // FormValues type to match MemberForm component exactly
 type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
@@ -61,8 +62,8 @@ const formDataToMember = (formData: FormValues): Partial<MemberFormData> => {
     firstName: formData.firstName,
     lastName: formData.lastName,
     email: formData.email,
-    role: formData.role as any, // Los valores ya están en mayúsculas desde el formulario
-    gender: formData.gender as any, // Los valores ya están en mayúsculas desde el formulario
+    role: formData.role as MemberRole, // Los valores ya están en mayúsculas desde el formulario
+    gender: formData.gender as Gender, // Los valores ya están en mayúsculas desde el formulario
   };
 
   // Handle optional string fields
@@ -85,7 +86,7 @@ const formDataToMember = (formData: FormValues): Partial<MemberFormData> => {
       if (!isNaN(birthDate.getTime())) {
         memberData.birthDate = birthDate;
       }
-    } catch (error) {
+    } catch {
       console.warn('Invalid birth date:', formData.birthDate);
     }
   }
@@ -96,7 +97,7 @@ const formDataToMember = (formData: FormValues): Partial<MemberFormData> => {
       if (!isNaN(baptismDate.getTime())) {
         memberData.baptismDate = baptismDate;
       }
-    } catch (error) {
+    } catch {
       console.warn('Invalid baptism date:', formData.baptismDate);
     }
   }

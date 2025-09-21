@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllMembers, createMember } from '@/app/members/actions/members.actions';
 import { MemberFormData } from '@/types/member';
+import { MemberRole } from '@/generated/prisma';
 
 // GET /api/members - Get all members
 export async function GET(request: NextRequest) {
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 50;
     const offset = searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : 0;
     const search = searchParams.get('search') || undefined;
-    const role = searchParams.get('role') || undefined;
+    const role = searchParams.get('role') as MemberRole || undefined;
     const orderBy = searchParams.get('orderBy') as 'firstName' | 'lastName' | 'createdAt' || 'lastName';
     const orderDirection = searchParams.get('orderDirection') as 'asc' | 'desc' || 'asc';
 

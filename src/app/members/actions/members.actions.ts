@@ -1,5 +1,6 @@
 'use server';
 import { prisma } from '@/lib/prisma';
+import { Prisma, MemberRole } from '@/generated/prisma';
 import { MemberFormData } from '@/types';
 import { generateUUID } from '@/lib/uuid';
 import * as bcrypt from 'bcryptjs';
@@ -9,7 +10,7 @@ export async function getAllMembers(options?: {
   limit?: number;
   offset?: number;
   search?: string;
-  role?: string;
+  role?: MemberRole;
   orderBy?: 'firstName' | 'lastName' | 'createdAt';
   orderDirection?: 'asc' | 'desc';
 }) {
@@ -23,7 +24,7 @@ export async function getAllMembers(options?: {
       orderDirection = 'asc',
     } = options || {};
 
-    const whereClause: any = {};
+    const whereClause: Prisma.MemberWhereInput = {};
 
     // Add search filter
     if (search) {
@@ -168,12 +169,38 @@ export async function createMember(data: MemberFormData) {
       name: error instanceof Error ? error.name : 'Unknown error type'
     });
     
-    if (error instanceof Error && error.message.includes('Unique constraint')) {
-      throw new Error('A member with this email already exists');
+    // Manejo específico de errores de Prisma
+    if (error instanceof Error) {
+      // Error de restricción única (email duplicado)
+      if (error.message.includes('Unique constraint') || 
+          error.message.includes('unique constraint') ||
+          error.message.includes('duplicate key')) {
+        throw new Error('Ya existe un miembro registrado con este email');
+      }
+      
+      // Error de validación de datos
+      if (error.message.includes('Invalid') || 
+          error.message.includes('validation') ||
+          error.message.includes('required')) {
+        throw new Error('Los datos proporcionados no son válidos. Verifica la información e intenta de nuevo');
+      }
+      
+      // Error de conexión a la base de datos
+      if (error.message.includes('connection') || 
+          error.message.includes('timeout') ||
+          error.message.includes('ECONNREFUSED')) {
+        throw new Error('Error de conexión con la base de datos. Intenta de nuevo en unos momentos');
+      }
+      
+      // Error relacionado con la iglesia
+      if (error.message.includes('church') || 
+          error.message.includes('No church found')) {
+        throw new Error('No se encontró una iglesia válida. Contacta al administrador del sistema');
+      }
     }
     
-    // Throw the original error message for debugging
-    throw new Error(error instanceof Error ? error.message : 'Failed to create member');
+    // Error genérico
+    throw new Error('Error al crear el miembro. Por favor, intenta de nuevo');
   }
 }
 
@@ -200,7 +227,7 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
     }
 
     // Prepare update data with better validation
-    const updateData: any = {};
+    const updateData: Prisma.MemberUpdateInput = {};
 
     // Required fields
     if (data.firstName !== undefined) {
@@ -370,7 +397,7 @@ export async function deactivateMember(id: string) {
 // Check if email is already taken
 export async function isEmailTaken(email: string, excludeId?: string) {
   try {
-    const whereClause: any = { email };
+    const whereClause: Prisma.MemberWhereInput = { email };
 
     if (excludeId) {
       whereClause.id = { not: excludeId };

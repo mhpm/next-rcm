@@ -11,6 +11,7 @@ import {
   getMemberStats,
 } from '../members.actions';
 import { prisma } from '@/lib/prisma';
+import { PrismaClient } from '@/generated/prisma';
 import { generateUUID } from '@/lib/uuid';
 import * as bcrypt from 'bcryptjs';
 import { MemberFormData } from '@/types';
@@ -34,12 +35,32 @@ const mockPrisma = {
     count: jest.fn(),
     groupBy: jest.fn(),
   },
-} as any;
+  churches: {
+    findFirst: jest.fn(),
+  },
+} as {
+  member: {
+    findMany: jest.MockedFunction<PrismaClient['member']['findMany']>;
+    findFirst: jest.MockedFunction<PrismaClient['member']['findFirst']>;
+    findUnique: jest.MockedFunction<PrismaClient['member']['findUnique']>;
+    create: jest.MockedFunction<PrismaClient['member']['create']>;
+    update: jest.MockedFunction<PrismaClient['member']['update']>;
+    delete: jest.MockedFunction<PrismaClient['member']['delete']>;
+    count: jest.MockedFunction<PrismaClient['member']['count']>;
+    groupBy: jest.MockedFunction<PrismaClient['member']['groupBy']>;
+  };
+  churches: {
+    findFirst: jest.MockedFunction<PrismaClient['churches']['findFirst']>;
+  };
+};
 
 // Override the prisma import
 (prisma as any).member = mockPrisma.member;
+(prisma as any).churches = mockPrisma.churches;
 
-const mockGenerateUUID = generateUUID as jest.MockedFunction<typeof generateUUID>;
+const mockGenerateUUID = generateUUID as jest.MockedFunction<
+  typeof generateUUID
+>;
 const mockBcrypt = bcrypt as jest.Mocked<typeof bcrypt>;
 
 // Sample test data
@@ -64,6 +85,7 @@ const mockMember = {
   notes: 'Test notes',
   skills: ['Leadership', 'Music'],
   passwordHash: 'hashedPassword',
+  church_id: 'test-church-id',
   createdAt: new Date(),
   updatedAt: new Date(),
 };
@@ -89,11 +111,20 @@ const mockMemberFormData: MemberFormData = {
   password: 'testPassword123',
 };
 
+const mockChurch = {
+  id: 'test-church-id',
+  name: 'Test Church',
+  slug: 'test-church',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
 describe('Members Actions', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGenerateUUID.mockReturnValue('test-uuid-123');
-    (mockBcrypt.hash as jest.MockedFunction<any>).mockResolvedValue('hashedPassword');
+    (mockBcrypt.hash as any).mockResolvedValue('hashedPassword');
+    mockPrisma.churches.findFirst.mockResolvedValue(mockChurch);
   });
 
   describe('getAllMembers', () => {
@@ -186,8 +217,12 @@ describe('Members Actions', () => {
     });
 
     it('should throw error when database fails', async () => {
-      mockPrisma.member.findFirst.mockRejectedValue(new Error('Database error'));
-      await expect(getMemberBy('email', 'test@example.com')).rejects.toThrow('Failed to fetch member');
+      mockPrisma.member.findFirst.mockRejectedValue(
+        new Error('Database error')
+      );
+      await expect(getMemberBy('email', 'test@example.com')).rejects.toThrow(
+        'Failed to fetch member'
+      );
     });
   });
 
@@ -231,9 +266,9 @@ describe('Members Actions', () => {
     it('should throw error when member not found', async () => {
       mockPrisma.member.findUnique.mockResolvedValue(null);
 
-      await expect(updateMember('nonexistent-id', { firstName: 'Jane' })).rejects.toThrow(
-        'Member not found'
-      );
+      await expect(
+        updateMember('nonexistent-id', { firstName: 'Jane' })
+      ).rejects.toThrow('Member not found');
     });
   });
 
@@ -244,19 +279,27 @@ describe('Members Actions', () => {
 
       const result = await deleteMember('test-id-123');
 
-      expect(result).toEqual({ success: true, message: 'Member deleted successfully' });
+      expect(result).toEqual({
+        success: true,
+        message: 'Member deleted successfully',
+      });
     });
 
     it('should throw error when member not found', async () => {
       mockPrisma.member.findUnique.mockResolvedValue(null);
-      await expect(deleteMember('nonexistent-id')).rejects.toThrow('Member not found');
+      await expect(deleteMember('nonexistent-id')).rejects.toThrow(
+        'Member not found'
+      );
     });
   });
 
   describe('deactivateMember', () => {
     it('should deactivate member successfully', async () => {
-      const deactivatedMember = { ...mockMember, notes: `DEACTIVATED: ${new Date().toISOString()}` };
-      
+      const deactivatedMember = {
+        ...mockMember,
+        notes: `DEACTIVATED: ${new Date().toISOString()}`,
+      };
+
       mockPrisma.member.update.mockResolvedValue(deactivatedMember);
 
       const result = await deactivateMember('test-id-123');
@@ -270,7 +313,9 @@ describe('Members Actions', () => {
 
     it('should throw error when update fails', async () => {
       mockPrisma.member.update.mockRejectedValue(new Error('Database error'));
-      await expect(deactivateMember('nonexistent-id')).rejects.toThrow('Failed to deactivate member');
+      await expect(deactivateMember('nonexistent-id')).rejects.toThrow(
+        'Failed to deactivate member'
+      );
     });
   });
 
@@ -285,7 +330,9 @@ describe('Members Actions', () => {
 
     it('should throw error when member not found', async () => {
       mockPrisma.member.findUnique.mockResolvedValue(null);
-      await expect(getMemberById('nonexistent-id')).rejects.toThrow('Failed to fetch member');
+      await expect(getMemberById('nonexistent-id')).rejects.toThrow(
+        'Failed to fetch member'
+      );
     });
   });
 
@@ -309,13 +356,13 @@ describe('Members Actions', () => {
 
   describe('getMemberStats', () => {
     it('should return member statistics', async () => {
-      const mockByRole = [{ role: 'MIEMBRO', _count: { role: 5 } }];
-      const mockByGender = [{ gender: 'MASCULINO', _count: { gender: 6 } }];
+      const mockByRole = [{ role: 'MIEMBRO' as const, _count: { role: 5 } }] as Awaited<ReturnType<typeof prisma.member.groupBy>>;
+      const mockByGender = [{ gender: 'MASCULINO' as const, _count: { gender: 6 } }] as Awaited<ReturnType<typeof prisma.member.groupBy>>;
 
       mockPrisma.member.count.mockResolvedValue(10);
       mockPrisma.member.groupBy
-        .mockResolvedValueOnce(mockByRole as any)
-        .mockResolvedValueOnce(mockByGender as any);
+        .mockResolvedValueOnce(mockByRole)
+        .mockResolvedValueOnce(mockByGender);
 
       const result = await getMemberStats();
 

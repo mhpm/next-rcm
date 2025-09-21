@@ -7,3 +7,5 @@ export { MemberForm } from './MemberForm/MemberForm';
 export { default as DataTable } from './DataTable/DataTable';
 export { ThemeProvider, useTheme } from './ThemeProvider';
 export { QueryProvider } from './QueryProvider/QueryProvider';
+export { Alert } from './Alert';
+export type { AlertType } from './Alert';

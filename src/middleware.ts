@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getChurchSlugFromHost, isValidChurchSlug } from '@/lib/database';
 
 export function middleware(request: NextRequest) {
-  const { pathname, search } = request.nextUrl;
+  const { pathname } = request.nextUrl;
   const host = request.headers.get('host') || 'localhost:3000';
   
   // Get church slug from the host
