@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { RiAddLine, RiSettings3Line } from 'react-icons/ri';
+import { RiAddLine } from 'react-icons/ri';
 import { DataTable, LoadingSkeleton } from '@/components';
 import { TableColumn, TableAction, AddButtonConfig } from '@/types';
 import { useMembers } from '@/app/members/hooks/useMembers';
@@ -141,6 +141,19 @@ export default function MembersPage() {
       key: 'skills',
       label: 'Habilidades',
       sortable: true,
+      render: (pill) => (
+        <>
+          {Array.isArray(pill) &&
+            pill.map((skill) => (
+              <div
+                key={skill}
+                className="badge badge-sm badge-info badge-soft m-1"
+              >
+                {skill}
+              </div>
+            ))}
+        </>
+      ),
     },
     {
       key: 'birthDate',

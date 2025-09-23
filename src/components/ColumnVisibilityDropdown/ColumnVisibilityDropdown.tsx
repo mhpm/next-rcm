@@ -61,7 +61,7 @@ export function ColumnVisibilityDropdown<T = Record<string, unknown>>({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-64 bg-base-100 border border-base-300 rounded-lg shadow-lg z-50">
+        <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:translate-x-0 sm:translate-y-0 sm:mt-2 w-[calc(100vw-2rem)] sm:w-64 max-w-sm bg-base-100 border border-base-300 rounded-lg shadow-lg z-50">
           <div className="p-3 border-b border-base-300">
             <h3 className="font-semibold text-sm text-base-content">
               Mostrar/Ocultar Columnas
