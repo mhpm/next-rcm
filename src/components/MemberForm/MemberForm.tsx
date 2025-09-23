@@ -11,7 +11,7 @@ import {
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Link from 'next/link';
-import { MemberFormData } from '@/types/member';
+import { MemberFormData } from '@/app/members/types/member';
 
 // 1. Definimos el tipo FormValues basado en MemberFormData pero con fechas como strings
 type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
@@ -167,8 +167,11 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     {...register('age', {
                       required: 'La edad es requerida',
                       min: { value: 1, message: 'La edad debe ser mayor a 0' },
-                      max: { value: 120, message: 'La edad debe ser menor a 120' },
-                      valueAsNumber: true
+                      max: {
+                        value: 120,
+                        message: 'La edad debe ser menor a 120',
+                      },
+                      valueAsNumber: true,
                     })}
                   />
                   {errors.age && (
@@ -416,8 +419,8 @@ export const MemberForm: React.FC<MemberFormProps> = ({
         <Link href="/members" className="btn btn-ghost">
           Cancelar
         </Link>
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className="btn btn-primary"
           disabled={isSubmitting}
         >
@@ -426,8 +429,10 @@ export const MemberForm: React.FC<MemberFormProps> = ({
               <span className="loading loading-spinner loading-sm"></span>
               {isEditMode ? 'Actualizando...' : 'Guardando...'}
             </>
+          ) : isEditMode ? (
+            'Actualizar Miembro'
           ) : (
-            isEditMode ? 'Actualizar Miembro' : 'Guardar Cambios'
+            'Guardar Cambios'
           )}
         </button>
       </div>

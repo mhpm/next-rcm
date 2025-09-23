@@ -11,6 +11,7 @@ import {
   RiAddLine,
 } from 'react-icons/ri';
 import { DataTableProps, PaginationInfo } from '@/types';
+import { ColumnVisibilityDropdown } from '../ColumnVisibilityDropdown';
 
 function DataTable<T extends Record<string, unknown>>({
   data,
@@ -28,6 +29,13 @@ function DataTable<T extends Record<string, unknown>>({
   className = '',
   onSelectionChange,
   addButton,
+  // Props para visibilidad de columnas
+  allColumns,
+  visibleColumns,
+  onToggleColumn,
+  onShowAllColumns,
+  onHideAllColumns,
+  showColumnVisibility = false,
 }: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -127,7 +135,7 @@ function DataTable<T extends Record<string, unknown>>({
   };
 
   // Handle action clicks
-  const handleAction = (action: typeof actions[0], row: T) => {
+  const handleAction = (action: (typeof actions)[0], row: T) => {
     if (action.onClick) {
       action.onClick(row);
     } else {
@@ -136,11 +144,11 @@ function DataTable<T extends Record<string, unknown>>({
   };
 
   // Get action icon
-  const getActionIcon = (action: typeof actions[0]) => {
+  const getActionIcon = (action: (typeof actions)[0]) => {
     if (action.icon) {
       return action.icon;
     }
-    
+
     // Fallback icons based on label
     switch (action.label) {
       case 'Ver':
@@ -210,10 +218,18 @@ function DataTable<T extends Record<string, unknown>>({
                   </button>
                 ))}
 
-              <div className="hidden sm:flex items-center gap-2">
-                <span className="text-sm text-base-content/70">Columns</span>
-                <button className="btn btn-ghost btn-sm">⋮</button>
-              </div>
+              {showColumnVisibility &&
+                allColumns &&
+                visibleColumns &&
+                onToggleColumn && (
+                  <ColumnVisibilityDropdown
+                    columns={allColumns}
+                    visibleColumns={visibleColumns}
+                    onToggleColumn={onToggleColumn}
+                    onShowAllColumns={onShowAllColumns}
+                    onHideAllColumns={onHideAllColumns}
+                  />
+                )}
             </div>
           </div>
 
@@ -393,7 +409,7 @@ function DataTable<T extends Record<string, unknown>>({
                       </td>
                     ))}
                     {actions.length > 0 && (
-                      <td className="px-4 py-3">
+                      <td className="flex justify-end px-4 py-3">
                         <div className="flex gap-2">
                           {actions.map((action, actionIndex) => (
                             <button

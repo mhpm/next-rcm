@@ -42,6 +42,7 @@ export interface Member {
 
 // Form-specific interface for creating/updating members
 export interface MemberFormData {
+  id?: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -63,3 +64,21 @@ export interface MemberFormData {
   confirmPassword?: string;
   picture?: File[]; // For file uploads
 }
+
+// Form values type for member forms (dates as strings for form inputs)
+export interface MemberFormValues
+  extends Omit<MemberFormData, 'birthDate' | 'baptismDate'> {
+  birthDate?: string;
+  baptismDate?: string;
+}
+
+// Type for creating a new member (without ID and system fields)
+export type CreateMemberData = Omit<
+  Member,
+  'id' | 'createdAt' | 'updatedAt' | 'passwordHash'
+>;
+
+// Type for updating a member (all fields optional except system fields)
+export type UpdateMemberData = Partial<
+  Omit<Member, 'id' | 'createdAt' | 'updatedAt' | 'passwordHash'>
+>;

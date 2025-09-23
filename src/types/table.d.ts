@@ -55,6 +55,13 @@ export interface DataTableProps<T = Record<string, unknown>> {
   className?: string;
   onSelectionChange?: (selectedRows: T[]) => void;
   addButton?: AddButtonConfig | (() => React.ReactNode);
+  // Props para visibilidad de columnas
+  allColumns?: TableColumn<T>[];
+  visibleColumns?: Set<string>;
+  onToggleColumn?: (columnKey: string) => void;
+  onShowAllColumns?: (columnKeys: string[]) => void;
+  onHideAllColumns?: (columnKeys: string[]) => void;
+  showColumnVisibility?: boolean;
 }
 
 export interface OrderData {

@@ -1,14 +1,34 @@
 'use client';
+
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { RiAddLine } from 'react-icons/ri';
+import { RiAddLine, RiSettings3Line } from 'react-icons/ri';
 import { DataTable, LoadingSkeleton } from '@/components';
-import { TableColumn, TableAction, Member, AddButtonConfig } from '@/types';
+import { TableColumn, TableAction, AddButtonConfig } from '@/types';
 import { useMembers } from '@/app/members/hooks/useMembers';
+import { Member } from '@/app/members/types/member';
+import { useColumnVisibilityStore } from '@/components/ColumnVisibilityDropdown/columnVisibilityStore';
 
 // Tipo para los datos transformados de la tabla
-type MemberTableData = Omit<Member, 'birthDate' | 'baptismDate'> & {
+type MemberTableData = Omit<
+  Member,
+  | 'gender'
+  | 'birthDate'
+  | 'baptismDate'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'passwordHash'
+  | 'pictureUrl'
+  | 'age'
+  | 'street'
+  | 'city'
+  | 'state'
+  | 'zip'
+  | 'country'
+> & {
   birthDate: string;
   baptismDate: string;
+  address: string;
 };
 
 // Función para transformar Member a formato de tabla
@@ -17,22 +37,14 @@ const transformMemberToTableData = (member: Member): MemberTableData => ({
   firstName: member.firstName,
   lastName: member.lastName,
   email: member.email,
-  phone: member.phone,
-  age: member.age,
-  street: member.street,
-  city: member.city,
-  state: member.state,
-  zip: member.zip,
-  country: member.country,
+  phone: member.phone || 'N/A',
   role: member.role,
-  gender: member.gender,
+  notes: member.notes || 'N/A',
+  skills: member.skills || 'N/A',
+  address: `${member.street || ''}, ${member.city || ''}, ${
+    member.state || ''
+  }, ${member.country || ''}`,
   ministerio: member.ministerio,
-  pictureUrl: member.pictureUrl,
-  notes: member.notes,
-  skills: member.skills,
-  passwordHash: member.passwordHash,
-  createdAt: member.createdAt,
-  updatedAt: member.updatedAt,
   birthDate: member.birthDate
     ? new Date(member.birthDate).toLocaleDateString('es-ES', {
         year: 'numeric',
@@ -51,6 +63,31 @@ const transformMemberToTableData = (member: Member): MemberTableData => ({
 
 export default function MembersPage() {
   const router = useRouter();
+
+  // Usar Zustand store para manejar la visibilidad de columnas
+  const {
+    visibleColumns,
+    toggleColumn,
+    showAllColumns,
+    hideAllColumns,
+    initializeColumns,
+  } = useColumnVisibilityStore();
+
+  // Inicializar columnas por defecto
+  useEffect(() => {
+    const defaultColumns = [
+      'firstName',
+      'lastName',
+      'email',
+      'phone',
+      'role',
+      'ministerio',
+      'birthDate',
+      'baptismDate',
+    ];
+    initializeColumns(defaultColumns);
+  }, [initializeColumns]);
+
   const {
     data: membersData,
     isLoading: loading,
@@ -63,8 +100,8 @@ export default function MembersPage() {
     ? membersData.map(transformMemberToTableData)
     : [];
 
-  // Configuración de columnas para la tabla
-  const columns: TableColumn<MemberTableData>[] = [
+  // Configuración de todas las columnas disponibles
+  const allColumns: TableColumn<MemberTableData>[] = [
     {
       key: 'firstName',
       label: 'Nombre',
@@ -72,17 +109,17 @@ export default function MembersPage() {
     },
     {
       key: 'lastName',
-      label: 'Apellido',
-      sortable: true,
-    },
-    {
-      key: 'email',
-      label: 'Email',
+      label: 'Apellidos',
       sortable: true,
     },
     {
       key: 'phone',
       label: 'Teléfono',
+      sortable: true,
+    },
+    {
+      key: 'address',
+      label: 'Dirección',
       sortable: true,
     },
     {
@@ -96,6 +133,16 @@ export default function MembersPage() {
       sortable: true,
     },
     {
+      key: 'notes',
+      label: 'Notas',
+      sortable: true,
+    },
+    {
+      key: 'skills',
+      label: 'Habilidades',
+      sortable: true,
+    },
+    {
       key: 'birthDate',
       label: 'Fecha de Nacimiento',
       sortable: true,
@@ -106,6 +153,11 @@ export default function MembersPage() {
       sortable: true,
     },
   ];
+
+  // Filtrar columnas basándose en la visibilidad
+  const visibleColumnsArray = allColumns.filter((column) =>
+    visibleColumns.has(String(column.key))
+  );
 
   // Configuración de acciones para cada fila
   const actions: TableAction<MemberTableData>[] = [
@@ -208,14 +260,21 @@ export default function MembersPage() {
         title="Miembros"
         subTitle="Lista de miembros de la iglesia"
         data={members}
-        columns={columns}
+        columns={visibleColumnsArray}
         actions={actions}
         searchable
         selectable
         pagination={true}
-        itemsPerPage={5}
+        itemsPerPage={10}
         className="bg-base-100 rounded-lg shadow-sm"
         addButton={addButtonConfig}
+        // Props para visibilidad de columnas
+        allColumns={allColumns}
+        visibleColumns={visibleColumns}
+        onToggleColumn={toggleColumn}
+        onShowAllColumns={showAllColumns}
+        onHideAllColumns={hideAllColumns}
+        showColumnVisibility={true}
       />
     </div>
   );

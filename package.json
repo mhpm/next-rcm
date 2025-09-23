@@ -13,6 +13,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@neondatabase/serverless": "^1.0.1",
     "@prisma/client": "^6.16.2",
     "@prisma/extension-accelerate": "^2.0.2",
@@ -30,6 +31,7 @@
     "react-icons": "^5.5.0",
     "tailwindcss": "^4.1.13",
     "theme-change": "^2.5.0",
+    "zod": "^4.1.11",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
