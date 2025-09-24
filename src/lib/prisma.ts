@@ -1,4 +1,4 @@
-import { PrismaClient } from '../generated/prisma';
+import { PrismaClient } from '@prisma/client';
 
 // Ensure DATABASE_URL is properly defined
 if (!process.env.DATABASE_URL) {
