@@ -9,6 +9,8 @@ import {
   RiArrowRightSLine,
   RiEdit2Fill,
   RiAddLine,
+  RiArrowUpSLine,
+  RiArrowDownSLine,
 } from 'react-icons/ri';
 import { DataTableProps, PaginationInfo } from '@/types';
 import { ColumnVisibilityDropdown } from '../ColumnVisibilityDropdown';
@@ -41,12 +43,82 @@ function DataTable<T extends Record<string, unknown>>({
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [itemsPerPageState, setItemsPerPageState] = useState(itemsPerPage);
+  
+  // Sorting state
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof T | null;
+    direction: 'asc' | 'desc';
+  }>({
+    key: null,
+    direction: 'asc',
+  });
 
-  // Filter data based on search term
+  // Handle sorting
+  const handleSort = (columnKey: keyof T) => {
+    const column = columns.find(col => col.key === columnKey);
+    if (!column?.sortable) return;
+
+    setSortConfig(prevConfig => {
+      if (prevConfig.key === columnKey) {
+        return {
+          key: columnKey,
+          direction: prevConfig.direction === 'asc' ? 'desc' : 'asc',
+        };
+      } else {
+        return {
+          key: columnKey,
+          direction: 'asc',
+        };
+      }
+    });
+    
+    // Reset to first page when sorting
+    setCurrentPage(1);
+  };
+
+  // Sort data
+  const sortedData = useMemo(() => {
+    if (!sortConfig.key) return data;
+
+    return [...data].sort((a, b) => {
+      const aValue = a[sortConfig.key!];
+      const bValue = b[sortConfig.key!];
+
+      // Handle null/undefined values
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return sortConfig.direction === 'asc' ? 1 : -1;
+      if (bValue == null) return sortConfig.direction === 'asc' ? -1 : 1;
+
+      // Handle different data types
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        const comparison = aValue.toLowerCase().localeCompare(bValue.toLowerCase());
+        return sortConfig.direction === 'asc' ? comparison : -comparison;
+      }
+
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        const comparison = aValue - bValue;
+        return sortConfig.direction === 'asc' ? comparison : -comparison;
+      }
+
+      // Handle dates
+      if (aValue instanceof Date && bValue instanceof Date) {
+        const comparison = aValue.getTime() - bValue.getTime();
+        return sortConfig.direction === 'asc' ? comparison : -comparison;
+      }
+
+      // Convert to string for comparison as fallback
+      const aStr = String(aValue).toLowerCase();
+      const bStr = String(bValue).toLowerCase();
+      const comparison = aStr.localeCompare(bStr);
+      return sortConfig.direction === 'asc' ? comparison : -comparison;
+    });
+  }, [data, sortConfig]);
+
+  // Filter data based on search term (now using sorted data)
   const filteredData = useMemo(() => {
-    if (!searchTerm) return data;
+    if (!searchTerm) return sortedData;
 
-    return data.filter((item) => {
+    return sortedData.filter((item) => {
       return columns.some((column) => {
         const value = item[column.key];
         if (typeof value === 'string') {
@@ -60,7 +132,28 @@ function DataTable<T extends Record<string, unknown>>({
         return String(value).toLowerCase().includes(searchTerm.toLowerCase());
       });
     });
-  }, [data, searchTerm, columns]);
+  }, [sortedData, searchTerm, columns]);
+
+  // Get sort icon for column
+  const getSortIcon = (columnKey: keyof T) => {
+    const column = columns.find(col => col.key === columnKey);
+    if (!column?.sortable) return null;
+
+    if (sortConfig.key === columnKey) {
+      return sortConfig.direction === 'asc' ? (
+        <RiArrowUpSLine className="w-4 h-4 text-primary" />
+      ) : (
+        <RiArrowDownSLine className="w-4 h-4 text-primary" />
+      );
+    }
+
+    return (
+      <div className="flex flex-col opacity-50 group-hover:opacity-100 transition-opacity">
+        <RiArrowUpSLine className="w-3 h-3 -mb-1" />
+        <RiArrowDownSLine className="w-3 h-3" />
+      </div>
+    );
+  };
 
   // Pagination logic
   const paginationInfo: PaginationInfo = useMemo(() => {
@@ -358,9 +451,17 @@ function DataTable<T extends Record<string, unknown>>({
                   key={String(column.key)}
                   className={`font-semibold text-base-content ${
                     column.className || ''
-                  }`}
+                  } ${column.sortable ? 'cursor-pointer select-none group hover:bg-base-300/50 transition-colors' : ''}`}
+                  onClick={() => column.sortable && handleSort(column.key)}
                 >
-                  {column.label}
+                  <div className="flex items-center justify-between">
+                    <span>{column.label}</span>
+                    {column.sortable && (
+                      <div className="ml-2 flex-shrink-0">
+                        {getSortIcon(column.key)}
+                      </div>
+                    )}
+                  </div>
                 </th>
               ))}
               {actions.length > 0 && (

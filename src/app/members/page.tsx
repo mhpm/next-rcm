@@ -6,8 +6,8 @@ import { RiAddLine } from 'react-icons/ri';
 import { DataTable, LoadingSkeleton } from '@/components';
 import { TableColumn, TableAction, AddButtonConfig } from '@/types';
 import { useMembers } from '@/app/members/hooks/useMembers';
-import { Member } from '@/app/members/types/member';
-import { useColumnVisibilityStore } from '@/components/ColumnVisibilityDropdown/columnVisibilityStore';
+import { Member } from './types/member';
+import { useColumnVisibilityStore } from '@/components/ColumnVisibilityDropdown';
 
 // Tipo para los datos transformados de la tabla
 type MemberTableData = Omit<
@@ -113,6 +113,11 @@ export default function MembersPage() {
       sortable: true,
     },
     {
+      key: 'email',
+      label: 'Email',
+      sortable: true,
+    },
+    {
       key: 'phone',
       label: 'Teléfono',
       sortable: true,
@@ -141,19 +146,6 @@ export default function MembersPage() {
       key: 'skills',
       label: 'Habilidades',
       sortable: true,
-      render: (pill) => (
-        <>
-          {Array.isArray(pill) &&
-            pill.map((skill) => (
-              <div
-                key={skill}
-                className="badge badge-sm badge-info badge-soft m-1"
-              >
-                {skill}
-              </div>
-            ))}
-        </>
-      ),
     },
     {
       key: 'birthDate',
