@@ -42,6 +42,7 @@ async function seedChurchDatabase(churchSlug: string) {
       notes: memberData.notes || null,
       skills: memberData.skills || [],
       passwordHash: memberData.passwordHash || null,
+      church_id: churchSlug, // Add the required church_id field
     };
 
     await prisma.member.create({
