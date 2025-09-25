@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SubmitHandler } from 'react-hook-form';
 import { MemberFormData } from '@/app/members/types/member';
-import { MemberRole, Gender } from '@/generated/prisma';
+import { MemberRole, Gender } from '@prisma/client';
 import { useCreateMember } from '@/app/members/hooks/useMembers';
 
 // FormValues type to match MemberForm component exactly

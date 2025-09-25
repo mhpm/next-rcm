@@ -4,7 +4,7 @@ import {
   createMember,
 } from '@/app/members/actions/members.actions';
 import { MemberFormData } from '@/app/members/types/member';
-import { MemberRole } from '@/generated/prisma';
+import { MemberRole } from '@prisma/client';
 
 // GET /api/members - Get all members
 export async function GET(request: NextRequest) {

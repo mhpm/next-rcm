@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Member, MemberFormData } from '@/types';
-import { MemberRole } from '@/generated/prisma';
+import { MemberRole } from '@prisma/client';
 import {
   getAllMembers,
   getMemberById,

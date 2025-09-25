@@ -6,7 +6,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { Breadcrumbs, MemberForm, LoadingSkeleton } from '@/components';
 import { useMember, useUpdateMember } from '@/app/members/hooks/useMembers';
 import { Member, MemberFormData } from '@/types';
-import { MemberRole, Gender } from '@/generated/prisma';
+import { MemberRole, Gender } from '@prisma/client';
 
 // FormValues type to match MemberForm component exactly
 type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {

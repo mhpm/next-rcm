@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { RiAddLine } from 'react-icons/ri';
+import { RiAddLine, RiSettings3Line } from 'react-icons/ri';
 import { DataTable, LoadingSkeleton } from '@/components';
 import { TableColumn, TableAction, AddButtonConfig } from '@/types';
 import { useMembers } from '@/app/members/hooks/useMembers';
-import { Member } from './types/member';
+import { Member } from '@/types';
 import { useColumnVisibilityStore } from '@/components/ColumnVisibilityDropdown';
 
 // Tipo para los datos transformados de la tabla
@@ -70,7 +70,7 @@ export default function MembersPage() {
     toggleColumn,
     showAllColumns,
     hideAllColumns,
-    initializeColumns,
+    initializeColumns
   } = useColumnVisibilityStore();
 
   // Inicializar columnas por defecto
@@ -110,11 +110,6 @@ export default function MembersPage() {
     {
       key: 'lastName',
       label: 'Apellidos',
-      sortable: true,
-    },
-    {
-      key: 'email',
-      label: 'Email',
       sortable: true,
     },
     {
@@ -278,7 +273,7 @@ export default function MembersPage() {
         visibleColumns={visibleColumns}
         onToggleColumn={toggleColumn}
         onShowAllColumns={showAllColumns}
-        onHideAllColumns={hideAllColumns}
+         onHideAllColumns={hideAllColumns}
         showColumnVisibility={true}
       />
     </div>

@@ -1,6 +1,6 @@
 'use server';
 import { prisma } from '@/lib/prisma';
-import { Prisma, MemberRole } from '@/generated/prisma';
+import { Prisma, MemberRole } from '@prisma/client';
 import { MemberFormData } from '@/types';
 import { generateUUID } from '@/lib/uuid';
 import * as bcrypt from 'bcryptjs';
