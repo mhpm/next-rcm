@@ -4,6 +4,8 @@ import { Prisma, MemberRole } from '@prisma/client';
 import { MemberFormData } from '@/types';
 import { generateUUID } from '@/lib/uuid';
 import * as bcrypt from 'bcryptjs';
+import { logger } from '@/lib/logger';
+import { handlePrismaError, withErrorHandling, NotFoundError } from '@/lib/error-handler';
 
 // Get all members with optional filtering and pagination
 export async function getAllMembers(options?: {
@@ -117,7 +119,7 @@ export async function getMemberById(id: string) {
 // ============ CREATE OPERATIONS ============
 
 // Create a new member
-export async function createMember(data: MemberFormData) {
+export const createMember = withErrorHandling(async function createMember(data: MemberFormData) {
   try {
     // Hash password if provided
     let passwordHash = null;
@@ -128,7 +130,7 @@ export async function createMember(data: MemberFormData) {
     // Get the first available church (for now, we'll use the existing one)
     const church = await prisma.churches.findFirst();
     if (!church) {
-      throw new Error('No church found. Please create a church first.');
+      throw new NotFoundError('No se encontró una iglesia válida. Contacta al administrador del sistema.');
     }
 
     // Prepare member data
@@ -160,49 +162,37 @@ export async function createMember(data: MemberFormData) {
       data: memberData,
     });
 
+    logger.info('Member created successfully', {
+      operation: 'createMember',
+      memberId: member.id,
+      email: member.email,
+    });
+
     return member;
   } catch (error) {
-    console.error('Error creating member:', error);
-    console.error('Error details:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : 'No stack trace',
-      name: error instanceof Error ? error.name : 'Unknown error type'
+    // Log detallado del error para debugging
+    logger.error('Error creating member', error as Error, {
+      operation: 'createMember',
+      memberData: {
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        role: data.role,
+      },
+      timestamp: new Date().toISOString(),
     });
-    
-    // Manejo específico de errores de Prisma
-    if (error instanceof Error) {
-      // Error de restricción única (email duplicado)
-      if (error.message.includes('Unique constraint') || 
-          error.message.includes('unique constraint') ||
-          error.message.includes('duplicate key')) {
-        throw new Error('Ya existe un miembro registrado con este email');
-      }
-      
-      // Error de validación de datos
-      if (error.message.includes('Invalid') || 
-          error.message.includes('validation') ||
-          error.message.includes('required')) {
-        throw new Error('Los datos proporcionados no son válidos. Verifica la información e intenta de nuevo');
-      }
-      
-      // Error de conexión a la base de datos
-      if (error.message.includes('connection') || 
-          error.message.includes('timeout') ||
-          error.message.includes('ECONNREFUSED')) {
-        throw new Error('Error de conexión con la base de datos. Intenta de nuevo en unos momentos');
-      }
-      
-      // Error relacionado con la iglesia
-      if (error.message.includes('church') || 
-          error.message.includes('No church found')) {
-        throw new Error('No se encontró una iglesia válida. Contacta al administrador del sistema');
-      }
+
+    // Convertir errores de Prisma a errores de aplicación
+    if (error instanceof Prisma.PrismaClientKnownRequestError ||
+        error instanceof Prisma.PrismaClientValidationError ||
+        error instanceof Prisma.PrismaClientInitializationError) {
+      throw handlePrismaError(error);
     }
-    
-    // Error genérico
-    throw new Error('Error al crear el miembro. Por favor, intenta de nuevo');
+
+    // Re-lanzar errores de aplicación conocidos
+    throw error;
   }
-}
+});
 
 // ============ UPDATE OPERATIONS ============
 

@@ -1,10 +1,10 @@
 import React from 'react';
-import { 
-  RiCheckboxCircleLine, 
-  RiErrorWarningLine, 
-  RiInformationLine, 
+import {
+  RiCheckboxCircleLine,
+  RiErrorWarningLine,
+  RiInformationLine,
   RiAlertLine,
-  RiCloseLine 
+  RiCloseLine,
 } from 'react-icons/ri';
 
 export type AlertType = 'success' | 'error' | 'warning' | 'info';
@@ -27,8 +27,8 @@ const Alert: React.FC<AlertProps> = ({
   showIcon = true,
 }) => {
   const getAlertClasses = () => {
-    const baseClasses = 'alert';
-    
+    const baseClasses = 'alert alert-soft';
+
     switch (type) {
       case 'success':
         return `${baseClasses} alert-success`;
@@ -64,9 +64,7 @@ const Alert: React.FC<AlertProps> = ({
     <div className={`${getAlertClasses()} ${className}`} role="alert">
       {showIcon && getIcon()}
       <div className="flex-1">
-        {title && (
-          <h3 className="font-bold text-sm mb-1">{title}</h3>
-        )}
+        {title && <h3 className="font-bold text-sm mb-1">{title}</h3>}
         <div className="text-sm">{message}</div>
       </div>
       {onClose && (

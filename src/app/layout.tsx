@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Drawer, Navbar, ThemeProvider, QueryProvider } from '@/components';
+import { NotificationProvider } from '@/contexts/NotificationContext';
+import { ToastContainer } from '@/components/Toast';
 import { DrawerItem } from '@/types';
 import { RiDashboard3Line, RiGroup2Fill, RiUser3Fill } from 'react-icons/ri';
 import { ROUTES } from '@/routes';
@@ -66,10 +68,13 @@ export default function RootLayout({
       >
         <QueryProvider>
           <ThemeProvider>
-            <Drawer items={Items}>
-              <Navbar />
-              <main>{children}</main>
-            </Drawer>
+            <NotificationProvider>
+              <Drawer items={Items}>
+                <Navbar />
+                <main>{children}</main>
+              </Drawer>
+              <ToastContainer position="top-right" />
+            </NotificationProvider>
           </ThemeProvider>
         </QueryProvider>
       </body>

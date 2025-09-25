@@ -7,6 +7,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { MemberFormData } from '@/app/members/types/member';
 import { MemberRole, Gender } from '@prisma/client';
 import { useCreateMember } from '@/app/members/hooks/useMembers';
+import { useServerNotifications } from '@/hooks/useServerNotifications';
 
 // FormValues type to match MemberForm component exactly
 type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
@@ -19,6 +20,7 @@ export default function NewMemberPage() {
   const createMemberMutation = useCreateMember();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const { handleServerAction } = useServerNotifications();
 
   // Convert form data to member data for API
   const formDataToMember = (formData: FormValues): MemberFormData => ({
@@ -49,45 +51,30 @@ export default function NewMemberPage() {
       setError(null);
       setSuccess(null);
 
-      try {
-        const memberData = formDataToMember(data);
-        await createMemberMutation.mutateAsync(memberData);
+      const result = await handleServerAction(
+        async () => {
+          const memberData = formDataToMember(data);
+          return await createMemberMutation.mutateAsync(memberData);
+        },
+        {
+          successMessage: `¡Miembro ${data.firstName} ${data.lastName} creado exitosamente!`,
+          errorMessage: 'Error al crear el miembro',
+          showSuccessNotification: true,
+          showErrorNotification: true,
+        }
+      );
 
-        // Show success message and redirect
-        setSuccess('Miembro creado exitosamente');
+      if (result.success) {
+        // Redirect after successful creation
         setTimeout(() => {
           router.push('/members');
-        }, 2000);
-      } catch (error) {
-        console.error('Error creating member:', error);
-
-        // Proporcionar mensajes de error más específicos
-        let errorMessage =
-          'Error al crear el miembro. Por favor, intenta de nuevo.';
-
-        if (error instanceof Error) {
-          if (
-            error.message.includes('email already exists') ||
-            error.message.includes('Unique constraint') ||
-            error.message.includes('ya existe')
-          ) {
-            errorMessage =
-              'Ya existe un miembro registrado con este email. Por favor, usa un email diferente.';
-          } else if (error.message.includes('validation')) {
-            errorMessage =
-              'Los datos proporcionados no son válidos. Verifica la información e intenta de nuevo.';
-          } else if (error.message.includes('church')) {
-            errorMessage =
-              'No se encontró una iglesia válida. Contacta al administrador del sistema.';
-          } else if (error.message) {
-            errorMessage = error.message;
-          }
-        }
-
-        setError(errorMessage);
+        }, 1500);
+      } else {
+        // Set local error state for additional UI feedback if needed
+        setError(result.error?.message || 'Error desconocido');
       }
     },
-    [createMemberMutation, router]
+    [createMemberMutation, router, handleServerAction]
   );
 
   return (

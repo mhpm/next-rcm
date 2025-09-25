@@ -7,6 +7,7 @@ import { Breadcrumbs, MemberForm, LoadingSkeleton } from '@/components';
 import { useMember, useUpdateMember } from '@/app/members/hooks/useMembers';
 import { Member, MemberFormData } from '@/types';
 import { MemberRole, Gender } from '@prisma/client';
+import { useServerNotifications } from '@/hooks/useServerNotifications';
 
 // FormValues type to match MemberForm component exactly
 type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
@@ -126,45 +127,37 @@ const EditMemberPage = ({ params }: PageProps) => {
 
   // Update member mutation
   const updateMemberMutation = useUpdateMember();
+  const { handleServerAction } = useServerNotifications();
 
   // Handle form submission
   const handleSubmit: SubmitHandler<FormValues> = async (formData) => {
     if (!memberId) {
-      alert('Error: ID de miembro no encontrado');
       return;
     }
 
-    try {
-      const memberData = formDataToMember(formData);
-      console.log('Updating member with data:', memberData);
-      
-      await updateMemberMutation.mutateAsync({
-        id: memberId,
-        data: memberData,
-      });
-
-      // Show success message and redirect
-      alert('Miembro actualizado exitosamente');
-      router.push('/members');
-    } catch (error) {
-      console.error('Error updating member:', error);
-      
-      // Provide more specific error messages
-      let errorMessage = 'Error al actualizar el miembro. Por favor, intenta de nuevo.';
-      
-      if (error instanceof Error) {
-        if (error.message.includes('email already exists')) {
-          errorMessage = 'Ya existe un miembro con este email.';
-        } else if (error.message.includes('Member not found')) {
-          errorMessage = 'El miembro no fue encontrado.';
-        } else if (error.message.includes('validation')) {
-          errorMessage = 'Los datos proporcionados no son válidos.';
-        } else if (error.message) {
-          errorMessage = error.message;
-        }
+    const result = await handleServerAction(
+      async () => {
+        const memberData = formDataToMember(formData);
+        console.log('Updating member with data:', memberData);
+        
+        return await updateMemberMutation.mutateAsync({
+          id: memberId,
+          data: memberData,
+        });
+      },
+      {
+        successMessage: `¡Miembro ${formData.firstName} ${formData.lastName} actualizado exitosamente!`,
+        errorMessage: 'Error al actualizar el miembro',
+        showSuccessNotification: true,
+        showErrorNotification: true,
       }
-      
-      alert(errorMessage);
+    );
+
+    if (result.success) {
+      // Redirect after successful update
+      setTimeout(() => {
+        router.push('/members');
+      }, 1500);
     }
   };
 

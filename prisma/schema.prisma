@@ -32,7 +32,7 @@ model Member {
   church_id    String
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime   @updatedAt @map("updated_at")
-  churches     churches   @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  churches     churches   @relation(fields: [church_id], references: [id])
 
   @@index([email])
   @@index([role])
