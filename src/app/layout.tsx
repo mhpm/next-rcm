@@ -71,8 +71,8 @@ export default function RootLayout({
               <Navbar />
               <main>{children}</main>
             </Drawer>
-            <ToastContainer position="top-right" />
           </ThemeProvider>
+          <ToastContainer position="top-right" />
         </QueryProvider>
       </body>
     </html>

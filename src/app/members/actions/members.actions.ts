@@ -6,6 +6,7 @@ import { generateUUID } from '@/lib/uuid';
 import * as bcrypt from 'bcryptjs';
 import { logger } from '@/lib/logger';
 import { handlePrismaError, withErrorHandling, NotFoundError } from '@/lib/error-handler';
+import { processImageUpload } from '@/lib/file-upload';
 
 // Get all members with optional filtering and pagination
 export async function getAllMembers(options?: {
@@ -127,6 +128,21 @@ export const createMember = withErrorHandling(async function createMember(data: 
       passwordHash = await bcrypt.hash(data.password, 12);
     }
 
+    // Process image upload if provided
+    let pictureUrl = null;
+    if (data.picture && data.picture.length > 0) {
+      try {
+        pictureUrl = await processImageUpload(data.picture);
+      } catch (uploadError) {
+        logger.error('Error uploading image', uploadError as Error, {
+          operation: 'createMember',
+          email: data.email,
+        });
+        // Continue without image if upload fails
+        pictureUrl = null;
+      }
+    }
+
     // Get the first available church (for now, we'll use the existing one)
     const church = await prisma.churches.findFirst();
     if (!church) {
@@ -154,7 +170,7 @@ export const createMember = withErrorHandling(async function createMember(data: 
       notes: data.notes || null,
       skills: data.skills || [],
       passwordHash,
-      pictureUrl: null, // Handle file upload separately if needed
+      pictureUrl, // Now includes the uploaded image URL
       church_id: church.id, // Add the required church_id
     };
 

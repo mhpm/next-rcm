@@ -7,7 +7,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { MemberFormData } from '@/app/members/types/member';
 import { MemberRole, Gender } from '@prisma/client';
 import { useCreateMember } from '@/app/members/hooks/useMembers';
-import { useServerNotifications } from '@/hooks/useServerNotifications';
+import { useNotificationStore } from '@/store/NotificationStore';
 
 // FormValues type to match MemberForm component exactly
 type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
@@ -20,7 +20,7 @@ export default function NewMemberPage() {
   const createMemberMutation = useCreateMember();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const { handleServerAction } = useServerNotifications();
+  const { showSuccess, showError } = useNotificationStore();
 
   // Convert form data to member data for API
   const formDataToMember = (formData: FormValues): MemberFormData => ({
@@ -38,11 +38,12 @@ export default function NewMemberPage() {
     baptismDate: formData.baptismDate
       ? new Date(formData.baptismDate)
       : undefined,
-    role: formData.role as MemberRole, // Los valores ya están en mayúsculas desde el formulario
-    gender: formData.gender as Gender, // Los valores ya están en mayúsculas desde el formulario
+    role: formData.role as MemberRole,
+    gender: formData.gender as Gender,
     ministerio: formData.ministerio || undefined,
     notes: formData.notes || undefined,
     skills: formData.skills || [],
+    picture: formData.picture || undefined,
   });
 
   const handleSubmit: SubmitHandler<FormValues> = useCallback(
@@ -51,30 +52,32 @@ export default function NewMemberPage() {
       setError(null);
       setSuccess(null);
 
-      const result = await handleServerAction(
-        async () => {
-          const memberData = formDataToMember(data);
-          return await createMemberMutation.mutateAsync(memberData);
-        },
-        {
-          successMessage: `¡Miembro ${data.firstName} ${data.lastName} creado exitosamente!`,
-          errorMessage: 'Error al crear el miembro',
-          showSuccessNotification: true,
-          showErrorNotification: true,
-        }
-      );
+      try {
+        const memberData = formDataToMember(data);
+        await createMemberMutation.mutateAsync(memberData);
 
-      if (result.success) {
-        // Redirect after successful creation
+        // Mostrar toast de éxito
+        const successMessage = `¡Miembro ${data.firstName} ${data.lastName} creado exitosamente!`;
+        showSuccess(successMessage);
+
+        // Set local success state for additional UI feedback
+        setSuccess(successMessage);
+
+        // Redirect after successful creation with enough time for toast to show
         setTimeout(() => {
           router.push('/members');
-        }, 1500);
-      } else {
-        // Set local error state for additional UI feedback if needed
-        setError(result.error?.message || 'Error desconocido');
+        }, 2500);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al crear el miembro';
+
+        // Mostrar toast de error
+        showError(errorMessage);
+
+        // Set local error state for additional UI feedback
+        setError(errorMessage);
       }
     },
-    [createMemberMutation, router, handleServerAction]
+    [createMemberMutation, router, showSuccess, showError]
   );
 
   return (
@@ -84,6 +87,10 @@ export default function NewMemberPage() {
         <Breadcrumbs />
       </div>
 
+      <MemberForm
+        onSubmit={handleSubmit}
+        isSubmitting={createMemberMutation.isPending}
+      />
       {/* Alertas de error y éxito */}
       {error && (
         <div className="mb-6">
@@ -100,17 +107,12 @@ export default function NewMemberPage() {
         <div className="mb-6">
           <Alert
             type="success"
-            title="¡Éxito!"
+            title="Miembro creado exitosamente"
             message={success}
             onClose={() => setSuccess(null)}
           />
         </div>
       )}
-
-      <MemberForm
-        onSubmit={handleSubmit}
-        isSubmitting={createMemberMutation.isPending}
-      />
     </div>
   );
 }

@@ -55,6 +55,8 @@ const ToastContainer: React.FC<ToastContainerProps> = ({
         width: 'auto',
         minWidth: '320px',
         maxWidth: '400px',
+        position: 'fixed',
+        zIndex: 99999,
       }}
     >
       {notifications.map((notification) => (

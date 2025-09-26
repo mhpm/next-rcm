@@ -1,17 +1,23 @@
 'use client';
 
 import React from 'react';
-import { useForm, SubmitHandler, Controller, Control } from 'react-hook-form';
+import { useForm, SubmitHandler, Controller, Control, ControllerRenderProps } from 'react-hook-form';
 import {
   RiEyeLine,
   RiEyeOffLine,
   RiUpload2Line,
   RiKey2Fill,
+  RiCheckLine,
+  RiCloseLine,
+  RiLoader4Line,
 } from 'react-icons/ri';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Link from 'next/link';
+import Image from 'next/image';
 import { MemberFormData } from '@/app/members/types/member';
+import { useEmailAvailability } from '@/app/members/hooks/useMembers';
+import { useDebounce } from '@/hooks/useDebounce';
 
 // 1. Definimos el tipo FormValues basado en MemberFormData pero con fechas como strings
 type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
@@ -29,33 +35,124 @@ interface MemberFormProps {
 
 // 3. Actualizamos el componente ImageUpload para usar FormValues
 const ImageUpload = ({ control }: { control: Control<FormValues> }) => {
-  const onDrop = useCallback(() => {
-    // Files are handled by the form controller
-  }, []);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  // Clean up preview URL when component unmounts
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   return (
-    <div
-      {...getRootProps()}
-      className={`border-2 border-dashed rounded-lg p-10 text-center cursor-pointer
-      ${isDragActive ? 'border-primary' : 'border-base-300'}`}
-    >
+    <div className="space-y-4">
       <Controller
         name="picture"
         control={control}
-        render={({ field }) => (
-          <input
-            {...getInputProps()}
-            onChange={(e) => field.onChange(e.target.files)}
-          />
-        )}
+        render={({ field }) => {
+          // Move hooks outside of render prop by creating a separate component
+          return <ImageUploadField field={field} previewUrl={previewUrl} setPreviewUrl={setPreviewUrl} />;
+        }}
       />
-      <RiUpload2Line className="mx-auto h-12 w-12 text-base-content/60" />
-      <p>
-        Arrastra y suelta tus archivos o <span className="link">Navega</span>
-      </p>
     </div>
+  );
+};
+
+const ImageUploadField = ({ 
+  field, 
+  previewUrl, 
+  setPreviewUrl 
+}: { 
+  field: ControllerRenderProps<FormValues, 'picture'>; 
+  previewUrl: string | null; 
+  setPreviewUrl: (url: string | null) => void; 
+}) => {
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
+      // Update form field
+      field.onChange([file]);
+      // Create preview URL
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  }, [field, setPreviewUrl]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp'],
+    },
+    multiple: false,
+  });
+
+  const handleRemoveImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl(null);
+    field.onChange([]);
+  };
+
+  return (
+    <>
+      {previewUrl ? (
+        <div className="relative">
+          <Image
+            src={previewUrl}
+            alt="Vista previa"
+            className="w-full h-48 object-cover rounded-lg border-2 border-base-300"
+            width={384}
+            height={192}
+          />
+          <button
+            type="button"
+            onClick={handleRemoveImage}
+            className="absolute top-2 right-2 btn btn-circle btn-sm btn-error"
+          >
+            <RiCloseLine className="w-4 h-4" />
+          </button>
+        </div>
+      ) : null}
+
+      <div
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded-lg p-10 text-center cursor-pointer transition-colors
+        ${
+          isDragActive
+            ? 'border-primary bg-primary/5'
+            : 'border-base-300 hover:border-primary/50'
+        }`}
+      >
+        <input
+          {...getInputProps()}
+          onChange={(e) => {
+            const files = e.target.files;
+            // Convert FileList to Array
+            const filesArray = files ? Array.from(files) : [];
+            field.onChange(filesArray);
+            if (files && files.length > 0) {
+              const file = files[0];
+              const url = URL.createObjectURL(file);
+              setPreviewUrl(url);
+            }
+          }}
+        />
+        <RiUpload2Line className="mx-auto h-12 w-12 text-base-content/60" />
+        <p className="mt-2">
+          {previewUrl
+            ? 'Arrastra una nueva imagen o haz clic para cambiar'
+            : 'Arrastra y suelta tus archivos o'}{' '}
+          <span className="link">Navega</span>
+        </p>
+        <p className="text-sm text-base-content/60 mt-1">
+          Formatos soportados: JPG, PNG, GIF, WebP
+        </p>
+      </div>
+    </>
   );
 };
 
@@ -80,6 +177,64 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const password = watch('password');
+  const emailValue = watch('email');
+
+  // Debounce email value to avoid excessive API calls
+  const debouncedEmail = useDebounce(emailValue, 500);
+
+  // Get member ID for edit mode (to exclude current member from email check)
+  const currentMemberId = initialData?.id;
+
+  // Email availability check
+  const {
+    data: isEmailAvailable,
+    isLoading: isCheckingEmail,
+    error: emailCheckError,
+  } = useEmailAvailability(
+    debouncedEmail || '',
+    isEditMode ? currentMemberId : undefined
+  );
+
+  // Email validation status
+  const emailValidationStatus = useMemo(() => {
+    if (!debouncedEmail || debouncedEmail.length === 0) {
+      return null;
+    }
+
+    if (isCheckingEmail) {
+      return 'checking';
+    }
+
+    if (emailCheckError) {
+      return 'error';
+    }
+
+    if (isEmailAvailable === true) {
+      return 'available';
+    }
+
+    if (isEmailAvailable === false) {
+      return 'taken';
+    }
+
+    return null;
+  }, [debouncedEmail, isCheckingEmail, emailCheckError, isEmailAvailable]);
+
+  // Email input class based on validation status
+  const emailInputClass = useMemo(() => {
+    const baseClass = 'input input-bordered w-full pr-10';
+
+    switch (emailValidationStatus) {
+      case 'available':
+        return `${baseClass} input-success`;
+      case 'taken':
+        return `${baseClass} input-error`;
+      case 'error':
+        return `${baseClass} input-warning`;
+      default:
+        return baseClass;
+    }
+  }, [emailValidationStatus]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -131,17 +286,66 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   <label className="label">
                     <span className="label-text">Correo Electrónico</span>
                   </label>
-                  <input
-                    type="email"
-                    placeholder="Correo"
-                    className="input input-bordered w-full"
-                    {...register('email', {
-                      required: 'El correo es requerido',
-                    })}
-                  />
+                  <div className="relative">
+                    <input
+                      type="email"
+                      placeholder="Correo"
+                      className={emailInputClass}
+                      {...register('email', {
+                        required: 'El correo es requerido',
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: 'Formato de correo inválido',
+                        },
+                        validate: (value) => {
+                          if (!value) return true;
+
+                          // Only validate availability if we have a result
+                          if (emailValidationStatus === 'taken') {
+                            return 'Este correo ya está en uso';
+                          }
+
+                          return true;
+                        },
+                      })}
+                    />
+
+                    {/* Email validation icon */}
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                      {emailValidationStatus === 'checking' && (
+                        <RiLoader4Line className="w-5 h-5 text-gray-400 animate-spin" />
+                      )}
+                      {emailValidationStatus === 'available' && (
+                        <RiCheckLine className="w-5 h-5 text-success" />
+                      )}
+                      {emailValidationStatus === 'taken' && (
+                        <RiCloseLine className="w-5 h-5 text-error" />
+                      )}
+                      {emailValidationStatus === 'error' && (
+                        <RiCloseLine className="w-5 h-5 text-warning" />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Email validation messages */}
                   {errors.email && (
                     <p className="text-error text-sm mt-1">
                       {errors.email.message}
+                    </p>
+                  )}
+                  {emailValidationStatus === 'available' && !errors.email && (
+                    <p className="text-success text-sm mt-1">
+                      ✓ Correo disponible
+                    </p>
+                  )}
+                  {emailValidationStatus === 'taken' && (
+                    <p className="text-error text-sm mt-1">
+                      ✗ Este correo ya está en uso
+                    </p>
+                  )}
+                  {emailValidationStatus === 'error' && (
+                    <p className="text-warning text-sm mt-1">
+                      ⚠ Error al verificar disponibilidad
                     </p>
                   )}
                 </fieldset>
