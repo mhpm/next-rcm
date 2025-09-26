@@ -104,7 +104,8 @@ const createNewMember = async (data: MemberFormData): Promise<Member> => {
     const member = await createMember(data);
     return member;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Error al crear miembro');
+    // Preserve the original error message from the server action
+    throw error;
   }
 };
 
@@ -120,7 +121,8 @@ const updateExistingMember = async ({
     const member = await updateMemberAction(id, data);
     return member;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Error al actualizar miembro');
+    // Preserve the original error message from the server action
+    throw error;
   }
 };
 
@@ -213,9 +215,7 @@ export const useCreateMember = () => {
       queryClient.invalidateQueries({ queryKey: ['members'] });
       queryClient.invalidateQueries({ queryKey: ['members', 'stats'] });
     },
-    onError: (error) => {
-      console.error('Error creating member:', error);
-    },
+    // Removido onError para que los errores se propaguen correctamente
   });
 };
 
@@ -233,9 +233,7 @@ export const useUpdateMember = () => {
       queryClient.invalidateQueries({ queryKey: ['members'] });
       queryClient.invalidateQueries({ queryKey: ['members', 'stats'] });
     },
-    onError: (error) => {
-      console.error('Error updating member:', error);
-    },
+    // Removido onError para que los errores se propaguen correctamente
   });
 };
 
@@ -253,9 +251,7 @@ export const useDeleteMember = () => {
       queryClient.invalidateQueries({ queryKey: ['members'] });
       queryClient.invalidateQueries({ queryKey: ['members', 'stats'] });
     },
-    onError: (error) => {
-      console.error('Error deleting member:', error);
-    },
+    // Removido onError para que los errores se propaguen correctamente
   });
 };
 
@@ -273,9 +269,7 @@ export const useDeactivateMember = () => {
       queryClient.invalidateQueries({ queryKey: ['members'] });
       queryClient.invalidateQueries({ queryKey: ['members', 'stats'] });
     },
-    onError: (error) => {
-      console.error('Error deactivating member:', error);
-    },
+    // Removido onError para que los errores se propaguen correctamente
   });
 };
 

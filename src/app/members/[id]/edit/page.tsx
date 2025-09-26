@@ -63,19 +63,26 @@ const formDataToMember = (formData: FormValues): Partial<MemberFormData> => {
     firstName: formData.firstName,
     lastName: formData.lastName,
     email: formData.email,
-    role: formData.role as MemberRole, // Los valores ya están en mayúsculas desde el formulario
-    gender: formData.gender as Gender, // Los valores ya están en mayúsculas desde el formulario
+    role: formData.role as MemberRole,
+    gender: formData.gender as Gender,
   };
 
   // Handle optional string fields
-  if (formData.phone && formData.phone.trim()) memberData.phone = formData.phone.trim();
-  if (formData.street && formData.street.trim()) memberData.street = formData.street.trim();
-  if (formData.city && formData.city.trim()) memberData.city = formData.city.trim();
-  if (formData.state && formData.state.trim()) memberData.state = formData.state.trim();
+  if (formData.phone && formData.phone.trim())
+    memberData.phone = formData.phone.trim();
+  if (formData.street && formData.street.trim())
+    memberData.street = formData.street.trim();
+  if (formData.city && formData.city.trim())
+    memberData.city = formData.city.trim();
+  if (formData.state && formData.state.trim())
+    memberData.state = formData.state.trim();
   if (formData.zip && formData.zip.trim()) memberData.zip = formData.zip.trim();
-  if (formData.country && formData.country.trim()) memberData.country = formData.country.trim();
-  if (formData.ministerio && formData.ministerio.trim()) memberData.ministerio = formData.ministerio.trim();
-  if (formData.notes && formData.notes.trim()) memberData.notes = formData.notes.trim();
+  if (formData.country && formData.country.trim())
+    memberData.country = formData.country.trim();
+  if (formData.ministerio && formData.ministerio.trim())
+    memberData.ministerio = formData.ministerio.trim();
+  if (formData.notes && formData.notes.trim())
+    memberData.notes = formData.notes.trim();
 
   // Handle numeric fields
   if (formData.age && formData.age > 0) memberData.age = formData.age;
@@ -105,7 +112,9 @@ const formDataToMember = (formData: FormValues): Partial<MemberFormData> => {
 
   // Handle skills array
   if (formData.skills && Array.isArray(formData.skills)) {
-    memberData.skills = formData.skills.filter(skill => skill && skill.trim());
+    memberData.skills = formData.skills.filter(
+      (skill) => skill && skill.trim()
+    );
   }
 
   return memberData;
@@ -138,8 +147,7 @@ const EditMemberPage = ({ params }: PageProps) => {
     const result = await handleServerAction(
       async () => {
         const memberData = formDataToMember(formData);
-        console.log('Updating member with data:', memberData);
-        
+
         return await updateMemberMutation.mutateAsync({
           id: memberId,
           data: memberData,

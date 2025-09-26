@@ -6,11 +6,17 @@ import { useNotifications } from '@/contexts/NotificationContext';
 import Toast from './Toast';
 
 interface ToastContainerProps {
-  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center' | 'bottom-center';
+  position?:
+    | 'top-right'
+    | 'top-left'
+    | 'bottom-right'
+    | 'bottom-left'
+    | 'top-center'
+    | 'bottom-center';
 }
 
-const ToastContainer: React.FC<ToastContainerProps> = ({ 
-  position = 'top-right' 
+const ToastContainer: React.FC<ToastContainerProps> = ({
+  position = 'top-right',
 }) => {
   const { notifications, removeNotification } = useNotifications();
 
@@ -40,15 +46,15 @@ const ToastContainer: React.FC<ToastContainerProps> = ({
   return createPortal(
     <div
       className={`
-        fixed z-[9999] flex flex-col space-y-4 pointer-events-none
+        fixed z-[99999] flex flex-col space-y-4 pointer-events-none w-[320px]
         ${getPositionClasses()}
       `}
-      style={{ 
-        maxHeight: 'calc(100vh - 2rem)', 
+      style={{
+        maxHeight: 'calc(100vh - 2rem)',
         overflowY: 'auto',
         width: 'auto',
         minWidth: '320px',
-        maxWidth: '400px'
+        maxWidth: '400px',
       }}
     >
       {notifications.map((notification) => (
