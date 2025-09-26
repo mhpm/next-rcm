@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { useNotifications } from '@/contexts/NotificationContext';
+import { useNotificationStore } from '@/store/NotificationStore';
 import Toast from './Toast';
 
 interface ToastContainerProps {
@@ -18,7 +18,7 @@ interface ToastContainerProps {
 const ToastContainer: React.FC<ToastContainerProps> = ({
   position = 'top-right',
 }) => {
-  const { notifications, removeNotification } = useNotifications();
+  const { notifications, removeNotification } = useNotificationStore();
 
   const getPositionClasses = () => {
     switch (position) {
@@ -46,7 +46,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({
   return createPortal(
     <div
       className={`
-        fixed z-[99999] flex flex-col space-y-4 pointer-events-none w-[320px]
+        fixed z-[99999] flex flex-col pointer-events-none
         ${getPositionClasses()}
       `}
       style={{

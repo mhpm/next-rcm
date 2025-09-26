@@ -1,6 +1,6 @@
 'use client';
 
-import { useNotifications } from '@/contexts/NotificationContext';
+import { useNotificationStore } from '@/store/NotificationStore';
 import { useCallback } from 'react';
 
 export interface ServerActionResult<T = unknown> {
@@ -14,7 +14,8 @@ export interface ServerActionResult<T = unknown> {
 }
 
 export const useServerNotifications = () => {
-  const { showSuccess, showError, showWarning, showInfo } = useNotifications();
+  const { showSuccess, showError, showWarning, showInfo } =
+    useNotificationStore();
 
   const handleServerAction = useCallback(
     async <T>(

@@ -8,7 +8,7 @@ import {
   RiAlertLine,
   RiCloseLine,
 } from 'react-icons/ri';
-import { Notification } from '@/contexts/NotificationContext';
+import { Notification } from '@/store/NotificationStore';
 
 interface ToastProps {
   notification: Notification;
@@ -35,9 +35,9 @@ const Toast: React.FC<ToastProps> = ({ notification, onClose }) => {
   const getToastClasses = () => {
     const baseClasses = `
       transform transition-all duration-300 ease-in-out
-      w-full bg-white shadow-xl rounded-lg pointer-events-auto
+      bg-white shadow-xl rounded-lg pointer-events-auto
       ring-1 ring-black ring-opacity-5 overflow-hidden
-      border border-gray-200
+      border border-gray-200 relative w-[300px] mb-4
     `;
 
     const visibilityClasses =
