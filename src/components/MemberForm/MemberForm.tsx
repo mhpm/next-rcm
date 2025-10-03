@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { useForm, FieldApi } from '@tanstack/react-form';
+import { useForm } from '@tanstack/react-form';
+import type { FieldApi } from '@tanstack/react-form';
 import {
   RiEyeLine,
   RiEyeOffLine,
@@ -15,26 +16,27 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MemberFormData } from '@/app/members/types/member';
+import type { MemberFormValues as MemberFormValuesType } from '@/app/members/types/member';
 import { useEmailAvailability } from '@/app/members/hooks/useMembers';
 import { useDebounce } from '@/hooks/useDebounce';
 
-// 1. Definimos el tipo FormValues basado en MemberFormData pero con fechas como strings
-type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
-  birthDate?: string;
-  baptismDate?: string;
-};
+// 1. Definimos el tipo MemberFormValues reutilizando la definición global para mantener consistencia
+export type MemberFormValues = MemberFormValuesType;
 
-// 2. Actualizamos la interfaz para usar FormValues
+// 2. Actualizamos la interfaz para usar MemberFormValues
 interface MemberFormProps {
-  initialData?: Partial<FormValues>;
-  onSubmit: (values: FormValues) => void | Promise<void>;
+  initialData?: Partial<MemberFormValues>;
+  onSubmit: (values: MemberFormValues) => void | Promise<void>;
   isEditMode?: boolean;
   isSubmitting?: boolean;
 }
 
-// 3. Actualizamos el componente ImageUpload para usar FormValues
-const ImageUploadField = ({ field }: { field: FieldApi<FormValues, 'picture'> }) => {
+// 3. Actualizamos el componente ImageUpload para usar MemberFormValues
+const ImageUploadField = ({
+  field,
+}: {
+  field: FieldApi<MemberFormValues, 'picture'>;
+}) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -149,7 +151,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   isEditMode = false,
   isSubmitting = false,
 }) => {
-  const form = useForm<FormValues>({
+  const form = useForm<MemberFormValues>({
     defaultValues: {
       id: initialData?.id,
       firstName: initialData?.firstName ?? '',
@@ -178,10 +180,24 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     },
   });
 
+  const { canSubmit, isSubmitting: formIsSubmitting, submitCount } =
+    form.useStore((state) => ({
+      canSubmit: state.canSubmit,
+      isSubmitting: state.isSubmitting,
+      submitCount: state.submitCount,
+    }));
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const emailValue = form.useStore((state) => state.values.email);
+  const emailValue = form.useStore((state) => state.values.email ?? '');
+
+  const getFieldError = useCallback(
+    (field: FieldApi<MemberFormValues, keyof MemberFormValues>) =>
+      field.state.meta.touchedErrors[0] ??
+      (submitCount > 0 ? field.state.meta.errors[0] : undefined),
+    [submitCount]
+  );
 
   // Debounce email value to avoid excessive API calls
   const debouncedEmail = useDebounce(emailValue, 500);
@@ -225,20 +241,25 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   }, [debouncedEmail, isCheckingEmail, emailCheckError, isEmailAvailable]);
 
   // Email input class based on validation status
-  const emailInputClass = useMemo(() => {
-    const baseClass = 'input input-bordered w-full pr-10';
-
+  const baseEmailInputClass = 'input input-bordered w-full pr-10';
+  const emailValidationClass = useMemo(() => {
     switch (emailValidationStatus) {
       case 'available':
-        return `${baseClass} input-success`;
+        return 'input-success';
       case 'taken':
-        return `${baseClass} input-error`;
+        return 'input-error';
       case 'error':
-        return `${baseClass} input-warning`;
+        return 'input-warning';
       default:
-        return baseClass;
+        return '';
     }
   }, [emailValidationStatus]);
+
+  const isSubmitDisabled =
+    isSubmitting ||
+    formIsSubmitting ||
+    !canSubmit ||
+    emailValidationStatus === 'taken';
 
   return (
     <form
@@ -265,26 +286,27 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                         : 'El nombre es requerido',
                   }}
                 >
-                  {(field) => (
-                    <fieldset>
-                      <label className="label">
-                        <span className="label-text">Nombre</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Nombre"
-                        className="input input-bordered w-full"
-                        value={field.state.value ?? ''}
-                        onChange={(event) => field.handleChange(event.target.value)}
-                        onBlur={field.handleBlur}
-                      />
-                      {field.state.meta.errors[0] ? (
-                        <p className="text-error text-sm mt-1">
-                          {field.state.meta.errors[0]}
-                        </p>
-                      ) : null}
-                    </fieldset>
-                  )}
+                  {(field) => {
+                    const errorMessage = getFieldError(field);
+                    return (
+                      <fieldset>
+                        <label className="label">
+                          <span className="label-text">Nombre</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Nombre"
+                          className="input input-bordered w-full"
+                          value={field.state.value ?? ''}
+                          onChange={(event) => field.handleChange(event.target.value)}
+                          onBlur={field.handleBlur}
+                        />
+                        {errorMessage ? (
+                          <p className="text-error text-sm mt-1">{errorMessage}</p>
+                        ) : null}
+                      </fieldset>
+                    );
+                  }}
                 </form.Field>
                 <form.Field
                   name="lastName"
@@ -295,26 +317,27 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                         : 'El apellido es requerido',
                   }}
                 >
-                  {(field) => (
-                    <fieldset>
-                      <label className="label">
-                        <span className="label-text">Apellido</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Apellido"
-                        className="input input-bordered w-full"
-                        value={field.state.value ?? ''}
-                        onChange={(event) => field.handleChange(event.target.value)}
-                        onBlur={field.handleBlur}
-                      />
-                      {field.state.meta.errors[0] ? (
-                        <p className="text-error text-sm mt-1">
-                          {field.state.meta.errors[0]}
-                        </p>
-                      ) : null}
-                    </fieldset>
-                  )}
+                  {(field) => {
+                    const errorMessage = getFieldError(field);
+                    return (
+                      <fieldset>
+                        <label className="label">
+                          <span className="label-text">Apellido</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Apellido"
+                          className="input input-bordered w-full"
+                          value={field.state.value ?? ''}
+                          onChange={(event) => field.handleChange(event.target.value)}
+                          onBlur={field.handleBlur}
+                        />
+                        {errorMessage ? (
+                          <p className="text-error text-sm mt-1">{errorMessage}</p>
+                        ) : null}
+                      </fieldset>
+                    );
+                  }}
                 </form.Field>
                 <form.Field
                   name="email"
@@ -349,62 +372,67 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     },
                   }}
                 >
-                  {(field) => (
-                    <fieldset>
-                      <label className="label">
-                        <span className="label-text">Correo Electrónico</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="email"
-                          placeholder="Correo"
-                          className={emailInputClass}
-                          value={field.state.value ?? ''}
-                          onChange={(event) => field.handleChange(event.target.value)}
-                          onBlur={field.handleBlur}
-                        />
+                  {(field) => {
+                    const errorMessage = getFieldError(field);
+                    const hasError = Boolean(errorMessage);
+                    const inputClassName = [
+                      baseEmailInputClass,
+                      hasError ? 'input-error' : emailValidationClass,
+                    ]
+                      .filter(Boolean)
+                      .join(' ');
+                    return (
+                      <fieldset>
+                        <label className="label">
+                          <span className="label-text">Correo Electrónico</span>
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="email"
+                            placeholder="Correo"
+                            className={inputClassName}
+                            value={field.state.value ?? ''}
+                            onChange={(event) => field.handleChange(event.target.value)}
+                            onBlur={field.handleBlur}
+                          />
 
-                        {/* Email validation icon */}
-                        <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                          {emailValidationStatus === 'checking' && (
-                            <RiLoader4Line className="w-5 h-5 text-gray-400 animate-spin" />
-                          )}
-                          {emailValidationStatus === 'available' && (
-                            <RiCheckLine className="w-5 h-5 text-success" />
-                          )}
-                          {emailValidationStatus === 'taken' && (
-                            <RiCloseLine className="w-5 h-5 text-error" />
-                          )}
-                          {emailValidationStatus === 'error' && (
-                            <RiCloseLine className="w-5 h-5 text-warning" />
-                          )}
+                          {/* Email validation icon */}
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                            {emailValidationStatus === 'checking' && (
+                              <RiLoader4Line className="w-5 h-5 text-gray-400 animate-spin" />
+                            )}
+                            {emailValidationStatus === 'available' && !hasError && (
+                              <RiCheckLine className="w-5 h-5 text-success" />
+                            )}
+                            {emailValidationStatus === 'taken' && (
+                              <RiCloseLine className="w-5 h-5 text-error" />
+                            )}
+                            {emailValidationStatus === 'error' && (
+                              <RiCloseLine className="w-5 h-5 text-warning" />
+                            )}
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Email validation messages */}
-                      {field.state.meta.errors[0] ? (
-                        <p className="text-error text-sm mt-1">
-                          {field.state.meta.errors[0]}
-                        </p>
-                      ) : null}
-                      {emailValidationStatus === 'available' &&
-                        !(field.state.meta.errors && field.state.meta.errors.length) && (
-                        <p className="text-success text-sm mt-1">
-                          ✓ Correo disponible
-                        </p>
-                      )}
-                      {emailValidationStatus === 'taken' && (
-                        <p className="text-error text-sm mt-1">
-                          ✗ Este correo ya está en uso
-                        </p>
-                      )}
-                      {emailValidationStatus === 'error' && (
-                        <p className="text-warning text-sm mt-1">
-                          ⚠ Error al verificar disponibilidad
-                        </p>
-                      )}
-                    </fieldset>
-                  )}
+                        {/* Email validation messages */}
+                        {errorMessage ? (
+                          <p className="text-error text-sm mt-1">{errorMessage}</p>
+                        ) : null}
+                        {emailValidationStatus === 'available' && !hasError && (
+                          <p className="text-success text-sm mt-1">✓ Correo disponible</p>
+                        )}
+                        {emailValidationStatus === 'taken' && (
+                          <p className="text-error text-sm mt-1">
+                            ✗ Este correo ya está en uso
+                          </p>
+                        )}
+                        {emailValidationStatus === 'error' && (
+                          <p className="text-warning text-sm mt-1">
+                            ⚠ Error al verificar disponibilidad
+                          </p>
+                        )}
+                      </fieldset>
+                    );
+                  }}
                 </form.Field>
                 <form.Field name="phone">
                   {(field) => (
@@ -443,37 +471,38 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     },
                   }}
                 >
-                  {(field) => (
-                    <fieldset>
-                      <label className="label">
-                        <span className="label-text">Edad</span>
-                      </label>
-                      <input
-                        type="number"
-                        placeholder="Edad"
-                        className="input input-bordered w-full"
-                        value={
-                          field.state.value === undefined || field.state.value === null
-                            ? ''
-                            : field.state.value
-                        }
-                        onChange={(event) => {
-                          const value = event.target.value;
-                          if (value === '') {
-                            field.handleChange(undefined);
-                          } else {
-                            field.handleChange(Number(value));
+                  {(field) => {
+                    const errorMessage = getFieldError(field);
+                    return (
+                      <fieldset>
+                        <label className="label">
+                          <span className="label-text">Edad</span>
+                        </label>
+                        <input
+                          type="number"
+                          placeholder="Edad"
+                          className="input input-bordered w-full"
+                          value={
+                            field.state.value === undefined || field.state.value === null
+                              ? ''
+                              : field.state.value
                           }
-                        }}
-                        onBlur={field.handleBlur}
-                      />
-                      {field.state.meta.errors[0] ? (
-                        <p className="text-error text-sm mt-1">
-                          {field.state.meta.errors[0]}
-                        </p>
-                      ) : null}
-                    </fieldset>
-                  )}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            if (value === '') {
+                              field.handleChange(undefined);
+                            } else {
+                              field.handleChange(Number(value));
+                            }
+                          }}
+                          onBlur={field.handleBlur}
+                        />
+                        {errorMessage ? (
+                          <p className="text-error text-sm mt-1">{errorMessage}</p>
+                        ) : null}
+                      </fieldset>
+                    );
+                  }}
                 </form.Field>
                 <form.Field name="birthDate">
                   {(field) => (
@@ -514,42 +543,43 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                       value ? undefined : 'Seleccione un género',
                   }}
                 >
-                  {(field) => (
-                    <fieldset className="md:col-span-2">
-                      <label className="label">
-                        <span className="label-text">Género</span>
-                      </label>
-                      <div className="flex items-center mt-2">
-                        <label className="label cursor-pointer mr-4">
-                          <input
-                            type="radio"
-                            value="MASCULINO"
-                            className="radio"
-                            checked={field.state.value === 'MASCULINO'}
-                            onChange={() => field.handleChange('MASCULINO')}
-                            onBlur={field.handleBlur}
-                          />
-                          <span className="label-text ml-2">Masculino</span>
+                  {(field) => {
+                    const errorMessage = getFieldError(field);
+                    return (
+                      <fieldset className="md:col-span-2">
+                        <label className="label">
+                          <span className="label-text">Género</span>
                         </label>
-                        <label className="label cursor-pointer">
-                          <input
-                            type="radio"
-                            value="FEMENINO"
-                            className="radio"
-                            checked={field.state.value === 'FEMENINO'}
-                            onChange={() => field.handleChange('FEMENINO')}
-                            onBlur={field.handleBlur}
-                          />
-                          <span className="label-text ml-2">Femenino</span>
-                        </label>
-                      </div>
-                      {field.state.meta.errors[0] ? (
-                        <p className="text-error text-sm mt-1">
-                          {field.state.meta.errors[0]}
-                        </p>
-                      ) : null}
-                    </fieldset>
-                  )}
+                        <div className="flex items-center mt-2">
+                          <label className="label cursor-pointer mr-4">
+                            <input
+                              type="radio"
+                              value="MASCULINO"
+                              className="radio"
+                              checked={field.state.value === 'MASCULINO'}
+                              onChange={() => field.handleChange('MASCULINO')}
+                              onBlur={field.handleBlur}
+                            />
+                            <span className="label-text ml-2">Masculino</span>
+                          </label>
+                          <label className="label cursor-pointer">
+                            <input
+                              type="radio"
+                              value="FEMENINO"
+                              className="radio"
+                              checked={field.state.value === 'FEMENINO'}
+                              onChange={() => field.handleChange('FEMENINO')}
+                              onBlur={field.handleBlur}
+                            />
+                            <span className="label-text ml-2">Femenino</span>
+                          </label>
+                        </div>
+                        {errorMessage ? (
+                          <p className="text-error text-sm mt-1">{errorMessage}</p>
+                        ) : null}
+                      </fieldset>
+                    );
+                  }}
                 </form.Field>
               </div>
             </div>
@@ -656,31 +686,34 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     value ? undefined : 'El rol es requerido',
                 }}
               >
-                {(field) => (
-                  <fieldset>
-                    <label className="label">
-                      <span className="label-text">Rol</span>
-                    </label>
-                    <select
-                      className="select select-bordered w-full"
-                      value={field.state.value ?? 'MIEMBRO'}
-                      onChange={(event) =>
-                        field.handleChange(event.target.value as FormValues['role'])
-                      }
-                      onBlur={field.handleBlur}
-                    >
-                      <option value="MIEMBRO">Miembro</option>
-                      <option value="SUPERVISOR">Supervisor</option>
-                      <option value="LIDER">Líder</option>
-                      <option value="ANFITRION">Anfitrión</option>
-                    </select>
-                    {field.state.meta.errors[0] ? (
-                      <p className="text-error text-sm mt-1">
-                        {field.state.meta.errors[0]}
-                      </p>
-                    ) : null}
-                  </fieldset>
-                )}
+                {(field) => {
+                  const errorMessage = getFieldError(field);
+                  return (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Rol</span>
+                      </label>
+                      <select
+                        className="select select-bordered w-full"
+                        value={field.state.value ?? 'MIEMBRO'}
+                        onChange={(event) =>
+                          field.handleChange(
+                            event.target.value as MemberFormValues['role']
+                          )
+                        }
+                        onBlur={field.handleBlur}
+                      >
+                        <option value="MIEMBRO">Miembro</option>
+                        <option value="SUPERVISOR">Supervisor</option>
+                        <option value="LIDER">Líder</option>
+                        <option value="ANFITRION">Anfitrión</option>
+                      </select>
+                      {errorMessage ? (
+                        <p className="text-error text-sm mt-1">{errorMessage}</p>
+                      ) : null}
+                    </fieldset>
+                  );
+                }}
               </form.Field>
               <form.Field name="ministerio">
                 {(field) => (
@@ -718,38 +751,39 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                         : undefined,
                   }}
                 >
-                  {(field) => (
-                    <fieldset>
-                      <label className="label">
-                        <span className="label-text">Contraseña</span>
-                      </label>
-                      <div className="relative">
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 z-10">
-                          <RiKey2Fill />
-                        </span>
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          placeholder="Contraseña"
-                          className="input input-bordered w-full pl-10 pr-10"
-                          value={field.state.value ?? ''}
-                          onChange={(event) => field.handleChange(event.target.value)}
-                          onBlur={field.handleBlur}
-                        />
-                        <button
-                          type="button"
-                          className="absolute inset-y-0 right-0 flex items-center pr-3 z-10"
-                          onClick={() => setShowPassword(!showPassword)}
-                        >
-                          {showPassword ? <RiEyeOffLine /> : <RiEyeLine />}
-                        </button>
-                      </div>
-                      {field.state.meta.errors[0] ? (
-                        <p className="text-error text-sm mt-1">
-                          {field.state.meta.errors[0]}
-                        </p>
-                      ) : null}
-                    </fieldset>
-                  )}
+                  {(field) => {
+                    const errorMessage = getFieldError(field);
+                    return (
+                      <fieldset>
+                        <label className="label">
+                          <span className="label-text">Contraseña</span>
+                        </label>
+                        <div className="relative">
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 z-10">
+                            <RiKey2Fill />
+                          </span>
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="Contraseña"
+                            className="input input-bordered w-full pl-10 pr-10"
+                            value={field.state.value ?? ''}
+                            onChange={(event) => field.handleChange(event.target.value)}
+                            onBlur={field.handleBlur}
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 flex items-center pr-3 z-10"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? <RiEyeOffLine /> : <RiEyeLine />}
+                          </button>
+                        </div>
+                        {errorMessage ? (
+                          <p className="text-error text-sm mt-1">{errorMessage}</p>
+                        ) : null}
+                      </fieldset>
+                    );
+                  }}
                 </form.Field>
                 <form.Field
                   name="confirmPassword"
@@ -780,40 +814,41 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     },
                   }}
                 >
-                  {(field) => (
-                    <fieldset>
-                      <label className="label">
-                        <span className="label-text">Confirmar Contraseña</span>
-                      </label>
-                      <div className="relative">
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 z-10">
-                          <RiKey2Fill />
-                        </span>
-                        <input
-                          type={showConfirmPassword ? 'text' : 'password'}
-                          placeholder="Confirmar Contraseña"
-                          className="input input-bordered w-full pl-10 pr-10"
-                          value={field.state.value ?? ''}
-                          onChange={(event) => field.handleChange(event.target.value)}
-                          onBlur={field.handleBlur}
-                        />
-                        <button
-                          type="button"
-                          className="absolute inset-y-0 right-0 flex items-center pr-3 z-10"
-                          onClick={() =>
-                            setShowConfirmPassword(!showConfirmPassword)
-                          }
-                        >
-                          {showConfirmPassword ? <RiEyeOffLine /> : <RiEyeLine />}
-                        </button>
-                      </div>
-                      {field.state.meta.errors[0] ? (
-                        <p className="text-error text-sm mt-1">
-                          {field.state.meta.errors[0]}
-                        </p>
-                      ) : null}
-                    </fieldset>
-                  )}
+                  {(field) => {
+                    const errorMessage = getFieldError(field);
+                    return (
+                      <fieldset>
+                        <label className="label">
+                          <span className="label-text">Confirmar Contraseña</span>
+                        </label>
+                        <div className="relative">
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 z-10">
+                            <RiKey2Fill />
+                          </span>
+                          <input
+                            type={showConfirmPassword ? 'text' : 'password'}
+                            placeholder="Confirmar Contraseña"
+                            className="input input-bordered w-full pl-10 pr-10"
+                            value={field.state.value ?? ''}
+                            onChange={(event) => field.handleChange(event.target.value)}
+                            onBlur={field.handleBlur}
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 flex items-center pr-3 z-10"
+                            onClick={() =>
+                              setShowConfirmPassword(!showConfirmPassword)
+                            }
+                          >
+                            {showConfirmPassword ? <RiEyeOffLine /> : <RiEyeLine />}
+                          </button>
+                        </div>
+                        {errorMessage ? (
+                          <p className="text-error text-sm mt-1">{errorMessage}</p>
+                        ) : null}
+                      </fieldset>
+                    );
+                  }}
                 </form.Field>
               </div>
             </div>
@@ -828,7 +863,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
         <button
           type="submit"
           className="btn btn-primary"
-          disabled={isSubmitting || emailValidationStatus === 'taken'}
+          disabled={isSubmitDisabled}
         >
           {isSubmitting ? (
             <>

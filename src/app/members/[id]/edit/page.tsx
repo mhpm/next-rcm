@@ -7,12 +7,7 @@ import { useMember, useUpdateMember } from '@/app/members/hooks/useMembers';
 import { Member, MemberFormData } from '@/types';
 import { MemberRole, Gender } from '@prisma/client';
 import { useServerNotifications } from '@/hooks/useServerNotifications';
-
-// FormValues type to match MemberForm component exactly
-type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
-  birthDate?: string;
-  baptismDate?: string;
-};
+import type { MemberFormValues } from '@/components';
 
 type PageProps = {
   params: Promise<{
@@ -36,7 +31,7 @@ const formatDateForInput = (date?: Date | null): string => {
 };
 
 // Helper para convertir datos del miembro a formato de formulario
-const memberToFormData = (member: Member): FormValues => ({
+const memberToFormData = (member: Member): MemberFormValues => ({
   firstName: member.firstName,
   lastName: member.lastName,
   email: member.email,
@@ -57,7 +52,9 @@ const memberToFormData = (member: Member): FormValues => ({
 });
 
 // Convert form data to member data for API
-const formDataToMember = (formData: FormValues): Partial<MemberFormData> => {
+const formDataToMember = (
+  formData: MemberFormValues
+): Partial<MemberFormData> => {
   const memberData: Partial<MemberFormData> = {
     firstName: formData.firstName,
     lastName: formData.lastName,
@@ -138,7 +135,7 @@ const EditMemberPage = ({ params }: PageProps) => {
   const { handleServerAction } = useServerNotifications();
 
   // Handle form submission
-  const handleSubmit = async (formData: FormValues) => {
+  const handleSubmit = async (formData: MemberFormValues) => {
     if (!memberId) {
       return;
     }

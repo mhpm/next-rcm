@@ -7,12 +7,7 @@ import { MemberFormData } from '@/app/members/types/member';
 import { MemberRole, Gender } from '@prisma/client';
 import { useCreateMember } from '@/app/members/hooks/useMembers';
 import { useNotificationStore } from '@/store/NotificationStore';
-
-// FormValues type to match MemberForm component exactly
-type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
-  birthDate?: string;
-  baptismDate?: string;
-};
+import type { MemberFormValues } from '@/components';
 
 export default function NewMemberPage() {
   const router = useRouter();
@@ -22,7 +17,7 @@ export default function NewMemberPage() {
   const { showSuccess, showError } = useNotificationStore();
 
   // Convert form data to member data for API
-  const formDataToMember = (formData: FormValues): MemberFormData => ({
+  const formDataToMember = (formData: MemberFormValues): MemberFormData => ({
     firstName: formData.firstName,
     lastName: formData.lastName,
     email: formData.email,
@@ -46,7 +41,7 @@ export default function NewMemberPage() {
   });
 
   const handleSubmit = useCallback(
-    async (data: FormValues) => {
+    async (data: MemberFormValues) => {
       // Limpiar mensajes anteriores
       setError(null);
       setSuccess(null);
