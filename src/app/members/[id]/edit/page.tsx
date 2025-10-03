@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { SubmitHandler } from 'react-hook-form';
 import { Breadcrumbs, MemberForm, LoadingSkeleton } from '@/components';
 import { useMember, useUpdateMember } from '@/app/members/hooks/useMembers';
 import { Member, MemberFormData } from '@/types';
@@ -139,7 +138,7 @@ const EditMemberPage = ({ params }: PageProps) => {
   const { handleServerAction } = useServerNotifications();
 
   // Handle form submission
-  const handleSubmit: SubmitHandler<FormValues> = async (formData) => {
+  const handleSubmit = async (formData: FormValues) => {
     if (!memberId) {
       return;
     }

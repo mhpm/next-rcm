@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useForm, SubmitHandler, Controller, Control, ControllerRenderProps } from 'react-hook-form';
+import { useForm, FieldApi } from '@tanstack/react-form';
 import {
   RiEyeLine,
   RiEyeOffLine,
@@ -28,57 +28,52 @@ type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
 // 2. Actualizamos la interfaz para usar FormValues
 interface MemberFormProps {
   initialData?: Partial<FormValues>;
-  onSubmit: SubmitHandler<FormValues>;
+  onSubmit: (values: FormValues) => void | Promise<void>;
   isEditMode?: boolean;
   isSubmitting?: boolean;
 }
 
 // 3. Actualizamos el componente ImageUpload para usar FormValues
-const ImageUpload = ({ control }: { control: Control<FormValues> }) => {
+const ImageUploadField = ({ field }: { field: FieldApi<FormValues, 'picture'> }) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  // Clean up preview URL when component unmounts
   useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
+    const files = field.state.value;
 
-  return (
-    <div className="space-y-4">
-      <Controller
-        name="picture"
-        control={control}
-        render={({ field }) => {
-          // Move hooks outside of render prop by creating a separate component
-          return <ImageUploadField field={field} previewUrl={previewUrl} setPreviewUrl={setPreviewUrl} />;
-        }}
-      />
-    </div>
-  );
-};
+    if (files && files.length > 0) {
+      const file = files[0];
+      const nextUrl = URL.createObjectURL(file);
 
-const ImageUploadField = ({ 
-  field, 
-  previewUrl, 
-  setPreviewUrl 
-}: { 
-  field: ControllerRenderProps<FormValues, 'picture'>; 
-  previewUrl: string | null; 
-  setPreviewUrl: (url: string | null) => void; 
-}) => {
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      const file = acceptedFiles[0];
-      // Update form field
-      field.onChange([file]);
-      // Create preview URL
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+      setPreviewUrl((prev) => {
+        if (prev) {
+          URL.revokeObjectURL(prev);
+        }
+        return nextUrl;
+      });
+
+      return () => {
+        URL.revokeObjectURL(nextUrl);
+      };
     }
-  }, [field, setPreviewUrl]);
+
+    setPreviewUrl((prev) => {
+      if (prev) {
+        URL.revokeObjectURL(prev);
+      }
+      return null;
+    });
+  }, [field.state.value]);
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length > 0) {
+        const file = acceptedFiles[0];
+        field.handleChange([file]);
+        field.handleBlur();
+      }
+    },
+    [field]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -90,11 +85,8 @@ const ImageUploadField = ({
 
   const handleRemoveImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    setPreviewUrl(null);
-    field.onChange([]);
+    field.handleChange([]);
+    field.handleBlur();
   };
 
   return (
@@ -131,14 +123,9 @@ const ImageUploadField = ({
           {...getInputProps()}
           onChange={(e) => {
             const files = e.target.files;
-            // Convert FileList to Array
             const filesArray = files ? Array.from(files) : [];
-            field.onChange(filesArray);
-            if (files && files.length > 0) {
-              const file = files[0];
-              const url = URL.createObjectURL(file);
-              setPreviewUrl(url);
-            }
+            field.handleChange(filesArray);
+            field.handleBlur();
           }}
         />
         <RiUpload2Line className="mx-auto h-12 w-12 text-base-content/60" />
@@ -162,22 +149,39 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   isEditMode = false,
   isSubmitting = false,
 }) => {
-  // 4. Usamos FormValues en useForm
-  const {
-    register,
-    handleSubmit,
-    control,
-    watch,
-    formState: { errors },
-  } = useForm<FormValues>({
-    defaultValues: initialData,
+  const form = useForm<FormValues>({
+    defaultValues: {
+      id: initialData?.id,
+      firstName: initialData?.firstName ?? '',
+      lastName: initialData?.lastName ?? '',
+      email: initialData?.email ?? '',
+      phone: initialData?.phone ?? '',
+      age: initialData?.age,
+      street: initialData?.street ?? '',
+      city: initialData?.city ?? '',
+      state: initialData?.state ?? '',
+      zip: initialData?.zip ?? '',
+      country: initialData?.country ?? '',
+      birthDate: initialData?.birthDate ?? '',
+      baptismDate: initialData?.baptismDate ?? '',
+      role: initialData?.role ?? 'MIEMBRO',
+      gender: initialData?.gender,
+      ministerio: initialData?.ministerio ?? '',
+      notes: initialData?.notes ?? '',
+      skills: initialData?.skills ?? [],
+      password: initialData?.password ?? '',
+      confirmPassword: initialData?.confirmPassword ?? '',
+      picture: initialData?.picture ?? [],
+    },
+    onSubmit: async ({ value }) => {
+      await onSubmit(value);
+    },
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const password = watch('password');
-  const emailValue = watch('email');
+  const emailValue = form.useStore((state) => state.values.email);
 
   // Debounce email value to avoid excessive API calls
   const debouncedEmail = useDebounce(emailValue, 500);
@@ -237,7 +241,13 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   }, [emailValidationStatus]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        void form.handleSubmit();
+      }}
+    >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Columna Izquierda */}
         <div className="lg:col-span-2 space-y-8">
@@ -246,196 +256,301 @@ export const MemberForm: React.FC<MemberFormProps> = ({
             <div className="card-body">
               <h2 className="card-title mb-4">Información Básica</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <fieldset>
-                  <label className="label">
-                    <span className="label-text">Nombre</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Nombre"
-                    className="input input-bordered w-full"
-                    {...register('firstName', {
-                      required: 'El nombre es requerido',
-                    })}
-                  />
-                  {errors.firstName && (
-                    <p className="text-error text-sm mt-1">
-                      {errors.firstName.message}
-                    </p>
+                <form.Field
+                  name="firstName"
+                  validators={{
+                    onSubmit: ({ value }) =>
+                      value && value.trim().length > 0
+                        ? undefined
+                        : 'El nombre es requerido',
+                  }}
+                >
+                  {(field) => (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Nombre</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Nombre"
+                        className="input input-bordered w-full"
+                        value={field.state.value ?? ''}
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        onBlur={field.handleBlur}
+                      />
+                      {field.state.meta.errors[0] ? (
+                        <p className="text-error text-sm mt-1">
+                          {field.state.meta.errors[0]}
+                        </p>
+                      ) : null}
+                    </fieldset>
                   )}
-                </fieldset>
-                <fieldset>
-                  <label className="label">
-                    <span className="label-text">Apellido</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Apellido"
-                    className="input input-bordered w-full"
-                    {...register('lastName', {
-                      required: 'El apellido es requerido',
-                    })}
-                  />
-                  {errors.lastName && (
-                    <p className="text-error text-sm mt-1">
-                      {errors.lastName.message}
-                    </p>
+                </form.Field>
+                <form.Field
+                  name="lastName"
+                  validators={{
+                    onSubmit: ({ value }) =>
+                      value && value.trim().length > 0
+                        ? undefined
+                        : 'El apellido es requerido',
+                  }}
+                >
+                  {(field) => (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Apellido</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Apellido"
+                        className="input input-bordered w-full"
+                        value={field.state.value ?? ''}
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        onBlur={field.handleBlur}
+                      />
+                      {field.state.meta.errors[0] ? (
+                        <p className="text-error text-sm mt-1">
+                          {field.state.meta.errors[0]}
+                        </p>
+                      ) : null}
+                    </fieldset>
                   )}
-                </fieldset>
-                <fieldset>
-                  <label className="label">
-                    <span className="label-text">Correo Electrónico</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="email"
-                      placeholder="Correo"
-                      className={emailInputClass}
-                      {...register('email', {
-                        required: 'El correo es requerido',
-                        pattern: {
-                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                          message: 'Formato de correo inválido',
-                        },
-                        validate: (value) => {
-                          if (!value) return true;
+                </form.Field>
+                <form.Field
+                  name="email"
+                  validators={{
+                    onChange: ({ value }) => {
+                      if (!value) {
+                        return undefined;
+                      }
 
-                          // Only validate availability if we have a result
-                          if (emailValidationStatus === 'taken') {
-                            return 'Este correo ya está en uso';
-                          }
+                      const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+                      if (!emailPattern.test(value)) {
+                        return 'Formato de correo inválido';
+                      }
 
-                          return true;
-                        },
-                      })}
-                    />
+                      return undefined;
+                    },
+                    onSubmit: ({ value }) => {
+                      if (!value || value.trim().length === 0) {
+                        return 'El correo es requerido';
+                      }
 
-                    {/* Email validation icon */}
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                      {emailValidationStatus === 'checking' && (
-                        <RiLoader4Line className="w-5 h-5 text-gray-400 animate-spin" />
-                      )}
-                      {emailValidationStatus === 'available' && (
-                        <RiCheckLine className="w-5 h-5 text-success" />
+                      const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+                      if (!emailPattern.test(value)) {
+                        return 'Formato de correo inválido';
+                      }
+
+                      if (emailValidationStatus === 'taken') {
+                        return 'Este correo ya está en uso';
+                      }
+
+                      return undefined;
+                    },
+                  }}
+                >
+                  {(field) => (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Correo Electrónico</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="email"
+                          placeholder="Correo"
+                          className={emailInputClass}
+                          value={field.state.value ?? ''}
+                          onChange={(event) => field.handleChange(event.target.value)}
+                          onBlur={field.handleBlur}
+                        />
+
+                        {/* Email validation icon */}
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                          {emailValidationStatus === 'checking' && (
+                            <RiLoader4Line className="w-5 h-5 text-gray-400 animate-spin" />
+                          )}
+                          {emailValidationStatus === 'available' && (
+                            <RiCheckLine className="w-5 h-5 text-success" />
+                          )}
+                          {emailValidationStatus === 'taken' && (
+                            <RiCloseLine className="w-5 h-5 text-error" />
+                          )}
+                          {emailValidationStatus === 'error' && (
+                            <RiCloseLine className="w-5 h-5 text-warning" />
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Email validation messages */}
+                      {field.state.meta.errors[0] ? (
+                        <p className="text-error text-sm mt-1">
+                          {field.state.meta.errors[0]}
+                        </p>
+                      ) : null}
+                      {emailValidationStatus === 'available' &&
+                        !(field.state.meta.errors && field.state.meta.errors.length) && (
+                        <p className="text-success text-sm mt-1">
+                          ✓ Correo disponible
+                        </p>
                       )}
                       {emailValidationStatus === 'taken' && (
-                        <RiCloseLine className="w-5 h-5 text-error" />
+                        <p className="text-error text-sm mt-1">
+                          ✗ Este correo ya está en uso
+                        </p>
                       )}
                       {emailValidationStatus === 'error' && (
-                        <RiCloseLine className="w-5 h-5 text-warning" />
+                        <p className="text-warning text-sm mt-1">
+                          ⚠ Error al verificar disponibilidad
+                        </p>
                       )}
-                    </div>
-                  </div>
+                    </fieldset>
+                  )}
+                </form.Field>
+                <form.Field name="phone">
+                  {(field) => (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Teléfono</span>
+                      </label>
+                      <input
+                        type="tel"
+                        placeholder="Teléfono"
+                        className="input input-bordered w-full"
+                        value={field.state.value ?? ''}
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        onBlur={field.handleBlur}
+                      />
+                    </fieldset>
+                  )}
+                </form.Field>
+                <form.Field
+                  name="age"
+                  validators={{
+                    onSubmit: ({ value }) => {
+                      if (value === undefined || value === null) {
+                        return 'La edad es requerida';
+                      }
 
-                  {/* Email validation messages */}
-                  {errors.email && (
-                    <p className="text-error text-sm mt-1">
-                      {errors.email.message}
-                    </p>
-                  )}
-                  {emailValidationStatus === 'available' && !errors.email && (
-                    <p className="text-success text-sm mt-1">
-                      ✓ Correo disponible
-                    </p>
-                  )}
-                  {emailValidationStatus === 'taken' && (
-                    <p className="text-error text-sm mt-1">
-                      ✗ Este correo ya está en uso
-                    </p>
-                  )}
-                  {emailValidationStatus === 'error' && (
-                    <p className="text-warning text-sm mt-1">
-                      ⚠ Error al verificar disponibilidad
-                    </p>
-                  )}
-                </fieldset>
-                <fieldset>
-                  <label className="label">
-                    <span className="label-text">Teléfono</span>
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="Teléfono"
-                    className="input input-bordered w-full"
-                    {...register('phone')}
-                  />
-                </fieldset>
-                <fieldset>
-                  <label className="label">
-                    <span className="label-text">Edad</span>
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="Edad"
-                    className="input input-bordered w-full"
-                    {...register('age', {
-                      required: 'La edad es requerida',
-                      min: { value: 1, message: 'La edad debe ser mayor a 0' },
-                      max: {
-                        value: 120,
-                        message: 'La edad debe ser menor a 120',
-                      },
-                      valueAsNumber: true,
-                    })}
-                  />
-                  {errors.age && (
-                    <p className="text-error text-sm mt-1">
-                      {errors.age.message}
-                    </p>
-                  )}
-                </fieldset>
-                <fieldset>
-                  <label className="label">
-                    <span className="label-text">Fecha de Nacimiento</span>
-                  </label>
-                  <input
-                    type="date"
-                    className="input input-bordered w-full"
-                    {...register('birthDate')}
-                  />
-                </fieldset>
-                <fieldset>
-                  <label className="label">
-                    <span className="label-text">Fecha de Bautismo</span>
-                  </label>
-                  <input
-                    type="date"
-                    className="input input-bordered w-full"
-                    {...register('baptismDate')}
-                  />
-                </fieldset>
-                <fieldset className="md:col-span-2">
-                  <label className="label">
-                    <span className="label-text">Género</span>
-                  </label>
-                  <div className="flex items-center mt-2">
-                    <label className="label cursor-pointer mr-4">
+                      if (value < 1) {
+                        return 'La edad debe ser mayor a 0';
+                      }
+
+                      if (value > 120) {
+                        return 'La edad debe ser menor a 120';
+                      }
+
+                      return undefined;
+                    },
+                  }}
+                >
+                  {(field) => (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Edad</span>
+                      </label>
                       <input
-                        type="radio"
-                        value="MASCULINO"
-                        className="radio"
-                        {...register('gender', {
-                          required: 'Seleccione un género',
-                        })}
+                        type="number"
+                        placeholder="Edad"
+                        className="input input-bordered w-full"
+                        value={
+                          field.state.value === undefined || field.state.value === null
+                            ? ''
+                            : field.state.value
+                        }
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          if (value === '') {
+                            field.handleChange(undefined);
+                          } else {
+                            field.handleChange(Number(value));
+                          }
+                        }}
+                        onBlur={field.handleBlur}
                       />
-                      <span className="label-text ml-2">Masculino</span>
-                    </label>
-                    <label className="label cursor-pointer">
-                      <input
-                        type="radio"
-                        value="FEMENINO"
-                        className="radio"
-                        {...register('gender')}
-                      />
-                      <span className="label-text ml-2">Femenino</span>
-                    </label>
-                  </div>
-                  {errors.gender && (
-                    <p className="text-error text-sm mt-1">
-                      {errors.gender.message}
-                    </p>
+                      {field.state.meta.errors[0] ? (
+                        <p className="text-error text-sm mt-1">
+                          {field.state.meta.errors[0]}
+                        </p>
+                      ) : null}
+                    </fieldset>
                   )}
-                </fieldset>
+                </form.Field>
+                <form.Field name="birthDate">
+                  {(field) => (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Fecha de Nacimiento</span>
+                      </label>
+                      <input
+                        type="date"
+                        className="input input-bordered w-full"
+                        value={field.state.value ?? ''}
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        onBlur={field.handleBlur}
+                      />
+                    </fieldset>
+                  )}
+                </form.Field>
+                <form.Field name="baptismDate">
+                  {(field) => (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Fecha de Bautismo</span>
+                      </label>
+                      <input
+                        type="date"
+                        className="input input-bordered w-full"
+                        value={field.state.value ?? ''}
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        onBlur={field.handleBlur}
+                      />
+                    </fieldset>
+                  )}
+                </form.Field>
+                <form.Field
+                  name="gender"
+                  validators={{
+                    onSubmit: ({ value }) =>
+                      value ? undefined : 'Seleccione un género',
+                  }}
+                >
+                  {(field) => (
+                    <fieldset className="md:col-span-2">
+                      <label className="label">
+                        <span className="label-text">Género</span>
+                      </label>
+                      <div className="flex items-center mt-2">
+                        <label className="label cursor-pointer mr-4">
+                          <input
+                            type="radio"
+                            value="MASCULINO"
+                            className="radio"
+                            checked={field.state.value === 'MASCULINO'}
+                            onChange={() => field.handleChange('MASCULINO')}
+                            onBlur={field.handleBlur}
+                          />
+                          <span className="label-text ml-2">Masculino</span>
+                        </label>
+                        <label className="label cursor-pointer">
+                          <input
+                            type="radio"
+                            value="FEMENINO"
+                            className="radio"
+                            checked={field.state.value === 'FEMENINO'}
+                            onChange={() => field.handleChange('FEMENINO')}
+                            onBlur={field.handleBlur}
+                          />
+                          <span className="label-text ml-2">Femenino</span>
+                        </label>
+                      </div>
+                      {field.state.meta.errors[0] ? (
+                        <p className="text-error text-sm mt-1">
+                          {field.state.meta.errors[0]}
+                        </p>
+                      ) : null}
+                    </fieldset>
+                  )}
+                </form.Field>
               </div>
             </div>
           </div>
@@ -445,50 +560,74 @@ export const MemberForm: React.FC<MemberFormProps> = ({
             <div className="card-body">
               <h2 className="card-title mb-4">Dirección</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <fieldset className="">
-                  <label className="label">
-                    <span className="label-text">Calle</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Calle"
-                    className="input input-bordered w-full"
-                    {...register('street')}
-                  />
-                </fieldset>
-                <fieldset>
-                  <label className="label">
-                    <span className="label-text">Ciudad</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Ciudad"
-                    className="input input-bordered w-full"
-                    {...register('city')}
-                  />
-                </fieldset>
-                <fieldset>
-                  <label className="label">
-                    <span className="label-text">Estado</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Estado"
-                    className="input input-bordered w-full"
-                    {...register('state')}
-                  />
-                </fieldset>
-                <fieldset>
-                  <label className="label">
-                    <span className="label-text">Código Postal</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Código Postal"
-                    className="input input-bordered w-full"
-                    {...register('zip')}
-                  />
-                </fieldset>
+                <form.Field name="street">
+                  {(field) => (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Calle</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Calle"
+                        className="input input-bordered w-full"
+                        value={field.state.value ?? ''}
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        onBlur={field.handleBlur}
+                      />
+                    </fieldset>
+                  )}
+                </form.Field>
+                <form.Field name="city">
+                  {(field) => (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Ciudad</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ciudad"
+                        className="input input-bordered w-full"
+                        value={field.state.value ?? ''}
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        onBlur={field.handleBlur}
+                      />
+                    </fieldset>
+                  )}
+                </form.Field>
+                <form.Field name="state">
+                  {(field) => (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Estado</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Estado"
+                        className="input input-bordered w-full"
+                        value={field.state.value ?? ''}
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        onBlur={field.handleBlur}
+                      />
+                    </fieldset>
+                  )}
+                </form.Field>
+                <form.Field name="zip">
+                  {(field) => (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Código Postal</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Código Postal"
+                        className="input input-bordered w-full"
+                        value={field.state.value ?? ''}
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        onBlur={field.handleBlur}
+                      />
+                    </fieldset>
+                  )}
+                </form.Field>
               </div>
             </div>
           </div>
@@ -500,7 +639,9 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           <div className="card bg-base-100 shadow-sm">
             <div className="card-body">
               <h2 className="card-title mb-4">Picture</h2>
-              <ImageUpload control={control} />
+              <form.Field name="picture">
+                {(field) => <ImageUploadField field={field} />}
+              </form.Field>
             </div>
           </div>
 
@@ -508,36 +649,56 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           <div className="card bg-base-100 shadow-sm">
             <div className="card-body">
               <h2 className="card-title mb-4">Rol & Ministerio</h2>
-              <fieldset>
-                <label className="label">
-                  <span className="label-text">Rol</span>
-                </label>
-                <select
-                  className="select select-bordered w-full"
-                  {...register('role', { required: 'El rol es requerido' })}
-                >
-                  <option value="MIEMBRO">Miembro</option>
-                  <option value="SUPERVISOR">Supervisor</option>
-                  <option value="LIDER">Líder</option>
-                  <option value="ANFITRION">Anfitrión</option>
-                </select>
-                {errors.role && (
-                  <p className="text-error text-sm mt-1">
-                    {errors.role.message}
-                  </p>
+              <form.Field
+                name="role"
+                validators={{
+                  onSubmit: ({ value }) =>
+                    value ? undefined : 'El rol es requerido',
+                }}
+              >
+                {(field) => (
+                  <fieldset>
+                    <label className="label">
+                      <span className="label-text">Rol</span>
+                    </label>
+                    <select
+                      className="select select-bordered w-full"
+                      value={field.state.value ?? 'MIEMBRO'}
+                      onChange={(event) =>
+                        field.handleChange(event.target.value as FormValues['role'])
+                      }
+                      onBlur={field.handleBlur}
+                    >
+                      <option value="MIEMBRO">Miembro</option>
+                      <option value="SUPERVISOR">Supervisor</option>
+                      <option value="LIDER">Líder</option>
+                      <option value="ANFITRION">Anfitrión</option>
+                    </select>
+                    {field.state.meta.errors[0] ? (
+                      <p className="text-error text-sm mt-1">
+                        {field.state.meta.errors[0]}
+                      </p>
+                    ) : null}
+                  </fieldset>
                 )}
-              </fieldset>
-              <fieldset>
-                <label className="label">
-                  <span className="label-text">Ministerio</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ministerio"
-                  className="input input-bordered w-full"
-                  {...register('ministerio')}
-                />
-              </fieldset>
+              </form.Field>
+              <form.Field name="ministerio">
+                {(field) => (
+                  <fieldset>
+                    <label className="label">
+                      <span className="label-text">Ministerio</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ministerio"
+                      className="input input-bordered w-full"
+                      value={field.state.value ?? ''}
+                      onChange={(event) => field.handleChange(event.target.value)}
+                      onBlur={field.handleBlur}
+                    />
+                  </fieldset>
+                )}
+              </form.Field>
             </div>
           </div>
 
@@ -548,71 +709,112 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                 {isEditMode ? 'Cambiar Contraseña' : 'Crear Contraseña'}
               </h2>
               <div className="space-y-4">
-                <fieldset>
-                  <label className="label">
-                    <span className="label-text">Contraseña</span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 z-10">
-                      <RiKey2Fill />
-                    </span>
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="Contraseña"
-                      className="input input-bordered w-full pl-10 pr-10"
-                      {...register('password', {
-                        required: !isEditMode
-                          ? 'La contraseña es requerida'
-                          : false,
-                      })}
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 flex items-center pr-3 z-10"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <RiEyeOffLine /> : <RiEyeLine />}
-                    </button>
-                  </div>
-                  {errors.password && (
-                    <p className="text-error text-sm mt-1">
-                      {errors.password.message}
-                    </p>
+                <form.Field
+                  name="password"
+                  validators={{
+                    onSubmit: ({ value }) =>
+                      !isEditMode && (!value || value.length === 0)
+                        ? 'La contraseña es requerida'
+                        : undefined,
+                  }}
+                >
+                  {(field) => (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Contraseña</span>
+                      </label>
+                      <div className="relative">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 z-10">
+                          <RiKey2Fill />
+                        </span>
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="Contraseña"
+                          className="input input-bordered w-full pl-10 pr-10"
+                          value={field.state.value ?? ''}
+                          onChange={(event) => field.handleChange(event.target.value)}
+                          onBlur={field.handleBlur}
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 z-10"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? <RiEyeOffLine /> : <RiEyeLine />}
+                        </button>
+                      </div>
+                      {field.state.meta.errors[0] ? (
+                        <p className="text-error text-sm mt-1">
+                          {field.state.meta.errors[0]}
+                        </p>
+                      ) : null}
+                    </fieldset>
                   )}
-                </fieldset>
-                <fieldset>
-                  <label className="label">
-                    <span className="label-text">Confirmar Contraseña</span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 z-10">
-                      <RiKey2Fill />
-                    </span>
-                    <input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      placeholder="Confirmar Contraseña"
-                      className="input input-bordered w-full pl-10 pr-10"
-                      {...register('confirmPassword', {
-                        validate: (value) =>
-                          value === password || 'Las contraseñas no coinciden',
-                      })}
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 flex items-center pr-3 z-10"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
+                </form.Field>
+                <form.Field
+                  name="confirmPassword"
+                  validators={{
+                    onChange: ({ value, form }) => {
+                      const currentPassword = form.getFieldValue('password');
+                      if (!value && !currentPassword) {
+                        return undefined;
                       }
-                    >
-                      {showConfirmPassword ? <RiEyeOffLine /> : <RiEyeLine />}
-                    </button>
-                  </div>
-                  {errors.confirmPassword && (
-                    <p className="text-error text-sm mt-1">
-                      {errors.confirmPassword.message}
-                    </p>
+
+                      if (value !== currentPassword) {
+                        return 'Las contraseñas no coinciden';
+                      }
+
+                      return undefined;
+                    },
+                    onSubmit: ({ value, form }) => {
+                      const currentPassword = form.getFieldValue('password');
+                      if (!currentPassword && !value) {
+                        return undefined;
+                      }
+
+                      if (value !== currentPassword) {
+                        return 'Las contraseñas no coinciden';
+                      }
+
+                      return undefined;
+                    },
+                  }}
+                >
+                  {(field) => (
+                    <fieldset>
+                      <label className="label">
+                        <span className="label-text">Confirmar Contraseña</span>
+                      </label>
+                      <div className="relative">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 z-10">
+                          <RiKey2Fill />
+                        </span>
+                        <input
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          placeholder="Confirmar Contraseña"
+                          className="input input-bordered w-full pl-10 pr-10"
+                          value={field.state.value ?? ''}
+                          onChange={(event) => field.handleChange(event.target.value)}
+                          onBlur={field.handleBlur}
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 z-10"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                        >
+                          {showConfirmPassword ? <RiEyeOffLine /> : <RiEyeLine />}
+                        </button>
+                      </div>
+                      {field.state.meta.errors[0] ? (
+                        <p className="text-error text-sm mt-1">
+                          {field.state.meta.errors[0]}
+                        </p>
+                      ) : null}
+                    </fieldset>
                   )}
-                </fieldset>
+                </form.Field>
               </div>
             </div>
           </div>
@@ -626,7 +828,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
         <button
           type="submit"
           className="btn btn-primary"
-          disabled={isSubmitting}
+          disabled={isSubmitting || emailValidationStatus === 'taken'}
         >
           {isSubmitting ? (
             <>

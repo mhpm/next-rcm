@@ -3,7 +3,6 @@
 import { Breadcrumbs, MemberForm, Alert } from '@/components';
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { SubmitHandler } from 'react-hook-form';
 import { MemberFormData } from '@/app/members/types/member';
 import { MemberRole, Gender } from '@prisma/client';
 import { useCreateMember } from '@/app/members/hooks/useMembers';
@@ -46,8 +45,8 @@ export default function NewMemberPage() {
     picture: formData.picture || undefined,
   });
 
-  const handleSubmit: SubmitHandler<FormValues> = useCallback(
-    async (data) => {
+  const handleSubmit = useCallback(
+    async (data: FormValues) => {
       // Limpiar mensajes anteriores
       setError(null);
       setSuccess(null);
