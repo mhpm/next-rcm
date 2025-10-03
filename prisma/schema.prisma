@@ -32,7 +32,6 @@ model Member {
   church_id    String
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime   @updatedAt @map("updated_at")
-  churches     churches   @relation(fields: [church_id], references: [id])
 
   @@index([email])
   @@index([role])
@@ -42,12 +41,11 @@ model Member {
 }
 
 model churches {
-  id        String   @id
+  id        String   @id @default(cuid())
   name      String
   slug      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime
-  members   Member[]
 }
 
 enum MemberRole {

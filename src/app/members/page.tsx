@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { RiAddLine } from 'react-icons/ri';
 import { DataTable, LoadingSkeleton } from '@/components';
@@ -8,6 +8,8 @@ import { TableColumn, TableAction, AddButtonConfig } from '@/types';
 import { useMembers } from '@/app/members/hooks/useMembers';
 import { Member } from '@/types';
 import { useColumnVisibilityStore } from '@/components/ColumnVisibilityDropdown';
+import { Modal } from '@/components/Modal/Modal';
+import { useDeleteMember } from '@/app/members/hooks/useMembers';
 
 // Tipo para los datos transformados de la tabla
 type MemberTableData = Omit<
@@ -118,6 +120,11 @@ export default function MembersPage() {
       sortable: true,
     },
     {
+      key: 'email',
+      label: 'Email',
+      sortable: true,
+    },
+    {
       key: 'address',
       label: 'Dirección',
       sortable: true,
@@ -159,6 +166,39 @@ export default function MembersPage() {
     visibleColumns.has(String(column.key))
   );
 
+  // Estado y lógica para el modal de confirmación de eliminado
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<MemberTableData | null>(
+    null
+  );
+  const deleteMemberMutation = useDeleteMember();
+
+  const openDeleteModal = (row: MemberTableData) => {
+    setSelectedMember(row);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedMember(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedMember) return;
+    try {
+      await deleteMemberMutation.mutateAsync(selectedMember.id, {
+        onSuccess: () => {
+          closeDeleteModal();
+        },
+        onError: (error) => {
+          console.error('Error al eliminar miembro:', error);
+        },
+      });
+    } catch (error) {
+      console.error('Error al eliminar miembro:', error);
+    }
+  };
+
   // Configuración de acciones para cada fila
   const actions: TableAction<MemberTableData>[] = [
     {
@@ -179,14 +219,7 @@ export default function MembersPage() {
       label: 'Eliminar',
       variant: 'error',
       onClick: (row) => {
-        if (
-          confirm(
-            `¿Estás seguro de que quieres eliminar a ${row.firstName} ${row.lastName}?`
-          )
-        ) {
-          // Aquí iría la lógica para eliminar el miembro
-          console.log('Eliminando miembro:', row.id);
-        }
+        openDeleteModal(row);
       },
     },
   ];
@@ -276,6 +309,34 @@ export default function MembersPage() {
         onHideAllColumns={hideAllColumns}
         showColumnVisibility={true}
       />
+
+      {/* Delete confirmation modal */}
+      <Modal
+        open={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        title="Confirmar eliminación"
+      >
+        <p className="text-sm text-gray-700 dark:text-gray-200">
+          {selectedMember
+            ? `¿Estás seguro de que quieres eliminar a ${selectedMember.firstName} ${selectedMember.lastName}?`
+            : '¿Estás seguro de que quieres eliminar este miembro?'}
+        </p>
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            onClick={closeDeleteModal}
+            className="px-4 py-2 rounded-md bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={handleConfirmDelete}
+            disabled={deleteMemberMutation.isPending}
+            className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {deleteMemberMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -42,14 +42,6 @@ export const Modal = ({ children, open = false, onClose, title }: Props) => {
       >
         {title && <h3 className="text-lg font-bold mb-3">{title}</h3>}
         <div>{children}</div>
-        <div className="mt-6 flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-md bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700"
-          >
-            Close
-          </button>
-        </div>
       </div>
     </div>
   );
