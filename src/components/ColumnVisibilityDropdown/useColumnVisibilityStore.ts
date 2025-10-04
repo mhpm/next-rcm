@@ -1,3 +1,5 @@
+'use client'
+
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
@@ -13,6 +15,23 @@ export interface ColumnVisibilityState {
 // Helper function to convert Set to Array for JSON serialization
 const setToArray = (set: Set<string>): string[] => Array.from(set)
 const arrayToSet = (array: string[]): Set<string> => new Set(array)
+
+// Safe storage for SSR to avoid localStorage access when window is undefined
+const createSafeStorage = () => {
+  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    return localStorage
+  }
+  const memory: Record<string, string> = {}
+  return {
+    getItem: (name: string) => (name in memory ? memory[name] : null),
+    setItem: (name: string, value: string) => {
+      memory[name] = value
+    },
+    removeItem: (name: string) => {
+      delete memory[name]
+    },
+  } as Storage
+}
 
 export const useColumnVisibilityStore = create<ColumnVisibilityState>()(
   persist(
@@ -55,7 +74,7 @@ export const useColumnVisibilityStore = create<ColumnVisibilityState>()(
     }),
     {
       name: 'column-visibility-storage',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(createSafeStorage),
       partialize: (state) => ({
         visibleColumns: setToArray(state.visibleColumns)
       }),

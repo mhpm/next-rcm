@@ -44,12 +44,30 @@ interface MemberStats {
   byGender: Record<string, number>;
 }
 
+// Añadimos un helper para prevenir que las consultas queden colgadas indefinidamente
+const withTimeout = <T>(promise: Promise<T>, ms = 15000): Promise<T> => {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error('Tiempo de espera agotado al obtener datos. Intenta nuevamente.'));
+    }, ms);
+    promise
+      .then((value) => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((err) => {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
+};
+
 // ============ QUERY FUNCTIONS ============
 
 // Fetch all members with filtering and pagination
 const fetchAllMembers = async (options?: MembersQueryOptions) => {
   try {
-    const result = await getAllMembers(options);
+    const result = await withTimeout(getAllMembers(options));
     return result;
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Error desconocido al obtener miembros');
@@ -59,7 +77,7 @@ const fetchAllMembers = async (options?: MembersQueryOptions) => {
 // Fetch members (legacy - for backward compatibility)
 const fetchMembers = async (): Promise<Member[]> => {
   try {
-    const result = await getAllMembers({ limit: 50 });
+    const result = await withTimeout(getAllMembers({ limit: 50 }));
     return result.members;
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Error desconocido al obtener miembros');

@@ -207,7 +207,7 @@ const EditMemberPage = ({ params }: PageProps) => {
   }
 
   // Convert member data to form format
-  const initialFormData = memberToFormData(member);
+  const initialFormData = { id: member.id, ...memberToFormData(member) };
 
   return (
     <div className="p-4 sm:p-6 md:p-8">

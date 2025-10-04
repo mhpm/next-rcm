@@ -27,10 +27,14 @@ type MemberTableData = Omit<
   | 'state'
   | 'zip'
   | 'country'
+  | 'skills'
+  | 'phone'
 > & {
   birthDate: string;
   baptismDate: string;
   address: string;
+  skills: string;
+  phone: string;
 };
 
 // Función para transformar Member a formato de tabla
@@ -42,7 +46,7 @@ const transformMemberToTableData = (member: Member): MemberTableData => ({
   phone: member.phone || 'N/A',
   role: member.role,
   notes: member.notes || 'N/A',
-  skills: member.skills || 'N/A',
+  skills: (member.skills && member.skills.length > 0) ? member.skills.join(', ') : 'N/A',
   address: `${member.street || ''}, ${member.city || ''}, ${
     member.state || ''
   }, ${member.country || ''}`,
