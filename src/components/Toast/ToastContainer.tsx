@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import type { FC } from 'react';
 import { createPortal } from 'react-dom';
 import { useNotificationStore } from '@/store/NotificationStore';
 import Toast from './Toast';
@@ -13,10 +13,12 @@ interface ToastContainerProps {
     | 'bottom-left'
     | 'top-center'
     | 'bottom-center';
+  usePortal?: boolean;
 }
 
-const ToastContainer: React.FC<ToastContainerProps> = ({
+const ToastContainer: FC<ToastContainerProps> = ({
   position = 'top-right',
+  usePortal = true,
 }) => {
   const { notifications, removeNotification } = useNotificationStore();
 
@@ -39,11 +41,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({
     }
   };
 
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  return createPortal(
+  const content = (
     <div
       className={`
         fixed z-[99999] flex flex-col pointer-events-none
@@ -66,9 +64,17 @@ const ToastContainer: React.FC<ToastContainerProps> = ({
           onClose={removeNotification}
         />
       ))}
-    </div>,
-    document.body
+    </div>
   );
+
+  if (usePortal) {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+    return createPortal(content, document.body);
+  }
+
+  return content;
 };
 
 export default ToastContainer;

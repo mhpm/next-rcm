@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { FC } from 'react';
 import {
   RiCheckboxCircleLine,
   RiErrorWarningLine,
@@ -15,7 +16,7 @@ interface ToastProps {
   onClose: (id: string) => void;
 }
 
-const Toast: React.FC<ToastProps> = ({ notification, onClose }) => {
+const Toast: FC<ToastProps> = ({ notification, onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
 
