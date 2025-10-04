@@ -13,6 +13,7 @@ const meta: Meta<typeof Toast> = {
   args: {
     onClose: () => {},
   },
+  tags: ['autodocs'],
 };
 export default meta;
 

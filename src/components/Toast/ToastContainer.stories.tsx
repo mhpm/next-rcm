@@ -29,6 +29,7 @@ const meta: Meta<typeof ToastContainer> = {
     position: 'top-right',
     usePortal: false,
   },
+  tags: ['autodocs'],
 };
 export default meta;
 
