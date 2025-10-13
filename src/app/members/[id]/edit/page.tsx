@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { SubmitHandler } from 'react-hook-form';
-import { Breadcrumbs, MemberForm, LoadingSkeleton } from '@/components';
-import { useMember, useUpdateMember } from '@/app/members/hooks/useMembers';
-import { Member, MemberFormData } from '@/types';
-import { MemberRole, Gender } from '@prisma/client';
-import { useServerNotifications } from '@/hooks/useServerNotifications';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { SubmitHandler } from "react-hook-form";
+import { Breadcrumbs, MemberForm, LoadingSkeleton, Alert } from "@/components";
+import { useMember, useUpdateMember } from "@/app/members/hooks/useMembers";
+import { Member, MemberFormData } from "@/types";
+import { MemberRole, Gender } from "@prisma/client";
+import { useNotificationStore } from "@/store/NotificationStore";
 
 // FormValues type to match MemberForm component exactly
-type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
+type FormValues = Omit<MemberFormData, "birthDate" | "baptismDate"> & {
   birthDate?: string;
   baptismDate?: string;
 };
@@ -23,16 +23,16 @@ type PageProps = {
 
 // Helper para formatear fechas a YYYY-MM-DD
 const formatDateForInput = (date?: Date | null): string => {
-  if (!date) return '';
+  if (!date) return "";
   try {
-    if (isNaN(date.getTime())) return '';
+    if (isNaN(date.getTime())) return "";
 
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   } catch {
-    return '';
+    return "";
   }
 };
 
@@ -95,7 +95,7 @@ const formDataToMember = (formData: FormValues): Partial<MemberFormData> => {
         memberData.birthDate = birthDate;
       }
     } catch {
-      console.warn('Invalid birth date:', formData.birthDate);
+      console.warn("Invalid birth date:", formData.birthDate);
     }
   }
 
@@ -106,7 +106,7 @@ const formDataToMember = (formData: FormValues): Partial<MemberFormData> => {
         memberData.baptismDate = baptismDate;
       }
     } catch {
-      console.warn('Invalid baptism date:', formData.baptismDate);
+      console.warn("Invalid baptism date:", formData.baptismDate);
     }
   }
 
@@ -121,8 +121,10 @@ const formDataToMember = (formData: FormValues): Partial<MemberFormData> => {
 };
 
 const EditMemberPage = ({ params }: PageProps) => {
+  const { showSuccess, showError } = useNotificationStore();
   const router = useRouter();
-  const [memberId, setMemberId] = useState<string>('');
+  const [memberId, setMemberId] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Resolve params
   useEffect(() => {
@@ -136,7 +138,6 @@ const EditMemberPage = ({ params }: PageProps) => {
 
   // Update member mutation
   const updateMemberMutation = useUpdateMember();
-  const { handleServerAction } = useServerNotifications();
 
   // Handle form submission
   const handleSubmit: SubmitHandler<FormValues> = async (formData) => {
@@ -144,29 +145,28 @@ const EditMemberPage = ({ params }: PageProps) => {
       return;
     }
 
-    const result = await handleServerAction(
-      async () => {
-        const memberData = formDataToMember(formData);
+    const memberData = formDataToMember(formData);
 
-        return await updateMemberMutation.mutateAsync({
-          id: memberId,
-          data: memberData,
-        });
+    updateMemberMutation.mutate(
+      {
+        id: memberId,
+        data: memberData,
       },
       {
-        successMessage: `¡Miembro ${formData.firstName} ${formData.lastName} actualizado exitosamente!`,
-        errorMessage: 'Error al actualizar el miembro',
-        showSuccessNotification: true,
-        showErrorNotification: true,
+        onSuccess: () => {
+          console.info("🚀 ~ handleSubmit ~ memberId:", memberId);
+
+          showSuccess("Miembro actualizado exitosamente");
+          // Redirect after successful update
+          setTimeout(() => {
+            router.push("/members");
+          }, 1500);
+        },
+        onError: (error) => {
+          showError(error.message || "Error al actualizar el miembro");
+        },
       }
     );
-
-    if (result.success) {
-      // Redirect after successful update
-      setTimeout(() => {
-        router.push('/members');
-      }, 1500);
-    }
   };
 
   // Loading state
@@ -193,10 +193,10 @@ const EditMemberPage = ({ params }: PageProps) => {
         <div className="bg-error/10 border border-error/20 rounded-lg p-4">
           <h2 className="text-lg font-semibold text-error mb-2">Error</h2>
           <p className="text-error">
-            {error?.message || 'No se pudo cargar la información del miembro.'}
+            {error?.message || "No se pudo cargar la información del miembro."}
           </p>
           <button
-            onClick={() => router.push('/members')}
+            onClick={() => router.push("/members")}
             className="mt-4 btn btn-outline btn-error"
           >
             Volver a la lista de miembros
@@ -224,6 +224,16 @@ const EditMemberPage = ({ params }: PageProps) => {
         isEditMode={true}
         isSubmitting={updateMemberMutation.isPending}
       />
+      {errorMessage && (
+        <div className="mt-6">
+          <Alert
+            type="error"
+            title="Error al actualizar"
+            message={errorMessage}
+            onClose={() => setErrorMessage(null)}
+          />
+        </div>
+      )}
     </div>
   );
 };

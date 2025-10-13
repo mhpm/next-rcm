@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { createPortal } from 'react-dom';
 import { useNotificationStore } from '@/store/NotificationStore';
 import Toast from './Toast';
 
@@ -39,11 +38,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({
     }
   };
 
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  return createPortal(
+  return (
     <div
       className={`
         fixed z-[99999] flex flex-col pointer-events-none
@@ -66,8 +61,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({
           onClose={removeNotification}
         />
       ))}
-    </div>,
-    document.body
+    </div>
   );
 };
 

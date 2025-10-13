@@ -1,34 +1,36 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { RiAddLine } from 'react-icons/ri';
-import { DataTable, LoadingSkeleton } from '@/components';
-import { TableColumn, TableAction, AddButtonConfig } from '@/types';
-import { useMembers } from '@/app/members/hooks/useMembers';
-import { Member } from '@/types';
-import { useColumnVisibilityStore } from '@/components/ColumnVisibilityDropdown';
-import { Modal } from '@/components/Modal/Modal';
-import { useDeleteMember } from '@/app/members/hooks/useMembers';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { RiAddLine } from "react-icons/ri";
+import { DataTable, LoadingSkeleton } from "@/components";
+import { TableColumn, TableAction, AddButtonConfig } from "@/types";
+import { useMembers } from "@/app/members/hooks/useMembers";
+import { Member } from "@/types";
+import { useColumnVisibilityStore } from "@/components/ColumnVisibilityDropdown";
+import { Modal } from "@/components/Modal/Modal";
+import { useDeleteMember } from "@/app/members/hooks/useMembers";
+import { useNotificationStore } from "@/store/NotificationStore";
 
 // Tipo para los datos transformados de la tabla
 type MemberTableData = Omit<
   Member,
-  | 'gender'
-  | 'birthDate'
-  | 'baptismDate'
-  | 'createdAt'
-  | 'updatedAt'
-  | 'passwordHash'
-  | 'pictureUrl'
-  | 'age'
-  | 'street'
-  | 'city'
-  | 'state'
-  | 'zip'
-  | 'country'
-  | 'skills'
-  | 'phone'
+  | "gender"
+  | "birthDate"
+  | "baptismDate"
+  | "createdAt"
+  | "updatedAt"
+  | "passwordHash"
+  | "pictureUrl"
+  | "age"
+  | "street"
+  | "city"
+  | "state"
+  | "zip"
+  | "country"
+  | "skills"
+  | "phone"
+  | "church_id"
 > & {
   birthDate: string;
   baptismDate: string;
@@ -37,38 +39,37 @@ type MemberTableData = Omit<
   phone: string;
 };
 
+// Formateo de fecha estable (evita dependencias de locale/zonas horarias)
+const formatDate = (value?: string | Date | null): string => {
+  if (!value) return "N/A";
+  const d = new Date(value);
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const year = d.getUTCFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 // Función para transformar Member a formato de tabla
 const transformMemberToTableData = (member: Member): MemberTableData => ({
   id: member.id,
   firstName: member.firstName,
   lastName: member.lastName,
   email: member.email,
-  phone: member.phone || 'N/A',
+  phone: member.phone || "N/A",
   role: member.role,
-  notes: member.notes || 'N/A',
-  skills: (member.skills && member.skills.length > 0) ? member.skills.join(', ') : 'N/A',
-  address: `${member.street || ''}, ${member.city || ''}, ${
-    member.state || ''
-  }, ${member.country || ''}`,
+  notes: member.notes || "N/A",
+  skills: member.skills.length > 0 ? member.skills.join(", ") : "N/A",
+  address: `${member.street || ""}, ${member.city || ""}, ${
+    member.state || ""
+  }, ${member.country || ""}`,
   ministerio: member.ministerio,
-  birthDate: member.birthDate
-    ? new Date(member.birthDate).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : 'N/A',
-  baptismDate: member.baptismDate
-    ? new Date(member.baptismDate).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : 'N/A',
+  birthDate: member.birthDate ? formatDate(member.birthDate) : "N/A",
+  baptismDate: member.baptismDate ? formatDate(member.baptismDate) : "N/A",
 });
 
 export default function MembersPage() {
   const router = useRouter();
+  const { showSuccess, showError } = useNotificationStore();
 
   // Usar Zustand store para manejar la visibilidad de columnas
   const {
@@ -82,14 +83,14 @@ export default function MembersPage() {
   // Inicializar columnas por defecto
   useEffect(() => {
     const defaultColumns = [
-      'firstName',
-      'lastName',
-      'email',
-      'phone',
-      'role',
-      'ministerio',
-      'birthDate',
-      'baptismDate',
+      "firstName",
+      "lastName",
+      "email",
+      "phone",
+      "role",
+      "ministerio",
+      "birthDate",
+      "baptismDate",
     ];
     initializeColumns(defaultColumns);
   }, [initializeColumns]);
@@ -109,58 +110,58 @@ export default function MembersPage() {
   // Configuración de todas las columnas disponibles
   const allColumns: TableColumn<MemberTableData>[] = [
     {
-      key: 'firstName',
-      label: 'Nombre',
+      key: "firstName",
+      label: "Nombre",
       sortable: true,
     },
     {
-      key: 'lastName',
-      label: 'Apellidos',
+      key: "lastName",
+      label: "Apellidos",
       sortable: true,
     },
     {
-      key: 'phone',
-      label: 'Teléfono',
+      key: "phone",
+      label: "Teléfono",
       sortable: true,
     },
     {
-      key: 'email',
-      label: 'Email',
+      key: "email",
+      label: "Email",
       sortable: true,
     },
     {
-      key: 'address',
-      label: 'Dirección',
+      key: "address",
+      label: "Dirección",
       sortable: true,
     },
     {
-      key: 'role',
-      label: 'Rol',
+      key: "role",
+      label: "Rol",
       sortable: true,
     },
     {
-      key: 'ministerio',
-      label: 'Ministerio',
+      key: "ministerio",
+      label: "Ministerio",
       sortable: true,
     },
     {
-      key: 'notes',
-      label: 'Notas',
+      key: "notes",
+      label: "Notas",
       sortable: true,
     },
     {
-      key: 'skills',
-      label: 'Habilidades',
+      key: "skills",
+      label: "Habilidades",
       sortable: true,
     },
     {
-      key: 'birthDate',
-      label: 'Fecha de Nacimiento',
+      key: "birthDate",
+      label: "Fecha de Nacimiento",
       sortable: true,
     },
     {
-      key: 'baptismDate',
-      label: 'Fecha de Bautismo',
+      key: "baptismDate",
+      label: "Fecha de Bautismo",
       sortable: true,
     },
   ];
@@ -189,39 +190,39 @@ export default function MembersPage() {
 
   const handleConfirmDelete = async () => {
     if (!selectedMember) return;
-    try {
-      await deleteMemberMutation.mutateAsync(selectedMember.id, {
-        onSuccess: () => {
-          closeDeleteModal();
-        },
-        onError: (error) => {
-          console.error('Error al eliminar miembro:', error);
-        },
-      });
-    } catch (error) {
-      console.error('Error al eliminar miembro:', error);
-    }
+
+    deleteMemberMutation.mutate(selectedMember.id, {
+      onSuccess: () => {
+        showSuccess("Miembro eliminado exitosamente");
+        closeDeleteModal();
+        refetch();
+      },
+      onError: (error) => {
+        showError("Error al eliminar miembro");
+        console.error("Error al eliminar miembro:", error);
+      },
+    });
   };
 
   // Configuración de acciones para cada fila
   const actions: TableAction<MemberTableData>[] = [
     {
-      label: 'Ver',
-      variant: 'info',
+      label: "Ver",
+      variant: "info",
       onClick: (row) => {
         router.push(`/members/${row.id}`);
       },
     },
     {
-      label: 'Editar',
-      variant: 'primary',
+      label: "Editar",
+      variant: "primary",
       onClick: (row) => {
         router.push(`/members/${row.id}/edit`);
       },
     },
     {
-      label: 'Eliminar',
-      variant: 'error',
+      label: "Eliminar",
+      variant: "error",
       onClick: (row) => {
         openDeleteModal(row);
       },
@@ -230,9 +231,9 @@ export default function MembersPage() {
 
   // Configuración del botón de agregar (enfoque actual)
   const addButtonConfig: AddButtonConfig = {
-    text: 'Agregar Miembro',
-    onClick: () => router.push('/members/new'),
-    variant: 'primary',
+    text: "Agregar Miembro",
+    onClick: () => router.push("/members/new"),
+    variant: "primary",
     icon: <RiAddLine className="w-4 h-4" />,
   };
 
@@ -278,7 +279,7 @@ export default function MembersPage() {
               <div>
                 <h3 className="font-bold">Error al cargar los datos</h3>
                 <div className="text-xs">
-                  {error?.message || 'Error desconocido'}
+                  {error?.message || "Error desconocido"}
                 </div>
               </div>
             </div>
@@ -323,7 +324,7 @@ export default function MembersPage() {
         <p className="text-sm text-gray-700 dark:text-gray-200">
           {selectedMember
             ? `¿Estás seguro de que quieres eliminar a ${selectedMember.firstName} ${selectedMember.lastName}?`
-            : '¿Estás seguro de que quieres eliminar este miembro?'}
+            : "¿Estás seguro de que quieres eliminar este miembro?"}
         </p>
         <div className="mt-6 flex justify-end gap-3">
           <button
@@ -337,7 +338,7 @@ export default function MembersPage() {
             disabled={deleteMemberMutation.isPending}
             className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {deleteMemberMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+            {deleteMemberMutation.isPending ? "Eliminando..." : "Eliminar"}
           </button>
         </div>
       </Modal>

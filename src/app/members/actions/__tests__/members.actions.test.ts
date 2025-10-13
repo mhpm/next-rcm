@@ -11,7 +11,7 @@ import {
   getMemberStats,
 } from '../members.actions';
 import { prisma } from '@/lib/prisma';
-import { PrismaClient } from '@/generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { generateUUID } from '@/lib/uuid';
 import * as bcrypt from 'bcryptjs';
 import { MemberFormData } from '@/types';

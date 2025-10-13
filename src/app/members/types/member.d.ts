@@ -1,44 +1,10 @@
 // Prisma-generated enums
-export type MemberRole = 'MIEMBRO' | 'SUPERVISOR' | 'LIDER' | 'ANFITRION';
-export type Gender = 'MASCULINO' | 'FEMENINO';
+import type { Member as PrismaMember, MemberRole, Gender } from '@prisma/client';
+export type Member = PrismaMember;
+export type { MemberRole, Gender };
 
 // Main Member interface matching Prisma schema
-export interface Member {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string | null;
-  age: number | null;
-
-  // Address fields (flat structure from Prisma)
-  street: string | null;
-  city: string | null;
-  state: string | null;
-  zip: string | null;
-  country: string | null;
-
-  // Important dates
-  birthDate: Date | null;
-  baptismDate: Date | null;
-
-  // Church-specific fields
-  role: MemberRole;
-  gender: Gender;
-  ministerio: string;
-
-  // Additional fields
-  pictureUrl: string | null;
-  notes: string | null;
-  skills: string[];
-
-  // Authentication
-  passwordHash: string | null;
-
-  // Timestamps
-  createdAt: Date;
-  updatedAt: Date;
-}
+// `Member` ahora es un alias del tipo generado por Prisma
 
 // Form-specific interface for creating/updating members
 export interface MemberFormData {
