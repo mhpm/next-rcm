@@ -1,6 +1,77 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 @plugin "daisyui" {
-  themes: cmyk --default, business --prefersdark;
+  themes: shine --default, darkness --prefersdark;
+}
+
+@plugin "daisyui/theme" {
+  name: "shine";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(98% 0.001 106.423);
+  --color-base-200: oklch(97% 0.001 106.424);
+  --color-base-300: oklch(92% 0.003 48.717);
+  --color-base-content: oklch(21% 0.006 56.043);
+  --color-primary: oklch(84% 0.238 128.85);
+  --color-primary-content: oklch(27% 0.072 132.109);
+  --color-secondary: oklch(85% 0.199 91.936);
+  --color-secondary-content: oklch(28% 0.066 53.813);
+  --color-accent: oklch(0% 0 0);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(37% 0.01 67.558);
+  --color-neutral-content: oklch(98% 0.001 106.423);
+  --color-info: oklch(58% 0.158 241.966);
+  --color-info-content: oklch(97% 0.013 236.62);
+  --color-success: oklch(59% 0.145 163.225);
+  --color-success-content: oklch(97% 0.021 166.113);
+  --color-warning: oklch(64% 0.222 41.116);
+  --color-warning-content: oklch(98% 0.016 73.684);
+  --color-error: oklch(58% 0.253 17.585);
+  --color-error-content: oklch(96% 0.015 12.422);
+  --radius-selector: 1rem;
+  --radius-field: 2rem;
+  --radius-box: 2rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 2px;
+  --depth: 0;
+  --noise: 1;
+}
+
+@plugin "daisyui/theme" {
+  name: "darkness";
+  default: false;
+  prefersdark: true;
+  color-scheme: "dark";
+
+  --color-base-100: oklch(13% 0.028 261.692);
+  --color-base-200: oklch(21% 0.034 264.665);
+  --color-base-300: oklch(27% 0.033 256.848);
+  --color-base-content: oklch(96% 0.003 264.542);
+  --color-primary: oklch(0% 0 0);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(68% 0.169 237.323);
+  --color-secondary-content: oklch(97% 0.013 236.62);
+  --accent: oklch(62% 0.214 259.815);
+  --accent-content: oklch(97% 0.014 254.604);
+  --neutral: oklch(37% 0.034 259.733);
+  --neutral-content: oklch(98% 0.002 247.839);
+  --info: oklch(78% 0.154 211.53);
+  --info-content: oklch(30% 0.056 229.695);
+  --success: oklch(77% 0.152 181.912);
+  --success-content: oklch(27% 0.046 192.524);
+  --warning: oklch(75% 0.183 55.934);
+  --warning-content: oklch(26% 0.079 36.259);
+  --error: oklch(71% 0.202 349.761);
+  --error-content: oklch(28% 0.109 3.907);
+  --radius-selector: 0.5rem;
+  --radius-field: 2rem;
+  --radius-box: 2rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
 }
 
 html,

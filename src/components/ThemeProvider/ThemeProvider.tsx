@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface ThemeContextType {
   isDark: boolean;
@@ -12,7 +12,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    throw new Error("useTheme must be used within a ThemeProvider");
   }
   return context;
 };
@@ -26,15 +26,15 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
   useEffect(() => {
     // Load theme from localStorage on initialization
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('isdark');
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("isdark");
       if (stored !== null) {
         const darkMode = JSON.parse(stored);
         setIsDark(darkMode);
         // Apply theme immediately
         document.documentElement.setAttribute(
-          'data-theme',
-          darkMode ? 'business' : 'cmyk'
+          "data-theme",
+          darkMode ? "darkness" : "shine"
         );
       }
     }
@@ -42,11 +42,11 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
   useEffect(() => {
     // Save to localStorage and apply theme when it changes
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('isdark', JSON.stringify(isDark));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("isdark", JSON.stringify(isDark));
       document.documentElement.setAttribute(
-        'data-theme',
-        isDark ? 'business' : 'cmyk'
+        "data-theme",
+        isDark ? "darkness" : "shine"
       );
     }
   }, [isDark]);

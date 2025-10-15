@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useDrawer } from './useDrawer';
-import { DrawerItem } from '@/types';
+import { useState } from "react";
+import Link from "next/link";
+import { useDrawer } from "./useDrawer";
+import { DrawerItem } from "@/types";
 
 // using shared DrawerItem from src/types
 
@@ -39,7 +39,7 @@ export const Drawer = ({ children, items }: Props) => {
     // if external link, prevent default and handle navigation
     if (href && isExternal) {
       e.preventDefault();
-      if (item.target === '_blank') window.open(href, '_blank');
+      if (item.target === "_blank") window.open(href, "_blank");
       else window.location.href = href;
     }
 
@@ -65,7 +65,11 @@ export const Drawer = ({ children, items }: Props) => {
               {item.icon}
               <span className="ml-2 text-lg md:text-xl">{item.label}</span>
             </div>
-            <span className={`transform transition-transform ${isItemOpen ? 'rotate-90' : ''}`}>
+            <span
+              className={`transform transition-transform ${
+                isItemOpen ? "rotate-90" : ""
+              }`}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
@@ -94,7 +98,7 @@ export const Drawer = ({ children, items }: Props) => {
                     </Link>
                   ) : (
                     <a
-                      href={child.href ?? '#'}
+                      href={child.href ?? "#"}
                       onClick={(e) => handleClick(e, child)}
                       target={child.target}
                       className="text-lg"
@@ -123,7 +127,7 @@ export const Drawer = ({ children, items }: Props) => {
           </Link>
         ) : (
           <a
-            href={item.href ?? '#'}
+            href={item.href ?? "#"}
             onClick={(e) => handleClick(e, item)}
             target={item.target}
             className="flex items-center"
@@ -137,7 +141,7 @@ export const Drawer = ({ children, items }: Props) => {
   };
 
   return (
-    <div className={`drawer min-h-screen ${isOpen ? 'drawer-open' : ''}`}>
+    <div className={`drawer min-h-screen ${isOpen ? "drawer-open" : ""}`}>
       <input
         id="my-drawer"
         type="checkbox"
@@ -145,7 +149,7 @@ export const Drawer = ({ children, items }: Props) => {
         checked={isOpen}
         readOnly
       />
-      <div className="drawer-content flex flex-col">{children}</div>
+      <div className="drawer-content flex flex-col bg-base-200">{children}</div>
       <nav className="drawer-side">
         <label
           htmlFor="my-drawer"

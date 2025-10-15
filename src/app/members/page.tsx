@@ -233,7 +233,7 @@ export default function MembersPage() {
   const addButtonConfig: AddButtonConfig = {
     text: "Agregar Miembro",
     onClick: () => router.push("/members/new"),
-    variant: "primary",
+    variant: "secondary",
     icon: <RiAddLine className="w-4 h-4" />,
   };
 

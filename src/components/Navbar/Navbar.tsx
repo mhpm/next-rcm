@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { RiMenuFill, RiMenuUnfold4Line, RiUser3Fill } from 'react-icons/ri';
-import { useDrawer } from '../Drawer/useDrawer';
-import { useTheme } from '../ThemeProvider';
+import { RiMenuFill, RiMenuUnfold4Line, RiUser3Fill } from "react-icons/ri";
+import { useDrawer } from "../Drawer/useDrawer";
+import { useTheme } from "../ThemeProvider";
 
 export const Navbar = () => {
   const toggleDrawer = useDrawer((s) => s.toggleDrawer);
@@ -10,7 +10,7 @@ export const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
 
   return (
-    <div className="navbar bg-base-100 px-4 shadow">
+    <div className="navbar bg-base-300 px-4 shadow">
       <div className="flex-none">
         <button
           className="btn btn-ghost btn-square"
@@ -25,12 +25,11 @@ export const Navbar = () => {
       </div>
 
       <div className="flex-none gap-2">
-
         <label className="swap swap-rotate">
           {/* this hidden checkbox controls the state */}
           <input
             type="checkbox"
-            value={'dark'}
+            value={"dark"}
             checked={isDark}
             className="theme-controller"
             onChange={toggleTheme}
@@ -79,17 +78,21 @@ export const Navbar = () => {
         {/* Avatar */}
         <div className="dropdown dropdown-end">
           <label tabIndex={0} className="btn btn-ghost btn-circle">
-              <RiUser3Fill size={18} />
+            <RiUser3Fill size={18} />
           </label>
           <ul
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-10 mt-3 w-52 p-2 shadow"
           >
             <li>
-              <a><strong>Perfil</strong></a>
+              <a>
+                <strong>Perfil</strong>
+              </a>
             </li>
             <li>
-              <a><strong>Ajustes</strong></a>
+              <a>
+                <strong>Ajustes</strong>
+              </a>
             </li>
             <li>
               <a>Cerrar Sesión</a>

@@ -1,4 +1,4 @@
-import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
+import { RiArrowUpSLine, RiArrowDownSLine } from "react-icons/ri";
 
 export const StatCard = ({
   icon,
@@ -7,39 +7,39 @@ export const StatCard = ({
   change,
   changeType,
   period,
-  iconBg,
+  iconBg = "bg-base-300",
 }: {
   icon: React.ReactNode;
   title: string;
   value: string;
   change: string;
-  changeType: 'increase' | 'decrease';
+  changeType: "increase" | "decrease";
   period: string;
-  iconBg: string;
+  iconBg?: string;
 }) => (
-  <div className="card bg-base-100 rounded-xl border border-gray-200 dark:border-gray-700">
-    <div className="card-body">
-      <div className="flex justify-between items-start">
-        <div>
-          <p className="text-sm text-base-content/60">{title}</p>
-          <p className="text-2xl font-bold">{value}</p>
+  <div className="card bg-base-100 card-border border-base-300">
+    <div className="stats relative">
+      <div className="stat">
+        <div className="stat-title text-bold">{title}</div>
+        <div className="stat-value">{value}</div>
+        <div className={`rounded-full absolute top-4 right-4 p-2 ${iconBg}`}>
+          {icon}
         </div>
-        <div className={`rounded-full p-2 ${iconBg}`}>{icon}</div>
-      </div>
-      <div className="flex items-center mt-2 text-sm">
-        <span
-          className={`flex items-center mr-2 ${
-            changeType === 'increase' ? 'text-success' : 'text-error'
-          }`}
-        >
-          {changeType === 'increase' ? (
-            <RiArrowUpSLine />
-          ) : (
-            <RiArrowDownSLine />
-          )}
-          {change}
-        </span>
-        <span className="text-base-content/60">{period}</span>
+        <div className="stat-desc flex items-center gap-2">
+          <span
+            className={`flex items-center mr-2 ${
+              changeType === "increase" ? "text-success" : "text-error"
+            }`}
+          >
+            {changeType === "increase" ? (
+              <RiArrowUpSLine />
+            ) : (
+              <RiArrowDownSLine />
+            )}
+            {change}
+          </span>
+          <span className="text-base-content/60">{period}</span>
+        </div>
       </div>
     </div>
   </div>
