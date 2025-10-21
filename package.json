@@ -14,7 +14,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "prisma:seed": "tsx prisma/seed.ts",
-    "next:upgrade": "bun add next@latest react@latest react-dom@latest eslint-config-next@latest typescript@latest @types/react@latest @types/react-dom@latest"
+    "next:upgrade": "next@latest react@latest react-dom@latest eslint-config-next@latest typescript@latest @types/react@latest @types/react-dom@latest"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
