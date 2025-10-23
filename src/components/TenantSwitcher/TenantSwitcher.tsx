@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useTenant } from '@/hooks/useTenant';
 import { getAllChurches, type Church } from '@/app/churches/actions/churches.actions';
 
@@ -10,9 +10,9 @@ interface TenantSwitcherProps {
 
 export function TenantSwitcher({ className = '' }: TenantSwitcherProps) {
   const { currentChurch, setChurch, clearChurch, isLoading } = useTenant();
-  const [isOpen, setIsOpen] = useState(false);
   const [churches, setChurches] = useState<Church[]>([]);
   const [loadingChurches, setLoadingChurches] = useState(true);
+  const detailsRef = useRef<HTMLDetailsElement>(null);
 
   // Cargar iglesias desde la base de datos
   useEffect(() => {
@@ -41,7 +41,11 @@ export function TenantSwitcher({ className = '' }: TenantSwitcherProps) {
       };
       
       await setChurch(churchForStore);
-      setIsOpen(false);
+      
+      // Cerrar el dropdown
+      if (detailsRef.current) {
+        detailsRef.current.open = false;
+      }
       
       // Forzar recarga de datos en lugar de recargar toda la página
       window.dispatchEvent(new CustomEvent('tenantChanged', { 
@@ -55,7 +59,11 @@ export function TenantSwitcher({ className = '' }: TenantSwitcherProps) {
   const handleClearTenant = async () => {
     try {
       await clearChurch();
-      setIsOpen(false);
+      
+      // Cerrar el dropdown
+      if (detailsRef.current) {
+        detailsRef.current.open = false;
+      }
       
       // Disparar evento de cambio de tenant
       window.dispatchEvent(new CustomEvent('tenantCleared'));
@@ -70,97 +78,88 @@ export function TenantSwitcher({ className = '' }: TenantSwitcherProps) {
   }
 
   return (
-    <div className={`relative ${className}`}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        disabled={isLoading || loadingChurches}
-        className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md border transition-colors disabled:opacity-50"
-      >
-        <span className={`w-2 h-2 rounded-full ${currentChurch ? 'bg-green-500' : 'bg-gray-400'}`}></span>
+    <details className={`dropdown ${className}`} ref={detailsRef}>
+      <summary className={`btn btn-sm m-1 flex items-center gap-2 ${isLoading || loadingChurches ? 'btn-disabled' : ''}`}>
+        <span className={`w-2 h-2 rounded-full ${currentChurch ? 'bg-success' : 'bg-base-300'}`}></span>
         <span className="font-medium">
           {loadingChurches ? 'Cargando...' : (currentChurch?.name || 'Seleccionar Iglesia')}
         </span>
         <svg
-          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className="w-4 h-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
-      </button>
-
-      {isOpen && (
-        <>
-          {/* Overlay */}
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
-          />
-          
-          {/* Dropdown */}
-          <div className="absolute top-full left-0 mt-1 w-64 bg-white border rounded-md shadow-lg z-20">
-            <div className="p-2 border-b bg-gray-50">
-              <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                Seleccionar Iglesia
-              </p>
-            </div>
-            
-            <div className="py-1">
-              {loadingChurches ? (
-                <div className="px-4 py-2 text-sm text-gray-500">
-                  Cargando iglesias...
-                </div>
-              ) : churches.length === 0 ? (
-                <div className="px-4 py-2 text-sm text-gray-500">
-                  No hay iglesias disponibles
-                </div>
-              ) : (
-                churches.map((church) => (
-                  <button
-                    key={church.slug}
-                    onClick={() => handleTenantChange(church)}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
-                      currentChurch?.slug === church.slug
-                        ? 'bg-blue-50 text-blue-700 font-medium'
-                        : 'text-gray-700'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${
-                        currentChurch?.slug === church.slug ? 'bg-blue-500' : 'bg-gray-300'
-                      }`}></span>
-                      <div>
-                        <div className="font-medium">{church.name}</div>
-                        <div className="text-xs text-gray-500">{church.slug}</div>
-                      </div>
-                    </div>
-                  </button>
-                ))
-              )}
-              
-              <hr className="my-1" />
-              
+      </summary>
+      
+      <ul className="menu dropdown-content bg-base-100 rounded-box z-[1] w-64 p-2 shadow-lg border border-base-300">
+        {/* Header */}
+        <li className="menu-title">
+          <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wide">
+            Seleccionar Iglesia
+          </span>
+        </li>
+        
+        {/* Content */}
+        {loadingChurches ? (
+          <li>
+            <span className="text-sm text-base-content/60 cursor-default">
+              Cargando iglesias...
+            </span>
+          </li>
+        ) : churches.length === 0 ? (
+          <li>
+            <span className="text-sm text-base-content/60 cursor-default">
+              No hay iglesias disponibles
+            </span>
+          </li>
+        ) : (
+          churches.map((church) => (
+            <li key={church.slug}>
               <button
-                onClick={handleClearTenant}
-                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                onClick={() => handleTenantChange(church)}
+                className={`flex items-center gap-2 ${
+                  currentChurch?.slug === church.slug
+                    ? 'active bg-primary text-primary-content'
+                    : ''
+                }`}
               >
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                  <span>Limpiar Selección</span>
+                <span className={`w-2 h-2 rounded-full ${
+                  currentChurch?.slug === church.slug ? 'bg-primary-content' : 'bg-base-300'
+                }`}></span>
+                <div className="flex flex-col items-start">
+                  <div className="font-medium">{church.name}</div>
+                  <div className="text-xs opacity-60">{church.slug}</div>
                 </div>
               </button>
-            </div>
-            
-            <div className="p-2 border-t bg-gray-50">
-              <p className="text-xs text-gray-500">
-                Actual: <span className="font-mono">{currentChurch?.slug || 'ninguno'}</span>
-              </p>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+            </li>
+          ))
+        )}
+        
+        {/* Divider */}
+        <li><hr className="my-1" /></li>
+        
+        {/* Clear Selection */}
+        <li>
+          <button
+            onClick={handleClearTenant}
+            className="text-error hover:bg-error hover:text-error-content"
+          >
+            <span className="w-2 h-2 bg-error rounded-full"></span>
+            <span>Limpiar Selección</span>
+          </button>
+        </li>
+        
+        {/* Footer */}
+        <li className="menu-title mt-2">
+          <span className="text-xs text-base-content/40">
+            Actual: <span className="font-mono">{currentChurch?.slug || 'ninguno'}</span>
+          </span>
+        </li>
+      </ul>
+    </details>
   );
 }
 
