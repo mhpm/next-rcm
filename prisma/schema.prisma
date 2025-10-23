@@ -8,44 +8,48 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modelo para representar las iglesias
-model churches {
-  id               String           @id @default(cuid())
-  name             String
-  slug             String           @unique
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+model Churches {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  members          Members[]
+  ministries       Ministries[]
   memberMinistries MemberMinistry[]
-  members          Member[]
-  ministries       Ministry[]
+
+  @@map("churches")
 }
 
-// Modelo para representar los miembros
-model Member {
-  id           String           @id @default(cuid())
-  firstName    String           @map("first_name")
-  lastName     String           @map("last_name")
-  email        String           @unique
+model Members {
+  id           String     @id @default(cuid())
+  firstName    String     @map("first_name")
+  lastName     String     @map("last_name")
+  email        String     @unique
   phone        String?
   age          Int?
   street       String?
   city         String?
   state        String?
   zip          String?
-  country      String?          @default("México")
-  birthDate    DateTime?        @map("birth_date")
-  baptismDate  DateTime?        @map("baptism_date")
-  role         MemberRole       @default(MIEMBRO)
+  country      String?    @default("México")
+  birthDate    DateTime?  @map("birth_date")
+  baptismDate  DateTime?  @map("baptism_date")
+  role         MemberRole @default(MIEMBRO)
   gender       Gender
-  pictureUrl   String?          @map("picture_url")
+  pictureUrl   String?    @map("picture_url")
   notes        String?
-  skills       String[]         @default([])
-  passwordHash String?          @map("password_hash")
+  skills       String[]   @default([])
+  passwordHash String?    @map("password_hash")
   church_id    String
-  createdAt    DateTime         @default(now()) @map("created_at")
-  updatedAt    DateTime         @updatedAt @map("updated_at")
-  ministries   MemberMinistry[]
-  church       churches         @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  church     Churches         @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  ministries MemberMinistry[]
 
   @@index([email])
   @@index([role])
@@ -54,38 +58,40 @@ model Member {
   @@map("members")
 }
 
-// Modelo para representar las ministries
-model Ministry {
-  id          String           @id @default(cuid())
-  name        String           
+model Ministries {
+  id          String   @id @default(cuid())
+  name        String
   description String?
-  createdAt   DateTime         @default(now()) @map("created_at")
-  updatedAt   DateTime         @updatedAt @map("updated_at")
   church_id   String
-  members     MemberMinistry[]
-  church      churches         @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  church  Churches         @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  members MemberMinistry[]
 
   @@unique([name, church_id])
   @@index([church_id])
   @@map("ministries")
 }
 
-// Modelo para representar la relación entre miembros y ministries
 model MemberMinistry {
   id         String   @id @default(cuid())
   memberId   String   @map("member_id")
   ministryId String   @map("ministry_id")
-  joinedAt   DateTime @default(now()) @map("joined_at")
   church_id  String
-  church     churches @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  member     Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  ministry   Ministry @relation(fields: [ministryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  member   Members    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  ministry Ministries @relation(fields: [ministryId], references: [id], onDelete: Cascade)
+  church   Churches   @relation(fields: [church_id], references: [id], onDelete: Cascade)
 
   @@unique([memberId, ministryId])
   @@index([church_id])
   @@map("member_ministries")
 }
-
 
 enum MemberRole {
   MIEMBRO

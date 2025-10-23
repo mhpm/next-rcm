@@ -52,7 +52,7 @@ const memberToFormData = (member: Member): FormValues => ({
   baptismDate: formatDateForInput(member.baptismDate),
   role: member.role,
   gender: member.gender,
-  ministerio: member.ministerio || undefined,
+  // ministerio: member.ministerio || undefined, // Removed - will be handled via MemberMinistry relation
   notes: member.notes || undefined,
   skills: member.skills || undefined,
 });
@@ -79,8 +79,8 @@ const formDataToMember = (formData: FormValues): Partial<MemberFormData> => {
   if (formData.zip && formData.zip.trim()) memberData.zip = formData.zip.trim();
   if (formData.country && formData.country.trim())
     memberData.country = formData.country.trim();
-  if (formData.ministerio && formData.ministerio.trim())
-    memberData.ministerio = formData.ministerio.trim();
+  // if (formData.ministerio && formData.ministerio.trim())
+  //   memberData.ministerio = formData.ministerio.trim(); // Removed - will be handled via MemberMinistry relation
   if (formData.notes && formData.notes.trim())
     memberData.notes = formData.notes.trim();
 

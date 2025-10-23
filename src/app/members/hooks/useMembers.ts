@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Member, MemberFormData } from '@/types';
+import { useEffect } from 'react';
+import { Member, MemberWithMinistries, MemberFormData } from '@/types';
 import { MemberRole } from '@prisma/client';
 import {
   getAllMembers,
@@ -23,7 +24,7 @@ interface MemberResponse {
 
 interface MembersResponse {
   success: boolean;
-  data: Member[];
+  data: MemberWithMinistries[];
   total: number;
   hasMore: boolean;
   error?: string;
@@ -75,7 +76,7 @@ const fetchAllMembers = async (options?: MembersQueryOptions) => {
 };
 
 // Fetch members (legacy - for backward compatibility)
-const fetchMembers = async (): Promise<Member[]> => {
+const fetchMembers = async (): Promise<MemberWithMinistries[]> => {
   try {
     const result = await withTimeout(getAllMembers({ limit: 50 }));
     return result.members;
@@ -165,8 +166,41 @@ const deactivateExistingMember = async (id: string): Promise<Member> => {
 
 // ============ QUERY HOOKS ============
 
+// Hook para escuchar cambios de tenant y invalidar queries
+export const useTenantChangeListener = () => {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const handleTenantChange = () => {
+      // Invalidar todas las queries relacionadas con members
+      queryClient.invalidateQueries({ queryKey: ['members'] });
+      queryClient.invalidateQueries({ queryKey: ['member'] });
+      queryClient.invalidateQueries({ queryKey: ['memberStats'] });
+      queryClient.invalidateQueries({ queryKey: ['emailAvailability'] });
+    };
+
+    const handleTenantClear = () => {
+      // Limpiar todas las queries cuando se limpia el tenant
+      queryClient.clear();
+    };
+
+    // Agregar listeners para eventos de cambio de tenant
+    window.addEventListener('tenantChanged', handleTenantChange);
+    window.addEventListener('tenantCleared', handleTenantClear);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('tenantChanged', handleTenantChange);
+      window.removeEventListener('tenantCleared', handleTenantClear);
+    };
+  }, [queryClient]);
+};
+
 // Hook for fetching all members with enhanced options
 export const useAllMembers = (options?: MembersQueryOptions) => {
+  // Escuchar cambios de tenant
+  useTenantChangeListener();
+  
   return useQuery({
     queryKey: ['members', 'all', options],
     queryFn: () => fetchAllMembers(options),
@@ -177,6 +211,9 @@ export const useAllMembers = (options?: MembersQueryOptions) => {
 
 // Hook for fetching all members (legacy - for backward compatibility)
 export const useMembers = () => {
+  // Escuchar cambios de tenant
+  useTenantChangeListener();
+  
   return useQuery({
     queryKey: ['members'],
     queryFn: fetchMembers,
@@ -187,6 +224,9 @@ export const useMembers = () => {
 
 // Hook for fetching a single member
 export const useMember = (id: string) => {
+  // Escuchar cambios de tenant
+  useTenantChangeListener();
+  
   return useQuery({
     queryKey: ['member', id],
     queryFn: () => fetchMember(id),
@@ -198,6 +238,9 @@ export const useMember = (id: string) => {
 
 // Hook for fetching member statistics
 export const useMemberStats = () => {
+  // Escuchar cambios de tenant
+  useTenantChangeListener();
+  
   return useQuery({
     queryKey: ['members', 'stats'],
     queryFn: fetchMemberStats,

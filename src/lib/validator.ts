@@ -6,6 +6,8 @@ const MemberRoleSchema = z.enum([
   "SUPERVISOR",
   "LIDER",
   "ANFITRION",
+  "PASTOR",
+  "TESORERO",
 ]);
 const GenderSchema = z.enum(["MASCULINO", "FEMENINO"]);
 
@@ -99,9 +101,9 @@ export const memberSchema = z
       .optional(),
 
     // Church-specific fields
-    ministerio: z
+    ministries: z
       .string()
-      .max(100, "El ministerio no puede exceder 100 caracteres")
+      .max(100, "Los ministerios no pueden exceder 100 caracteres")
       .optional(),
 
     notes: z
@@ -175,7 +177,7 @@ export const memberSearchSchema = z.object({
   search: z.string().optional(),
   role: MemberRoleSchema.optional(),
   gender: GenderSchema.optional(),
-  ministerio: z.string().optional(),
+  ministries: z.string().optional(),
   page: z.number().int().min(1).optional(),
   limit: z.number().int().min(1).max(100).optional(),
 });

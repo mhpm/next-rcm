@@ -1,19 +1,20 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 // Cache for database connections
 const databaseConnections = new Map<string, PrismaClient>();
 
 // Get database URL for a specific church
 function getDatabaseUrl(churchSlug: string): string {
+  console.log("🚀 ~ getDatabaseUrl ~ getDatabaseUrl:", getDatabaseUrl);
   // In production, this would come from environment variables or a configuration service
   // For now, we'll use a pattern-based approach
   const baseUrl =
-    process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432';
-  console.log('DATABASE_URL: ', process.env.DATABASE_URL);
+    process.env.DATABASE_URL || "postgresql://user:password@localhost:5432";
+  console.log("DATABASE_URL: ", process.env.DATABASE_URL);
 
   // Extract the base URL without the database name
-  const urlParts = baseUrl.split('/');
-  const baseWithoutDb = urlParts.slice(0, -1).join('/');
+  const urlParts = baseUrl.split("/");
+  const baseWithoutDb = urlParts.slice(0, -1).join("/");
 
   // Create church-specific database URL
   return `${baseWithoutDb}/${churchSlug}_church_db`;
@@ -36,9 +37,9 @@ export function getDatabaseConnection(churchSlug: string): PrismaClient {
       },
     },
     log:
-      process.env.NODE_ENV === 'development'
-        ? ['query', 'error', 'warn']
-        : ['error'],
+      process.env.NODE_ENV === "development"
+        ? ["query", "error", "warn"]
+        : ["error"],
   });
 
   // Cache the connection
@@ -71,20 +72,20 @@ export async function closeAllDatabaseConnections(): Promise<void> {
 // Get church slug from subdomain or domain
 export function getChurchSlugFromHost(host: string): string {
   // Remove port if present
-  const cleanHost = host.split(':')[0];
+  const cleanHost = host.split(":")[0];
 
   // Handle different patterns:
   // 1. Subdomain: church1.myapp.com -> church1
   // 2. Custom domain: church1.org -> church1
   // 3. Localhost with query param or path-based routing
 
-  if (cleanHost.includes('.')) {
-    const parts = cleanHost.split('.');
+  if (cleanHost.includes(".")) {
+    const parts = cleanHost.split(".");
 
     // If it's a subdomain of our main domain
     if (
       parts.length >= 3 &&
-      (parts[1] === 'myapp' || parts[1] === 'churchapp')
+      (parts[1] === "myapp" || parts[1] === "churchapp")
     ) {
       return parts[0];
     }
@@ -95,7 +96,7 @@ export function getChurchSlugFromHost(host: string): string {
 
   // For localhost or IP addresses, we'll need to handle this differently
   // This could be done via path parameters or query strings
-  return 'default';
+  return "default";
 }
 
 // Validate church slug format

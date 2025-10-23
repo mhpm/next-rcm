@@ -20,7 +20,6 @@ export const members: Member[] = [
     baptismDate: new Date("2020-01-01"),
     role: "MIEMBRO",
     gender: "MASCULINO",
-    ministerio: "Ministerio A",
     pictureUrl: null,
     notes: "Miembro activo y comprometido",
     skills: ["Liderazgo", "Música"],
@@ -45,7 +44,6 @@ export const members: Member[] = [
     baptismDate: new Date("2021-01-01"),
     role: "SUPERVISOR",
     gender: "MASCULINO",
-    ministerio: "Ministerio B",
     pictureUrl: null,
     notes: "Supervisor de jóvenes",
     skills: ["Enseñanza", "Tecnología"],
@@ -70,7 +68,6 @@ export const members: Member[] = [
     baptismDate: new Date("2019-03-15"),
     role: "LIDER",
     gender: "FEMENINO",
-    ministerio: "Ministerio de Mujeres",
     pictureUrl: null,
     notes: "Líder del ministerio de mujeres",
     skills: ["Enseñanza", "Consejería"],
@@ -95,7 +92,6 @@ export const members: Member[] = [
     baptismDate: new Date("2022-06-01"),
     role: "ANFITRION",
     gender: "MASCULINO",
-    ministerio: "Hospitalidad",
     pictureUrl: null,
     notes: "Nuevo miembro, muy entusiasta",
     skills: ["Hospitalidad", "Cocina"],
@@ -120,7 +116,6 @@ export const members: Member[] = [
     baptismDate: new Date("2018-12-25"),
     role: "LIDER",
     gender: "FEMENINO",
-    ministerio: "Pastoral",
     pictureUrl: null,
     notes: "Pastora asociada",
     skills: ["Predicación", "Consejería", "Liderazgo"],
@@ -145,7 +140,6 @@ export const members: Member[] = [
     baptismDate: new Date("2019-08-10"),
     role: "MIEMBRO",
     gender: "MASCULINO",
-    ministerio: "Ministerio de Alabanza",
     pictureUrl: null,
     notes: "Músico talentoso",
     skills: ["Música", "Alabanza"],
@@ -170,7 +164,6 @@ export const members: Member[] = [
     baptismDate: new Date("2020-09-20"),
     role: "SUPERVISOR",
     gender: "FEMENINO",
-    ministerio: "Ministerio de Niños",
     pictureUrl: null,
     notes: "Trabaja con niños de 3 a 5 años",
     skills: ["Enseñanza", "Paciencia"],
@@ -195,7 +188,6 @@ export const members: Member[] = [
     baptismDate: new Date("2017-05-30"),
     role: "LIDER",
     gender: "MASCULINO",
-    ministerio: "Ministerio de Jóvenes",
     pictureUrl: null,
     notes: "Líder de adolescentes",
     skills: ["Liderazgo", "Deportes"],
@@ -220,7 +212,6 @@ export const members: Member[] = [
     baptismDate: new Date("2021-11-15"),
     role: "ANFITRION",
     gender: "FEMENINO",
-    ministerio: "Hospitalidad",
     pictureUrl: null,
     notes: "Ayuda en la cafetería",
     skills: ["Cocina", "Servicio"],
@@ -245,7 +236,6 @@ export const members: Member[] = [
     baptismDate: new Date("2015-04-12"),
     role: "MIEMBRO",
     gender: "MASCULINO",
-    ministerio: "Ministerio de Oración",
     pictureUrl: null,
     notes: "Intercesor dedicado",
     skills: ["Oración", "Consejería"],
@@ -270,7 +260,6 @@ export const members: Member[] = [
     baptismDate: new Date("2020-03-22"),
     role: "SUPERVISOR",
     gender: "FEMENINO",
-    ministerio: "Ministerio de Damas",
     pictureUrl: null,
     notes: "Coordinadora de damas",
     skills: ["Organización", "Consejería"],
@@ -295,7 +284,6 @@ export const members: Member[] = [
     baptismDate: new Date("2016-07-18"),
     role: "LIDER",
     gender: "MASCULINO",
-    ministerio: "Ministerio de Hombres",
     pictureUrl: null,
     notes: "Líder de hombres mayores",
     skills: ["Predicación", "Liderazgo"],
@@ -320,7 +308,6 @@ export const members: Member[] = [
     baptismDate: new Date("2022-02-14"),
     role: "ANFITRION",
     gender: "FEMENINO",
-    ministerio: "Recepción",
     pictureUrl: null,
     notes: "Recibe a nuevos visitantes",
     skills: ["Hospitalidad", "Comunicación"],
@@ -345,7 +332,6 @@ export const members: Member[] = [
     baptismDate: new Date("2019-10-30"),
     role: "MIEMBRO",
     gender: "MASCULINO",
-    ministerio: "Ministerio de Música",
     pictureUrl: null,
     notes: "Toca batería en el equipo de alabanza",
     skills: ["Música", "Batería"],
@@ -370,7 +356,6 @@ export const members: Member[] = [
     baptismDate: new Date("2023-01-10"),
     role: "SUPERVISOR",
     gender: "FEMENINO",
-    ministerio: "Ministerio de Adolescentes",
     pictureUrl: null,
     notes: "Trabaja con jóvenes de 12 a 17 años",
     skills: ["Enseñanza", "Música"],
@@ -397,13 +382,6 @@ export const mockHelpers = {
    */
   getMembersByRole: (role: Member["role"]): Member[] => {
     return members.filter((member) => member.role === role);
-  },
-
-  /**
-   * Get members by ministerio
-   */
-  getMembersByMinisterio: (ministerio: string): Member[] => {
-    return members.filter((member) => member.ministerio === ministerio);
   },
 
   /**
@@ -456,15 +434,8 @@ export const mockHelpers = {
    */
   getMembersBySkill: (skill: string): Member[] => {
     return members.filter((member) =>
-      member.skills?.some((s) => s.toLowerCase().includes(skill.toLowerCase()))
+      member.skills?.some((s: string) => s.toLowerCase().includes(skill.toLowerCase()))
     );
-  },
-
-  /**
-   * Get all unique ministerios
-   */
-  getAllMinisterios: (): string[] => {
-    return [...new Set(members.map((member) => member.ministerio))];
   },
 
   /**

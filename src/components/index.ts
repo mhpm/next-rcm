@@ -11,3 +11,4 @@ export { Alert } from './Alert';
 export type { AlertType } from './Alert';
 export { ColumnVisibilityDropdown } from './ColumnVisibilityDropdown';
 export { InputField, SelectField, RadioGroupField, PasswordField, EmailField } from './FormControls';
+export { TenantSwitcher } from './TenantSwitcher';

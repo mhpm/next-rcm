@@ -6,15 +6,16 @@ import { RiAddLine } from "react-icons/ri";
 import { DataTable, LoadingSkeleton } from "@/components";
 import { TableColumn, TableAction, AddButtonConfig } from "@/types";
 import { useMembers } from "@/app/members/hooks/useMembers";
-import { Member } from "@/types";
+import { MemberWithMinistries } from "@/types";
 import { useColumnVisibilityStore } from "@/components/ColumnVisibilityDropdown";
 import { Modal } from "@/components/Modal/Modal";
 import { useDeleteMember } from "@/app/members/hooks/useMembers";
 import { useNotificationStore } from "@/store/NotificationStore";
+import { Ministries } from "@prisma/client";
 
 // Tipo para los datos transformados de la tabla
 type MemberTableData = Omit<
-  Member,
+  MemberWithMinistries,
   | "gender"
   | "birthDate"
   | "baptismDate"
@@ -31,12 +32,14 @@ type MemberTableData = Omit<
   | "skills"
   | "phone"
   | "church_id"
+  | "ministries"
 > & {
   birthDate: string;
   baptismDate: string;
   address: string;
   skills: string;
   phone: string;
+  ministries: string;
 };
 
 // Formateo de fecha estable (evita dependencias de locale/zonas horarias)
@@ -50,7 +53,9 @@ const formatDate = (value?: string | Date | null): string => {
 };
 
 // Función para transformar Member a formato de tabla
-const transformMemberToTableData = (member: Member): MemberTableData => ({
+const transformMemberToTableData = (
+  member: MemberWithMinistries
+): MemberTableData => ({
   id: member.id,
   firstName: member.firstName,
   lastName: member.lastName,
@@ -62,7 +67,12 @@ const transformMemberToTableData = (member: Member): MemberTableData => ({
   address: `${member.street || ""}, ${member.city || ""}, ${
     member.state || ""
   }, ${member.country || ""}`,
-  ministerio: member.ministerio,
+  ministries: member.ministries
+    ? member.ministries
+        .map((m: MemberWithMinistries) => m.ministry?.name)
+        .filter(Boolean)
+        .join(", ")
+    : "N/A",
   birthDate: member.birthDate ? formatDate(member.birthDate) : "N/A",
   baptismDate: member.baptismDate ? formatDate(member.baptismDate) : "N/A",
 });
@@ -88,7 +98,7 @@ export default function MembersPage() {
       "email",
       "phone",
       "role",
-      "ministerio",
+      "ministries",
       "birthDate",
       "baptismDate",
     ];
@@ -140,8 +150,8 @@ export default function MembersPage() {
       sortable: true,
     },
     {
-      key: "ministerio",
-      label: "Ministerio",
+      key: "ministries",
+      label: "Ministerios",
       sortable: true,
     },
     {

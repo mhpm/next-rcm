@@ -1,5 +1,4 @@
 "use server";
-import { prisma } from "@/lib/prisma";
 import { Prisma, MemberRole } from "@prisma/client";
 import { MemberFormData } from "@/types";
 import { generateUUID } from "@/lib/uuid";
@@ -12,6 +11,7 @@ import {
 } from "@/lib/error-handler";
 import { processImageUpload } from "@/lib/file-upload";
 import { memberSchema, updateMemberSchema } from "@/lib/validator";
+import { getTenantPrisma, getChurchId } from "@/actions/tenantActions";
 
 // Get all members with optional filtering and pagination
 export async function getAllMembers(options?: {
@@ -32,7 +32,8 @@ export async function getAllMembers(options?: {
       orderDirection = "asc",
     } = options || {};
 
-    const whereClause: Prisma.MemberWhereInput = {};
+    const prisma = await getTenantPrisma();
+    const whereClause: Prisma.MembersWhereInput = {};
 
     // Add search filter
     if (search) {
@@ -49,15 +50,22 @@ export async function getAllMembers(options?: {
     }
 
     const [members, total] = await Promise.all([
-      prisma.member.findMany({
+      prisma.members.findMany({
         where: whereClause,
         take: limit,
         skip: offset,
         orderBy: {
           [orderBy]: orderDirection,
         },
+        include: {
+          ministries: {
+            include: {
+              ministry: true,
+            },
+          },
+        },
       }),
-      prisma.member.count({ where: whereClause }),
+      prisma.members.count({ where: whereClause }),
     ]);
 
     return {
@@ -74,10 +82,18 @@ export async function getAllMembers(options?: {
 // Get members with limit (legacy function for backward compatibility)
 export async function getMembers(limit = 10) {
   try {
-    const members = await prisma.member.findMany({
+    const prisma = await getTenantPrisma();
+    const members = await prisma.members.findMany({
       take: limit,
       orderBy: {
         lastName: "asc",
+      },
+      include: {
+        ministries: {
+          include: {
+            ministry: true,
+          },
+        },
       },
     });
 
@@ -91,7 +107,8 @@ export async function getMembers(limit = 10) {
 // Get member by specific field
 export async function getMemberBy(field: string, value: unknown) {
   try {
-    const member = await prisma.member.findFirst({
+    const prisma = await getTenantPrisma();
+    const member = await prisma.members.findFirst({
       where: {
         [field]: value,
       },
@@ -107,7 +124,8 @@ export async function getMemberBy(field: string, value: unknown) {
 // Get member by ID
 export async function getMemberById(id: string) {
   try {
-    const member = await prisma.member.findUnique({
+    const prisma = await getTenantPrisma();
+    const member = await prisma.members.findUnique({
       where: { id },
     });
 
@@ -165,15 +183,10 @@ export const createMember = withErrorHandling(async function createMember(
       }
     }
 
-    // Get the first available church (for now, we'll use the existing one)
-    const church = await prisma.churches.findFirst();
-    if (!church) {
-      throw new NotFoundError(
-        "No se encontró una iglesia válida. Contacta al administrador del sistema."
-      );
-    }
+    const prisma = await getTenantPrisma();
+    const churchId = await getChurchId();
 
-    // Prepare member data
+    // Prepare member data with explicit church_id
     const memberData = {
       id: generateUUID(),
       firstName: parsed.firstName,
@@ -190,15 +203,15 @@ export const createMember = withErrorHandling(async function createMember(
       baptismDate: parsed.baptismDate || null,
       role: parsed.role,
       gender: parsed.gender,
-      ministerio: parsed.ministerio || "",
+      // ministerio: parsed.ministerio || "", // Removed - will be handled via MemberMinistry relation
       notes: parsed.notes || null,
       skills: parsed.skills || [],
       passwordHash,
       pictureUrl, // Now includes the uploaded image URL
-      church_id: church.id, // Add the required church_id
+      church_id: churchId, // Explicitly add church_id
     };
 
-    const member = await prisma.member.create({
+    const member = await prisma.members.create({
       data: memberData,
     });
 
@@ -238,20 +251,21 @@ export const createMember = withErrorHandling(async function createMember(
 
 // ============ UPDATE OPERATIONS ============
 
-  // Update an existing member
-  export async function updateMember(id: string, data: Partial<MemberFormData>) {
-    try {
-      const parsed = updateMemberSchema.parse({ id, ...data });
+// Update an existing member
+export async function updateMember(id: string, data: Partial<MemberFormData>) {
+  try {
+    const parsed = updateMemberSchema.parse({ id, ...data });
+    const prisma = await getTenantPrisma();
 
     // Ensure member exists
-    const existingMember = await prisma.member.findUnique({
+    const existingMember = await prisma.members.findUnique({
       where: { id: parsed.id! },
     });
     if (!existingMember) {
       throw new NotFoundError("Member not found");
     }
 
-    const updateData: Prisma.MemberUpdateInput = {};
+    const updateData: Prisma.MembersUpdateInput = {};
 
     // Strings and required-like fields
     if (parsed.firstName !== undefined)
@@ -269,8 +283,8 @@ export const createMember = withErrorHandling(async function createMember(
     if (parsed.zip !== undefined) updateData.zip = parsed.zip || null;
     if (parsed.country !== undefined)
       updateData.country = parsed.country || null;
-    if (parsed.ministerio !== undefined)
-      updateData.ministerio = parsed.ministerio || "";
+    // if (parsed.ministerio !== undefined)
+    //   updateData.ministerio = parsed.ministerio || ""; // Removed - will be handled via MemberMinistry relation
     if (parsed.notes !== undefined) updateData.notes = parsed.notes || null;
 
     // Numbers
@@ -298,37 +312,42 @@ export const createMember = withErrorHandling(async function createMember(
 
     // Si no hay cambios en los datos, devolver el miembro existente sin error
     if (Object.keys(updateData).length === 0) {
-      logger.info("No changes detected in updateMember; returning existing member", {
-        operation: "updateMember",
-        memberId: parsed.id!,
-      });
+      logger.info(
+        "No changes detected in updateMember; returning existing member",
+        {
+          operation: "updateMember",
+          memberId: parsed.id!,
+        }
+      );
       return existingMember;
     }
 
-    const updatedMember = await prisma.member.update({
+    const updatedMember = await prisma.members.update({
       where: { id: parsed.id! },
       data: updateData,
     });
     return updatedMember;
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError ||
-        error instanceof Prisma.PrismaClientValidationError ||
-        error instanceof Prisma.PrismaClientInitializationError
-      ) {
-        throw handlePrismaError(error);
-      }
-      throw error;
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError ||
+      error instanceof Prisma.PrismaClientValidationError ||
+      error instanceof Prisma.PrismaClientInitializationError
+    ) {
+      throw handlePrismaError(error);
     }
+    throw error;
   }
+}
 
 // ============ DELETE OPERATIONS ============
 
 // Delete a member by ID
 export async function deleteMember(id: string) {
   try {
+    const prisma = await getTenantPrisma();
+
     // Check if member exists
-    const existingMember = await prisma.member.findUnique({
+    const existingMember = await prisma.members.findUnique({
       where: { id },
     });
 
@@ -336,7 +355,7 @@ export async function deleteMember(id: string) {
       throw new Error("Member not found");
     }
 
-    await prisma.member.delete({
+    await prisma.members.delete({
       where: { id },
     });
 
@@ -353,9 +372,11 @@ export async function deleteMember(id: string) {
 // Soft delete a member (mark as inactive instead of deleting)
 export async function deactivateMember(id: string) {
   try {
+    const prisma = await getTenantPrisma();
+
     // Note: This requires adding an 'active' field to your schema
     // For now, we'll add it to notes as a workaround
-    const updatedMember = await prisma.member.update({
+    const updatedMember = await prisma.members.update({
       where: { id },
       data: {
         notes: `DEACTIVATED: ${new Date().toISOString()}`,
@@ -374,13 +395,14 @@ export async function deactivateMember(id: string) {
 // Check if email is already taken
 export async function isEmailTaken(email: string, excludeId?: string) {
   try {
-    const whereClause: Prisma.MemberWhereInput = { email };
+    const prisma = await getTenantPrisma();
+    const whereClause: Prisma.MembersWhereInput = { email };
 
     if (excludeId) {
       whereClause.id = { not: excludeId };
     }
 
-    const existingMember = await prisma.member.findFirst({
+    const existingMember = await prisma.members.findFirst({
       where: whereClause,
     });
 
@@ -394,13 +416,15 @@ export async function isEmailTaken(email: string, excludeId?: string) {
 // Get member statistics
 export async function getMemberStats() {
   try {
+    const prisma = await getTenantPrisma();
+
     const [total, byRole, byGender] = await Promise.all([
-      prisma.member.count(),
-      prisma.member.groupBy({
+      prisma.members.count(),
+      prisma.members.groupBy({
         by: ["role"],
         _count: { role: true },
       }),
-      prisma.member.groupBy({
+      prisma.members.groupBy({
         by: ["gender"],
         _count: { gender: true },
       }),

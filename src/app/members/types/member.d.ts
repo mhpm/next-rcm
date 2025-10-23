@@ -1,7 +1,14 @@
 // Prisma-generated enums
-import type { Member as PrismaMember, MemberRole, Gender } from '@prisma/client';
+import type { Member as PrismaMember, MemberRole, Gender, Ministry, MemberMinistry } from '@prisma/client';
 export type Member = PrismaMember;
 export type { MemberRole, Gender };
+
+// Member with ministries relationship
+export type MemberWithMinistries = Member & {
+  ministries: (MemberMinistry & {
+    ministry: Ministry;
+  })[];
+};
 
 // Main Member interface matching Prisma schema
 // `Member` ahora es un alias del tipo generado por Prisma
@@ -23,7 +30,6 @@ export interface MemberFormData {
   baptismDate?: Date;
   role: MemberRole;
   gender: Gender;
-  ministerio?: string;
   notes?: string;
   skills?: string[];
   password?: string;

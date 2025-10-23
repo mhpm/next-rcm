@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useMemo, useEffect } from "react";
 import Link from "next/link";
-import { MemberFormData } from "@/app/members/types/member";
+
 import { useEmailAvailability } from "@/app/members/hooks/useMembers";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
@@ -16,14 +16,10 @@ import {
   ImageUploadField,
 } from "@/components/FormControls";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertMemberFormSchema } from "@/lib/validator";
+import { insertMemberFormSchema, InsertMemberFormSchema } from "@/lib/validator";
 
-// 1. Definimos el tipo FormValues basado en MemberFormData pero con fechas como strings
-type FormValues = Omit<MemberFormData, "birthDate" | "baptismDate"> & {
-  id?: string;
-  birthDate?: string;
-  baptismDate?: string;
-};
+// Usamos el tipo inferido del esquema de validación
+type FormValues = InsertMemberFormSchema;
 
 // 2. Actualizamos la interfaz para usar FormValues
 interface MemberFormProps {
@@ -169,7 +165,6 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                       value: 120,
                       message: "La edad debe ser menor a 120",
                     },
-                    valueAsNumber: true,
                   }}
                   error={errors.age?.message}
                 />
@@ -227,6 +222,11 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   label="Código Postal"
                   register={register}
                 />
+                <InputField<FormValues>
+                  name="country"
+                  label="País"
+                  register={register}
+                />
               </div>
             </div>
           </div>
@@ -249,7 +249,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           {/* Role & Ministerio */}
           <div className="card bg-base-100 shadow-sm">
             <div className="card-body">
-              <h2 className="card-title mb-4">Rol & Ministerio</h2>
+              <h2 className="card-title mb-4">Rol</h2>
               <SelectField<FormValues>
                 name="role"
                 label="Rol"
@@ -261,13 +261,16 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   { value: "SUPERVISOR", label: "Supervisor" },
                   { value: "LIDER", label: "Líder" },
                   { value: "ANFITRION", label: "Anfitrión" },
+                  { value: "PASTOR", label: "Pastor" },
+                  { value: "TESORERO", label: "Tesorero" },
                 ]}
               />
-              <InputField<FormValues>
-                name="ministerio"
-                label="Ministerio"
+              {/* TODO: Implement ministries selection with proper many-to-many relationship */}
+              {/* <InputField<FormValues>
+                name="ministries"
+                label="Ministerios"
                 register={register}
-              />
+              /> */}
             </div>
           </div>
 
