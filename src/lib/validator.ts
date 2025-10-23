@@ -185,27 +185,53 @@ export const memberSearchSchema = z.object({
 // Form-specific schema for client-side validation (dates as strings)
 export const insertMemberFormSchema = memberSchema
   // Avoid overriding existing keys with safeExtend; omit then add back as strings
-  .omit({ birthDate: true, baptismDate: true })
+  .omit({ birthDate: true, baptismDate: true, age: true, gender: true })
   .safeExtend({
     birthDate: z
-      .string()
+      .union([z.string(), z.date()])
       .optional()
-      .refine((val) => !val || !isNaN(Date.parse(val)), {
-        message: "Formato de fecha inválido",
+      .transform((val) => {
+        if (!val) return undefined;
+        if (val instanceof Date) return val;
+        const parsed = new Date(val);
+        return isNaN(parsed.getTime()) ? undefined : parsed;
       })
-      .refine((val) => !val || new Date(val) <= new Date(), {
+      .refine((val) => !val || val <= new Date(), {
         message: "La fecha de nacimiento no puede ser futura",
       }),
 
     baptismDate: z
-      .string()
+      .union([z.string(), z.date()])
       .optional()
-      .refine((val) => !val || !isNaN(Date.parse(val)), {
-        message: "Formato de fecha inválido",
+      .transform((val) => {
+        if (!val) return undefined;
+        if (val instanceof Date) return val;
+        const parsed = new Date(val);
+        return isNaN(parsed.getTime()) ? undefined : parsed;
       })
-      .refine((val) => !val || new Date(val) <= new Date(), {
+      .refine((val) => !val || val <= new Date(), {
         message: "La fecha de bautismo no puede ser futura",
       }),
+
+    age: z
+      .union([z.string(), z.number()])
+      .optional()
+      .transform((val) => {
+        if (val === "" || val === undefined || val === null) return undefined;
+        const num = typeof val === "string" ? parseInt(val, 10) : val;
+        return isNaN(num) ? undefined : num;
+      })
+      .refine((val) => val === undefined || (val >= 1 && val <= 120), {
+        message: "La edad debe estar entre 1 y 120 años",
+      }),
+
+    gender: z
+      .union([z.string(), z.enum(["MASCULINO", "FEMENINO"])])
+      .refine((val) => val !== "undefined" && val !== "" && val !== undefined, {
+        message: "El género es requerido",
+      })
+      .transform((val) => val as "MASCULINO" | "FEMENINO")
+      .pipe(GenderSchema),
   })
   // Ensure password confirmation matches when either field is provided
   .refine(
@@ -224,9 +250,8 @@ export const insertMemberFormSchema = memberSchema
     (data) => {
       // Custom validation: baptism date should be after birth date
       if (data.birthDate && data.baptismDate) {
-        const birthDate = new Date(data.birthDate);
-        const baptismDate = new Date(data.baptismDate);
-        return baptismDate >= birthDate;
+        // Both dates are already Date objects after transformation
+        return data.baptismDate >= data.birthDate;
       }
       return true;
     },

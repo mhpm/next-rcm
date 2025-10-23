@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
-import { useTenant } from '@/hooks/useTenant';
-import { getAllChurches, type Church } from '@/app/churches/actions/churches.actions';
+import { useEffect, useState, useRef } from "react";
+import { useTenant } from "@/hooks/useTenant";
+import {
+  getAllChurches,
+  type Church,
+} from "@/app/churches/actions/churches.actions";
 
 interface TenantSwitcherProps {
   className?: string;
 }
 
-export function TenantSwitcher({ className = '' }: TenantSwitcherProps) {
+export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
   const { currentChurch, setChurch, clearChurch, isLoading } = useTenant();
   const [churches, setChurches] = useState<Church[]>([]);
   const [loadingChurches, setLoadingChurches] = useState(true);
@@ -21,7 +24,7 @@ export function TenantSwitcher({ className = '' }: TenantSwitcherProps) {
         const churchesData = await getAllChurches();
         setChurches(churchesData);
       } catch (error) {
-        console.error('Error loading churches:', error);
+        console.error("Error loading churches:", error);
         setChurches([]);
       } finally {
         setLoadingChurches(false);
@@ -39,36 +42,38 @@ export function TenantSwitcher({ className = '' }: TenantSwitcherProps) {
         createdAt: church.createdAt.toISOString(),
         updatedAt: church.updatedAt.toISOString(),
       };
-      
+
       await setChurch(churchForStore);
-      
+
       // Cerrar el dropdown
       if (detailsRef.current) {
         detailsRef.current.open = false;
       }
-      
+
       // Forzar recarga de datos en lugar de recargar toda la página
-      window.dispatchEvent(new CustomEvent('tenantChanged', { 
-        detail: { church: churchForStore } 
-      }));
+      window.dispatchEvent(
+        new CustomEvent("tenantChanged", {
+          detail: { church: churchForStore },
+        })
+      );
     } catch (error) {
-      console.error('Error changing tenant:', error);
+      console.error("Error changing tenant:", error);
     }
   };
 
   const handleClearTenant = async () => {
     try {
       await clearChurch();
-      
+
       // Cerrar el dropdown
       if (detailsRef.current) {
         detailsRef.current.open = false;
       }
-      
+
       // Disparar evento de cambio de tenant
-      window.dispatchEvent(new CustomEvent('tenantCleared'));
+      window.dispatchEvent(new CustomEvent("tenantCleared"));
     } catch (error) {
-      console.error('Error clearing tenant:', error);
+      console.error("Error clearing tenant:", error);
     }
   };
 
@@ -78,11 +83,21 @@ export function TenantSwitcher({ className = '' }: TenantSwitcherProps) {
   }
 
   return (
-    <details className={`dropdown ${className}`} ref={detailsRef}>
-      <summary className={`btn btn-sm m-1 flex items-center gap-2 ${isLoading || loadingChurches ? 'btn-disabled' : ''}`}>
-        <span className={`w-2 h-2 rounded-full ${currentChurch ? 'bg-success' : 'bg-base-300'}`}></span>
+    <details className={`dropdown dropdown-end ${className}`} ref={detailsRef}>
+      <summary
+        className={`btn btn-sm m-1 flex items-center gap-2 ${
+          isLoading || loadingChurches ? "btn-disabled" : ""
+        }`}
+      >
+        <span
+          className={`w-2 h-2 rounded-full ${
+            currentChurch ? "bg-success" : "bg-base-300"
+          }`}
+        ></span>
         <span className="font-medium">
-          {loadingChurches ? 'Cargando...' : (currentChurch?.name || 'Seleccionar Iglesia')}
+          {loadingChurches
+            ? "Cargando..."
+            : currentChurch?.name || "Seleccionar Iglesia"}
         </span>
         <svg
           className="w-4 h-4"
@@ -90,10 +105,15 @@ export function TenantSwitcher({ className = '' }: TenantSwitcherProps) {
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </summary>
-      
+
       <ul className="menu dropdown-content bg-base-100 rounded-box z-[1] w-64 p-2 shadow-lg border border-base-300">
         {/* Header */}
         <li className="menu-title">
@@ -101,7 +121,7 @@ export function TenantSwitcher({ className = '' }: TenantSwitcherProps) {
             Seleccionar Iglesia
           </span>
         </li>
-        
+
         {/* Content */}
         {loadingChurches ? (
           <li>
@@ -122,13 +142,17 @@ export function TenantSwitcher({ className = '' }: TenantSwitcherProps) {
                 onClick={() => handleTenantChange(church)}
                 className={`flex items-center gap-2 ${
                   currentChurch?.slug === church.slug
-                    ? 'active bg-primary text-primary-content'
-                    : ''
+                    ? "active bg-primary text-primary-content"
+                    : ""
                 }`}
               >
-                <span className={`w-2 h-2 rounded-full ${
-                  currentChurch?.slug === church.slug ? 'bg-primary-content' : 'bg-base-300'
-                }`}></span>
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    currentChurch?.slug === church.slug
+                      ? "bg-primary-content"
+                      : "bg-base-300"
+                  }`}
+                ></span>
                 <div className="flex flex-col items-start">
                   <div className="font-medium">{church.name}</div>
                   <div className="text-xs opacity-60">{church.slug}</div>
@@ -137,10 +161,12 @@ export function TenantSwitcher({ className = '' }: TenantSwitcherProps) {
             </li>
           ))
         )}
-        
+
         {/* Divider */}
-        <li><hr className="my-1" /></li>
-        
+        <li>
+          <hr className="my-1" />
+        </li>
+
         {/* Clear Selection */}
         <li>
           <button
@@ -151,11 +177,14 @@ export function TenantSwitcher({ className = '' }: TenantSwitcherProps) {
             <span>Limpiar Selección</span>
           </button>
         </li>
-        
+
         {/* Footer */}
         <li className="menu-title mt-2">
           <span className="text-xs text-base-content/40">
-            Actual: <span className="font-mono">{currentChurch?.slug || 'ninguno'}</span>
+            Actual:{" "}
+            <span className="font-mono">
+              {currentChurch?.slug || "ninguno"}
+            </span>
           </span>
         </li>
       </ul>

@@ -10,7 +10,7 @@ import {
   NotFoundError,
 } from "@/lib/error-handler";
 import { processImageUpload } from "@/lib/file-upload";
-import { memberSchema, updateMemberSchema } from "@/lib/validator";
+import { memberSchema, updateMemberSchema, insertMemberFormSchema } from "@/lib/validator";
 import { getTenantPrisma, getChurchId } from "@/actions/tenantActions";
 
 // Get all members with optional filtering and pagination
@@ -147,21 +147,15 @@ export const createMember = withErrorHandling(async function createMember(
   data: MemberFormData
 ) {
   try {
-    // Normalize possible string dates coming from client before Zod parsing
-    const normalized: MemberFormData = {
-      ...data,
-      birthDate:
-        typeof data.birthDate === "string"
-          ? new Date(data.birthDate)
-          : data.birthDate,
-      baptismDate:
-        typeof data.baptismDate === "string"
-          ? new Date(data.baptismDate)
-          : data.baptismDate,
-    } as MemberFormData;
-
-    // Validate and normalize payload with Zod
-    const parsed = memberSchema.parse(normalized);
+    // Debug: Log incoming data
+    console.log("🚀 ~ createMember ~ incoming data:", JSON.stringify(data, null, 2));
+    
+    // Validate and normalize payload with Zod (using form schema for proper data transformation)
+    // The insertMemberFormSchema handles string-to-date conversion and age string-to-number conversion
+    const parsed = insertMemberFormSchema.parse(data);
+    
+    // Debug: Log parsed data
+    console.log("🚀 ~ createMember ~ parsed data:", JSON.stringify(parsed, null, 2));
     // Hash password if provided
     let passwordHash = null;
     if (parsed.password) {
@@ -188,7 +182,6 @@ export const createMember = withErrorHandling(async function createMember(
 
     // Prepare member data with explicit church_id
     const memberData = {
-      id: generateUUID(),
       firstName: parsed.firstName,
       lastName: parsed.lastName,
       email: parsed.email,
@@ -198,18 +191,32 @@ export const createMember = withErrorHandling(async function createMember(
       city: parsed.city || null,
       state: parsed.state || null,
       zip: parsed.zip || null,
-      country: parsed.country || null,
+      ...(parsed.country && { country: parsed.country }),
       birthDate: parsed.birthDate || null,
       baptismDate: parsed.baptismDate || null,
       role: parsed.role,
       gender: parsed.gender,
       // ministerio: parsed.ministerio || "", // Removed - will be handled via MemberMinistry relation
       notes: parsed.notes || null,
-      skills: parsed.skills || [],
+      ...(parsed.skills && parsed.skills.length > 0 && { skills: parsed.skills }),
       passwordHash,
       pictureUrl, // Now includes the uploaded image URL
-      church_id: churchId, // Explicitly add church_id
+      church: {
+        connect: {
+          id: churchId
+        }
+      }
     };
+
+    // Debug logging para identificar el problema
+    console.log("=== DEBUG: Datos que se envían a Prisma ===");
+    console.log("memberData:", JSON.stringify(memberData, null, 2));
+    console.log("churchId:", churchId);
+    console.log("=== TIPOS DE DATOS ===");
+    Object.entries(memberData).forEach(([key, value]) => {
+      console.log(`${key}: ${typeof value} = ${value}`);
+    });
+    console.log("=== FIN DEBUG ===");
 
     const member = await prisma.members.create({
       data: memberData,

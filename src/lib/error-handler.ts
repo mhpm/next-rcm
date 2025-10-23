@@ -1,4 +1,4 @@
-import { logger } from './logger';
+import { logger } from "./logger";
 
 export interface ErrorResponse {
   success: false;
@@ -47,36 +47,39 @@ export class AppError extends Error {
 // Errores específicos de la aplicación
 export class ValidationError extends AppError {
   constructor(message: string, details?: unknown) {
-    super(message, 400, 'VALIDATION_ERROR', details);
+    super(message, 400, "VALIDATION_ERROR", details);
   }
 }
 
 export class NotFoundError extends AppError {
-  constructor(message: string = 'Recurso no encontrado') {
-    super(message, 404, 'NOT_FOUND');
+  constructor(message: string = "Recurso no encontrado") {
+    super(message, 404, "NOT_FOUND");
   }
 }
 
 export class ConflictError extends AppError {
   constructor(message: string, details?: unknown) {
-    super(message, 409, 'CONFLICT', details);
+    super(message, 409, "CONFLICT", details);
   }
 }
 
 export class DatabaseError extends AppError {
   constructor(message: string, details?: unknown) {
-    super(message, 500, 'DATABASE_ERROR', details);
+    super(message, 500, "DATABASE_ERROR", details);
   }
 }
 
 // Función para manejar errores de manera consistente
-export function handleError(error: unknown, context?: Record<string, unknown>): ErrorResponse {
+export function handleError(
+  error: unknown,
+  context?: Record<string, unknown>
+): ErrorResponse {
   const timestamp = new Date().toISOString();
-  const showDetailedErrors = process.env.SHOW_DETAILED_ERRORS === 'true';
-  const isDevelopment = process.env.NODE_ENV === 'development';
-  
+  const showDetailedErrors = process.env.SHOW_DETAILED_ERRORS === "true";
+  const isDevelopment = process.env.NODE_ENV === "development";
+
   // Log del error
-  logger.error('Error handled by error handler', error as Error, context);
+  logger.error("Error handled by error handler", error as Error, context);
 
   // Si es un error de aplicación conocido
   if (error instanceof AppError) {
@@ -85,7 +88,8 @@ export function handleError(error: unknown, context?: Record<string, unknown>): 
       error: {
         message: error.message,
         code: error.code,
-        details: (isDevelopment || showDetailedErrors) ? error.details : undefined,
+        details:
+          isDevelopment || showDetailedErrors ? error.details : undefined,
       },
       timestamp,
     };
@@ -99,7 +103,7 @@ export function handleError(error: unknown, context?: Record<string, unknown>): 
         success: false,
         error: {
           message: error.message,
-          code: 'INTERNAL_ERROR',
+          code: "INTERNAL_ERROR",
           details: {
             stack: error.stack,
             name: error.name,
@@ -113,15 +117,16 @@ export function handleError(error: unknown, context?: Record<string, unknown>): 
     return {
       success: false,
       error: {
-        message: 'Ha ocurrido un error interno. Por favor, intenta de nuevo más tarde.',
-        code: 'INTERNAL_ERROR',
+        message:
+          "Ha ocurrido un error interno. Por favor, intenta de nuevo más tarde.",
+        code: "INTERNAL_ERROR",
       },
       timestamp,
     };
   }
 
   // Error desconocido
-  logger.error('Unknown error type', new Error('Unknown error'), {
+  logger.error("Unknown error type", new Error("Unknown error"), {
     errorValue: error,
     errorType: typeof error,
     ...context,
@@ -130,8 +135,9 @@ export function handleError(error: unknown, context?: Record<string, unknown>): 
   return {
     success: false,
     error: {
-      message: 'Ha ocurrido un error inesperado. Por favor, intenta de nuevo más tarde.',
-      code: 'UNKNOWN_ERROR',
+      message:
+        "Ha ocurrido un error inesperado. Por favor, intenta de nuevo más tarde.",
+      code: "UNKNOWN_ERROR",
     },
     timestamp,
   };
@@ -156,7 +162,7 @@ export function withErrorHandling<T extends unknown[], R>(
     } catch (error) {
       // Re-lanzar el error para que sea manejado por el caller
       // pero asegurándonos de que esté loggeado
-      logger.error('Error in wrapped function', error as Error, {
+      logger.error("Error in wrapped function", error as Error, {
         functionName: fn.name,
         arguments: args,
       });
@@ -169,38 +175,52 @@ export function withErrorHandling<T extends unknown[], R>(
 export function handlePrismaError(error: unknown): AppError {
   // Importar Prisma dinámicamente para evitar problemas de dependencias
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { Prisma } = require('@prisma/client');
+  const { Prisma } = require("@prisma/client");
 
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    const prismaError = error as typeof Prisma.PrismaClientKnownRequestError.prototype;
+    const prismaError =
+      error as typeof Prisma.PrismaClientKnownRequestError.prototype;
     switch (prismaError.code) {
-      case 'P2002':
+      case "P2002":
         const target = prismaError.meta?.target as string[];
-        if (target?.includes('email')) {
-          return new ConflictError('Ya existe un registro con este email');
+        if (target?.includes("email")) {
+          return new ConflictError("Ya existe un registro con este email");
         }
-        return new ConflictError('Ya existe un registro con estos datos');
-      
-      case 'P2003':
-        return new ValidationError('Error de referencia: El registro relacionado no existe');
-      
-      case 'P2025':
-        return new NotFoundError('El registro solicitado no fue encontrado');
-      
+        return new ConflictError("Ya existe un registro con estos datos");
+
+      case "P2003":
+        return new ValidationError(
+          "Error de referencia: El registro relacionado no existe"
+        );
+
+      case "P2025":
+        return new NotFoundError("El registro solicitado no fue encontrado");
+
       default:
-        return new DatabaseError(`Error de base de datos: ${prismaError.message}`);
+        return new DatabaseError(
+          `Error de base de datos: ${prismaError.message}`
+        );
     }
   }
 
   if (error instanceof Prisma.PrismaClientValidationError) {
-    return new ValidationError('Los datos proporcionados no son válidos');
+    console.log("=== PRISMA VALIDATION ERROR DETAILS ===");
+    console.log("Error message:", (error as Error).message);
+    console.log("Error stack:", (error as Error).stack);
+    console.log("=== END PRISMA ERROR DETAILS ===");
+    return new ValidationError(
+      `Los datos proporcionados no son válidos: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
   }
 
   if (error instanceof Prisma.PrismaClientInitializationError) {
-    return new DatabaseError('Error de conexión con la base de datos');
+    return new DatabaseError("Error de conexión con la base de datos");
   }
 
   // Si no es un error de Prisma conocido, devolver error genérico
-  const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+  const errorMessage =
+    error instanceof Error ? error.message : "Error desconocido";
   return new AppError(errorMessage, 500);
 }
