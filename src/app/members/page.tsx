@@ -11,7 +11,7 @@ import { useColumnVisibilityStore } from "@/components/ColumnVisibilityDropdown"
 import { Modal } from "@/components/Modal/Modal";
 import { useDeleteMember } from "@/app/members/hooks/useMembers";
 import { useNotificationStore } from "@/store/NotificationStore";
-import { Ministries } from "@prisma/client";
+
 
 // Tipo para los datos transformados de la tabla
 type MemberTableData = Omit<

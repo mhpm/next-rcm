@@ -30,6 +30,7 @@ export interface MemberFormData {
   baptismDate?: Date;
   role: MemberRole;
   gender: Gender;
+  pictureUrl?: string | null; // URL of uploaded picture
   notes?: string;
   skills?: string[];
   password?: string;

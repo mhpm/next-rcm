@@ -8,12 +8,10 @@ import { MemberFormData } from '@/app/members/types/member';
 import { MemberRole, Gender } from '@prisma/client';
 import { useCreateMember } from '@/app/members/hooks/useMembers';
 import { useNotificationStore } from '@/store/NotificationStore';
+import { MemberFormInput } from '@/lib/validator';
 
 // FormValues type to match MemberForm component exactly
-type FormValues = Omit<MemberFormData, 'birthDate' | 'baptismDate'> & {
-  birthDate?: string;
-  baptismDate?: string;
-};
+type FormValues = MemberFormInput;
 
 export default function NewMemberPage() {
   const router = useRouter();
@@ -28,7 +26,7 @@ export default function NewMemberPage() {
     lastName: formData.lastName,
     email: formData.email,
     phone: formData.phone || undefined,
-    age: formData.age || undefined,
+    age: typeof formData.age === 'string' ? parseInt(formData.age, 10) || undefined : formData.age || undefined,
     street: formData.street || undefined,
     city: formData.city || undefined,
     state: formData.state || undefined,

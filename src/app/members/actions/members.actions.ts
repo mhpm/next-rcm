@@ -1,7 +1,6 @@
 "use server";
 import { Prisma, MemberRole } from "@prisma/client";
 import { MemberFormData } from "@/types";
-import { generateUUID } from "@/lib/uuid";
 import * as bcrypt from "bcryptjs";
 import { logger } from "@/lib/logger";
 import {
@@ -10,7 +9,7 @@ import {
   NotFoundError,
 } from "@/lib/error-handler";
 import { processImageUpload } from "@/lib/file-upload";
-import { memberSchema, updateMemberSchema, insertMemberFormSchema } from "@/lib/validator";
+import { updateMemberSchema, insertMemberFormSchema } from "@/lib/validator";
 import { getTenantPrisma, getChurchId } from "@/actions/tenantActions";
 
 // Get all members with optional filtering and pagination
@@ -125,6 +124,7 @@ export async function getMemberBy(field: string, value: unknown) {
 export async function getMemberById(id: string) {
   try {
     const prisma = await getTenantPrisma();
+
     const member = await prisma.members.findUnique({
       where: { id },
     });
@@ -208,15 +208,7 @@ export const createMember = withErrorHandling(async function createMember(
       }
     };
 
-    // Debug logging para identificar el problema
-    console.log("=== DEBUG: Datos que se envían a Prisma ===");
-    console.log("memberData:", JSON.stringify(memberData, null, 2));
-    console.log("churchId:", churchId);
-    console.log("=== TIPOS DE DATOS ===");
-    Object.entries(memberData).forEach(([key, value]) => {
-      console.log(`${key}: ${typeof value} = ${value}`);
-    });
-    console.log("=== FIN DEBUG ===");
+
 
     const member = await prisma.members.create({
       data: memberData,
@@ -288,8 +280,8 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
     if (parsed.city !== undefined) updateData.city = parsed.city || null;
     if (parsed.state !== undefined) updateData.state = parsed.state || null;
     if (parsed.zip !== undefined) updateData.zip = parsed.zip || null;
-    if (parsed.country !== undefined)
-      updateData.country = parsed.country || null;
+    if (parsed.country !== undefined && parsed.country)
+      updateData.country = parsed.country;
     // if (parsed.ministerio !== undefined)
     //   updateData.ministerio = parsed.ministerio || ""; // Removed - will be handled via MemberMinistry relation
     if (parsed.notes !== undefined) updateData.notes = parsed.notes || null;
@@ -309,8 +301,8 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
     if (parsed.gender !== undefined) updateData.gender = parsed.gender;
 
     // Arrays
-    if (parsed.skills !== undefined)
-      updateData.skills = Array.isArray(parsed.skills) ? parsed.skills : [];
+    if (parsed.skills !== undefined && Array.isArray(parsed.skills) && parsed.skills.length > 0)
+      updateData.skills = parsed.skills;
 
     // Password
     if (parsed.password) {

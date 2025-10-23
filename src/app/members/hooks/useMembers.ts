@@ -91,7 +91,8 @@ const fetchMember = async (id: string): Promise<Member> => {
     const member = await getMemberById(id);
     return member;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Error desconocido al obtener miembro');
+    console.error('Error fetching member:', error);
+    throw error;
   }
 };
 

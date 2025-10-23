@@ -16,10 +16,10 @@ import {
   ImageUploadField,
 } from "@/components/FormControls";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertMemberFormSchema, InsertMemberFormSchema } from "@/lib/validator";
+import { memberFormSchema, MemberFormInput } from "@/lib/validator";
 
-// Usamos el tipo inferido del esquema de validación
-type FormValues = InsertMemberFormSchema;
+// Usamos el tipo de entrada del esquema (antes de transformaciones)
+export type FormValues = MemberFormInput;
 
 // 2. Actualizamos la interfaz para usar FormValues
 interface MemberFormProps {
@@ -47,7 +47,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     defaultValues: initialData,
     mode: "onChange",
     reValidateMode: "onChange",
-    resolver: zodResolver(insertMemberFormSchema),
+    resolver: zodResolver(memberFormSchema),
   });
 
   const password = watch("password");
@@ -91,6 +91,11 @@ export const MemberForm: React.FC<MemberFormProps> = ({
       return "error";
     }
 
+    // En modo edición, si el email es el mismo que el original, no mostrar validación
+    if (isEditMode && initialData?.email && debouncedEmail === initialData.email) {
+      return null;
+    }
+
     if (isEmailAvailable === true) {
       return "available";
     }
@@ -100,7 +105,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     }
 
     return null;
-  }, [debouncedEmail, isCheckingEmail, emailCheckError, isEmailAvailable]);
+  }, [debouncedEmail, isCheckingEmail, emailCheckError, isEmailAvailable, isEditMode, initialData?.email]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -138,6 +143,12 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     },
                     validate: (value) => {
                       if (!value) return true;
+                      
+                      // En modo edición, si el email es el mismo que el original, no validar
+                      if (isEditMode && initialData?.email && value === initialData.email) {
+                        return true;
+                      }
+                      
                       if (emailValidationStatus === "taken") {
                         return "Este correo ya está en uso";
                       }
@@ -158,14 +169,6 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   label="Edad"
                   type="number"
                   register={register}
-                  rules={{
-                    required: "La edad es requerida",
-                    min: { value: 1, message: "La edad debe ser mayor a 0" },
-                    max: {
-                      value: 120,
-                      message: "La edad debe ser menor a 120",
-                    },
-                  }}
                   error={errors.age?.message}
                 />
                 <InputField<FormValues>
@@ -241,7 +244,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
               <ImageUploadField<FormValues>
                 name="picture"
                 control={control}
-                label=""
+                label="Foto del miembro"
               />
             </div>
           </div>
