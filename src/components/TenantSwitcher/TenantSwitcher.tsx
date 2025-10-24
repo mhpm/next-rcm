@@ -142,14 +142,14 @@ export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
                 onClick={() => handleTenantChange(church)}
                 className={`flex items-center gap-2 ${
                   currentChurch?.slug === church.slug
-                    ? "active bg-primary text-primary-content"
+                    ? "active text-primary-content"
                     : ""
                 }`}
               >
                 <span
                   className={`w-2 h-2 rounded-full ${
                     currentChurch?.slug === church.slug
-                      ? "bg-primary-content"
+                      ? "bg-success"
                       : "bg-base-300"
                   }`}
                 ></span>

@@ -11,7 +11,7 @@ export const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
 
   return (
-    <div className="navbar bg-base-300 px-4 shadow">
+    <div className="navbar bg-base-100 px-4 shadow">
       <div className="flex-none">
         <button
           className="btn btn-ghost btn-square"

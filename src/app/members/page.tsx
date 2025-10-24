@@ -12,7 +12,6 @@ import { Modal } from "@/components/Modal/Modal";
 import { useDeleteMember } from "@/app/members/hooks/useMembers";
 import { useNotificationStore } from "@/store/NotificationStore";
 
-
 // Tipo para los datos transformados de la tabla
 type MemberTableData = Omit<
   MemberWithMinistries,
@@ -314,7 +313,6 @@ export default function MembersPage() {
         selectable
         pagination={true}
         itemsPerPage={10}
-        className="bg-base-100 rounded-lg shadow-sm"
         addButton={addButtonConfig}
         // Props para visibilidad de columnas
         allColumns={allColumns}

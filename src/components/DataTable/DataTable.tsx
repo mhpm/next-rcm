@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from "react";
 import {
   RiSearchLine,
   RiEyeLine,
@@ -11,24 +11,24 @@ import {
   RiAddLine,
   RiArrowUpSLine,
   RiArrowDownSLine,
-} from 'react-icons/ri';
-import { DataTableProps, PaginationInfo } from '@/types';
-import { ColumnVisibilityDropdown } from '../ColumnVisibilityDropdown';
+} from "react-icons/ri";
+import { DataTableProps, PaginationInfo } from "@/types";
+import { ColumnVisibilityDropdown } from "../ColumnVisibilityDropdown";
 
 function DataTable<T extends Record<string, unknown>>({
   data,
-  title = '',
-  subTitle = '',
+  title = "",
+  subTitle = "",
   columns,
   actions = [],
   searchable = true,
-  searchPlaceholder = 'Buscar...',
+  searchPlaceholder = "Buscar...",
   selectable = true,
   pagination = true,
   itemsPerPage = 10,
   loading = false,
-  emptyMessage = 'No data available',
-  className = '',
+  emptyMessage = "No data available",
+  className = "",
   onSelectionChange,
   addButton,
   // Props para visibilidad de columnas
@@ -39,39 +39,39 @@ function DataTable<T extends Record<string, unknown>>({
   onHideAllColumns,
   showColumnVisibility = false,
 }: DataTableProps<T>) {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [itemsPerPageState, setItemsPerPageState] = useState(itemsPerPage);
-  
+
   // Sorting state
   const [sortConfig, setSortConfig] = useState<{
     key: keyof T | null;
-    direction: 'asc' | 'desc';
+    direction: "asc" | "desc";
   }>({
     key: null,
-    direction: 'asc',
+    direction: "asc",
   });
 
   // Handle sorting
   const handleSort = (columnKey: keyof T) => {
-    const column = columns.find(col => col.key === columnKey);
+    const column = columns.find((col) => col.key === columnKey);
     if (!column?.sortable) return;
 
-    setSortConfig(prevConfig => {
+    setSortConfig((prevConfig) => {
       if (prevConfig.key === columnKey) {
         return {
           key: columnKey,
-          direction: prevConfig.direction === 'asc' ? 'desc' : 'asc',
+          direction: prevConfig.direction === "asc" ? "desc" : "asc",
         };
       } else {
         return {
           key: columnKey,
-          direction: 'asc',
+          direction: "asc",
         };
       }
     });
-    
+
     // Reset to first page when sorting
     setCurrentPage(1);
   };
@@ -86,31 +86,33 @@ function DataTable<T extends Record<string, unknown>>({
 
       // Handle null/undefined values
       if (aValue == null && bValue == null) return 0;
-      if (aValue == null) return sortConfig.direction === 'asc' ? 1 : -1;
-      if (bValue == null) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue == null) return sortConfig.direction === "asc" ? 1 : -1;
+      if (bValue == null) return sortConfig.direction === "asc" ? -1 : 1;
 
       // Handle different data types
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        const comparison = aValue.toLowerCase().localeCompare(bValue.toLowerCase());
-        return sortConfig.direction === 'asc' ? comparison : -comparison;
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        const comparison = aValue
+          .toLowerCase()
+          .localeCompare(bValue.toLowerCase());
+        return sortConfig.direction === "asc" ? comparison : -comparison;
       }
 
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
+      if (typeof aValue === "number" && typeof bValue === "number") {
         const comparison = aValue - bValue;
-        return sortConfig.direction === 'asc' ? comparison : -comparison;
+        return sortConfig.direction === "asc" ? comparison : -comparison;
       }
 
       // Handle dates
       if (aValue instanceof Date && bValue instanceof Date) {
         const comparison = aValue.getTime() - bValue.getTime();
-        return sortConfig.direction === 'asc' ? comparison : -comparison;
+        return sortConfig.direction === "asc" ? comparison : -comparison;
       }
 
       // Convert to string for comparison as fallback
       const aStr = String(aValue).toLowerCase();
       const bStr = String(bValue).toLowerCase();
       const comparison = aStr.localeCompare(bStr);
-      return sortConfig.direction === 'asc' ? comparison : -comparison;
+      return sortConfig.direction === "asc" ? comparison : -comparison;
     });
   }, [data, sortConfig]);
 
@@ -121,10 +123,10 @@ function DataTable<T extends Record<string, unknown>>({
     return sortedData.filter((item) => {
       return columns.some((column) => {
         const value = item[column.key];
-        if (typeof value === 'string') {
+        if (typeof value === "string") {
           return value.toLowerCase().includes(searchTerm.toLowerCase());
         }
-        if (typeof value === 'object' && value !== null) {
+        if (typeof value === "object" && value !== null) {
           return JSON.stringify(value)
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
@@ -136,11 +138,11 @@ function DataTable<T extends Record<string, unknown>>({
 
   // Get sort icon for column
   const getSortIcon = (columnKey: keyof T) => {
-    const column = columns.find(col => col.key === columnKey);
+    const column = columns.find((col) => col.key === columnKey);
     if (!column?.sortable) return null;
 
     if (sortConfig.key === columnKey) {
-      return sortConfig.direction === 'asc' ? (
+      return sortConfig.direction === "asc" ? (
         <RiArrowUpSLine className="w-4 h-4 text-primary" />
       ) : (
         <RiArrowDownSLine className="w-4 h-4 text-primary" />
@@ -224,7 +226,7 @@ function DataTable<T extends Record<string, unknown>>({
       return column.render(value, row);
     }
 
-    return String(value || '');
+    return String(value || "");
   };
 
   // Handle action clicks
@@ -244,11 +246,11 @@ function DataTable<T extends Record<string, unknown>>({
 
     // Fallback icons based on label
     switch (action.label) {
-      case 'Ver':
+      case "Ver":
         return <RiEyeLine className="w-4 h-4" />;
-      case 'Editar':
+      case "Editar":
         return <RiEdit2Fill className="w-4 h-4" />;
-      case 'Eliminar':
+      case "Eliminar":
         return <RiDeleteBinLine className="w-4 h-4" />;
       default:
         return null;
@@ -269,7 +271,9 @@ function DataTable<T extends Record<string, unknown>>({
   }
 
   return (
-    <div className={`bg-base-100 rounded-lg shadow-sm ${className}`}>
+    <div
+      className={`bg-base-100 rounded-lg overflow-hidden shadow-md ${className}`}
+    >
       {/* Header */}
       <div className="p-4 sm:p-6 border-b border-base-300">
         <div className="flex flex-col gap-4">
@@ -283,28 +287,28 @@ function DataTable<T extends Record<string, unknown>>({
 
             <div className="flex items-center gap-2">
               {addButton &&
-                (typeof addButton === 'function' ? (
+                (typeof addButton === "function" ? (
                   addButton()
                 ) : (
                   <button
                     onClick={addButton.onClick}
                     className={`btn ${
-                      addButton.variant === 'primary'
-                        ? 'btn-primary'
-                        : addButton.variant === 'secondary'
-                        ? 'btn-secondary'
-                        : addButton.variant === 'success'
-                        ? 'btn-success'
-                        : addButton.variant === 'warning'
-                        ? 'btn-warning'
-                        : addButton.variant === 'info'
-                        ? 'btn-info'
-                        : addButton.variant === 'error'
-                        ? 'btn-error'
-                        : addButton.variant === 'ghost'
-                        ? 'btn-ghost'
-                        : 'btn-primary'
-                    } btn-sm ${addButton.className || ''}`}
+                      addButton.variant === "primary"
+                        ? "btn-primary"
+                        : addButton.variant === "secondary"
+                        ? "btn-secondary"
+                        : addButton.variant === "success"
+                        ? "btn-success"
+                        : addButton.variant === "warning"
+                        ? "btn-warning"
+                        : addButton.variant === "info"
+                        ? "btn-info"
+                        : addButton.variant === "error"
+                        ? "btn-error"
+                        : addButton.variant === "ghost"
+                        ? "btn-ghost"
+                        : "btn-primary"
+                    } btn-sm ${addButton.className || ""}`}
                   >
                     {addButton.icon || <RiAddLine className="w-4 h-4" />}
                     <span className="hidden sm:inline">{addButton.text}</span>
@@ -359,8 +363,8 @@ function DataTable<T extends Record<string, unknown>>({
                   key={rowId}
                   className={`card bg-base-200 shadow-sm border ${
                     isSelected
-                      ? 'border-primary bg-primary/5'
-                      : 'border-base-300'
+                      ? "border-primary bg-primary/5"
+                      : "border-base-300"
                   }`}
                 >
                   <div className="card-body p-4">
@@ -382,20 +386,20 @@ function DataTable<T extends Record<string, unknown>>({
                               key={actionIndex}
                               onClick={() => handleAction(action, row)}
                               className={`btn btn-xs ${
-                                action.variant === 'error'
-                                  ? 'btn-error'
-                                  : action.variant === 'primary'
-                                  ? 'btn-primary'
-                                  : action.variant === 'secondary'
-                                  ? 'btn-secondary'
-                                  : action.variant === 'success'
-                                  ? 'btn-success'
-                                  : action.variant === 'warning'
-                                  ? 'btn-warning'
-                                  : action.variant === 'info'
-                                  ? 'btn-info'
-                                  : 'btn-ghost'
-                              } ${action.className || ''}`}
+                                action.variant === "error"
+                                  ? "btn-error"
+                                  : action.variant === "primary"
+                                  ? "btn-primary"
+                                  : action.variant === "secondary"
+                                  ? "btn-secondary"
+                                  : action.variant === "success"
+                                  ? "btn-success"
+                                  : action.variant === "warning"
+                                  ? "btn-warning"
+                                  : action.variant === "info"
+                                  ? "btn-info"
+                                  : "btn-ghost"
+                              } ${action.className || ""}`}
                               title={action.label}
                             >
                               {getActionIcon(action)}
@@ -450,8 +454,12 @@ function DataTable<T extends Record<string, unknown>>({
                 <th
                   key={String(column.key)}
                   className={`font-semibold text-base-content ${
-                    column.className || ''
-                  } ${column.sortable ? 'cursor-pointer select-none group hover:bg-base-300/50 transition-colors' : ''}`}
+                    column.className || ""
+                  } ${
+                    column.sortable
+                      ? "cursor-pointer select-none group hover:bg-base-300/50 transition-colors"
+                      : ""
+                  }`}
                   onClick={() => column.sortable && handleSort(column.key)}
                 >
                   <div className="flex items-center justify-between">
@@ -491,7 +499,7 @@ function DataTable<T extends Record<string, unknown>>({
                 const isSelected = selectedRows.has(rowId);
 
                 return (
-                  <tr key={rowId} className={isSelected ? 'bg-primary/10' : ''}>
+                  <tr key={rowId} className={isSelected ? "bg-primary/10" : ""}>
                     {selectable && (
                       <td>
                         <input
@@ -517,20 +525,20 @@ function DataTable<T extends Record<string, unknown>>({
                               key={actionIndex}
                               onClick={() => handleAction(action, row)}
                               className={`btn btn-sm ${
-                                action.variant === 'error'
-                                  ? 'btn-error'
-                                  : action.variant === 'primary'
-                                  ? 'btn-primary'
-                                  : action.variant === 'secondary'
-                                  ? 'btn-secondary'
-                                  : action.variant === 'success'
-                                  ? 'btn-success'
-                                  : action.variant === 'warning'
-                                  ? 'btn-warning'
-                                  : action.variant === 'info'
-                                  ? 'btn-info'
-                                  : 'btn-ghost'
-                              } ${action.className || ''}`}
+                                action.variant === "error"
+                                  ? "btn-error"
+                                  : action.variant === "primary"
+                                  ? "btn-primary"
+                                  : action.variant === "secondary"
+                                  ? "btn-secondary"
+                                  : action.variant === "success"
+                                  ? "btn-success"
+                                  : action.variant === "warning"
+                                  ? "btn-warning"
+                                  : action.variant === "info"
+                                  ? "btn-info"
+                                  : "btn-ghost"
+                              } ${action.className || ""}`}
                               title={action.label}
                             >
                               {getActionIcon(action)}
@@ -556,7 +564,7 @@ function DataTable<T extends Record<string, unknown>>({
               {/* Items info and per page selector */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="text-sm text-base-content/70 text-center sm:text-left">
-                  {paginationInfo.startItem}-{paginationInfo.endItem} de{' '}
+                  {paginationInfo.startItem}-{paginationInfo.endItem} de{" "}
                   {paginationInfo.totalItems}
                 </div>
                 <div className="flex items-center justify-center gap-2">
@@ -671,7 +679,7 @@ function DataTable<T extends Record<string, unknown>>({
                         key={pageNum}
                         onClick={() => setCurrentPage(pageNum)}
                         className={`btn btn-sm ${
-                          pageNum === currentPage ? 'btn-primary' : 'btn-ghost'
+                          pageNum === currentPage ? "btn-primary" : "btn-ghost"
                         }`}
                       >
                         {pageNum}
