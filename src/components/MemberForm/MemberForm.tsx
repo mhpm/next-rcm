@@ -7,6 +7,7 @@ import Link from "next/link";
 
 import { useEmailAvailability } from "@/app/members/hooks/useMembers";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useMinistries } from "@/app/ministries/hooks/useMinistries";
 import {
   InputField,
   SelectField,
@@ -14,6 +15,7 @@ import {
   PasswordField,
   EmailField,
   ImageUploadField,
+  MultiSelectField,
 } from "@/components/FormControls";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { memberFormSchema, MemberFormInput } from "@/lib/validator";
@@ -42,6 +44,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     control,
     watch,
     trigger,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: initialData,
@@ -49,6 +52,9 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     reValidateMode: "onChange",
     resolver: zodResolver(memberFormSchema),
   });
+
+  // Hook para obtener ministerios
+  const { data: ministriesData, isLoading: isLoadingMinistries } = useMinistries();
 
   const password = watch("password");
   const emailValue = watch("email");
@@ -106,6 +112,23 @@ export const MemberForm: React.FC<MemberFormProps> = ({
 
     return null;
   }, [debouncedEmail, isCheckingEmail, emailCheckError, isEmailAvailable, isEditMode, initialData?.email]);
+
+  // Preparar opciones de ministerios
+  const ministryOptions = useMemo(() => {
+    if (!ministriesData?.ministries) return [];
+    return ministriesData.ministries.map(ministry => ({
+      value: ministry.id,
+      label: ministry.name,
+    }));
+  }, [ministriesData]);
+
+  // Obtener valor actual de ministerios
+  const currentMinistries = watch("ministries") || [];
+
+  // Función para manejar cambios en ministerios
+  const handleMinistriesChange = (values: string[]) => {
+    setValue("ministries", values, { shouldValidate: true });
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -268,12 +291,15 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   { value: "TESORERO", label: "Tesorero" },
                 ]}
               />
-              {/* TODO: Implement ministries selection with proper many-to-many relationship */}
-              {/* <InputField<FormValues>
-                name="ministries"
+              <MultiSelectField
                 label="Ministerios"
-                register={register}
-              /> */}
+                options={ministryOptions}
+                value={currentMinistries}
+                onChange={handleMinistriesChange}
+                placeholder="Selecciona ministerios..."
+                isLoading={isLoadingMinistries}
+                error={errors.ministries?.message}
+              />
             </div>
           </div>
 

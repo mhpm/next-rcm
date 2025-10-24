@@ -106,8 +106,8 @@ export const memberSchema = z
 
     // Church-specific fields
     ministries: z
-      .string()
-      .max(100, "Los ministerios no pueden exceder 100 caracteres")
+      .array(z.string())
+      .max(10, "No se pueden asignar más de 10 ministerios")
       .optional(),
 
     notes: z
@@ -292,8 +292,8 @@ export const memberFormSchema = z
 
     // Church-specific fields
     ministries: z
-      .string()
-      .max(100, "Los ministerios no pueden exceder 100 caracteres")
+      .array(z.string())
+      .max(10, "No se pueden asignar más de 10 ministerios")
       .optional(),
 
     notes: z

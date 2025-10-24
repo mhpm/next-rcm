@@ -38,7 +38,7 @@ export default function NewMemberPage() {
       : undefined,
     role: formData.role as MemberRole,
     gender: formData.gender as Gender,
-    // ministerio: formData.ministerio || undefined, // Removed - will be handled via MemberMinistry relation
+    ministries: formData.ministries || [], // Include ministries array
     notes: formData.notes || undefined,
     skills: formData.skills || [],
     picture: formData.picture || undefined,

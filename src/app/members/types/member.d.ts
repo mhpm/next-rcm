@@ -33,6 +33,7 @@ export interface MemberFormData {
   pictureUrl?: string | null; // URL of uploaded picture
   notes?: string;
   skills?: string[];
+  ministries?: string[]; // Array of ministry IDs
   password?: string;
   confirmPassword?: string;
   picture?: File[]; // For file uploads

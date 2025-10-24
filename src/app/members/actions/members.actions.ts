@@ -214,6 +214,25 @@ export const createMember = withErrorHandling(async function createMember(
       data: memberData,
     });
 
+    // Create MemberMinistry relations if ministries are provided
+    if (parsed.ministries && parsed.ministries.length > 0) {
+      const memberMinistryData = parsed.ministries.map(ministryId => ({
+        memberId: member.id,
+        ministryId: ministryId,
+        church_id: churchId,
+      }));
+
+      await prisma.memberMinistry.createMany({
+        data: memberMinistryData,
+      });
+
+      logger.info("Member ministries created successfully", {
+        operation: "createMember",
+        memberId: member.id,
+        ministriesCount: parsed.ministries.length,
+      });
+    }
+
     logger.info("Member created successfully", {
       operation: "createMember",
       memberId: member.id,
