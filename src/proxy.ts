@@ -1,46 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getChurchSlugFromHost, isValidChurchSlug } from "@/lib/database";
 
-// first middleware to set the x-church-slug header
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+// Proxy function to handle multi-tenant routing and headers
+export function proxy(request: NextRequest) {
   const host = request.headers.get("host") || "localhost:3000";
 
   // Get church slug from the host
   const churchSlug = getChurchSlugFromHost(host);
 
-  // Skip middleware for certain paths
-  const skipPaths = [
-    "/_next",
-    "/api/health",
-    "/favicon.ico",
-    "/robots.txt",
-    "/sitemap.xml",
-    "/manifest.json",
-  ];
-
-  if (skipPaths.some((path) => pathname.startsWith(path))) {
-    return NextResponse.next();
-  }
-
-  // For localhost development, we'll use a default church or path-based routing
+  // For localhost development, use path-based or parameter-based routing
   if (host.startsWith("localhost") || host.startsWith("127.0.0.1")) {
     let selectedChurchSlug = "demo"; // default
-    
+
     // Check multiple sources for church slug in priority order:
-    // 1. URL parameter
     const url = new URL(request.url);
     const churchParam = url.searchParams.get("church");
-    
-    // 2. Cookie
     const cookieChurchSlug = request.cookies.get("church-slug")?.value;
-    
-    // 3. Header (for API calls)
     const headerChurchSlug = request.headers.get("x-church-slug");
-
-    console.log("🚀 ~ middleware ~ churchParam:", churchParam);
-    console.log("🚀 ~ middleware ~ cookieChurchSlug:", cookieChurchSlug);
-    console.log("🚀 ~ middleware ~ headerChurchSlug:", headerChurchSlug);
 
     // Priority: URL param > Header > Cookie > Default
     if (churchParam && isValidChurchSlug(churchParam)) {
@@ -51,11 +27,11 @@ export function middleware(request: NextRequest) {
       selectedChurchSlug = cookieChurchSlug;
     }
 
-    // Add church slug to headers for API routes to use
+    // Create response with headers and cookies
     const response = NextResponse.next();
     response.headers.set("x-church-slug", selectedChurchSlug);
-    
-    // Update cookie if it's different from current selection
+
+    // Update cookie if needed
     if (cookieChurchSlug !== selectedChurchSlug) {
       response.cookies.set("church-slug", selectedChurchSlug, {
         httpOnly: false,
@@ -65,23 +41,20 @@ export function middleware(request: NextRequest) {
         path: "/",
       });
     }
-    
+
     return response;
   }
 
-  // Validate church slug
+  // Validate church slug for production domains
   if (!isValidChurchSlug(churchSlug)) {
-    // Redirect to error page or main landing page
     return NextResponse.redirect(
       new URL("/error?code=invalid-church", request.url)
     );
   }
 
-  // Add church slug to headers for API routes and pages to use
+  // Set headers and cookies for valid church
   const response = NextResponse.next();
   response.headers.set("x-church-slug", churchSlug);
-
-  // Optional: Add church slug to cookies for client-side access
   response.cookies.set("church-slug", churchSlug, {
     httpOnly: false,
     secure: process.env.NODE_ENV === "production",
@@ -92,15 +65,16 @@ export function middleware(request: NextRequest) {
   return response;
 }
 
+// Optimized matcher configuration following Next.js best practices
 export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - api routes that don't need tenant context
      */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/health).*)",
   ],
 };

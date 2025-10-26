@@ -8,12 +8,13 @@ const nextConfig: NextConfig = {
     },
     // Optimizaciones para mejor performance
     optimizePackageImports: ['@tanstack/react-query', 'react-icons'],
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
+  },
+  // Configuración de Turbopack (Next.js 16)
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
     },
   },
