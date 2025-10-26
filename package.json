@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
+    "dev": "next dev",
+    "build": "prisma generate & next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -14,7 +15,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "prisma:seed": "tsx prisma/seed.ts",
-    "next:upgrade": "next@latest react@latest react-dom@latest eslint-config-next@latest typescript@latest @types/react@latest @types/react-dom@latest"
+    "next:upgrade": "next@latest react@latest react-dom@latest typescript@latest @types/react@latest @types/react-dom@latest"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -28,7 +29,7 @@
     "@tanstack/react-query-devtools": "^5.89.0",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^3.0.2",
-    "next": "^15.5.5",
+    "next": "^16.0.0",
     "postcss": "^8.5.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
