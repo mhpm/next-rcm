@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Drawer, Navbar, ThemeProvider, QueryProvider } from "@/components";
+import { Drawer, Navbar, ThemeProvider, QueryProvider, NavigationLoader } from "@/components";
 import { ToastContainer } from "@/components/Toast";
 
 import { DrawerItem } from "@/types";
@@ -70,6 +70,7 @@ export default function RootLayout({
         <StoreProvider>
           <QueryProvider>
             <ThemeProvider>
+              <NavigationLoader />
               <Drawer items={Items}>
                 <Navbar />
                 <main>{children}</main>
