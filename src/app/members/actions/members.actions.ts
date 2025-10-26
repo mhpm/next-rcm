@@ -127,6 +127,13 @@ export async function getMemberById(id: string) {
 
     const member = await prisma.members.findUnique({
       where: { id },
+      include: {
+        ministries: {
+          include: {
+            ministry: true,
+          },
+        },
+      },
     });
 
     if (!member) {
@@ -328,7 +335,58 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
       updateData.passwordHash = await bcrypt.hash(parsed.password, 12);
     }
 
-    // Si no hay cambios en los datos, devolver el miembro existente sin error
+    // Handle ministries update if provided
+    if (parsed.ministries !== undefined) {
+      // Delete existing ministry relations
+      await prisma.memberMinistry.deleteMany({
+        where: { memberId: parsed.id! },
+      });
+
+      // Create new ministry relations if ministries are provided
+      if (parsed.ministries.length > 0) {
+        const churchId = await getChurchId();
+        const memberMinistryData = parsed.ministries.map(ministryId => ({
+          memberId: parsed.id!,
+          ministryId: ministryId,
+          church_id: churchId,
+        }));
+
+        await prisma.memberMinistry.createMany({
+          data: memberMinistryData,
+        });
+
+        logger.info("Member ministries updated successfully", {
+          operation: "updateMember",
+          memberId: parsed.id!,
+          ministriesCount: parsed.ministries.length,
+        });
+      }
+    }
+
+    // Si no hay cambios en los datos del miembro, pero sí en ministerios, devolver el miembro con ministerios actualizados
+    if (Object.keys(updateData).length === 0 && parsed.ministries !== undefined) {
+      const memberWithMinistries = await prisma.members.findUnique({
+        where: { id: parsed.id! },
+        include: {
+          ministries: {
+            include: {
+              ministry: true,
+            },
+          },
+        },
+      });
+      
+      logger.info(
+        "Only ministries updated in updateMember; returning member with updated ministries",
+        {
+          operation: "updateMember",
+          memberId: parsed.id!,
+        }
+      );
+      return memberWithMinistries!;
+    }
+
+    // Si no hay cambios en los datos ni en ministerios, devolver el miembro existente sin error
     if (Object.keys(updateData).length === 0) {
       logger.info(
         "No changes detected in updateMember; returning existing member",
@@ -343,6 +401,13 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
     const updatedMember = await prisma.members.update({
       where: { id: parsed.id! },
       data: updateData,
+      include: {
+        ministries: {
+          include: {
+            ministry: true,
+          },
+        },
+      },
     });
     return updatedMember;
   } catch (error) {

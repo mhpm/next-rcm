@@ -3,6 +3,7 @@ export { Drawer } from './Drawer/Drawer';
 export { StatCard } from './StatCard/StatCard';
 export { default as Breadcrumbs } from './Breadcrumbs/Breadcrumbs';
 export { default as LoadingSkeleton } from './LoadingSkeleton/LoadingSkeleton';
+export { default as MinimalLoader } from './MinimalLoader/MinimalLoader';
 export { MemberForm } from './MemberForm/MemberForm';
 export { default as DataTable } from './DataTable/DataTable';
 export { ThemeProvider, useTheme } from './ThemeProvider';

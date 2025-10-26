@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { SubmitHandler } from 'react-hook-form';
-import { MemberForm, LoadingSkeleton, Alert } from '@/components';
-import { useMember, useUpdateMember } from '@/app/members/hooks/useMembers';
-import { MemberFormData } from '@/types';
-import { MemberRole, Gender } from '@prisma/client';
-import { useNotificationStore } from '@/store/NotificationStore';
-import { MemberFormInput } from '@/lib/validator';
-import { useQueryClient } from '@tanstack/react-query';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { SubmitHandler } from "react-hook-form";
+import { MemberForm, Alert, MinimalLoader } from "@/components";
+import { useMember, useUpdateMember } from "@/app/members/hooks/useMembers";
+import { MemberFormData } from "@/types";
+import { MemberRole, Gender, MemberMinistry, Ministries } from "@prisma/client";
+import { useNotificationStore } from "@/store/NotificationStore";
+import { MemberFormInput } from "@/lib/validator";
+import { useQueryClient } from "@tanstack/react-query";
 
 // FormValues type to match MemberForm component exactly
 type FormValues = MemberFormInput;
@@ -26,7 +26,7 @@ const EditMemberClient = ({ memberId }: EditMemberClientProps) => {
 
   // Function to invalidate and refetch member data
   const invalidateMemberQuery = () => {
-    queryClient.invalidateQueries({ queryKey: ['member', memberId] });
+    queryClient.invalidateQueries({ queryKey: ["member", memberId] });
   };
 
   // Fetch member data
@@ -45,41 +45,50 @@ const EditMemberClient = ({ memberId }: EditMemberClientProps) => {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        phone: data.phone || '',
-        age: typeof data.age === 'string' ? parseInt(data.age, 10) || undefined : data.age || undefined,
-        street: data.street || '',
-        city: data.city || '',
-        state: data.state || '',
-        zip: data.zip || '',
-        country: data.country || '',
+        phone: data.phone || "",
+        age:
+          typeof data.age === "string"
+            ? parseInt(data.age, 10) || undefined
+            : data.age || undefined,
+        street: data.street || "",
+        city: data.city || "",
+        state: data.state || "",
+        zip: data.zip || "",
+        country: data.country || "",
         birthDate: data.birthDate ? new Date(data.birthDate) : undefined,
         baptismDate: data.baptismDate ? new Date(data.baptismDate) : undefined,
         role: (data.role as MemberRole) || MemberRole.MIEMBRO,
         gender: (data.gender as Gender) || Gender.MASCULINO,
         pictureUrl: data.pictureUrl || null,
-        notes: data.notes || '',
+        notes: data.notes || "",
         skills: data.skills || [],
+        ministries: data.ministries || [],
       };
 
-      console.log('🚀 ~ handleSubmit ~ memberData:', memberData);
+      console.log("🚀 ~ handleSubmit ~ memberData:", memberData);
 
       await updateMemberMutation.mutateAsync({
         id: memberId,
         data: memberData,
       });
 
-      showSuccess('Miembro actualizado exitosamente');
-      router.push('/members');
+      showSuccess("Miembro actualizado exitosamente");
+      router.push("/members");
     } catch (error) {
-      console.error('Error updating member:', error);
-      const message = error instanceof Error ? error.message : 'Error desconocido';
+      console.error("Error updating member:", error);
+      const message =
+        error instanceof Error ? error.message : "Error desconocido";
       setErrorMessage(message);
       showError(`Error al actualizar miembro: ${message}`);
     }
   };
 
   if (isLoading) {
-    return <LoadingSkeleton />;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <MinimalLoader text="Cargando información del miembro..." />
+      </div>
+    );
   }
 
   if (isError || !member) {
@@ -88,7 +97,9 @@ const EditMemberClient = ({ memberId }: EditMemberClientProps) => {
         <Alert
           type="error"
           title="Error"
-          message={error?.message || 'No se pudo cargar la información del miembro'}
+          message={
+            error?.message || "No se pudo cargar la información del miembro"
+          }
         />
         <button
           onClick={invalidateMemberQuery}
@@ -105,20 +116,29 @@ const EditMemberClient = ({ memberId }: EditMemberClientProps) => {
     firstName: member.firstName,
     lastName: member.lastName,
     email: member.email,
-    phone: member.phone || '',
+    phone: member.phone || "",
     age: member.age || 0,
-    street: member.street || '',
-    city: member.city || '',
-    state: member.state || '',
-    zip: member.zip || '',
-    country: member.country || '',
-    birthDate: member.birthDate ? member.birthDate.toISOString().split('T')[0] : '',
-    baptismDate: member.baptismDate ? member.baptismDate.toISOString().split('T')[0] : '',
+    street: member.street || "",
+    city: member.city || "",
+    state: member.state || "",
+    zip: member.zip || "",
+    country: member.country || "",
+    birthDate: member.birthDate
+      ? member.birthDate.toISOString().split("T")[0]
+      : "",
+    baptismDate: member.baptismDate
+      ? member.baptismDate.toISOString().split("T")[0]
+      : "",
     role: member.role,
     gender: member.gender,
-    pictureUrl: member.pictureUrl || '',
-    notes: member.notes || '',
+    pictureUrl: member.pictureUrl || "",
+    notes: member.notes || "",
     skills: member.skills || [],
+    ministries:
+      member.ministries?.map(
+        (memberMinistry: MemberMinistry & { ministry: Ministries }) =>
+          memberMinistry.ministry.id
+      ) || [],
   };
 
   return (
@@ -132,16 +152,12 @@ const EditMemberClient = ({ memberId }: EditMemberClientProps) => {
         />
       )}
 
-
-
       <MemberForm
         onSubmit={handleSubmit}
         initialData={defaultValues}
         isEditMode={true}
         isSubmitting={updateMemberMutation.isPending}
       />
-
-
     </div>
   );
 };

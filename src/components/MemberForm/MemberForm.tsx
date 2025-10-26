@@ -45,6 +45,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     watch,
     trigger,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: initialData,
@@ -52,6 +53,13 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     reValidateMode: "onChange",
     resolver: zodResolver(memberFormSchema),
   });
+
+  // Reset form when initialData changes (for async data loading)
+  useEffect(() => {
+    if (initialData) {
+      reset(initialData);
+    }
+  }, [initialData, reset]);
 
   // Hook para obtener ministerios
   const { data: ministriesData, isLoading: isLoadingMinistries } = useMinistries();

@@ -86,7 +86,7 @@ const fetchMembers = async (): Promise<MemberWithMinistries[]> => {
 };
 
 // Fetch individual member
-const fetchMember = async (id: string): Promise<Member> => {
+const fetchMember = async (id: string): Promise<MemberWithMinistries> => {
   try {
     const member = await getMemberById(id);
     return member;
