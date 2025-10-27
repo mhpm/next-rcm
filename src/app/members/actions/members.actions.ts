@@ -9,7 +9,10 @@ import {
   NotFoundError,
 } from "@/lib/error-handler";
 import { processImageUpload } from "@/lib/file-upload";
-import { updateMemberSchema, insertMemberFormSchema } from "@/lib/validator";
+import {
+  updateMemberSchema,
+  insertMemberFormSchema,
+} from "@/app/members/schema/members.schema";
 import { getTenantPrisma, getChurchId } from "@/actions/tenantActions";
 
 // Get all members with optional filtering and pagination
@@ -155,14 +158,20 @@ export const createMember = withErrorHandling(async function createMember(
 ) {
   try {
     // Debug: Log incoming data
-    console.log("🚀 ~ createMember ~ incoming data:", JSON.stringify(data, null, 2));
-    
+    console.log(
+      "🚀 ~ createMember ~ incoming data:",
+      JSON.stringify(data, null, 2)
+    );
+
     // Validate and normalize payload with Zod (using form schema for proper data transformation)
     // The insertMemberFormSchema handles string-to-date conversion and age string-to-number conversion
     const parsed = insertMemberFormSchema.parse(data);
-    
+
     // Debug: Log parsed data
-    console.log("🚀 ~ createMember ~ parsed data:", JSON.stringify(parsed, null, 2));
+    console.log(
+      "🚀 ~ createMember ~ parsed data:",
+      JSON.stringify(parsed, null, 2)
+    );
     // Hash password if provided
     let passwordHash = null;
     if (parsed.password) {
@@ -205,17 +214,16 @@ export const createMember = withErrorHandling(async function createMember(
       gender: parsed.gender,
       // ministerio: parsed.ministerio || "", // Removed - will be handled via MemberMinistry relation
       notes: parsed.notes || null,
-      ...(parsed.skills && parsed.skills.length > 0 && { skills: parsed.skills }),
+      ...(parsed.skills &&
+        parsed.skills.length > 0 && { skills: parsed.skills }),
       passwordHash,
       pictureUrl, // Now includes the uploaded image URL
       church: {
         connect: {
-          id: churchId
-        }
-      }
+          id: churchId,
+        },
+      },
     };
-
-
 
     const member = await prisma.members.create({
       data: memberData,
@@ -223,7 +231,7 @@ export const createMember = withErrorHandling(async function createMember(
 
     // Create MemberMinistry relations if ministries are provided
     if (parsed.ministries && parsed.ministries.length > 0) {
-      const memberMinistryData = parsed.ministries.map(ministryId => ({
+      const memberMinistryData = parsed.ministries.map((ministryId) => ({
         memberId: member.id,
         ministryId: ministryId,
         church_id: churchId,
@@ -327,7 +335,11 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
     if (parsed.gender !== undefined) updateData.gender = parsed.gender;
 
     // Arrays
-    if (parsed.skills !== undefined && Array.isArray(parsed.skills) && parsed.skills.length > 0)
+    if (
+      parsed.skills !== undefined &&
+      Array.isArray(parsed.skills) &&
+      parsed.skills.length > 0
+    )
       updateData.skills = parsed.skills;
 
     // Password
@@ -345,7 +357,7 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
       // Create new ministry relations if ministries are provided
       if (parsed.ministries.length > 0) {
         const churchId = await getChurchId();
-        const memberMinistryData = parsed.ministries.map(ministryId => ({
+        const memberMinistryData = parsed.ministries.map((ministryId) => ({
           memberId: parsed.id!,
           ministryId: ministryId,
           church_id: churchId,
@@ -364,7 +376,10 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
     }
 
     // Si no hay cambios en los datos del miembro, pero sí en ministerios, devolver el miembro con ministerios actualizados
-    if (Object.keys(updateData).length === 0 && parsed.ministries !== undefined) {
+    if (
+      Object.keys(updateData).length === 0 &&
+      parsed.ministries !== undefined
+    ) {
       const memberWithMinistries = await prisma.members.findUnique({
         where: { id: parsed.id! },
         include: {
@@ -375,7 +390,7 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
           },
         },
       });
-      
+
       logger.info(
         "Only ministries updated in updateMember; returning member with updated ministries",
         {

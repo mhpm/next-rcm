@@ -8,7 +8,7 @@ import { useMember, useUpdateMember } from "@/app/members/hooks/useMembers";
 import { MemberFormData } from "@/types";
 import { MemberRole, Gender, MemberMinistry, Ministries } from "@prisma/client";
 import { useNotificationStore } from "@/store/NotificationStore";
-import { MemberFormInput } from "@/lib/validator";
+import { MemberFormInput } from "@/app/members/schema/members.schema";
 import { useQueryClient } from "@tanstack/react-query";
 
 // FormValues type to match MemberForm component exactly

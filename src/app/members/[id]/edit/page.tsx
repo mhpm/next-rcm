@@ -2,12 +2,12 @@
 
 import { use } from "react";
 import dynamic from "next/dynamic";
-import { Breadcrumbs, LoadingSkeleton } from "@/components";
+import { Breadcrumbs, MinimalLoader } from "@/components";
 
 // Dynamic import for client-side component
 const EditMemberClient = dynamic(() => import("./EditMemberClient"), {
   ssr: false,
-  loading: () => <LoadingSkeleton />,
+  loading: () => <MinimalLoader text="Cargando información del miembro..." />,
 });
 
 type PageProps = {

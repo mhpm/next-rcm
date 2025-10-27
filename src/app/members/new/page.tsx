@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { Breadcrumbs, MemberForm, Alert } from '@/components';
-import { useCallback, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { SubmitHandler } from 'react-hook-form';
-import { MemberFormData } from '@/app/members/types/member';
-import { MemberRole, Gender } from '@prisma/client';
-import { useCreateMember } from '@/app/members/hooks/useMembers';
-import { useNotificationStore } from '@/store/NotificationStore';
-import { MemberFormInput } from '@/lib/validator';
+import { Breadcrumbs, MemberForm, Alert } from "@/components";
+import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
+import { SubmitHandler } from "react-hook-form";
+import { MemberFormData } from "@/app/members/types/member";
+import { MemberRole, Gender } from "@prisma/client";
+import { useCreateMember } from "@/app/members/hooks/useMembers";
+import { useNotificationStore } from "@/store/NotificationStore";
+import { MemberFormInput } from "@/app/members/schema/members.schema";
 
 // FormValues type to match MemberForm component exactly
 type FormValues = MemberFormInput;
@@ -26,7 +26,10 @@ export default function NewMemberPage() {
     lastName: formData.lastName,
     email: formData.email,
     phone: formData.phone || undefined,
-    age: typeof formData.age === 'string' ? parseInt(formData.age, 10) || undefined : formData.age || undefined,
+    age:
+      typeof formData.age === "string"
+        ? parseInt(formData.age, 10) || undefined
+        : formData.age || undefined,
     street: formData.street || undefined,
     city: formData.city || undefined,
     state: formData.state || undefined,
@@ -63,10 +66,11 @@ export default function NewMemberPage() {
 
         // Redirect after successful creation with enough time for toast to show
         setTimeout(() => {
-          router.push('/members');
+          router.push("/members");
         }, 2500);
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : 'Error al crear el miembro';
+        const errorMessage =
+          error instanceof Error ? error.message : "Error al crear el miembro";
 
         // Mostrar toast de error
         showError(errorMessage);

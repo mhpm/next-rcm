@@ -18,7 +18,10 @@ import {
   MultiSelectField,
 } from "@/components/FormControls";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { memberFormSchema, MemberFormInput } from "@/lib/validator";
+import {
+  memberFormSchema,
+  MemberFormInput,
+} from "@/app/members/schema/members.schema";
 
 // Usamos el tipo de entrada del esquema (antes de transformaciones)
 export type FormValues = MemberFormInput;
@@ -62,7 +65,8 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   }, [initialData, reset]);
 
   // Hook para obtener ministerios
-  const { data: ministriesData, isLoading: isLoadingMinistries } = useMinistries();
+  const { data: ministriesData, isLoading: isLoadingMinistries } =
+    useMinistries();
 
   const password = watch("password");
   const emailValue = watch("email");
@@ -106,7 +110,11 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     }
 
     // En modo edición, si el email es el mismo que el original, no mostrar validación
-    if (isEditMode && initialData?.email && debouncedEmail === initialData.email) {
+    if (
+      isEditMode &&
+      initialData?.email &&
+      debouncedEmail === initialData.email
+    ) {
       return null;
     }
 
@@ -119,12 +127,19 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     }
 
     return null;
-  }, [debouncedEmail, isCheckingEmail, emailCheckError, isEmailAvailable, isEditMode, initialData?.email]);
+  }, [
+    debouncedEmail,
+    isCheckingEmail,
+    emailCheckError,
+    isEmailAvailable,
+    isEditMode,
+    initialData?.email,
+  ]);
 
   // Preparar opciones de ministerios
   const ministryOptions = useMemo(() => {
     if (!ministriesData?.ministries) return [];
-    return ministriesData.ministries.map(ministry => ({
+    return ministriesData.ministries.map((ministry) => ({
       value: ministry.id,
       label: ministry.name,
     }));
@@ -174,12 +189,16 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     },
                     validate: (value) => {
                       if (!value) return true;
-                      
+
                       // En modo edición, si el email es el mismo que el original, no validar
-                      if (isEditMode && initialData?.email && value === initialData.email) {
+                      if (
+                        isEditMode &&
+                        initialData?.email &&
+                        value === initialData.email
+                      ) {
                         return true;
                       }
-                      
+
                       if (emailValidationStatus === "taken") {
                         return "Este correo ya está en uso";
                       }
