@@ -1,80 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RiAddLine } from "react-icons/ri";
-import { DataTable, LoadingSkeleton } from "@/components";
-import { TableColumn, TableAction, AddButtonConfig } from "@/types";
+import { DataTable } from "@/components";
+import {
+  TableColumn,
+  TableAction,
+  AddButtonConfig,
+  MemberTableData,
+} from "@/types";
 import { useMembers } from "@/app/members/hooks/useMembers";
-import { MemberWithMinistries } from "@/types";
 import { useColumnVisibilityStore } from "@/components/ColumnVisibilityDropdown";
 import { Modal } from "@/components/Modal/Modal";
 import { useDeleteMember } from "@/app/members/hooks/useMembers";
 import { useNotificationStore } from "@/store/NotificationStore";
-
-// Tipo para los datos transformados de la tabla
-type MemberTableData = Omit<
-  MemberWithMinistries,
-  | "gender"
-  | "birthDate"
-  | "baptismDate"
-  | "createdAt"
-  | "updatedAt"
-  | "passwordHash"
-  | "pictureUrl"
-  | "age"
-  | "street"
-  | "city"
-  | "state"
-  | "zip"
-  | "country"
-  | "skills"
-  | "phone"
-  | "church_id"
-  | "ministries"
-> & {
-  birthDate: string;
-  baptismDate: string;
-  address: string;
-  skills: string;
-  phone: string;
-  ministries: string;
-};
-
-// Formateo de fecha estable (evita dependencias de locale/zonas horarias)
-const formatDate = (value?: string | Date | null): string => {
-  if (!value) return "N/A";
-  const d = new Date(value);
-  const day = String(d.getUTCDate()).padStart(2, "0");
-  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
-  const year = d.getUTCFullYear();
-  return `${day}/${month}/${year}`;
-};
-
-// Función para transformar Member a formato de tabla
-const transformMemberToTableData = (
-  member: MemberWithMinistries
-): MemberTableData => ({
-  id: member.id,
-  firstName: member.firstName,
-  lastName: member.lastName,
-  email: member.email,
-  phone: member.phone || "N/A",
-  role: member.role,
-  notes: member.notes || "N/A",
-  skills: member.skills.length > 0 ? member.skills.join(", ") : "N/A",
-  address: `${member.street || ""}, ${member.city || ""}, ${
-    member.state || ""
-  }, ${member.country || ""}`,
-  ministries: member.ministries
-    ? member.ministries
-        .map((m: MemberWithMinistries) => m.ministry?.name)
-        .filter(Boolean)
-        .join(", ")
-    : "N/A",
-  birthDate: member.birthDate ? formatDate(member.birthDate) : "N/A",
-  baptismDate: member.baptismDate ? formatDate(member.baptismDate) : "N/A",
-});
+import { transformMemberToTableData } from "./utils/membersUtils";
 
 export default function MembersPage() {
   const router = useRouter();
@@ -216,13 +157,6 @@ export default function MembersPage() {
   // Configuración de acciones para cada fila
   const actions: TableAction<MemberTableData>[] = [
     {
-      label: "Ver",
-      variant: "info",
-      onClick: (row) => {
-        router.push(`/members/${row.id}`);
-      },
-    },
-    {
       label: "Editar",
       variant: "primary",
       onClick: (row) => {
@@ -245,25 +179,6 @@ export default function MembersPage() {
     variant: "secondary",
     icon: <RiAddLine className="w-4 h-4" />,
   };
-
-  // Mostrar estado de carga
-  if (loading) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="space-y-6">
-          <div className="skeleton h-8 w-48"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <LoadingSkeleton />
-            <LoadingSkeleton />
-            <LoadingSkeleton />
-            <LoadingSkeleton />
-            <LoadingSkeleton />
-            <LoadingSkeleton />
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // Mostrar estado de error
   if (error) {
@@ -321,6 +236,7 @@ export default function MembersPage() {
         onShowAllColumns={showAllColumns}
         onHideAllColumns={hideAllColumns}
         showColumnVisibility={true}
+        loading={loading}
       />
 
       {/* Delete confirmation modal */}

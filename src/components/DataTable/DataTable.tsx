@@ -264,8 +264,9 @@ function DataTable<T extends Record<string, unknown>>({
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <span className="loading loading-spinner loading-lg"></span>
+      <div className="flex flex-col justify-center items-center gap-6 h-64">
+        <p className="text-base-content/70">Cargando datos</p>
+        <span className="loading loading-spinner loading-xl"></span>
       </div>
     );
   }
