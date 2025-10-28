@@ -1,6 +1,12 @@
 "use client";
 import { Breadcrumbs, StatCard } from "@/components";
-import { RiGroupLine, RiGroup2Fill } from "react-icons/ri";
+import {
+  FaPeopleRoof,
+  FaUserGroup,
+  FaUsersGear,
+  FaUsers,
+  FaPersonChalkboard,
+} from "react-icons/fa6";
 import Link from "next/link";
 
 export default function Dashboard() {
@@ -18,7 +24,7 @@ export default function Dashboard() {
             change="10.8%"
             changeType="increase"
             period="vs. 12 ultimo cuatrimestre"
-            icon={<RiGroupLine size={24} />}
+            icon={<FaUserGroup size={24} />}
           />
         </Link>
         <Link href="/cells" className="cursor-pointer">
@@ -28,7 +34,7 @@ export default function Dashboard() {
             change="21.2%"
             changeType="increase"
             period="vs. 12 ultimo cuatrimestre"
-            icon={<RiGroup2Fill size={24} />}
+            icon={<FaPeopleRoof size={24} />}
           />
         </Link>
         <Link href="/sectors" className="cursor-pointer">
@@ -38,7 +44,7 @@ export default function Dashboard() {
             change="6.8%"
             changeType="decrease"
             period="vs. 28 ultimo cuatrimestre"
-            icon={<RiGroup2Fill size={24} />}
+            icon={<FaUsersGear size={24} />}
           />
         </Link>
         <Link href="/subsectors" className="cursor-pointer">
@@ -48,7 +54,17 @@ export default function Dashboard() {
             change="8.5%"
             changeType="increase"
             period="vs. 3 ultimo cuatrimestre"
-            icon={<RiGroup2Fill size={24} />}
+            icon={<FaUsers size={24} />}
+          />
+        </Link>
+        <Link href="/ministries" className="cursor-pointer">
+          <StatCard
+            title="Ministerios"
+            value="10"
+            change="8.5%"
+            changeType="increase"
+            period="vs. 3 ultimo cuatrimestre"
+            icon={<FaPersonChalkboard size={24} />}
           />
         </Link>
       </div>

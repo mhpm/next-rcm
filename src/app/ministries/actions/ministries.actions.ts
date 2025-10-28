@@ -39,12 +39,25 @@ export async function getAllMinistries(options?: {
         orderBy: {
           [orderBy]: orderDirection,
         },
+        include: {
+          _count: {
+            select: {
+              members: true,
+            },
+          },
+        },
       }),
       prisma.ministries.count({ where: whereClause }),
     ]);
 
+    // Transform ministries to include member count
+    const ministriesWithCount = ministries.map((ministry) => ({
+      ...ministry,
+      memberCount: ministry._count.members,
+    }));
+
     return {
-      ministries,
+      ministries: ministriesWithCount,
       total,
       hasMore: offset + limit < total,
     };

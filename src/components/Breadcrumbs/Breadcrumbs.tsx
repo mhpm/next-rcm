@@ -13,7 +13,7 @@ const Breadcrumbs = () => {
     <div className="text-sm breadcrumbs">
       <ul>
         <li>
-          <Link className="active" href="/">
+          <Link className="active" href="/dashboard">
             Dashboard
           </Link>
         </li>

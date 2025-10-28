@@ -44,6 +44,14 @@ function DataTable<T extends Record<string, unknown>>({
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [itemsPerPageState, setItemsPerPageState] = useState(itemsPerPage);
 
+  // Filter columns based on visibility
+  const visibleColumnsFiltered = useMemo(() => {
+    if (!visibleColumns || visibleColumns.size === 0) {
+      return columns;
+    }
+    return columns.filter(column => visibleColumns.has(String(column.key)));
+  }, [columns, visibleColumns]);
+
   // Sorting state
   const [sortConfig, setSortConfig] = useState<{
     key: keyof T | null;
@@ -411,7 +419,7 @@ function DataTable<T extends Record<string, unknown>>({
                     </div>
 
                     <div className="space-y-2">
-                      {columns.map((column) => (
+                      {visibleColumnsFiltered.map((column) => (
                         <div
                           key={String(column.key)}
                           className="flex flex-col sm:flex-row sm:justify-between"
@@ -451,7 +459,7 @@ function DataTable<T extends Record<string, unknown>>({
                   />
                 </th>
               )}
-              {columns.map((column) => (
+              {visibleColumnsFiltered.map((column) => (
                 <th
                   key={String(column.key)}
                   className={`font-semibold text-base-content ${
@@ -485,7 +493,7 @@ function DataTable<T extends Record<string, unknown>>({
               <tr>
                 <td
                   colSpan={
-                    columns.length +
+                    visibleColumnsFiltered.length +
                     (selectable ? 1 : 0) +
                     (actions.length > 0 ? 1 : 0)
                   }
@@ -513,7 +521,7 @@ function DataTable<T extends Record<string, unknown>>({
                         />
                       </td>
                     )}
-                    {columns.map((column) => (
+                    {visibleColumnsFiltered.map((column) => (
                       <td key={String(column.key)} className={column.className}>
                         {renderCell(column, row[column.key], row)}
                       </td>

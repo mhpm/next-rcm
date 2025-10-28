@@ -1,42 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Ministries } from '@prisma/client';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getAllMinistries,
   getMinistryById,
   createMinistry,
   updateMinistry,
   deleteMinistry,
-} from '../actions/ministries.actions';
-
-// ============ TYPES ============
-
-interface MinistryResponse {
-  success: boolean;
-  data: Ministries;
-  error?: string;
-  message?: string;
-}
-
-interface MinistriesResponse {
-  success: boolean;
-  data: Ministries[];
-  total: number;
-  hasMore: boolean;
-  error?: string;
-}
-
-interface MinistriesQueryOptions {
-  limit?: number;
-  offset?: number;
-  search?: string;
-  orderBy?: 'name' | 'createdAt';
-  orderDirection?: 'asc' | 'desc';
-}
-
-interface MinistryFormData {
-  name: string;
-  description?: string;
-}
+} from "../actions/ministries.actions";
+import { MinistriesQueryOptions, MinistryFormData } from "../types/ministries";
 
 // ============ UTILITY FUNCTIONS ============
 
@@ -44,7 +14,7 @@ const withTimeout = <T>(promise: Promise<T>, timeout = 10000): Promise<T> => {
   return Promise.race([
     promise,
     new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('Request timeout')), timeout)
+      setTimeout(() => reject(new Error("Request timeout")), timeout)
     ),
   ]);
 };
@@ -57,7 +27,11 @@ const fetchAllMinistries = async (options?: MinistriesQueryOptions) => {
     const result = await withTimeout(getAllMinistries(options));
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Error desconocido al obtener ministerios');
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Error desconocido al obtener ministerios"
+    );
   }
 };
 
@@ -67,7 +41,11 @@ const fetchMinistry = async (id: string) => {
     const result = await withTimeout(getMinistryById(id));
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Error desconocido al obtener ministerio');
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Error desconocido al obtener ministerio"
+    );
   }
 };
 
@@ -76,7 +54,7 @@ const fetchMinistry = async (id: string) => {
 // Hook for fetching all ministries
 export const useMinistries = (options?: MinistriesQueryOptions) => {
   return useQuery({
-    queryKey: ['ministries', 'all', options],
+    queryKey: ["ministries", "all", options],
     queryFn: () => fetchAllMinistries(options),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -86,7 +64,7 @@ export const useMinistries = (options?: MinistriesQueryOptions) => {
 // Hook for fetching a single ministry
 export const useMinistry = (id: string) => {
   return useQuery({
-    queryKey: ['ministry', id],
+    queryKey: ["ministry", id],
     queryFn: () => fetchMinistry(id),
     enabled: !!id,
     staleTime: 5 * 60 * 1000,
@@ -101,10 +79,10 @@ export const useCreateMinistry = () => {
   return useMutation({
     mutationFn: (data: MinistryFormData) => createMinistry(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ministries'] });
+      queryClient.invalidateQueries({ queryKey: ["ministries"] });
     },
     onError: (error) => {
-      console.error('Error creating ministry:', error);
+      console.error("Error creating ministry:", error);
     },
   });
 };
@@ -114,14 +92,19 @@ export const useUpdateMinistry = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<MinistryFormData> }) =>
-      updateMinistry(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<MinistryFormData>;
+    }) => updateMinistry(id, data),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['ministries'] });
-      queryClient.invalidateQueries({ queryKey: ['ministry', id] });
+      queryClient.invalidateQueries({ queryKey: ["ministries"] });
+      queryClient.invalidateQueries({ queryKey: ["ministry", id] });
     },
     onError: (error) => {
-      console.error('Error updating ministry:', error);
+      console.error("Error updating ministry:", error);
     },
   });
 };
@@ -133,10 +116,10 @@ export const useDeleteMinistry = () => {
   return useMutation({
     mutationFn: (id: string) => deleteMinistry(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ministries'] });
+      queryClient.invalidateQueries({ queryKey: ["ministries"] });
     },
     onError: (error) => {
-      console.error('Error deleting ministry:', error);
+      console.error("Error deleting ministry:", error);
     },
   });
 };
@@ -147,17 +130,9 @@ export const usePrefetchMinistry = () => {
 
   return (id: string) => {
     queryClient.prefetchQuery({
-      queryKey: ['ministry', id],
+      queryKey: ["ministry", id],
       queryFn: () => fetchMinistry(id),
       staleTime: 5 * 60 * 1000,
     });
   };
-};
-
-// Export types for use in components
-export type { 
-  MinistryResponse, 
-  MinistriesResponse, 
-  MinistriesQueryOptions, 
-  MinistryFormData 
 };

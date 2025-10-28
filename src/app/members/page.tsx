@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RiAddLine } from "react-icons/ri";
-import { DataTable } from "@/components";
+import { Breadcrumbs, DataTable } from "@/components";
 import {
   TableColumn,
   TableAction,
@@ -176,7 +176,7 @@ export default function MembersPage() {
   const addButtonConfig: AddButtonConfig = {
     text: "Agregar Miembro",
     onClick: () => router.push("/members/new"),
-    variant: "secondary",
+    variant: "primary",
     icon: <RiAddLine className="w-4 h-4" />,
   };
 
@@ -218,6 +218,9 @@ export default function MembersPage() {
 
   return (
     <div className="flex flex-col gap-6 p-8">
+      <div className="flex justify-end items-center">
+        <Breadcrumbs />
+      </div>
       <DataTable<MemberTableData>
         title="Miembros"
         subTitle="Lista de miembros de la iglesia"
