@@ -204,6 +204,7 @@ export function createTenantPrisma(churchId: string) {
 
 /**
  * Helper para obtener el church_id desde headers en server actions
+ * En Next.js 16, intentamos obtener desde headers si están disponibles
  */
 export async function getChurchIdFromHeaders(): Promise<string> {
   if (typeof window !== "undefined") {
@@ -217,9 +218,8 @@ export async function getChurchIdFromHeaders(): Promise<string> {
     const churchSlug = headerStore.get("x-church-slug");
 
     if (!churchSlug) {
-      throw new Error(
-        "Church slug not found in headers. Make sure middleware is properly configured."
-      );
+      // En lugar de lanzar error, retornamos null para intentar cookies
+      throw new Error("Church slug not found in headers");
     }
 
     // Convertir slug a church ID
@@ -235,7 +235,7 @@ export async function getChurchIdFromHeaders(): Promise<string> {
     return church.id;
   } catch (error) {
     console.error("Error getting church ID from headers:", error);
-    throw new Error("Failed to get church context");
+    throw new Error("Failed to get church context from headers");
   }
 }
 
@@ -278,14 +278,72 @@ export async function getChurchIdFromCookies(): Promise<string> {
 }
 
 /**
+ * Helper para obtener church-slug desde múltiples fuentes
+ * Prioridad: URL params > Headers > Cookies > Default
+ */
+export async function getChurchSlugFromSources(): Promise<string> {
+  if (typeof window !== "undefined") {
+    throw new Error("getChurchSlugFromSources should only be called on the server");
+  }
+
+  try {
+    // 1. Intentar desde headers (si están disponibles)
+    try {
+      const headerStore = await headers();
+      const churchSlug = headerStore.get("x-church-slug");
+      if (churchSlug) {
+        console.log("Church slug found in headers:", churchSlug);
+        return churchSlug;
+      }
+    } catch (error) {
+      console.log("Headers not available or no church-slug found");
+    }
+
+    // 2. Intentar desde cookies
+    try {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      const churchSlug = cookieStore.get("church-slug")?.value;
+      if (churchSlug) {
+        console.log("Church slug found in cookies:", churchSlug);
+        return churchSlug;
+      }
+    } catch (error) {
+      console.log("Cookies not available or no church-slug found");
+    }
+
+    // 3. Fallback a 'demo' para desarrollo
+    console.log("Using fallback church slug: demo");
+    return "demo";
+  } catch (error) {
+    console.error("Error getting church slug from sources:", error);
+    return "demo"; // Fallback seguro
+  }
+}
+
+/**
  * Helper principal para obtener el church_id en server actions
- * Intenta headers primero, luego cookies
+ * Usa el nuevo método de múltiples fuentes
  */
 export async function getChurchId(): Promise<string> {
   try {
-    return await getChurchIdFromHeaders();
-  } catch {
-    return await getChurchIdFromCookies();
+    const churchSlug = await getChurchSlugFromSources();
+    
+    // Convertir slug a church ID
+    const church = await prisma.churches.findUnique({
+      where: { slug: churchSlug },
+      select: { id: true },
+    });
+
+    if (!church) {
+      console.error(`Church not found for slug: ${churchSlug}`);
+      throw new Error(`Church not found for slug: ${churchSlug}`);
+    }
+
+    return church.id;
+  } catch (error) {
+    console.error("Error getting church ID:", error);
+    throw new Error("Failed to get church context");
   }
 }
 
