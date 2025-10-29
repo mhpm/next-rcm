@@ -214,8 +214,9 @@ export async function getChurchIdFromHeaders(): Promise<string> {
   }
 
   try {
-    const headerStore = await headers();
-    const churchSlug = headerStore.get("x-church-slug");
+    // const headerStore = await headers();
+    // const churchSlug = headerStore.get("x-church-slug");
+    const churchSlug = "demo";
 
     if (!churchSlug) {
       // En lugar de lanzar error, retornamos null para intentar cookies
@@ -283,7 +284,9 @@ export async function getChurchIdFromCookies(): Promise<string> {
  */
 export async function getChurchSlugFromSources(): Promise<string> {
   if (typeof window !== "undefined") {
-    throw new Error("getChurchSlugFromSources should only be called on the server");
+    throw new Error(
+      "getChurchSlugFromSources should only be called on the server"
+    );
   }
 
   try {
@@ -328,7 +331,7 @@ export async function getChurchSlugFromSources(): Promise<string> {
 export async function getChurchId(): Promise<string> {
   try {
     const churchSlug = await getChurchSlugFromSources();
-    
+
     // Convertir slug a church ID
     const church = await prisma.churches.findUnique({
       where: { slug: churchSlug },
