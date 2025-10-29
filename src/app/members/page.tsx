@@ -158,14 +158,14 @@ export default function MembersPage() {
   const actions: TableAction<MemberTableData>[] = [
     {
       label: "Editar",
-      variant: "primary",
+      variant: "ghost",
       onClick: (row) => {
         router.push(`/members/${row.id}/edit`);
       },
     },
     {
       label: "Eliminar",
-      variant: "error",
+      variant: "ghost",
       onClick: (row) => {
         openDeleteModal(row);
       },
@@ -248,7 +248,7 @@ export default function MembersPage() {
         onClose={closeDeleteModal}
         title="Confirmar eliminación"
       >
-        <p className="text-sm text-gray-700 dark:text-gray-200">
+        <p className="text-sm">
           {selectedMember
             ? `¿Estás seguro de que quieres eliminar a ${selectedMember.firstName} ${selectedMember.lastName}?`
             : "¿Estás seguro de que quieres eliminar este miembro?"}

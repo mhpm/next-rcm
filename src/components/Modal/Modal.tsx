@@ -36,7 +36,7 @@ export const Modal = ({ children, open = false, onClose, title }: Props) => {
 
       {/* Modal content */}
       <div
-        className={`relative mx-auto max-w-lg w-[90%] sm:w-auto p-6 bg-white dark:bg-neutral-900 rounded-lg shadow-lg transition-all duration-200 ${
+        className={`relative mx-auto max-w-lg w-[90%] sm:w-auto p-6 bg-base-100 rounded-lg shadow-lg transition-all duration-200 ${
           open ? "opacity-100" : "opacity-0"
         } top-1/2 -translate-y-1/2`}
       >

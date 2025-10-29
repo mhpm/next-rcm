@@ -87,23 +87,23 @@ export default function MinistriesPage() {
 
   // Define table actions
   const actions: TableAction<MinistryTableData>[] = [
-    {
-      label: "Ver",
-      variant: "ghost",
-      onClick: (ministry) => {
-        router.push(`/ministries/${ministry.id}`);
-      },
-    },
+    // {
+    //   label: "Ver",
+    //   variant: "ghost",
+    //   onClick: (ministry) => {
+    //     router.push(`/ministries/${ministry.id}`);
+    //   },
+    // },
     {
       label: "Editar",
-      variant: "primary",
+      variant: "ghost",
       onClick: (ministry) => {
         router.push(`/ministries/${ministry.id}/edit`);
       },
     },
     {
       label: "Eliminar",
-      variant: "error",
+      variant: "ghost",
       onClick: (ministry) => {
         setMinistryToDelete(ministry);
         setDeleteModalOpen(true);

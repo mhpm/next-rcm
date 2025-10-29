@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useMemo, useEffect } from "react";
 import Link from "next/link";
+import { FaLink } from "react-icons/fa6";
 
 import { useEmailAvailability } from "@/app/members/hooks/useMembers";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -288,7 +289,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
         {/* Columna Derecha */}
         <div className="space-y-8">
           {/* Image Upload */}
-          <div className="card bg-base-100 shadow-sm">
+          {/* <div className="card bg-base-100 shadow-sm">
             <div className="card-body">
               <h2 className="card-title mb-4">Picture</h2>
               <ImageUploadField<FormValues>
@@ -297,7 +298,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                 label="Foto del miembro"
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Role & Ministerio */}
           <div className="card bg-base-100 shadow-sm">
@@ -327,6 +328,12 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                 isLoading={isLoadingMinistries}
                 error={errors.ministries?.message}
               />
+              <p className="text-sm text-neutral-500">
+                ¿No se encuentra tu ministerio?
+                <Link href="/ministries" className="underline text-primary">
+                  Agreagar nuevo ministerio <FaLink className="inline-block" />
+                </Link>
+              </p>
             </div>
           </div>
 
