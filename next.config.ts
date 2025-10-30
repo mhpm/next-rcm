@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['@tanstack/react-query', 'react-icons'],
   },
   // Configuración específica para Prisma en producción
-  output: 'standalone',
+  // output: 'standalone', // Disabled for Vercel deployment
   // Configuración de Turbopack (Next.js 16)
   turbopack: {
     rules: {
