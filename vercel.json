@@ -1,12 +1,19 @@
 {
   "functions": {
-    "app/**/*.js": {
+    "app/**": {
+      "includeFiles": "node_modules/.prisma/client/**"
+    },
+    ".next/server/**": {
       "includeFiles": "node_modules/.prisma/client/**"
     }
   },
   "build": {
     "env": {
-      "PRISMA_GENERATE_SKIP_AUTOINSTALL": "true"
+      "PRISMA_GENERATE_SKIP_AUTOINSTALL": "true",
+      "PRISMA_CLI_BINARY_TARGETS": "native,rhel-openssl-3.0.x,linux-musl,debian-openssl-3.0.x"
     }
-  }
+  },
+  "outputDirectory": ".next",
+  "installCommand": "npm install && npx prisma generate",
+  "buildCommand": "npm run build"
 }
