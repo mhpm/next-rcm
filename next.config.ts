@@ -28,19 +28,28 @@ const nextConfig: NextConfig = {
   },
   // Compresión mejorada
   compress: true,
-  // Optimización de chunks y configuración de Prisma
+  // Optimización de chunks y configuración de Prisma para Vercel
   webpack: (config, { dev, isServer }) => {
-    // Configuración específica para Prisma
+    // Configuración específica para Prisma en Vercel
     if (isServer) {
-      config.externals.push({
-        '@prisma/client': '@prisma/client',
+      // No externalizar @prisma/client para que se bundle correctamente en Vercel
+      config.externals = config.externals.filter((external: any) => {
+        if (typeof external === 'string') {
+          return !external.includes('@prisma/client');
+        }
+        return true;
       });
     }
 
-    // Asegurar que los archivos .node de Prisma se incluyan
+    // Asegurar que los archivos .node de Prisma se incluyan correctamente
     config.module.rules.push({
       test: /\.node$/,
-      use: 'raw-loader',
+      use: 'file-loader',
+      options: {
+        name: '[name].[ext]',
+        outputPath: 'chunks/',
+        publicPath: '/_next/static/chunks/',
+      },
     });
 
     if (!dev && !isServer) {
