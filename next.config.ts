@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
     // Optimizaciones para mejor performance
     optimizePackageImports: ['@tanstack/react-query', 'react-icons'],
   },
+  // Configuración específica para Prisma en producción
+  output: 'standalone',
   // Configuración de Turbopack (Next.js 16)
   turbopack: {
     rules: {
@@ -26,8 +28,21 @@ const nextConfig: NextConfig = {
   },
   // Compresión mejorada
   compress: true,
-  // Optimización de chunks
+  // Optimización de chunks y configuración de Prisma
   webpack: (config, { dev, isServer }) => {
+    // Configuración específica para Prisma
+    if (isServer) {
+      config.externals.push({
+        '@prisma/client': '@prisma/client',
+      });
+    }
+
+    // Asegurar que los archivos .node de Prisma se incluyan
+    config.module.rules.push({
+      test: /\.node$/,
+      use: 'raw-loader',
+    });
+
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
         chunks: 'all',
