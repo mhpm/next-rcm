@@ -27,6 +27,31 @@ export function QueryProvider({ children }: QueryProviderProps) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
+  // Escuchar cambios de tenant y limpiar/invalidate caché para forzar recarga
+  useEffect(() => {
+    const handleTenantChange = () => {
+      // Limpiamos el caché para asegurar que todas las queries se refetch con el nuevo tenant
+      // Esto es más seguro que invalidar selectivamente en apps multi-tenant
+      queryClient.clear();
+    };
+
+    const handleTenantCleared = () => {
+      queryClient.clear();
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('tenantChanged', handleTenantChange);
+      window.addEventListener('tenantCleared', handleTenantCleared);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('tenantChanged', handleTenantChange);
+        window.removeEventListener('tenantCleared', handleTenantCleared);
+      }
+    };
+  }, [queryClient]);
+
   return (
     <QueryClientProvider client={queryClient}>
       {children}

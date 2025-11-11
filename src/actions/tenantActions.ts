@@ -316,13 +316,13 @@ export async function getChurchSlugFromSources(): Promise<string> {
     }
 
     // 3. Fallback a slug por defecto para desarrollo/entornos sin contexto
-    const defaultSlug = process.env.DEFAULT_CHURCH_SLUG ?? "maranatha-cdmx";
-    console.log("Using fallback church slug:", defaultSlug);
-    return defaultSlug;
+    const DEFAULT_CHURCH_SLUG = "demo";
+    console.log("Using fallback church slug:", DEFAULT_CHURCH_SLUG);
+    return DEFAULT_CHURCH_SLUG;
   } catch (error) {
     console.error("Error getting church slug from sources:", error);
-    const defaultSlug = process.env.DEFAULT_CHURCH_SLUG ?? "maranatha-cdmx";
-    return defaultSlug; // Fallback seguro
+    const DEFAULT_CHURCH_SLUG = "demo";
+    return DEFAULT_CHURCH_SLUG; // Fallback seguro
   }
 }
 
@@ -348,15 +348,21 @@ export async function getChurchId(): Promise<string> {
     });
 
     if (!church) {
-      console.warn(`Church not found for slug: ${churchSlug}. Attempting fallback...`);
+      console.warn(
+        `Church not found for slug: ${churchSlug}. Attempting fallback...`
+      );
       // Fallback: intentar tomar la primera iglesia disponible
-      const fallbackChurch = await prisma.churches.findFirst({ select: { id: true, slug: true } });
+      const fallbackChurch = await prisma.churches.findFirst({
+        select: { id: true, slug: true },
+      });
       if (fallbackChurch?.id) {
         console.log(`Using fallback church: ${fallbackChurch.slug}`);
         return fallbackChurch.id;
       }
       // Si no existe ninguna iglesia, lanzar un error claro
-      throw new Error(`No churches found in database and slug '${churchSlug}' did not match any record.`);
+      throw new Error(
+        `No churches found in database and slug '${churchSlug}' did not match any record.`
+      );
     }
 
     return church.id;

@@ -16,21 +16,6 @@ export default function MinistriesPage() {
   const router = useRouter();
   const { showSuccess, showError } = useNotificationStore();
 
-  // Column visibility management
-  const {
-    visibleColumns,
-    toggleColumn,
-    showAllColumns,
-    hideAllColumns,
-    initializeColumns,
-  } = useColumnVisibilityStore();
-
-  // Initialize default columns
-  //   useEffect(() => {
-  //     const defaultColumns = ["name", "description", "memberCount", "createdAt"];
-  //     initializeColumns(defaultColumns);
-  //   }, [initializeColumns]);
-
   // Data fetching
   const {
     data: ministriesData,
@@ -77,23 +62,10 @@ export default function MinistriesPage() {
         <span className="badge badge-primary badge-sm">{value as number}</span>
       ),
     },
-    {
-      key: "createdAt",
-      label: "Fecha de Creación",
-      sortable: true,
-      className: "text-sm text-base-content/70",
-    },
   ];
 
   // Define table actions
   const actions: TableAction<MinistryTableData>[] = [
-    // {
-    //   label: "Ver",
-    //   variant: "ghost",
-    //   onClick: (ministry) => {
-    //     router.push(`/ministries/${ministry.id}`);
-    //   },
-    // },
     {
       label: "Editar",
       variant: "ghost",
@@ -162,7 +134,7 @@ export default function MinistriesPage() {
         searchPlaceholder="Buscar ministerios..."
         selectable={false}
         pagination={true}
-        itemsPerPage={25}
+        itemsPerPage={10}
         loading={loading}
         emptyMessage="No se encontraron ministerios"
         addButton={addButton}

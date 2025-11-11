@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useTenant } from "@/hooks/useTenant";
 import {
   getAllChurches,
@@ -16,6 +17,7 @@ export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
   const [churches, setChurches] = useState<Church[]>([]);
   const [loadingChurches, setLoadingChurches] = useState(true);
   const detailsRef = useRef<HTMLDetailsElement>(null);
+  const router = useRouter();
 
   // Cargar iglesias desde la base de datos
   useEffect(() => {
@@ -56,6 +58,13 @@ export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
           detail: { church: churchForStore },
         })
       );
+
+      // Refrescar el router para re-renderizar Server Components y Server Actions
+      try {
+        router.refresh();
+      } catch (e) {
+        console.warn("router.refresh failed or not available:", e);
+      }
     } catch (error) {
       console.error("Error changing tenant:", error);
     }
@@ -72,6 +81,13 @@ export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
 
       // Disparar evento de cambio de tenant
       window.dispatchEvent(new CustomEvent("tenantCleared"));
+
+      // Refrescar el router para re-renderizar Server Components y Server Actions
+      try {
+        router.refresh();
+      } catch (e) {
+        console.warn("router.refresh failed or not available:", e);
+      }
     } catch (error) {
       console.error("Error clearing tenant:", error);
     }
@@ -114,7 +130,7 @@ export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
         </svg>
       </summary>
 
-      <ul className="menu dropdown-content bg-base-100 rounded-box z-[1] w-64 p-2 shadow-lg border border-base-300">
+      <ul className="menu dropdown-content bg-base-100 rounded-box z-1 w-64 p-2 shadow-lg border border-base-300">
         {/* Header */}
         <li className="menu-title">
           <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wide">
