@@ -61,7 +61,6 @@ const EditMemberClient = ({ memberId }: EditMemberClientProps) => {
         gender: (data.gender as Gender) || Gender.MASCULINO,
         pictureUrl: data.pictureUrl || null,
         notes: data.notes || "",
-        skills: data.skills || [],
         ministries: data.ministries || [],
       };
 

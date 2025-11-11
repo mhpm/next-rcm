@@ -43,7 +43,6 @@ export default function NewMemberPage() {
     gender: formData.gender as Gender,
     ministries: formData.ministries || [], // Include ministries array
     notes: formData.notes || undefined,
-    skills: formData.skills || [],
     picture: formData.picture || undefined,
   });
 

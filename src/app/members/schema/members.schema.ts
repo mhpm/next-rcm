@@ -100,9 +100,7 @@ export const memberSchema = z
       .max(new Date(), "La fecha de nacimiento no puede ser futura")
       .optional(),
 
-    baptismDate: z
-      .date()
-      .optional(),
+    baptismDate: z.date().optional(),
 
     // Church-specific fields
     ministries: z
@@ -113,13 +111,6 @@ export const memberSchema = z
     notes: z
       .string()
       .max(500, "Las notas no pueden exceder 500 caracteres")
-      .optional(),
-
-    skills: z
-      .array(
-        z.string().max(50, "Cada habilidad no puede exceder 50 caracteres")
-      )
-      .max(10, "No se pueden agregar más de 10 habilidades")
       .optional(),
 
     // Password fields for new members
@@ -271,24 +262,30 @@ export const memberFormSchema = z
     birthDate: z
       .string()
       .optional()
-      .refine((val) => {
-        if (!val) return true;
-        const date = new Date(val);
-        return !isNaN(date.getTime()) && date <= new Date();
-      }, {
-        message: "La fecha de nacimiento no puede ser futura",
-      }),
+      .refine(
+        (val) => {
+          if (!val) return true;
+          const date = new Date(val);
+          return !isNaN(date.getTime()) && date <= new Date();
+        },
+        {
+          message: "La fecha de nacimiento no puede ser futura",
+        }
+      ),
 
     baptismDate: z
       .string()
       .optional()
-      .refine((val) => {
-        if (!val) return true;
-        const date = new Date(val);
-        return !isNaN(date.getTime());
-      }, {
-        message: "Formato de fecha inválido",
-      }),
+      .refine(
+        (val) => {
+          if (!val) return true;
+          const date = new Date(val);
+          return !isNaN(date.getTime());
+        },
+        {
+          message: "Formato de fecha inválido",
+        }
+      ),
 
     // Church-specific fields
     ministries: z
@@ -326,7 +323,7 @@ export const memberFormSchema = z
       .array(z.instanceof(File))
       .max(1, "Solo se puede subir una imagen")
       .optional(),
-      
+
     pictureUrl: z.string().optional(),
     createdAt: z.date().optional(),
     updatedAt: z.date().optional(),
