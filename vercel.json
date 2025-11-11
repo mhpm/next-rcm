@@ -1,10 +1,4 @@
 {
-  "build": {
-    "env": {
-      "PRISMA_GENERATE_SKIP_AUTOINSTALL": "true",
-      "PRISMA_CLI_BINARY_TARGETS": "rhel-openssl-3.0.x,linux-musl,debian-openssl-3.0.x,linux-musl-openssl-3.0.x"
-    }
-  },
-  "installCommand": "npm install && npx prisma generate",
-  "buildCommand": "npm run build"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "bunVersion": "1.x"
 }
