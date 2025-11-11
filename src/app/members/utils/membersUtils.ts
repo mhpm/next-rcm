@@ -21,7 +21,6 @@ export const transformMemberToTableData = (
   phone: member.phone || "N/A",
   role: member.role,
   notes: member.notes || "N/A",
-  skills: member.skills.length > 0 ? member.skills.join(", ") : "N/A",
   address: `${member.street || ""}, ${member.city || ""}, ${
     member.state || ""
   }, ${member.country || ""}`,

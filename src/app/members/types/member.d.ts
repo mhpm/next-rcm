@@ -5,7 +5,7 @@ import type {
   Gender,
   Ministry,
   MemberMinistry,
-} from "@prisma/client";
+} from "@/app/generated/prisma";
 export type Member = PrismaMember;
 export type { MemberRole, Gender };
 
@@ -38,7 +38,6 @@ export interface MemberFormData {
   gender: Gender;
   pictureUrl?: string | null; // URL of uploaded picture
   notes?: string;
-  skills?: string[];
   ministries?: string[]; // Array of ministry IDs
   password?: string;
   confirmPassword?: string;
@@ -79,7 +78,6 @@ export type MemberTableData = Omit<
   | "state"
   | "zip"
   | "country"
-  | "skills"
   | "phone"
   | "church_id"
   | "ministries"
@@ -87,7 +85,6 @@ export type MemberTableData = Omit<
   birthDate: string;
   baptismDate: string;
   address: string;
-  skills: string;
   phone: string;
   ministries: string;
 };

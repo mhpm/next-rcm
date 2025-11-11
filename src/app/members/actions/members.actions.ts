@@ -1,5 +1,5 @@
 "use server";
-import { Prisma, MemberRole } from "@prisma/client";
+import { Prisma, MemberRole } from "@/app/generated/prisma";
 import { MemberFormData } from "@/types";
 import * as bcrypt from "bcryptjs";
 import { logger } from "@/lib/logger";
@@ -214,8 +214,6 @@ export const createMember = withErrorHandling(async function createMember(
       gender: parsed.gender,
       // ministerio: parsed.ministerio || "", // Removed - will be handled via MemberMinistry relation
       notes: parsed.notes || null,
-      ...(parsed.skills &&
-        parsed.skills.length > 0 && { skills: parsed.skills }),
       passwordHash,
       pictureUrl, // Now includes the uploaded image URL
       church: {
@@ -335,15 +333,8 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
     if (parsed.gender !== undefined) updateData.gender = parsed.gender;
 
     // Arrays
-    if (
-      parsed.skills !== undefined &&
-      Array.isArray(parsed.skills) &&
-      parsed.skills.length > 0
-    )
-      updateData.skills = parsed.skills;
-
-    // Password
     if (parsed.password) {
+      // Password
       updateData.passwordHash = await bcrypt.hash(parsed.password, 12);
     }
 

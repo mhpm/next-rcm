@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/app/generated/prisma";
 
 // Tipos para operaciones de creación
 type MemberCreateManyData = Prisma.MembersCreateManyInput;
@@ -216,7 +216,7 @@ export async function getChurchIdFromHeaders(): Promise<string> {
   try {
     // const headerStore = await headers();
     // const churchSlug = headerStore.get("x-church-slug");
-    const churchSlug = "demo";
+    const churchSlug = "maranatha-cdmx";
 
     if (!churchSlug) {
       // En lugar de lanzar error, retornamos null para intentar cookies
@@ -315,12 +315,14 @@ export async function getChurchSlugFromSources(): Promise<string> {
       console.log("Cookies not available or no church-slug found");
     }
 
-    // 3. Fallback a 'demo' para desarrollo
-    console.log("Using fallback church slug: demo");
-    return "demo";
+    // 3. Fallback a slug por defecto para desarrollo/entornos sin contexto
+    const defaultSlug = process.env.DEFAULT_CHURCH_SLUG ?? "maranatha-cdmx";
+    console.log("Using fallback church slug:", defaultSlug);
+    return defaultSlug;
   } catch (error) {
     console.error("Error getting church slug from sources:", error);
-    return "demo"; // Fallback seguro
+    const defaultSlug = process.env.DEFAULT_CHURCH_SLUG ?? "maranatha-cdmx";
+    return defaultSlug; // Fallback seguro
   }
 }
 
@@ -330,6 +332,13 @@ export async function getChurchSlugFromSources(): Promise<string> {
  */
 export async function getChurchId(): Promise<string> {
   try {
+    // Ensure database connection is alive (helps with occasional Closed connection errors)
+    try {
+      await prisma.$connect();
+    } catch (e) {
+      console.warn("Prisma connect warning:", e);
+    }
+
     const churchSlug = await getChurchSlugFromSources();
 
     // Convertir slug a church ID
@@ -339,8 +348,15 @@ export async function getChurchId(): Promise<string> {
     });
 
     if (!church) {
-      console.error(`Church not found for slug: ${churchSlug}`);
-      throw new Error(`Church not found for slug: ${churchSlug}`);
+      console.warn(`Church not found for slug: ${churchSlug}. Attempting fallback...`);
+      // Fallback: intentar tomar la primera iglesia disponible
+      const fallbackChurch = await prisma.churches.findFirst({ select: { id: true, slug: true } });
+      if (fallbackChurch?.id) {
+        console.log(`Using fallback church: ${fallbackChurch.slug}`);
+        return fallbackChurch.id;
+      }
+      // Si no existe ninguna iglesia, lanzar un error claro
+      throw new Error(`No churches found in database and slug '${churchSlug}' did not match any record.`);
     }
 
     return church.id;
