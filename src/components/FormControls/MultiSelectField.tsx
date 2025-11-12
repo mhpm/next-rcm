@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { FieldValues, Path } from 'react-hook-form';
-import { RiArrowDownSLine, RiCloseLine } from 'react-icons/ri';
+import React, { useState, useRef, useEffect } from "react";
+import { FieldValues, Path } from "react-hook-form";
+import { RiArrowDownSLine, RiCloseLine } from "react-icons/ri";
 
 export interface MultiSelectOption {
   value: string;
@@ -32,24 +32,26 @@ export function MultiSelectField<T extends FieldValues>({
   disabled = false,
   required = false,
   isLoading = false,
-}: Omit<MultiSelectFieldProps<T>, 'name'>) {
+}: Omit<MultiSelectFieldProps<T>, "name">) {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Filter options based on search term
-  const filteredOptions = options.filter(option =>
+  const filteredOptions = options.filter((option) =>
     option.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Get selected options for display
-  const selectedOptions = options.filter(option => value.includes(option.value));
+  const selectedOptions = options.filter((option) =>
+    value.includes(option.value)
+  );
 
   // Handle option selection
   const handleOptionToggle = (optionValue: string) => {
     const newValue = value.includes(optionValue)
-      ? value.filter(v => v !== optionValue)
+      ? value.filter((v) => v !== optionValue)
       : [...value, optionValue];
     onChange(newValue);
   };
@@ -57,7 +59,7 @@ export function MultiSelectField<T extends FieldValues>({
   // Handle removing a selected option
   const handleRemoveOption = (optionValue: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const newValue = value.filter(v => v !== optionValue);
+    const newValue = value.filter((v) => v !== optionValue);
     onChange(newValue);
   };
 
@@ -70,14 +72,17 @@ export function MultiSelectField<T extends FieldValues>({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
-        setSearchTerm('');
+        setSearchTerm("");
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Focus search input when dropdown opens
@@ -95,15 +100,15 @@ export function MultiSelectField<T extends FieldValues>({
           {required && <span className="text-error ml-1">*</span>}
         </span>
       </label>
-      
+
       <div className="relative" ref={dropdownRef}>
         {/* Main input display */}
         <div
           className={`
-            input input-bordered w-full min-h-[3rem] h-auto cursor-pointer
+            input input-bordered w-full min-h-12 h-auto cursor-pointer
             flex flex-wrap items-center gap-1 p-2
-            ${error ? 'input-error' : ''}
-            ${disabled ? 'input-disabled' : ''}
+            ${error ? "input-error" : ""}
+            ${disabled ? "input-disabled" : ""}
           `}
           onClick={() => !disabled && setIsOpen(!isOpen)}
         >
@@ -113,7 +118,7 @@ export function MultiSelectField<T extends FieldValues>({
               {selectedOptions.map((option) => (
                 <span
                   key={option.value}
-                  className="badge badge-primary gap-1 text-xs"
+                  className="badge badge-primary rounded-full gap-1 text-xs"
                 >
                   {option.label}
                   {!disabled && (
@@ -131,7 +136,7 @@ export function MultiSelectField<T extends FieldValues>({
           ) : (
             <span className="text-base-content/50 flex-1">{placeholder}</span>
           )}
-          
+
           {/* Controls */}
           <div className="flex items-center gap-1">
             {selectedOptions.length > 0 && !disabled && (
@@ -143,8 +148,10 @@ export function MultiSelectField<T extends FieldValues>({
                 <RiCloseLine className="w-4 h-4" />
               </button>
             )}
-            <RiArrowDownSLine 
-              className={`w-5 h-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} 
+            <RiArrowDownSLine
+              className={`w-5 h-5 transition-transform ${
+                isOpen ? "rotate-180" : ""
+              }`}
             />
           </div>
         </div>
@@ -180,7 +187,7 @@ export function MultiSelectField<T extends FieldValues>({
                       key={option.value}
                       className={`
                         px-3 py-2 cursor-pointer hover:bg-base-200 flex items-center gap-2
-                        ${isSelected ? 'bg-primary/10 text-primary' : ''}
+                        ${isSelected ? "bg-primary/10 text-primary" : ""}
                       `}
                       onClick={() => handleOptionToggle(option.value)}
                     >

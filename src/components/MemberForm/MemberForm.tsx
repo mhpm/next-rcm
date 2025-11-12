@@ -330,7 +330,10 @@ export const MemberForm: React.FC<MemberFormProps> = ({
               />
               <p className="text-sm text-neutral-500">
                 ¿No se encuentra tu ministerio?
-                <Link href="/ministries" className="underline text-primary">
+                <Link
+                  href="/ministries"
+                  className="underline text-primary ml-2"
+                >
                   Agreagar nuevo ministerio <FaLink className="inline-block" />
                 </Link>
               </p>

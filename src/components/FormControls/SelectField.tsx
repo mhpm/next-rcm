@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
   FieldValues,
   Path,
   RegisterOptions,
   UseFormRegister,
-} from 'react-hook-form';
+} from "react-hook-form";
 
 type SelectFieldProps<T extends FieldValues> = {
   name: Path<T>;
@@ -25,7 +25,7 @@ export function SelectField<T extends FieldValues>({
   register,
   rules,
   error,
-  className = 'select select-bordered w-full',
+  className = "select select-bordered w-full",
 }: SelectFieldProps<T>) {
   return (
     <fieldset>
