@@ -64,8 +64,6 @@ const EditMemberClient = ({ memberId }: EditMemberClientProps) => {
         ministries: data.ministries || [],
       };
 
-      console.log("🚀 ~ handleSubmit ~ memberData:", memberData);
-
       await updateMemberMutation.mutateAsync({
         id: memberId,
         data: memberData,
@@ -132,7 +130,6 @@ const EditMemberClient = ({ memberId }: EditMemberClientProps) => {
     gender: member.gender,
     pictureUrl: member.pictureUrl || "",
     notes: member.notes || "",
-    skills: member.skills || [],
     ministries:
       member.ministries?.map(
         (memberMinistry: MemberMinistry & { ministry: Ministries }) =>
@@ -142,6 +139,12 @@ const EditMemberClient = ({ memberId }: EditMemberClientProps) => {
 
   return (
     <div className="">
+      <MemberForm
+        onSubmit={handleSubmit}
+        initialData={defaultValues}
+        isEditMode={true}
+        isSubmitting={updateMemberMutation.isPending}
+      />
       {errorMessage && (
         <Alert
           type="error"
@@ -150,13 +153,6 @@ const EditMemberClient = ({ memberId }: EditMemberClientProps) => {
           className="mb-6"
         />
       )}
-
-      <MemberForm
-        onSubmit={handleSubmit}
-        initialData={defaultValues}
-        isEditMode={true}
-        isSubmitting={updateMemberMutation.isPending}
-      />
     </div>
   );
 };

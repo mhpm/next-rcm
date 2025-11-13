@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RiAddLine } from "react-icons/ri";
-import { Breadcrumbs, DataTable } from "@/components";
+import { Breadcrumbs, DataTable, BackLink } from "@/components";
 import {
   TableColumn,
   TableAction,
@@ -97,11 +97,6 @@ export default function MembersPage() {
     {
       key: "notes",
       label: "Notas",
-      sortable: true,
-    },
-    {
-      key: "skills",
-      label: "Habilidades",
       sortable: true,
     },
     {
@@ -218,7 +213,8 @@ export default function MembersPage() {
 
   return (
     <div className="flex flex-col gap-6 p-8">
-      <div className="flex justify-end items-center">
+      <div className="flex items-center justify-between">
+        <BackLink text="Volver atrás" fallbackHref="/dashboard" />
         <Breadcrumbs />
       </div>
       <DataTable<MemberTableData>

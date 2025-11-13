@@ -328,15 +328,14 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                 isLoading={isLoadingMinistries}
                 error={errors.ministries?.message}
               />
-              <p className="text-sm text-neutral-500">
-                ¿No se encuentra tu ministerio?
-                <Link
-                  href="/ministries"
-                  className="underline text-primary ml-2"
-                >
+              <div className="flex flex-wrap justify-start items-start gap-2 mt-2">
+                <p className="text-sm text-neutral-500">
+                  ¿No se encuentra tu ministerio?
+                </p>
+                <Link href="/ministries" className="underline text-primary">
                   Agreagar nuevo ministerio <FaLink className="inline-block" />
                 </Link>
-              </p>
+              </div>
             </div>
           </div>
 

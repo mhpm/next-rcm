@@ -1,6 +1,6 @@
 "use client";
 
-import { Breadcrumbs, MemberForm, Alert } from "@/components";
+import { Breadcrumbs, MemberForm, Alert, BackLink } from "@/components";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SubmitHandler } from "react-hook-form";
@@ -84,10 +84,13 @@ export default function NewMemberPage() {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Añadir Miembro</h1>
+        <BackLink text="Volver atrás" fallbackHref="/dashboard" />
         <Breadcrumbs />
       </div>
 
+      <div className="mb-6 rounded-2xl bg-base-100 p-4 shadow-sm card">
+        <h1 className="text-2xl font-bold">Añadir Miembro</h1>
+      </div>
       <MemberForm
         onSubmit={handleSubmit}
         isSubmitting={createMemberMutation.isPending}

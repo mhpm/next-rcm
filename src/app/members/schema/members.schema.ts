@@ -298,13 +298,6 @@ export const memberFormSchema = z
       .max(500, "Las notas no pueden exceder 500 caracteres")
       .optional(),
 
-    skills: z
-      .array(
-        z.string().max(50, "Cada habilidad no puede exceder 50 caracteres")
-      )
-      .max(10, "No se pueden agregar más de 10 habilidades")
-      .optional(),
-
     // Password fields for new members
     password: z
       .string()
