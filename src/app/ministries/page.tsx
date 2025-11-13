@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RiAddLine } from "react-icons/ri";
-import { Breadcrumbs, DataTable } from "@/components";
+import { BackLink, Breadcrumbs, DataTable } from "@/components";
 import { TableColumn, TableAction, AddButtonConfig } from "@/types";
 import { useMinistries, useDeleteMinistry } from "./hooks/useMinistries";
 import { useColumnVisibilityStore } from "@/components/ColumnVisibilityDropdown";
@@ -121,7 +121,8 @@ export default function MinistriesPage() {
 
   return (
     <div className="space-y-6 p-8">
-      <div className="flex justify-end items-center">
+      <div className="flex items-center justify-between">
+        <BackLink text="Volver atrás" fallbackHref="/dashboard" />
         <Breadcrumbs />
       </div>
       <DataTable<MinistryTableData>
