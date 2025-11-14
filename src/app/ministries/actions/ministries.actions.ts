@@ -1,6 +1,6 @@
 "use server";
 
-import { getTenantPrisma } from "@/actions/tenantActions";
+import { getTenantPrisma, getChurchId } from "@/actions/tenantActions";
 import { Prisma } from "@prisma/client";
 
 // Get all ministries for the current tenant
@@ -101,12 +101,16 @@ export async function createMinistry(data: {
 }) {
   try {
     const prisma = await getTenantPrisma();
+    // Explicitly connect to current tenant to satisfy Prisma types
+    const churchId = await getChurchId();
 
     const ministry = await prisma.ministries.create({
       data: {
         name: data.name,
         description: data.description,
-        church_id: "", // This will be overridden by the tenant middleware
+        church: {
+          connect: { id: churchId },
+        },
       },
     });
 
