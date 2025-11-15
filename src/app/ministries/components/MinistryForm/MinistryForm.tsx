@@ -72,13 +72,23 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
 
   // Observar el leaderId actual del formulario y mostrar chip dinámico
   const leaderIdValue = watch("leaderId");
+  // Estado local para mostrar el chip inmediatamente al seleccionar desde el dropdown
+  const [localSelectedLeader, setLocalSelectedLeader] = useState<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email?: string | null;
+  } | null>(null);
   const { data: selectedLeader } = useMember(leaderIdValue || "");
   const selectedLeaderName = useMemo(() => {
+    if (localSelectedLeader) {
+      return `${localSelectedLeader.firstName} ${localSelectedLeader.lastName}`;
+    }
     if (selectedLeader) {
       return `${selectedLeader.firstName} ${selectedLeader.lastName}`;
     }
     return undefined;
-  }, [selectedLeader]);
+  }, [localSelectedLeader, selectedLeader]);
 
   const handleSubmitInternal: SubmitHandler<MinistryFormInput> = (data) => {
     const normalizedLeaderId =
@@ -124,7 +134,7 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
 
                   {/* Chip del líder seleccionado (si aplica) */}
                   {selectedLeaderName && leaderIdValue ? (
-                    <div className="badge badge-soft badge-primary ml-2 gap-2 mb-2">
+                    <div className="badge badge-soft badge-primary ml-2 gap-2 mb-2 p-3">
                       {selectedLeaderName}
                       <button
                         type="button"
@@ -132,6 +142,7 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
                         onClick={() => {
                           setValue("leaderId", "");
                           setLeaderSearch("");
+                          setLocalSelectedLeader(null);
                         }}
                       >
                         Quitar
@@ -176,6 +187,13 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
                                   setValue("leaderId", m.id);
                                   // Mostrar chip con el nombre seleccionado
                                   setLeaderSearch("");
+                                  // Guardar localmente para mostrar el chip sin esperar al fetch
+                                  setLocalSelectedLeader({
+                                    id: m.id,
+                                    firstName: m.firstName,
+                                    lastName: m.lastName,
+                                    email: m.email,
+                                  });
                                 }}
                               >
                                 {m.firstName} {m.lastName}{" "}
