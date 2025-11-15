@@ -10,7 +10,7 @@ const Breadcrumbs = () => {
   const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
   return (
-    <div className="text-sm breadcrumbs">
+    <div className="text-sm breadcrumbs hidden sm:block">
       <ul>
         <li>
           <Link className="active" href="/dashboard">
