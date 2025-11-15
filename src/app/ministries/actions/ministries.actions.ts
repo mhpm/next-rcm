@@ -159,3 +159,116 @@ export async function deleteMinistry(id: string) {
     throw new Error("Failed to delete ministry");
   }
 }
+
+// ============ MEMBERSHIP OPERATIONS ============
+
+// List members belonging to a ministry (joins MemberMinistry -> Members)
+export async function getMembersByMinistry(ministryId: string) {
+  try {
+    const prisma = await getTenantPrisma();
+
+    const memberships = await prisma.memberMinistry.findMany({
+      where: { ministryId },
+      include: { member: true },
+      orderBy: { createdAt: "asc" },
+    });
+
+    return memberships;
+  } catch (error) {
+    console.error("Error fetching ministry members:", error);
+    throw new Error("Failed to fetch ministry members");
+  }
+}
+
+// Add a member to a ministry
+export async function addMemberToMinistry(
+  ministryId: string,
+  memberId: string
+) {
+  try {
+    const prisma = await getTenantPrisma();
+    const churchId = await getChurchId();
+
+    // Create membership, respecting unique(memberId, ministryId)
+    const membership = await prisma.memberMinistry.create({
+      data: {
+        ministry: { connect: { id: ministryId } },
+        member: { connect: { id: memberId } },
+        church: { connect: { id: churchId } },
+      },
+      include: { member: true, ministry: true },
+    });
+
+    return membership;
+  } catch (error: unknown) {
+    // Manejo seguro del error sin usar 'any'
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      // Violación de restricción única (memberId, ministryId)
+      throw new Error("El miembro ya pertenece a este ministerio");
+    }
+    console.error("Error adding member to ministry:", error);
+    throw new Error("Failed to add member to ministry");
+  }
+}
+
+// Add multiple members to a ministry (bulk)
+export async function addMembersToMinistry(
+  ministryId: string,
+  memberIds: string[]
+) {
+  try {
+    const prisma = await getTenantPrisma();
+    const churchId = await getChurchId();
+
+    if (!memberIds?.length) {
+      return { count: 0 };
+    }
+
+    // Use createMany for efficient bulk insert, skipping duplicates
+    const result = await prisma.memberMinistry.createMany({
+      data: memberIds.map((memberId) => ({
+        ministryId,
+        memberId,
+        // createMany no admite relaciones; debemos usar la FK escalar mapeada
+        // en el esquema como `church_id`
+        church_id: churchId,
+      })),
+      skipDuplicates: true,
+    });
+
+    return { count: result.count };
+  } catch (error: unknown) {
+    console.error("Error adding members to ministry:", error);
+    throw new Error("Failed to add members to ministry");
+  }
+}
+
+// Remove a member from a ministry
+export async function removeMemberFromMinistry(
+  ministryId: string,
+  memberId: string
+) {
+  try {
+    const prisma = await getTenantPrisma();
+
+    // Find membership id first (since delete requires a unique identifier)
+    const membership = await prisma.memberMinistry.findFirst({
+      where: { ministryId, memberId },
+      select: { id: true },
+    });
+
+    if (!membership) {
+      throw new Error("La relación miembro-ministerio no existe");
+    }
+
+    await prisma.memberMinistry.delete({ where: { id: membership.id } });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error removing member from ministry:", error);
+    throw new Error("Failed to remove member from ministry");
+  }
+}

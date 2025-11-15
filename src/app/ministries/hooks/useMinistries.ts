@@ -5,6 +5,9 @@ import {
   createMinistry,
   updateMinistry,
   deleteMinistry,
+  addMemberToMinistry,
+  addMembersToMinistry,
+  removeMemberFromMinistry,
 } from "../actions/ministries.actions";
 import { MinistriesQueryOptions, MinistryFormData } from "../types/ministries";
 
@@ -135,4 +138,42 @@ export const usePrefetchMinistry = () => {
       staleTime: 5 * 60 * 1000,
     });
   };
+};
+
+// ============ MEMBERSHIP MUTATION HOOKS ============
+
+export const useAddMemberToMinistry = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ ministryId, memberId }: { ministryId: string; memberId: string }) =>
+      addMemberToMinistry(ministryId, memberId),
+    onSuccess: (membership) => {
+      // Invalidate the ministry detail to refresh members list
+      queryClient.invalidateQueries({ queryKey: ["ministry", membership.ministryId] });
+    },
+  });
+};
+
+export const useAddMembersToMinistry = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ ministryId, memberIds }: { ministryId: string; memberIds: string[] }) =>
+      addMembersToMinistry(ministryId, memberIds),
+    onSuccess: (_, variables) => {
+      // Invalidate the ministry detail to refresh members list
+      queryClient.invalidateQueries({ queryKey: ["ministry", variables.ministryId] });
+    },
+  });
+};
+
+export const useRemoveMemberFromMinistry = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ ministryId, memberId }: { ministryId: string; memberId: string }) =>
+      removeMemberFromMinistry(ministryId, memberId),
+    onSuccess: (_, variables) => {
+      // Invalidate the ministry detail to refresh members list
+      queryClient.invalidateQueries({ queryKey: ["ministry", variables.ministryId] });
+    },
+  });
 };

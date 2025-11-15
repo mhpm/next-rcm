@@ -11,6 +11,7 @@ import {
 } from "@/app/ministries/hooks/useMinistries";
 import { useNotificationStore } from "@/store/NotificationStore";
 import { BackLink, Breadcrumbs } from "@/components";
+import MinistryMembersTable from "@/app/ministries/components/MinistryMembersTable";
 
 export default function EditMinistryPage({
   params,
@@ -23,6 +24,7 @@ export default function EditMinistryPage({
   const { data: ministryData, isLoading, error } = useMinistry(id);
   const updateMinistry = useUpdateMinistry();
   const { showSuccess, showError } = useNotificationStore();
+  const [activeTab, setActiveTab] = React.useState<"info" | "members">("info");
 
   const handleSubmit = async (data: MinistryFormInput) => {
     try {
@@ -58,16 +60,47 @@ export default function EditMinistryPage({
         <BackLink text="Volver atrás" fallbackHref="/ministries" />
         <Breadcrumbs />
       </div>
-      <MinistryForm
-        initialData={{
-          name: ministryData?.name || "",
-          description: ministryData?.description || "",
-          id: ministryData?.id,
-        }}
-        onSubmit={handleSubmit}
-        isEditMode={true}
-        isSubmitting={updateMinistry.isPending}
-      />
+      {/* Tabs para información y miembros */}
+      <div className="flex flex-col gap-4">
+        <div role="tablist" className="tabs tabs-border">
+          <button
+            role="tab"
+            className={`tab ${activeTab === "info" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("info")}
+          >
+            Información
+          </button>
+          <button
+            role="tab"
+            className={`tab ${activeTab === "members" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("members")}
+          >
+            Miembros
+          </button>
+        </div>
+
+        <div className="mt-2">
+          {activeTab === "info" && (
+            <MinistryForm
+              initialData={{
+                name: ministryData?.name || "",
+                description: ministryData?.description || "",
+                id: ministryData?.id,
+              }}
+              onSubmit={handleSubmit}
+              isEditMode={true}
+              isSubmitting={updateMinistry.isPending}
+            />
+          )}
+
+          {activeTab === "members" && ministryData && (
+            <MinistryMembersTable
+              ministryId={id}
+              memberships={ministryData.members}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
