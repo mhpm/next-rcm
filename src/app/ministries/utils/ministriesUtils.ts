@@ -1,5 +1,7 @@
-import { Ministries } from "@prisma/client";
-import { MinistryTableData, MinistryWithMemberCount } from "../types/ministries";
+import {
+  MinistryTableData,
+  MinistryWithMemberCount,
+} from "../types/ministries";
 
 /**
  * Transform ministry data to table format
