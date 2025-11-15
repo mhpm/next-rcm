@@ -99,7 +99,7 @@ export async function getMinistryById(id: string) {
 export async function createMinistry(data: {
   name: string;
   description?: string;
-  leaderId?: string;
+  leaderId?: string | null;
 }) {
   try {
     const prisma = await getTenantPrisma();
@@ -113,7 +113,8 @@ export async function createMinistry(data: {
         church: {
           connect: { id: churchId },
         },
-        ...(data.leaderId
+        // Connect leader if provided; otherwise no leader relation is set
+        ...(data.leaderId && data.leaderId !== ""
           ? {
               leader: {
                 connect: { id: data.leaderId },
