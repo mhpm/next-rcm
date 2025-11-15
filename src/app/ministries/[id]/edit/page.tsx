@@ -10,7 +10,7 @@ import {
   useUpdateMinistry,
 } from "@/app/ministries/hooks/useMinistries";
 import { useNotificationStore } from "@/store/NotificationStore";
-import { BackLink, Breadcrumbs } from "@/components";
+import { BackLink, Breadcrumbs, MinimalLoader } from "@/components";
 import MinistryMembersTable from "@/app/ministries/components/MinistryMembersTable";
 
 export default function EditMinistryPage({
@@ -40,7 +40,7 @@ export default function EditMinistryPage({
   if (isLoading) {
     return (
       <div className="p-8">
-        <div className="loading loading-spinner loading-lg" />
+        <MinimalLoader />
       </div>
     );
   }

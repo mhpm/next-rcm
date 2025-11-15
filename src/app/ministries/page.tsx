@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { RiAddLine } from "react-icons/ri";
 import { BackLink, Breadcrumbs, DataTable } from "@/components";
 import { TableColumn, TableAction, AddButtonConfig } from "@/types";
 import { useMinistries, useDeleteMinistry } from "./hooks/useMinistries";
-import { useColumnVisibilityStore } from "@/components/ColumnVisibilityDropdown";
 import { Modal } from "@/components/Modal/Modal";
 import { useNotificationStore } from "@/store/NotificationStore";
 import { transformMinistriesToTableData } from "./utils/ministriesUtils";
