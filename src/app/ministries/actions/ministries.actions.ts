@@ -1,7 +1,7 @@
 "use server";
 
 import { getTenantPrisma, getChurchId } from "@/actions/tenantActions";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/app/generated/prisma";
 
 // Get all ministries for the current tenant
 export async function getAllMinistries(options?: {
@@ -75,6 +75,7 @@ export async function getMinistryById(id: string) {
     const ministry = await prisma.ministries.findUnique({
       where: { id },
       include: {
+        leader: true,
         members: {
           include: {
             member: true,
@@ -98,6 +99,7 @@ export async function getMinistryById(id: string) {
 export async function createMinistry(data: {
   name: string;
   description?: string;
+  leaderId?: string;
 }) {
   try {
     const prisma = await getTenantPrisma();
@@ -111,6 +113,13 @@ export async function createMinistry(data: {
         church: {
           connect: { id: churchId },
         },
+        ...(data.leaderId
+          ? {
+              leader: {
+                connect: { id: data.leaderId },
+              },
+            }
+          : {}),
       },
     });
 
@@ -127,20 +136,37 @@ export async function updateMinistry(
   data: {
     name?: string;
     description?: string;
+    leaderId?: string | null;
   }
 ) {
   try {
     const prisma = await getTenantPrisma();
 
+    const updateData: Prisma.MinistriesUpdateInput = {
+      ...(data.name ? { name: data.name } : {}),
+      ...(data.description !== undefined
+        ? { description: data.description }
+        : {}),
+    };
+
+    // Manejar explícitamente la conexión/desconexión del líder SIN usar any
+    if (Object.prototype.hasOwnProperty.call(data, "leaderId")) {
+      updateData.leader = data.leaderId && data.leaderId !== ""
+        ? { connect: { id: data.leaderId } }
+        : { disconnect: true };
+    }
+
     const ministry = await prisma.ministries.update({
       where: { id },
-      data,
+      data: updateData,
     });
 
     return ministry;
   } catch (error) {
     console.error("Error updating ministry:", error);
-    throw new Error("Failed to update ministry");
+    // Surface underlying error message in dev to help diagnose
+    const message = error instanceof Error ? error.message : "Failed to update ministry";
+    throw new Error(message);
   }
 }
 

@@ -86,6 +86,7 @@ export default function EditMinistryPage({
                 name: ministryData?.name || "",
                 description: ministryData?.description || "",
                 id: ministryData?.id,
+                leaderId: ministryData?.leader?.id || ministryData?.leader_id || "",
               }}
               onSubmit={handleSubmit}
               isEditMode={true}

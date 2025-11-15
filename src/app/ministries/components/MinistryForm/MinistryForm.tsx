@@ -1,15 +1,20 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
 
 import { InputField } from "@/components/FormControls";
+import { useMember } from "@/app/members/hooks/useMembers";
+import { getAllMembers } from "@/app/members/actions/members.actions";
+import { useDebounce } from "@/hooks/useDebounce";
 
 // Tipos del formulario
 export interface MinistryFormInput {
   name: string;
   description?: string;
+  leaderId?: string | null;
 }
 
 interface MinistryFormProps {
@@ -34,6 +39,8 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<MinistryFormInput>({
     defaultValues: initialData,
@@ -47,8 +54,40 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
     }
   }, [initialData, reset]);
 
+  // Estado para búsqueda de líder
+  const [leaderSearch, setLeaderSearch] = useState<string>("");
+  const debouncedSearch = useDebounce(leaderSearch, 300);
+  const dropdownOpen = debouncedSearch.length >= 2;
+
+  // Buscar miembros por término (lazy: sólo cuando hay 2+ caracteres)
+  const { data: searchResult, isLoading: isSearching } = useQuery({
+    queryKey: ["member-search", debouncedSearch],
+    queryFn: async () => {
+      const res = await getAllMembers({ search: debouncedSearch, limit: 10 });
+      return res.members;
+    },
+    enabled: debouncedSearch.length >= 2,
+    staleTime: 60_000,
+  });
+
+  // Observar el leaderId actual del formulario y mostrar chip dinámico
+  const leaderIdValue = watch("leaderId");
+  const { data: selectedLeader } = useMember(leaderIdValue || "");
+  const selectedLeaderName = useMemo(() => {
+    if (selectedLeader) {
+      return `${selectedLeader.firstName} ${selectedLeader.lastName}`;
+    }
+    return undefined;
+  }, [selectedLeader]);
+
+  const handleSubmitInternal: SubmitHandler<MinistryFormInput> = (data) => {
+    const normalizedLeaderId =
+      data.leaderId && data.leaderId.trim() !== "" ? data.leaderId : null;
+    onSubmit({ ...data, leaderId: normalizedLeaderId });
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(handleSubmitInternal)}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Columna principal */}
         <div className="lg:col-span-3 space-y-8">
@@ -74,6 +113,85 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
                   defaultValue={initialData?.description}
                   placeholder="Breve descripción"
                 />
+                {/* Buscador y selección de líder */}
+                <fieldset>
+                  <label className="label">
+                    <span className="label-text">Líder del Ministerio</span>
+                  </label>
+
+                  {/* Valor oculto para react-hook-form */}
+                  <input type="hidden" {...register("leaderId")} />
+
+                  {/* Chip del líder seleccionado (si aplica) */}
+                  {selectedLeaderName && leaderIdValue ? (
+                    <div className="badge badge-soft badge-primary ml-2 gap-2 mb-2">
+                      {selectedLeaderName}
+                      <button
+                        type="button"
+                        className="ml-2 btn btn-ghost btn-xs"
+                        onClick={() => {
+                          setValue("leaderId", "");
+                          setLeaderSearch("");
+                        }}
+                      >
+                        Quitar
+                      </button>
+                    </div>
+                  ) : null}
+
+                  {/* Buscador */}
+                  <div
+                    className={`dropdown w-full ${
+                      dropdownOpen ? "dropdown-open" : ""
+                    }`}
+                  >
+                    <input
+                      type="text"
+                      className="input input-bordered w-full"
+                      placeholder="Buscar miembros por nombre..."
+                      value={leaderSearch}
+                      onChange={(e) => setLeaderSearch(e.target.value)}
+                    />
+
+                    {/* Resultados */}
+                    {dropdownOpen && (
+                      <ul className="dropdown-content menu bg-base-100 w-full z-10 shadow">
+                        {isSearching && (
+                          <li className="p-2 text-sm opacity-70">
+                            Buscando...
+                          </li>
+                        )}
+                        {!isSearching &&
+                          (!searchResult || searchResult.length === 0) && (
+                            <li className="p-2 text-sm opacity-70">
+                              Sin resultados
+                            </li>
+                          )}
+                        {!isSearching &&
+                          searchResult?.map((m) => (
+                            <li key={m.id}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setValue("leaderId", m.id);
+                                  // Mostrar chip con el nombre seleccionado
+                                  setLeaderSearch("");
+                                }}
+                              >
+                                {m.firstName} {m.lastName}{" "}
+                                {m.email ? `— ${m.email}` : ""}
+                              </button>
+                            </li>
+                          ))}
+                      </ul>
+                    )}
+                  </div>
+                  {errors.leaderId?.message && (
+                    <p className="text-error text-sm mt-1">
+                      {errors.leaderId.message}
+                    </p>
+                  )}
+                </fieldset>
               </div>
             </div>
           </div>

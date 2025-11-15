@@ -28,6 +28,7 @@ export interface MinistriesQueryOptions {
 export interface MinistryFormData {
   name: string;
   description?: string;
+  leaderId?: string | null;
 }
 
 // ============ TABLE TYPES ============

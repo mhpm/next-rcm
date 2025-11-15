@@ -32,6 +32,7 @@ export default function NewMinistryPage() {
         <Breadcrumbs />
       </div>
       <MinistryForm
+        initialData={{ leaderId: "" }}
         onSubmit={handleSubmit}
         isEditMode={false}
         isSubmitting={createMinistry.isPending}
