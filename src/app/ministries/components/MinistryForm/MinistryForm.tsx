@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 
@@ -35,6 +35,7 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
   isEditMode = false,
   isSubmitting = false,
 }) => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -233,9 +234,14 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
 
       {/* Botones de acción */}
       <div className="flex justify-end gap-4 mt-8">
-        <Link href="/ministries" className="btn btn-ghost">
+        <button
+          type="button"
+          className="btn btn-ghost"
+          onClick={() => router.push("/ministries")}
+          disabled={isSubmitting}
+        >
           Cancelar
-        </Link>
+        </button>
         <button
           type="submit"
           className="btn btn-primary"

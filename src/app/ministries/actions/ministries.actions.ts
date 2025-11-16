@@ -156,9 +156,10 @@ export async function updateMinistry(
 
     // Manejar explícitamente la conexión/desconexión del líder SIN usar any
     if (Object.prototype.hasOwnProperty.call(data, "leaderId")) {
-      updateData.leader = data.leaderId && data.leaderId !== ""
-        ? { connect: { id: data.leaderId } }
-        : { disconnect: true };
+      updateData.leader =
+        data.leaderId && data.leaderId !== ""
+          ? { connect: { id: data.leaderId } }
+          : { disconnect: true };
     }
 
     const ministry = await prisma.ministries.update({

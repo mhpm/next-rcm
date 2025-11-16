@@ -33,7 +33,11 @@ export default function EditMinistryPage({
       router.push("/ministries");
     } catch (err) {
       console.error(err);
-      showError("Error al actualizar el ministerio");
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Error al actualizar el ministerio";
+      showError(message);
     }
   };
 
