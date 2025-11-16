@@ -147,6 +147,33 @@ export async function updateMinistry(
     const prisma = await getTenantPrisma();
     churchId = await getChurchId();
 
+    // Pre-validación: asegurar que el ministerio existe en el tenant actual
+    const existingMinistry = await prisma.ministries.findFirst({
+      where: { id },
+      select: { id: true, name: true },
+    });
+    if (!existingMinistry) {
+      throw new Error(
+        "El ministerio no existe en esta iglesia o el ID es inválido."
+      );
+    }
+
+    // Pre-validación del líder (si se envió leaderId): debe existir en el tenant actual
+    if (Object.prototype.hasOwnProperty.call(data, "leaderId")) {
+      const leaderIdValue = data.leaderId ?? null;
+      if (leaderIdValue) {
+        const existingLeader = await prisma.members.findFirst({
+          where: { id: leaderIdValue },
+          select: { id: true, firstName: true, lastName: true },
+        });
+        if (!existingLeader) {
+          throw new Error(
+            "No se pudo asignar el líder: el miembro seleccionado no pertenece a esta iglesia."
+          );
+        }
+      }
+    }
+
     const updateData: Prisma.MinistriesUpdateInput = {
       ...(data.name ? { name: data.name } : {}),
       ...(data.description !== undefined
