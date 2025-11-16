@@ -142,8 +142,10 @@ export async function updateMinistry(
     leaderId?: string | null;
   }
 ) {
+  let churchId: string | undefined;
   try {
     const prisma = await getTenantPrisma();
+    churchId = await getChurchId();
 
     const updateData: Prisma.MinistriesUpdateInput = {
       ...(data.name ? { name: data.name } : {}),
@@ -166,9 +168,31 @@ export async function updateMinistry(
 
     return ministry;
   } catch (error) {
-    console.error("Error updating ministry:", error);
-    // Surface underlying error message in dev to help diagnose
-    const message = error instanceof Error ? error.message : "Failed to update ministry";
+    // Log detallado para diagnosticar fallas de conexión de líder en producción
+    console.error("Error updating ministry:", {
+      error,
+      context: {
+        operation: "updateMinistry",
+        ministryId: id,
+        leaderId: data?.leaderId ?? null,
+        churchId,
+      },
+    });
+
+    // Si es un error conocido de Prisma (por ejemplo, P2025 al intentar conectar líder que no existe en el tenant)
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        throw new Error(
+          "No se pudo asignar el líder: el miembro seleccionado no se encontró en esta iglesia. Verifica que el líder pertenezca al mismo tenant."
+        );
+      }
+      throw new Error(
+        `Error de base de datos al actualizar el ministerio: ${error.message}`
+      );
+    }
+
+    const message =
+      error instanceof Error ? error.message : "Failed to update ministry";
     throw new Error(message);
   }
 }

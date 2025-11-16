@@ -24,7 +24,7 @@ export function createTenantPrisma(churchId: string) {
           return query(args);
         },
         async findUnique({ args, query }) {
-          args.where = { ...args.where, church_id: churchId };
+          // No modificar findUnique con church_id para evitar romper filtros únicos usados por connect/findUnique
           return query(args);
         },
         async count({ args, query }) {
@@ -55,7 +55,7 @@ export function createTenantPrisma(churchId: string) {
           return query(args);
         },
         async update({ args, query }) {
-          args.where = { ...args.where, church_id: churchId };
+          // No forzar church_id en update de un registro único (where por id)
           return query(args);
         },
         async updateMany({ args, query }) {
@@ -63,7 +63,7 @@ export function createTenantPrisma(churchId: string) {
           return query(args);
         },
         async delete({ args, query }) {
-          args.where = { ...args.where, church_id: churchId };
+          // No forzar church_id en delete de un registro único (where por id)
           return query(args);
         },
         async deleteMany({ args, query }) {
@@ -81,7 +81,7 @@ export function createTenantPrisma(churchId: string) {
           return query(args);
         },
         async findUnique({ args, query }) {
-          args.where = { ...args.where, church_id: churchId };
+          // No modificar findUnique con church_id para evitar romper filtros únicos usados por connect/findUnique
           return query(args);
         },
         async count({ args, query }) {
@@ -112,7 +112,7 @@ export function createTenantPrisma(churchId: string) {
           return query(args);
         },
         async update({ args, query }) {
-          args.where = { ...args.where, church_id: churchId };
+          // No forzar church_id en update de un registro único (where por id)
           return query(args);
         },
         async updateMany({ args, query }) {
@@ -120,7 +120,7 @@ export function createTenantPrisma(churchId: string) {
           return query(args);
         },
         async delete({ args, query }) {
-          args.where = { ...args.where, church_id: churchId };
+          // No forzar church_id en delete de un registro único (where por id)
           return query(args);
         },
         async deleteMany({ args, query }) {
@@ -138,7 +138,7 @@ export function createTenantPrisma(churchId: string) {
           return query(args);
         },
         async findUnique({ args, query }) {
-          args.where = { ...args.where, church_id: churchId };
+          // No modificar findUnique con church_id para evitar romper filtros únicos usados por connect/findUnique
           return query(args);
         },
         async count({ args, query }) {
@@ -179,7 +179,7 @@ export function createTenantPrisma(churchId: string) {
           return query(args);
         },
         async update({ args, query }) {
-          args.where = { ...args.where, church_id: churchId };
+          // No forzar church_id en update de un registro único (where por id)
           return query(args);
         },
         async updateMany({ args, query }) {
@@ -187,7 +187,7 @@ export function createTenantPrisma(churchId: string) {
           return query(args);
         },
         async delete({ args, query }) {
-          args.where = { ...args.where, church_id: churchId };
+          // No forzar church_id en delete de un registro único (where por id)
           return query(args);
         },
         async deleteMany({ args, query }) {
