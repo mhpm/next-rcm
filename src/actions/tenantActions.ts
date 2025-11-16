@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { headers } from "next/headers";
 import { Prisma } from "@/app/generated/prisma";
 
 // Tipos para operaciones de creación
@@ -203,84 +202,38 @@ export function createTenantPrisma(churchId: string) {
 }
 
 /**
+ * Obtiene el slug de la iglesia desde las credenciales del usuario autenticado.
+ *
+ * NOTA: Este es un stub temporal hasta que exista login.
+ * En el futuro, aquí se integrará con tu proveedor de autenticación (p. ej. NextAuth)
+ * para extraer el tenant/iglesia del usuario autenticado.
+ *
+ * Por ahora, siempre retorna "demo" para utilizar esa iglesia como default.
+ */
+export async function getChurchSlugFromAuth(): Promise<string | null> {
+  // TODO: Integrar con autenticación (NextAuth / JWT / sesión propia) para obtener el slug de la iglesia.
+  // Ejemplo a futuro:
+  // const session = await auth();
+  // return session?.user?.churchSlug ?? null;
+  return "demo";
+}
+
+/**
  * Helper para obtener el church_id desde headers en server actions
  * En Next.js 16, intentamos obtener desde headers si están disponibles
  */
-export async function getChurchIdFromHeaders(): Promise<string> {
-  if (typeof window !== "undefined") {
-    throw new Error(
-      "getChurchIdFromHeaders should only be called on the server"
-    );
-  }
-
-  try {
-    // const headerStore = await headers();
-    // const churchSlug = headerStore.get("x-church-slug");
-    const churchSlug = "maranatha-cdmx";
-
-    if (!churchSlug) {
-      // En lugar de lanzar error, retornamos null para intentar cookies
-      throw new Error("Church slug not found in headers");
-    }
-
-    // Convertir slug a church ID
-    const church = await prisma.churches.findUnique({
-      where: { slug: churchSlug },
-      select: { id: true },
-    });
-
-    if (!church) {
-      throw new Error(`Church not found for slug: ${churchSlug}`);
-    }
-
-    return church.id;
-  } catch (error) {
-    console.error("Error getting church ID from headers:", error);
-    throw new Error("Failed to get church context from headers");
-  }
-}
+// getChurchIdFromHeaders eliminado: el tenant se resolverá exclusivamente desde auth/default
 
 /**
  * Helper para obtener el church_id desde cookies en server actions
  */
-export async function getChurchIdFromCookies(): Promise<string> {
-  if (typeof window !== "undefined") {
-    throw new Error(
-      "getChurchIdFromCookies should only be called on the server"
-    );
-  }
-
-  try {
-    const { cookies } = await import("next/headers");
-    const cookieStore = await cookies();
-    const churchSlug = cookieStore.get("church-slug")?.value;
-
-    if (!churchSlug) {
-      throw new Error(
-        "Church slug not found in cookies. Make sure tenant is properly set."
-      );
-    }
-
-    // Convertir slug a church ID
-    const church = await prisma.churches.findUnique({
-      where: { slug: churchSlug },
-      select: { id: true },
-    });
-
-    if (!church) {
-      throw new Error(`Church not found for slug: ${churchSlug}`);
-    }
-
-    return church.id;
-  } catch (error) {
-    console.error("Error getting church ID from cookies:", error);
-    throw new Error("Failed to get church context from cookies");
-  }
-}
+// getChurchIdFromCookies eliminado: el tenant se resolverá exclusivamente desde auth/default
 
 /**
- * Helper para obtener church-slug desde múltiples fuentes
- * Prioridad: URL params > Headers > Cookies > Default
+ * Obtén el church-slug exclusivamente desde credenciales (auth) y/o default.
+ *
+ * Se deja de lado headers/cookies según la solicitud.
+ * Por ahora, siempre retorna "demo" hasta que exista login.
  */
 export async function getChurchSlugFromSources(): Promise<string> {
   if (typeof window !== "undefined") {
@@ -290,45 +243,21 @@ export async function getChurchSlugFromSources(): Promise<string> {
   }
 
   try {
-    // 1. Intentar desde headers (si están disponibles)
-    try {
-      const headerStore = await headers();
-      const churchSlug = headerStore.get("x-church-slug");
-      if (churchSlug) {
-        console.log("Church slug found in headers:", churchSlug);
-        return churchSlug;
-      }
-    } catch (error) {
-      console.log("Headers not available or no church-slug found");
-    }
+    const fromAuth = await getChurchSlugFromAuth();
+    if (fromAuth) return fromAuth;
 
-    // 2. Intentar desde cookies
-    try {
-      const { cookies } = await import("next/headers");
-      const cookieStore = await cookies();
-      const churchSlug = cookieStore.get("church-slug")?.value;
-      if (churchSlug) {
-        console.log("Church slug found in cookies:", churchSlug);
-        return churchSlug;
-      }
-    } catch (error) {
-      console.log("Cookies not available or no church-slug found");
-    }
-
-    // 3. Fallback a slug por defecto para desarrollo/entornos sin contexto
-    const DEFAULT_CHURCH_SLUG = "demo";
-    console.log("Using fallback church slug:", DEFAULT_CHURCH_SLUG);
-    return DEFAULT_CHURCH_SLUG;
+    // Default permanente mientras no exista login.
+    return "demo";
   } catch (error) {
-    console.error("Error getting church slug from sources:", error);
-    const DEFAULT_CHURCH_SLUG = "demo";
-    return DEFAULT_CHURCH_SLUG; // Fallback seguro
+    console.error("Error getting church slug (auth/default)", error);
+    // Default permanente
+    return "demo";
   }
 }
 
 /**
  * Helper principal para obtener el church_id en server actions
- * Usa el nuevo método de múltiples fuentes
+ * Usa el método basado en auth/default
  */
 export async function getChurchId(): Promise<string> {
   try {
@@ -348,20 +277,10 @@ export async function getChurchId(): Promise<string> {
     });
 
     if (!church) {
-      console.warn(
-        `Church not found for slug: ${churchSlug}. Attempting fallback...`
-      );
-      // Fallback: intentar tomar la primera iglesia disponible
-      const fallbackChurch = await prisma.churches.findFirst({
-        select: { id: true, slug: true },
-      });
-      if (fallbackChurch?.id) {
-        console.log(`Using fallback church: ${fallbackChurch.slug}`);
-        return fallbackChurch.id;
-      }
-      // Si no existe ninguna iglesia, lanzar un error claro
+      // Sin fallback: queremos usar exclusivamente la iglesia "demo".
+      // Si no existe, lanzamos error claro para que sea creada (seed o manualmente).
       throw new Error(
-        `No churches found in database and slug '${churchSlug}' did not match any record.`
+        `Church not found for slug '${churchSlug}'. Ensure a church with slug '${churchSlug}' exists.`
       );
     }
 
