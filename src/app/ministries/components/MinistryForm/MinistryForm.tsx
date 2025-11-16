@@ -72,7 +72,7 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
 
   // Observar el leaderId actual del formulario y mostrar chip dinámico
   const leaderIdValue = watch("leaderId");
-  // Estado local para mostrar el chip inmediatamente al seleccionar desde el dropdown
+  // Estado local para mantener estable el chip del líder (evita parpadeos durante refetch)
   const [localSelectedLeader, setLocalSelectedLeader] = useState<{
     id: string;
     firstName: string;
@@ -89,6 +89,18 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
     }
     return undefined;
   }, [localSelectedLeader, selectedLeader]);
+
+  // Sincroniza el estado local con el dato remoto cuando exista leaderId (evita desaparezca el chip durante el refetch)
+  useEffect(() => {
+    if (!localSelectedLeader && selectedLeader) {
+      setLocalSelectedLeader({
+        id: selectedLeader.id,
+        firstName: selectedLeader.firstName,
+        lastName: selectedLeader.lastName,
+        email: selectedLeader.email ?? null,
+      });
+    }
+  }, [selectedLeader, localSelectedLeader]);
 
   const handleSubmitInternal: SubmitHandler<MinistryFormInput> = (data) => {
     const normalizedLeaderId =
@@ -133,8 +145,8 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
                   <input type="hidden" {...register("leaderId")} />
 
                   {/* Chip del líder seleccionado (si aplica) */}
-                  {selectedLeaderName && leaderIdValue ? (
-                    <div className="badge badge-soft badge-primary ml-2 gap-2 mb-2 p-3">
+                  {selectedLeaderName ? (
+                    <div className="badge badge-soft badge-neutral ml-2 gap-2 mb-2 p-3">
                       {selectedLeaderName}
                       <button
                         type="button"

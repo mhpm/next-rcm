@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { RiAddLine } from "react-icons/ri";
 import { BackLink, Breadcrumbs, DataTable } from "@/components";
 import { TableColumn, TableAction, AddButtonConfig } from "@/types";
@@ -53,13 +54,30 @@ export default function MinistriesPage() {
       className: "max-w-xs truncate",
     },
     {
+      key: "leaderName",
+      label: "Líder",
+      sortable: true,
+      className: "font-semibold",
+      render: (value, row) => {
+        const name = value as string;
+        if (row.leaderId) {
+          return (
+            <Link
+              href={`/members/${row.leaderId}/edit`}
+              className="hover:underline text-primary"
+            >
+              {name}
+            </Link>
+          );
+        }
+        return <span className="text-neutral/45">{name}</span>;
+      },
+    },
+    {
       key: "memberCount",
       label: "Miembros",
       sortable: true,
-      className: "text-center",
-      render: (value) => (
-        <span className="badge badge-primary badge-sm">{value as number}</span>
-      ),
+      className: "text-center font-semibold",
     },
   ];
 

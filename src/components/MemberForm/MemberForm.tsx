@@ -162,7 +162,14 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           {/* Basic Information */}
           <div className="card bg-base-100 shadow-sm">
             <div className="card-body">
-              <h2 className="card-title mb-4">Información Básica</h2>
+              <h3 className="card-title text-lg font-semibold text-base-content">
+                Editar Miembro
+              </h3>
+              <p className="text-sm text-base-content/70 mb-2">
+                {isEditMode
+                  ? "Actualiza la información del miembro"
+                  : "Ingresa los datos básicos del miembro"}
+              </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InputField<FormValues>
                   name="firstName"

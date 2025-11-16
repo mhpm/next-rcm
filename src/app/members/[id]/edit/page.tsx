@@ -27,10 +27,6 @@ const EditMemberPage = ({ params }: PageProps) => {
         <BackLink text="Volver atrás" fallbackHref="/dashboard" />
         <Breadcrumbs />
       </div>
-
-      <div className="mb-6 rounded-2xl bg-base-100 p-4 shadow-sm card">
-        <h1 className="text-2xl font-bold">Editar Miembro</h1>
-      </div>
       <EditMemberClient memberId={memberId} />
     </div>
   );

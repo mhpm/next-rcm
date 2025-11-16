@@ -1,4 +1,4 @@
-import type { Ministries } from "@prisma/client";
+import type { Ministries, Members } from "@/app/generated/prisma";
 
 // ============ TYPES ============
 
@@ -37,6 +37,8 @@ export interface MinistryTableData {
   id: string;
   name: string;
   description: string;
+  leaderName?: string; // Nombre del líder (si existe)
+  leaderId?: string | null; // ID del líder para navegación
   memberCount: number;
   createdAt: string;
   updatedAt: string;
@@ -45,4 +47,5 @@ export interface MinistryTableData {
 
 export type MinistryWithMemberCount = Ministries & {
   memberCount: number;
+  leader?: Members | null;
 }

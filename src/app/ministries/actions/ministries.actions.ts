@@ -40,6 +40,8 @@ export async function getAllMinistries(options?: {
           [orderBy]: orderDirection,
         },
         include: {
+          // Include leader to show in the table
+          leader: true,
           _count: {
             select: {
               members: true,
