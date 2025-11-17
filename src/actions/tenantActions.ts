@@ -244,15 +244,6 @@ export async function getChurchSlugFromSources(): Promise<string> {
   }
 
   try {
-    // 1. Intentar obtener desde la cookie (más fiable en Server Actions)
-    const cookieStore = cookies();
-    const fromCookie = (await cookieStore).get("church-slug")?.value;
-    if (fromCookie) {
-      console.log(`[getChurchSlug] Found slug in cookie: ${fromCookie}`);
-      return fromCookie;
-    }
-
-    // 2. Fallback a la autenticación (cuando esté implementada)
     const fromAuth = await getChurchSlugFromAuth();
     if (fromAuth) {
       console.log(`[getChurchSlug] Found slug in auth: ${fromAuth}`);
