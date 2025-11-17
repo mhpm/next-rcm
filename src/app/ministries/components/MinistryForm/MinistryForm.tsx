@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
@@ -49,7 +49,12 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
   });
 
   // Reset cuando cambian los datos iniciales (útil en modo edición)
+  const prevInitialDataRef = useRef<string | null>(null);
   useEffect(() => {
+    const json = JSON.stringify(initialData ?? {});
+    // Evitar reestablecer el formulario si el contenido de initialData no cambió
+    if (prevInitialDataRef.current === json) return;
+    prevInitialDataRef.current = json;
     if (initialData) {
       reset(initialData);
     }
@@ -57,8 +62,25 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
 
   // Estado para búsqueda de líder
   const [leaderSearch, setLeaderSearch] = useState<string>("");
+  const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
+  const [hasUserTyped, setHasUserTyped] = useState<boolean>(false);
   const debouncedSearch = useDebounce(leaderSearch, 300);
-  const dropdownOpen = debouncedSearch.length >= 2;
+  const dropdownOpen =
+    isSearchFocused && hasUserTyped && debouncedSearch.length >= 2;
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const leaderIdValue = watch("leaderId");
+  const { data: currentLeader } = useMember(leaderIdValue || "");
+
+  // Efecto: sincroniza el nombre en el input cuando hay leaderId válido.
+  // No limpiar el input si no hay leaderId para no borrar lo que escribe el usuario.
+  useEffect(() => {
+    if (leaderIdValue && currentLeader) {
+      setLeaderSearch(`${currentLeader.firstName} ${currentLeader.lastName}`);
+      setHasUserTyped(false);
+    }
+  }, [leaderIdValue, currentLeader]);
 
   // Buscar miembros por término (lazy: sólo cuando hay 2+ caracteres)
   const { data: searchResult, isLoading: isSearching } = useQuery({
@@ -67,56 +89,28 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
       const res = await getAllMembers({ search: debouncedSearch, limit: 10 });
       return res.members;
     },
-    enabled: debouncedSearch.length >= 2,
+    enabled: dropdownOpen, // Solo ejecutar si el dropdown está abierto
     staleTime: 60_000,
   });
 
-  // Observar el leaderId actual del formulario y mostrar chip dinámico
-  const leaderIdValue = watch("leaderId");
-  // Estado local para mantener estable el chip del líder (evita parpadeos durante refetch)
-  const [localSelectedLeader, setLocalSelectedLeader] = useState<{
-    id: string;
-    firstName: string;
-    lastName: string;
-    email?: string | null;
-  } | null>(null);
-  const { data: selectedLeader } = useMember(leaderIdValue || "");
-  const selectedLeaderName = useMemo(() => {
-    if (localSelectedLeader) {
-      return `${localSelectedLeader.firstName} ${localSelectedLeader.lastName}`;
-    }
-    if (selectedLeader) {
-      return `${selectedLeader.firstName} ${selectedLeader.lastName}`;
-    }
-    return undefined;
-  }, [localSelectedLeader, selectedLeader]);
+  // Observar el leaderId actual del formulario
 
-  // Sincroniza el estado local con el dato remoto cuando exista leaderId (evita desaparezca el chip durante el refetch)
-  useEffect(() => {
-    if (selectedLeader) {
-      setLocalSelectedLeader({
-        id: selectedLeader.id,
-        firstName: selectedLeader.firstName,
-        lastName: selectedLeader.lastName,
-        email: selectedLeader.email ?? null,
-      });
-    } else {
-      setLocalSelectedLeader(null);
+  const handleSubmitInternal = async (data: MinistryFormInput) => {
+    try {
+      await onSubmit(data);
+      // Mantener sincronizados los valores del formulario con lo enviado
+      // para evitar que visualmente se "regenere" con los valores antiguos.
+      reset(data);
+      // Actualizar referencia para que el efecto de initialData no sobrescriba lo enviado
+      prevInitialDataRef.current = JSON.stringify(data ?? {});
+      setHasUserTyped(false);
+    } catch (error) {
+      console.error("Error al enviar el formulario", error);
     }
-  }, [selectedLeader]);
-
-  const handleSubmitInternal: SubmitHandler<MinistryFormInput> = (data) => {
-    // Usar el leaderId directamente del estado del formulario (watch)
-    // ya que es la fuente de verdad más fiable.
-    const currentLeaderId = leaderIdValue;
-    const normalizedLeaderId =
-      currentLeaderId && currentLeaderId.trim() !== "" ? currentLeaderId : null;
-
-    onSubmit({ ...data, leaderId: normalizedLeaderId });
   };
 
   return (
-    <form onSubmit={handleSubmit(handleSubmitInternal)}>
+    <form onSubmit={handleSubmit(handleSubmitInternal)} className="space-y-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Columna principal */}
         <div className="lg:col-span-3 space-y-8">
@@ -151,23 +145,7 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
                   {/* Valor oculto para react-hook-form */}
                   <input type="hidden" {...register("leaderId")} />
 
-                  {/* Chip del líder seleccionado (si aplica) */}
-                  {selectedLeaderName ? (
-                    <div className="badge badge-soft badge-neutral ml-2 gap-2 mb-2 p-3">
-                      {selectedLeaderName}
-                      <button
-                        type="button"
-                        className="ml-2 btn btn-ghost btn-xs"
-                        onClick={() => {
-                          setValue("leaderId", "");
-                          setLeaderSearch("");
-                          setLocalSelectedLeader(null);
-                        }}
-                      >
-                        Quitar
-                      </button>
-                    </div>
-                  ) : null}
+                  {/* Mostrar solo el campo de búsqueda sin chip */}
 
                   {/* Buscador */}
                   <div
@@ -175,51 +153,92 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
                       dropdownOpen ? "dropdown-open" : ""
                     }`}
                   >
-                    <input
-                      type="text"
-                      className="input input-bordered w-full"
-                      placeholder="Buscar miembros por nombre..."
-                      value={leaderSearch}
-                      onChange={(e) => setLeaderSearch(e.target.value)}
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        className="input input-bordered w-full pr-10"
+                        placeholder="Buscar miembros por nombre..."
+                        value={leaderSearch}
+                        onChange={(e) => {
+                          setLeaderSearch(e.target.value);
+                          setHasUserTyped(true);
+                          if (e.target.value === "") {
+                            setValue("leaderId", null);
+                          }
+                        }}
+                        onFocus={() => {
+                          setIsSearchFocused(true);
+                          // No abrir resultados si no hay tecleo aún
+                          setHasUserTyped(false);
+                        }}
+                        onBlur={() =>
+                          setTimeout(() => {
+                            setIsSearchFocused(false);
+                            setHasUserTyped(false);
+                          }, 150)
+                        }
+                        ref={searchInputRef}
+                      />
+
+                      {leaderIdValue && leaderSearch && (
+                        <button
+                          type="button"
+                          aria-label="Quitar líder"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => {
+                            setValue("leaderId", null);
+                            setLeaderSearch("");
+                            setHasUserTyped(false);
+                            searchInputRef.current?.focus();
+                          }}
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
 
                     {/* Resultados */}
                     {dropdownOpen && (
-                      <ul className="dropdown-content menu bg-base-100 w-full z-10 shadow">
-                        {isSearching && (
-                          <li className="p-2 text-sm opacity-70">
-                            Buscando...
+                      <ul
+                        tabIndex={0}
+                        className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full mt-2"
+                      >
+                        {isSearching ? (
+                          <li>
+                            <span>Buscando...</span>
                           </li>
-                        )}
-                        {!isSearching &&
-                          (!searchResult || searchResult.length === 0) && (
-                            <li className="p-2 text-sm opacity-70">
-                              Sin resultados
-                            </li>
-                          )}
-                        {!isSearching &&
-                          searchResult?.map((m) => (
+                        ) : searchResult && searchResult.length > 0 ? (
+                          searchResult.map((m) => (
                             <li key={m.id}>
                               <button
                                 type="button"
+                                onMouseDown={(e) => {
+                                  // Evita que el input pierda el foco antes de que se ejecute el click
+                                  // así no se cierra el dropdown y no se "deshace" la selección
+                                  e.preventDefault();
+                                }}
                                 onClick={() => {
                                   setValue("leaderId", m.id);
-                                  // Mostrar chip con el nombre seleccionado
-                                  setLeaderSearch("");
-                                  // Guardar localmente para mostrar el chip sin esperar al fetch
-                                  setLocalSelectedLeader({
-                                    id: m.id,
-                                    firstName: m.firstName,
-                                    lastName: m.lastName,
-                                    email: m.email,
-                                  });
+                                  setLeaderSearch(
+                                    `${m.firstName} ${m.lastName}`
+                                  );
+                                  setIsSearchFocused(false);
+                                  setHasUserTyped(false);
                                 }}
                               >
                                 {m.firstName} {m.lastName}{" "}
-                                {m.email ? `— ${m.email}` : ""}
+                                <span className="text-gray-500">
+                                  - {m.email}
+                                </span>
                               </button>
                             </li>
-                          ))}
+                          ))
+                        ) : (
+                          <li>
+                            <span>Sin resultados</span>
+                          </li>
+                        )}
                       </ul>
                     )}
                   </div>

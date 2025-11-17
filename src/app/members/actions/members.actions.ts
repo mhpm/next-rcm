@@ -37,13 +37,39 @@ export async function getAllMembers(options?: {
     const prisma = await getTenantPrisma();
     const whereClause: Prisma.MembersWhereInput = {};
 
-    // Add search filter
+    // Add search filter (supports "first last" queries and single-term)
     if (search) {
-      whereClause.OR = [
-        { firstName: { contains: search, mode: "insensitive" } },
-        { lastName: { contains: search, mode: "insensitive" } },
-        { email: { contains: search, mode: "insensitive" } },
+      const term = search.trim();
+      const parts = term.split(/\s+/).filter(Boolean);
+
+      const orClauses: Prisma.MembersWhereInput[] = [
+        { firstName: { contains: term, mode: "insensitive" } },
+        { lastName: { contains: term, mode: "insensitive" } },
+        { email: { contains: term, mode: "insensitive" } },
       ];
+
+      // If query includes two or more parts, support "First Last" matching in both orders
+      if (parts.length >= 2) {
+        const first = parts[0];
+        const last = parts.slice(1).join(" "); // support multi-word last names
+
+        orClauses.push(
+          {
+            AND: [
+              { firstName: { contains: first, mode: "insensitive" } },
+              { lastName: { contains: last, mode: "insensitive" } },
+            ],
+          },
+          {
+            AND: [
+              { firstName: { contains: last, mode: "insensitive" } },
+              { lastName: { contains: first, mode: "insensitive" } },
+            ],
+          }
+        );
+      }
+
+      whereClause.OR = orClauses;
     }
 
     // Add role filter
