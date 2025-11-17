@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/app/generated/prisma";
+import { cookies } from "next/headers";
 
 // Tipos para operaciones de creación
 type MemberCreateManyData = Prisma.MembersCreateManyInput;
@@ -243,14 +244,27 @@ export async function getChurchSlugFromSources(): Promise<string> {
   }
 
   try {
-    const fromAuth = await getChurchSlugFromAuth();
-    if (fromAuth) return fromAuth;
+    // 1. Intentar obtener desde la cookie (más fiable en Server Actions)
+    const cookieStore = cookies();
+    const fromCookie = (await cookieStore).get("church-slug")?.value;
+    if (fromCookie) {
+      console.log(`[getChurchSlug] Found slug in cookie: ${fromCookie}`);
+      return fromCookie;
+    }
 
-    // Default permanente mientras no exista login.
+    // 2. Fallback a la autenticación (cuando esté implementada)
+    const fromAuth = await getChurchSlugFromAuth();
+    if (fromAuth) {
+      console.log(`[getChurchSlug] Found slug in auth: ${fromAuth}`);
+      return fromAuth;
+    }
+
+    // 3. Default final solo si todo lo demás falla
+    console.log("[getChurchSlug] No slug found, using default 'demo'");
     return "demo";
   } catch (error) {
-    console.error("Error getting church slug (auth/default)", error);
-    // Default permanente
+    console.error("Error getting church slug from sources", error);
+    // Default de seguridad
     return "demo";
   }
 }
@@ -277,7 +291,7 @@ export async function getChurchId(): Promise<string> {
     });
 
     if (!church) {
-      // Sin fallback: queremos usar exclusivamente la iglesia "demo".
+      // Sin fallback: queremos usar exclusivamente la iglesia "demo"..
       // Si no existe, lanzamos error claro para que sea creada (seed o manualmente).
       throw new Error(
         `Church not found for slug '${churchSlug}'. Ensure a church with slug '${churchSlug}' exists.`
