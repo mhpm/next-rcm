@@ -158,9 +158,9 @@ exports.Prisma.MinistriesScalarFieldEnum = {
   name: 'name',
   description: 'description',
   church_id: 'church_id',
-  leader_id: 'leader_id',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  leader_id: 'leader_id'
 };
 
 exports.Prisma.MemberMinistryScalarFieldEnum = {

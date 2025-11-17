@@ -219,7 +219,7 @@ export default function MembersPage() {
       </div>
       <DataTable<MemberTableData>
         title="Miembros"
-        subTitle="Lista de miembros de la iglesia"
+        subTitle={`Total de miembros en la iglesia: ${members.length}`}
         data={members}
         columns={visibleColumnsArray}
         actions={actions}

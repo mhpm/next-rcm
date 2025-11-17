@@ -35,7 +35,7 @@ export default function MinistriesPage() {
     useState<MinistryTableData | null>(null);
 
   // Transform data for table
-  const tableData = ministriesData?.ministries
+  const ministries = ministriesData?.ministries
     ? transformMinistriesToTableData(ministriesData.ministries)
     : [];
 
@@ -143,9 +143,9 @@ export default function MinistriesPage() {
         <Breadcrumbs />
       </div>
       <DataTable<MinistryTableData>
-        data={tableData}
+        data={ministries}
         title="Ministerios"
-        subTitle="Gestiona los ministerios de tu iglesia"
+        subTitle={`Total de ministerios en la iglesia: ${ministries.length}`}
         columns={columns}
         actions={actions}
         searchable={true}

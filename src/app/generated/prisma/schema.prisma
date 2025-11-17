@@ -45,7 +45,6 @@ model Members {
   updatedAt     DateTime         @updatedAt @map("updated_at")
   ministries    MemberMinistry[]
   church        Churches         @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  // Ministries where this member is the designated leader
   ledMinistries Ministries[]     @relation("MinistryLeader")
 
   @@index([email])
@@ -60,13 +59,12 @@ model Ministries {
   name        String
   description String?
   church_id   String
-  // Leader of the ministry (a member can lead one or more ministries)
-  leader_id   String?
   createdAt   DateTime         @default(now()) @map("created_at")
   updatedAt   DateTime         @updatedAt @map("updated_at")
+  leader_id   String?
   members     MemberMinistry[]
   church      Churches         @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  leader      Members?         @relation("MinistryLeader", fields: [leader_id], references: [id], onDelete: SetNull)
+  leader      Members?         @relation("MinistryLeader", fields: [leader_id], references: [id])
 
   @@unique([name, church_id])
   @@index([church_id])

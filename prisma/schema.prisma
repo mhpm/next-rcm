@@ -22,31 +22,30 @@ model Churches {
 }
 
 model Members {
-  id           String           @id @default(cuid())
-  firstName    String           @map("first_name")
-  lastName     String           @map("last_name")
-  email        String           @unique
-  phone        String?
-  age          Int?
-  street       String?
-  city         String?
-  state        String?
-  zip          String?
-  country      String?          @default("México")
-  birthDate    DateTime?        @map("birth_date")
-  baptismDate  DateTime?        @map("baptism_date")
-  role         MemberRole       @default(MIEMBRO)
-  gender       Gender           @default(MASCULINO)
-  pictureUrl   String?          @map("picture_url")
-  notes        String?
-  passwordHash String?          @map("password_hash")
-  church_id    String
-  createdAt    DateTime         @default(now()) @map("created_at")
-  updatedAt    DateTime         @updatedAt @map("updated_at")
-  ministries   MemberMinistry[]
-  church       Churches         @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  // Ministries where this member is the designated leader
-  ledMinistries Ministries[]    @relation("MinistryLeader")
+  id            String           @id @default(cuid())
+  firstName     String           @map("first_name")
+  lastName      String           @map("last_name")
+  email         String           @unique
+  phone         String?
+  age           Int?
+  street        String?
+  city          String?
+  state         String?
+  zip           String?
+  country       String?          @default("México")
+  birthDate     DateTime?        @map("birth_date")
+  baptismDate   DateTime?        @map("baptism_date")
+  role          MemberRole       @default(MIEMBRO)
+  gender        Gender           @default(MASCULINO)
+  pictureUrl    String?          @map("picture_url")
+  notes         String?
+  passwordHash  String?          @map("password_hash")
+  church_id     String
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+  ministries    MemberMinistry[]
+  church        Churches         @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  ledMinistries Ministries[]     @relation("MinistryLeader")
 
   @@index([email])
   @@index([role])
@@ -60,13 +59,12 @@ model Ministries {
   name        String
   description String?
   church_id   String
-  // Leader of the ministry (a member can lead one or more ministries)
-  leader_id   String?
   createdAt   DateTime         @default(now()) @map("created_at")
   updatedAt   DateTime         @updatedAt @map("updated_at")
+  leader_id   String?
   members     MemberMinistry[]
   church      Churches         @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  leader      Members?         @relation("MinistryLeader", fields: [leader_id], references: [id], onDelete: SetNull)
+  leader      Members?         @relation("MinistryLeader", fields: [leader_id], references: [id])
 
   @@unique([name, church_id])
   @@index([church_id])

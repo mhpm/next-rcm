@@ -3785,9 +3785,9 @@ export namespace Prisma {
     name: string | null
     description: string | null
     church_id: string | null
-    leader_id: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    leader_id: string | null
   }
 
   export type MinistriesMaxAggregateOutputType = {
@@ -3795,9 +3795,9 @@ export namespace Prisma {
     name: string | null
     description: string | null
     church_id: string | null
-    leader_id: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    leader_id: string | null
   }
 
   export type MinistriesCountAggregateOutputType = {
@@ -3805,9 +3805,9 @@ export namespace Prisma {
     name: number
     description: number
     church_id: number
-    leader_id: number
     createdAt: number
     updatedAt: number
+    leader_id: number
     _all: number
   }
 
@@ -3817,9 +3817,9 @@ export namespace Prisma {
     name?: true
     description?: true
     church_id?: true
-    leader_id?: true
     createdAt?: true
     updatedAt?: true
+    leader_id?: true
   }
 
   export type MinistriesMaxAggregateInputType = {
@@ -3827,9 +3827,9 @@ export namespace Prisma {
     name?: true
     description?: true
     church_id?: true
-    leader_id?: true
     createdAt?: true
     updatedAt?: true
+    leader_id?: true
   }
 
   export type MinistriesCountAggregateInputType = {
@@ -3837,9 +3837,9 @@ export namespace Prisma {
     name?: true
     description?: true
     church_id?: true
-    leader_id?: true
     createdAt?: true
     updatedAt?: true
+    leader_id?: true
     _all?: true
   }
 
@@ -3920,9 +3920,9 @@ export namespace Prisma {
     name: string
     description: string | null
     church_id: string
-    leader_id: string | null
     createdAt: Date
     updatedAt: Date
+    leader_id: string | null
     _count: MinistriesCountAggregateOutputType | null
     _min: MinistriesMinAggregateOutputType | null
     _max: MinistriesMaxAggregateOutputType | null
@@ -3947,9 +3947,9 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     church_id?: boolean
-    leader_id?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    leader_id?: boolean
     members?: boolean | Ministries$membersArgs<ExtArgs>
     church?: boolean | ChurchesDefaultArgs<ExtArgs>
     leader?: boolean | Ministries$leaderArgs<ExtArgs>
@@ -3961,9 +3961,9 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     church_id?: boolean
-    leader_id?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    leader_id?: boolean
     church?: boolean | ChurchesDefaultArgs<ExtArgs>
     leader?: boolean | Ministries$leaderArgs<ExtArgs>
   }, ExtArgs["result"]["ministries"]>
@@ -3973,9 +3973,9 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     church_id?: boolean
-    leader_id?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    leader_id?: boolean
     church?: boolean | ChurchesDefaultArgs<ExtArgs>
     leader?: boolean | Ministries$leaderArgs<ExtArgs>
   }, ExtArgs["result"]["ministries"]>
@@ -3985,12 +3985,12 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     church_id?: boolean
-    leader_id?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    leader_id?: boolean
   }
 
-  export type MinistriesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "church_id" | "leader_id" | "createdAt" | "updatedAt", ExtArgs["result"]["ministries"]>
+  export type MinistriesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "church_id" | "createdAt" | "updatedAt" | "leader_id", ExtArgs["result"]["ministries"]>
   export type MinistriesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | Ministries$membersArgs<ExtArgs>
     church?: boolean | ChurchesDefaultArgs<ExtArgs>
@@ -4018,9 +4018,9 @@ export namespace Prisma {
       name: string
       description: string | null
       church_id: string
-      leader_id: string | null
       createdAt: Date
       updatedAt: Date
+      leader_id: string | null
     }, ExtArgs["result"]["ministries"]>
     composites: {}
   }
@@ -4451,9 +4451,9 @@ export namespace Prisma {
     readonly name: FieldRef<"Ministries", 'String'>
     readonly description: FieldRef<"Ministries", 'String'>
     readonly church_id: FieldRef<"Ministries", 'String'>
-    readonly leader_id: FieldRef<"Ministries", 'String'>
     readonly createdAt: FieldRef<"Ministries", 'DateTime'>
     readonly updatedAt: FieldRef<"Ministries", 'DateTime'>
+    readonly leader_id: FieldRef<"Ministries", 'String'>
   }
     
 
@@ -6055,9 +6055,9 @@ export namespace Prisma {
     name: 'name',
     description: 'description',
     church_id: 'church_id',
-    leader_id: 'leader_id',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    leader_id: 'leader_id'
   };
 
   export type MinistriesScalarFieldEnum = (typeof MinistriesScalarFieldEnum)[keyof typeof MinistriesScalarFieldEnum]
@@ -6403,9 +6403,9 @@ export namespace Prisma {
     name?: StringFilter<"Ministries"> | string
     description?: StringNullableFilter<"Ministries"> | string | null
     church_id?: StringFilter<"Ministries"> | string
-    leader_id?: StringNullableFilter<"Ministries"> | string | null
     createdAt?: DateTimeFilter<"Ministries"> | Date | string
     updatedAt?: DateTimeFilter<"Ministries"> | Date | string
+    leader_id?: StringNullableFilter<"Ministries"> | string | null
     members?: MemberMinistryListRelationFilter
     church?: XOR<ChurchesScalarRelationFilter, ChurchesWhereInput>
     leader?: XOR<MembersNullableScalarRelationFilter, MembersWhereInput> | null
@@ -6416,9 +6416,9 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     church_id?: SortOrder
-    leader_id?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    leader_id?: SortOrderInput | SortOrder
     members?: MemberMinistryOrderByRelationAggregateInput
     church?: ChurchesOrderByWithRelationInput
     leader?: MembersOrderByWithRelationInput
@@ -6433,9 +6433,9 @@ export namespace Prisma {
     name?: StringFilter<"Ministries"> | string
     description?: StringNullableFilter<"Ministries"> | string | null
     church_id?: StringFilter<"Ministries"> | string
-    leader_id?: StringNullableFilter<"Ministries"> | string | null
     createdAt?: DateTimeFilter<"Ministries"> | Date | string
     updatedAt?: DateTimeFilter<"Ministries"> | Date | string
+    leader_id?: StringNullableFilter<"Ministries"> | string | null
     members?: MemberMinistryListRelationFilter
     church?: XOR<ChurchesScalarRelationFilter, ChurchesWhereInput>
     leader?: XOR<MembersNullableScalarRelationFilter, MembersWhereInput> | null
@@ -6446,9 +6446,9 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     church_id?: SortOrder
-    leader_id?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    leader_id?: SortOrderInput | SortOrder
     _count?: MinistriesCountOrderByAggregateInput
     _max?: MinistriesMaxOrderByAggregateInput
     _min?: MinistriesMinOrderByAggregateInput
@@ -6462,9 +6462,9 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Ministries"> | string
     description?: StringNullableWithAggregatesFilter<"Ministries"> | string | null
     church_id?: StringWithAggregatesFilter<"Ministries"> | string
-    leader_id?: StringNullableWithAggregatesFilter<"Ministries"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Ministries"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Ministries"> | Date | string
+    leader_id?: StringNullableWithAggregatesFilter<"Ministries"> | string | null
   }
 
   export type MemberMinistryWhereInput = {
@@ -6793,9 +6793,9 @@ export namespace Prisma {
     name: string
     description?: string | null
     church_id: string
-    leader_id?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    leader_id?: string | null
     members?: MemberMinistryUncheckedCreateNestedManyWithoutMinistryInput
   }
 
@@ -6815,9 +6815,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     church_id?: StringFieldUpdateOperationsInput | string
-    leader_id?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    leader_id?: NullableStringFieldUpdateOperationsInput | string | null
     members?: MemberMinistryUncheckedUpdateManyWithoutMinistryNestedInput
   }
 
@@ -6826,9 +6826,9 @@ export namespace Prisma {
     name: string
     description?: string | null
     church_id: string
-    leader_id?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    leader_id?: string | null
   }
 
   export type MinistriesUpdateManyMutationInput = {
@@ -6844,9 +6844,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     church_id?: StringFieldUpdateOperationsInput | string
-    leader_id?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    leader_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MemberMinistryCreateInput = {
@@ -7245,9 +7245,9 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrder
     church_id?: SortOrder
-    leader_id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    leader_id?: SortOrder
   }
 
   export type MinistriesMaxOrderByAggregateInput = {
@@ -7255,9 +7255,9 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrder
     church_id?: SortOrder
-    leader_id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    leader_id?: SortOrder
   }
 
   export type MinistriesMinOrderByAggregateInput = {
@@ -7265,9 +7265,9 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrder
     church_id?: SortOrder
-    leader_id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    leader_id?: SortOrder
   }
 
   export type MembersScalarRelationFilter = {
@@ -7977,9 +7977,9 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    leader_id?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    leader_id?: string | null
     members?: MemberMinistryUncheckedCreateNestedManyWithoutMinistryInput
   }
 
@@ -8088,9 +8088,9 @@ export namespace Prisma {
     name?: StringFilter<"Ministries"> | string
     description?: StringNullableFilter<"Ministries"> | string | null
     church_id?: StringFilter<"Ministries"> | string
-    leader_id?: StringNullableFilter<"Ministries"> | string | null
     createdAt?: DateTimeFilter<"Ministries"> | Date | string
     updatedAt?: DateTimeFilter<"Ministries"> | Date | string
+    leader_id?: StringNullableFilter<"Ministries"> | string | null
   }
 
   export type MemberMinistryCreateWithoutMemberInput = {
@@ -8546,9 +8546,9 @@ export namespace Prisma {
     name: string
     description?: string | null
     church_id: string
-    leader_id?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    leader_id?: string | null
   }
 
   export type MinistriesCreateOrConnectWithoutMembersInput = {
@@ -8674,9 +8674,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     church_id?: StringFieldUpdateOperationsInput | string
-    leader_id?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    leader_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MemberMinistryCreateManyChurchInput = {
@@ -8714,9 +8714,9 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    leader_id?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    leader_id?: string | null
   }
 
   export type MemberMinistryUpdateWithoutChurchInput = {
@@ -8830,9 +8830,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    leader_id?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    leader_id?: NullableStringFieldUpdateOperationsInput | string | null
     members?: MemberMinistryUncheckedUpdateManyWithoutMinistryNestedInput
   }
 
@@ -8840,9 +8840,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    leader_id?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    leader_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MemberMinistryCreateManyMemberInput = {
