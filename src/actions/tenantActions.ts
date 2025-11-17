@@ -215,7 +215,7 @@ export async function getChurchSlugFromAuth(): Promise<string | null> {
   // Ejemplo a futuro:
   // const session = await auth();
   // return session?.user?.churchSlug ?? null;
-  return "vida-nueva-guadalajara";
+  return "demo";
 }
 
 /**
