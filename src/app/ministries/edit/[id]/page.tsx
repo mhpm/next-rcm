@@ -16,7 +16,6 @@ import MinistryMembersTable from "@/app/ministries/components/MinistryMembersTab
 export default function EditMinistryPage({
   params,
 }: {
-  // In Client Components, params is a Promise and must be unwrapped with React.use()
   params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
@@ -90,7 +89,8 @@ export default function EditMinistryPage({
                 name: ministryData?.name || "",
                 description: ministryData?.description || "",
                 id: ministryData?.id,
-                leaderId: ministryData?.leader?.id || ministryData?.leader_id || "",
+                leaderId:
+                  ministryData?.leader?.id || ministryData?.leader_id || "",
               }}
               onSubmit={handleSubmit}
               isEditMode={true}

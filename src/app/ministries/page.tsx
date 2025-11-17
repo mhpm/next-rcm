@@ -87,7 +87,7 @@ export default function MinistriesPage() {
       label: "Editar",
       variant: "ghost",
       onClick: (ministry) => {
-        router.push(`/ministries/${ministry.id}/edit`);
+        router.push(`/ministries/edit/${ministry.id}`);
       },
     },
     {

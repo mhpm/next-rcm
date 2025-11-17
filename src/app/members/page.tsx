@@ -155,7 +155,7 @@ export default function MembersPage() {
       label: "Editar",
       variant: "ghost",
       onClick: (row) => {
-        router.push(`/members/${row.id}/edit`);
+        router.push(`/members/edit/${row.id}`);
       },
     },
     {
