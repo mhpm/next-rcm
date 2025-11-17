@@ -6,12 +6,16 @@ declare global {
 
 // Singleton pattern for Prisma Client
 const createPrismaClient = () => {
-  return new PrismaClient({
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "error", "warn"]
-        : ["error"],
-  });
+  const isDev = process.env.NODE_ENV === "development";
+  const prismaLogLevel = process.env.PRISMA_LOG_LEVEL;
+  const log: ("query" | "info" | "warn" | "error")[] =
+    prismaLogLevel === "debug"
+      ? ["query", "error", "warn"]
+      : isDev
+      ? ["query", "error", "warn"]
+      : ["error", "warn"]; // Incluir warn en producción para mejor visibilidad
+
+  return new PrismaClient({ log });
 };
 
 export const prisma = globalThis.__prisma ?? createPrismaClient();

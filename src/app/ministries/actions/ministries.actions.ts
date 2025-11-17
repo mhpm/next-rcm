@@ -194,6 +194,17 @@ export async function updateMinistry(
       data: updateData,
     });
 
+    // Log de éxito para inspección en producción
+    console.log("[updateMinistry:success]", {
+      operation: "updateMinistry",
+      ministryId: id,
+      leaderIdAttempted: Object.prototype.hasOwnProperty.call(data, "leaderId")
+        ? data.leaderId ?? null
+        : "not-provided",
+      churchId,
+      resultLeaderId: ministry.leader_id ?? null,
+    });
+
     return ministry;
   } catch (error) {
     // Log detallado para diagnosticar fallas de conexión de líder en producción
