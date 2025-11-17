@@ -93,19 +93,25 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
 
   // Sincroniza el estado local con el dato remoto cuando exista leaderId (evita desaparezca el chip durante el refetch)
   useEffect(() => {
-    if (!localSelectedLeader && selectedLeader) {
+    if (selectedLeader) {
       setLocalSelectedLeader({
         id: selectedLeader.id,
         firstName: selectedLeader.firstName,
         lastName: selectedLeader.lastName,
         email: selectedLeader.email ?? null,
       });
+    } else {
+      setLocalSelectedLeader(null);
     }
-  }, [selectedLeader, localSelectedLeader]);
+  }, [selectedLeader]);
 
   const handleSubmitInternal: SubmitHandler<MinistryFormInput> = (data) => {
+    // Usar el leaderId directamente del estado del formulario (watch)
+    // ya que es la fuente de verdad más fiable.
+    const currentLeaderId = leaderIdValue;
     const normalizedLeaderId =
-      data.leaderId && data.leaderId.trim() !== "" ? data.leaderId : null;
+      currentLeaderId && currentLeaderId.trim() !== "" ? currentLeaderId : null;
+
     onSubmit({ ...data, leaderId: normalizedLeaderId });
   };
 
