@@ -5,3 +5,5 @@ export { PasswordField } from './PasswordField';
 export { EmailField } from './EmailField';
 export { ImageUploadField } from './ImageUploadField';
 export { MultiSelectField } from './MultiSelectField';
+export { MemberSearchField } from './MemberSearchField';
+export { AutocompleteField } from './AutocompleteField';
