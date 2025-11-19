@@ -29,7 +29,6 @@ export default function EditMinistryPage({
     try {
       await updateMinistry.mutateAsync({ id, data });
       showSuccess("Ministerio actualizado exitosamente");
-      router.push("/ministries");
     } catch (err) {
       console.error(err);
       const message =

@@ -121,7 +121,7 @@ export default function MinistryMembersTable({
       <DataTable
         data={rows}
         title="Miembros del ministerio"
-        subTitle="Administra los miembros asociados"
+        subTitle={`Total de miembros en el ministerio: ${memberships.length}`}
         columns={columns}
         actions={actions}
         addButton={addButton}

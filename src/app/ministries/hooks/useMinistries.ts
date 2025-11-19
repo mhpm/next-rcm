@@ -150,6 +150,7 @@ export const useAddMemberToMinistry = () => {
     onSuccess: (membership) => {
       // Invalidate the ministry detail to refresh members list
       queryClient.invalidateQueries({ queryKey: ["ministry", membership.ministryId] });
+      queryClient.invalidateQueries({ queryKey: ["ministries"] });
     },
   });
 };
@@ -162,6 +163,7 @@ export const useAddMembersToMinistry = () => {
     onSuccess: (_, variables) => {
       // Invalidate the ministry detail to refresh members list
       queryClient.invalidateQueries({ queryKey: ["ministry", variables.ministryId] });
+      queryClient.invalidateQueries({ queryKey: ["ministries"] });
     },
   });
 };
@@ -174,6 +176,7 @@ export const useRemoveMemberFromMinistry = () => {
     onSuccess: (_, variables) => {
       // Invalidate the ministry detail to refresh members list
       queryClient.invalidateQueries({ queryKey: ["ministry", variables.ministryId] });
+      queryClient.invalidateQueries({ queryKey: ["ministries"] });
     },
   });
 };
