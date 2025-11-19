@@ -8,6 +8,7 @@ import {
   addMemberToMinistry,
   addMembersToMinistry,
   removeMemberFromMinistry,
+  getMinistryStats,
 } from "../actions/ministries.actions";
 import { MinistriesQueryOptions, MinistryFormData } from "../types/ministries";
 
@@ -52,6 +53,19 @@ const fetchMinistry = async (id: string) => {
   }
 };
 
+const fetchMinistryStats = async () => {
+  try {
+    const result = await withTimeout(getMinistryStats());
+    return result;
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Error desconocido al obtener estadísticas de ministerios"
+    );
+  }
+};
+
 // ============ HOOKS ============
 
 // Hook for fetching all ministries
@@ -72,6 +86,15 @@ export const useMinistry = (id: string) => {
     enabled: !!id,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+  });
+};
+
+export const useMinistryStats = () => {
+  return useQuery({
+    queryKey: ["ministries", "stats"],
+    queryFn: () => fetchMinistryStats(),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
   });
 };
 

@@ -409,3 +409,51 @@ export async function removeMemberFromMinistry(
     throw new Error("Failed to remove member from ministry");
   }
 }
+
+// Get ministry stats
+export async function getMinistryStats() {
+  try {
+    const prisma = await getChurchPrisma();
+    const churchId = await getChurchId();
+
+    const [total, membershipsByMinistry] = await Promise.all([
+      prisma.ministries.count({ where: { church_id: churchId } }),
+      prisma.memberMinistry.groupBy({
+        where: { church_id: churchId },
+        by: ["ministryId"],
+        _count: { ministryId: true },
+      }),
+    ]);
+
+    const ministryIds = membershipsByMinistry.map((m) => m.ministryId);
+    const ministries = ministryIds.length
+      ? await prisma.ministries.findMany({
+          where: { id: { in: ministryIds } },
+          select: { id: true, name: true },
+        })
+      : [];
+    const nameMap = new Map(ministries.map((m) => [m.id, m.name]));
+
+    const byMinistry = membershipsByMinistry.reduce((acc, item) => {
+      const name = nameMap.get(item.ministryId) ?? item.ministryId;
+      acc[name] = item._count.ministryId;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const distinctMembers = await prisma.memberMinistry.findMany({
+      where: { church_id: churchId },
+      distinct: ["memberId"],
+      select: { memberId: true },
+    });
+    const membersInAnyMinistry = distinctMembers.length;
+
+    return {
+      total,
+      membersInAnyMinistry,
+      byMinistry,
+    };
+  } catch (error) {
+    console.error("Error fetching ministry stats:", error);
+    throw new Error("Failed to fetch ministry statistics");
+  }
+}

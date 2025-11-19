@@ -8,8 +8,32 @@ import {
   FaPersonChalkboard,
 } from "react-icons/fa6";
 import Link from "next/link";
+import { useMemberStats } from "@/app/members/hooks/useMembers";
+import { useMinistryStats } from "@/app/ministries/hooks/useMinistries";
 
 export default function Dashboard() {
+  const { data: stats, isLoading } = useMemberStats();
+  const { data: ministryStats, isLoading: isLoadingMinistries } =
+    useMinistryStats();
+
+  const totalMembers = isLoading ? "…" : String(stats?.total ?? 0);
+  const totalMinistries = isLoadingMinistries
+    ? "…"
+    : String(ministryStats?.total ?? 0);
+  const membersInAnyMinistry = isLoadingMinistries
+    ? "…"
+    : String(ministryStats?.membersInAnyMinistry ?? 0);
+  const extraMinistryStats = [
+    {
+      label: "Miembros activos:",
+      value: `${membersInAnyMinistry} / ${totalMembers}`,
+    },
+    {
+      label: "Miemrbos sin ministerio:",
+      value: `${Number(totalMembers) - Number(membersInAnyMinistry)}`,
+    },
+  ];
+
   return (
     <div className="p-4 md:p-8">
       <div className="flex justify-between items-center mb-6">
@@ -20,7 +44,7 @@ export default function Dashboard() {
         <Link href="/members" className="cursor-pointer">
           <StatCard
             title="Miembros"
-            value="700"
+            value={totalMembers}
             change="10.8%"
             changeType="increase"
             period="vs. 12 ultimo cuatrimestre"
@@ -60,11 +84,12 @@ export default function Dashboard() {
         <Link href="/ministries" className="cursor-pointer">
           <StatCard
             title="Ministerios"
-            value="10"
+            value={totalMinistries}
             change="8.5%"
             changeType="increase"
             period="vs. 3 ultimo cuatrimestre"
             icon={<FaPersonChalkboard size={24} />}
+            extraStats={extraMinistryStats}
           />
         </Link>
       </div>

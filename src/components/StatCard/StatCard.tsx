@@ -1,5 +1,18 @@
 import { FaArrowTrendUp, FaArrowTrendDown } from "react-icons/fa6";
 
+type StatCardExtraStat = { label: string; value: string | number };
+
+interface StatCardProps {
+  icon: React.ReactNode;
+  title: string;
+  value: string;
+  change: string;
+  changeType: "increase" | "decrease";
+  period: string;
+  iconBg?: string;
+  extraStats?: StatCardExtraStat[];
+}
+
 export const StatCard = ({
   icon,
   title,
@@ -8,15 +21,8 @@ export const StatCard = ({
   changeType,
   period,
   iconBg = "bg-base-300",
-}: {
-  icon: React.ReactNode;
-  title: string;
-  value: string;
-  change: string;
-  changeType: "increase" | "decrease";
-  period: string;
-  iconBg?: string;
-}) => (
+  extraStats,
+}: StatCardProps) => (
   <div className="card bg-base-100 card-border shadow-md">
     <div className="stats relative">
       <div className="stat">
@@ -42,6 +48,21 @@ export const StatCard = ({
           </span>
           <span className="text-base-content/60">{period}</span>
         </div>
+        {extraStats && extraStats.length > 0 ? (
+          <div className="mt-4">
+            <div className="grid grid-cols-1 gap-2">
+              {extraStats.map((item) => (
+                <div
+                  key={item.label}
+                  className="flex items-center justify-between text-sm"
+                >
+                  <span className="text-base-content/70">{item.label}</span>
+                  <span className="font-semibold">{String(item.value)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   </div>
