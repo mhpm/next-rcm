@@ -276,6 +276,7 @@ export const useCreateMember = () => {
       // Invalidate and refetch all member-related queries
       queryClient.invalidateQueries({ queryKey: ['members'] });
       queryClient.invalidateQueries({ queryKey: ['members', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['ministries'] });
     },
     // Removido onError para que los errores se propaguen correctamente
   });
@@ -312,6 +313,7 @@ export const useDeleteMember = () => {
       // Invalidate and refetch member-related queries
       queryClient.invalidateQueries({ queryKey: ['members'] });
       queryClient.invalidateQueries({ queryKey: ['members', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['ministries'] });
     },
     // Removido onError para que los errores se propaguen correctamente
   });

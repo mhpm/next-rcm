@@ -23,7 +23,7 @@ function DataTable<T extends Record<string, unknown>>({
   actions = [],
   searchable = true,
   searchPlaceholder = "Buscar...",
-  selectable = true,
+  selectable = false,
   pagination = true,
   itemsPerPage = 10,
   loading = false,
@@ -49,7 +49,7 @@ function DataTable<T extends Record<string, unknown>>({
     if (!visibleColumns || visibleColumns.size === 0) {
       return columns;
     }
-    return columns.filter(column => visibleColumns.has(String(column.key)));
+    return columns.filter((column) => visibleColumns.has(String(column.key)));
   }, [columns, visibleColumns]);
 
   // Sorting state

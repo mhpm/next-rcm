@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
   FieldValues,
   Path,
@@ -13,7 +12,7 @@ import {
   getAllMembers,
   getMemberById,
 } from "@/app/members/actions/members.actions";
-import { Member } from "@/types";
+import { MemberWithMinistries } from "@/types";
 
 type MemberSearchFieldProps<T extends FieldValues> = {
   name: Path<T>;
@@ -37,7 +36,7 @@ export function MemberSearchField<T extends FieldValues>({
   minChars = 2,
 }: MemberSearchFieldProps<T>) {
   return (
-    <AutocompleteField<T, Member>
+    <AutocompleteField<T, MemberWithMinistries>
       name={name}
       label={label}
       placeholder={placeholder || "Buscar miembros por nombre..."}
@@ -53,6 +52,7 @@ export function MemberSearchField<T extends FieldValues>({
       resolveById={async (id) => {
         try {
           const member = await getMemberById(id);
+          console.log("🚀 ~ MemberSearchField ~ member:", member);
           return member ?? null;
         } catch (e) {
           console.error("Error fetching member by ID:", e);
@@ -64,6 +64,14 @@ export function MemberSearchField<T extends FieldValues>({
       renderItem={(m) => (
         <>
           {m.firstName} {m.lastName}{" "}
+          <span className="text-sm font-semibold text-gray-700">
+            {m.ministries && m.ministries.length > 0
+              ? m.ministries
+                  .map((mm: MemberWithMinistries) => mm.ministry?.name)
+                  .filter(Boolean)
+                  .join(", ")
+              : "No pertenece a ningún ministerio"}
+          </span>
         </>
       )}
     />

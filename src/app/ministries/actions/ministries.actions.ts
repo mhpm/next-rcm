@@ -194,6 +194,44 @@ export async function updateMinistry(
       data: updateData,
     });
 
+    // After updating the ministry, if a new leader was assigned, ensure they are a member.
+    if (data.leaderId) {
+      const isMember = await prisma.memberMinistry.findFirst({
+        where: {
+          ministryId: id,
+          memberId: data.leaderId,
+        },
+      });
+
+      if (!isMember) {
+        try {
+          await prisma.memberMinistry.create({
+            data: {
+              church: { connect: { id: churchId! } },
+              member: { connect: { id: data.leaderId } },
+              ministry: { connect: { id } },
+            },
+          });
+          console.log("[updateMinistry:memberAdded]", {
+            ministryId: id,
+            memberId: data.leaderId,
+          });
+        } catch (e) {
+          if (
+            e instanceof Prisma.PrismaClientKnownRequestError &&
+            e.code === "P2002"
+          ) {
+            console.warn("[updateMinistry:memberExists]", {
+              ministryId: id,
+              memberId: data.leaderId,
+            });
+          } else {
+            throw e;
+          }
+        }
+      }
+    }
+
     // Log de éxito para inspección en producción
     console.log("[updateMinistry:success]", {
       operation: "updateMinistry",
@@ -356,7 +394,14 @@ export async function removeMemberFromMinistry(
       throw new Error("La relación miembro-ministerio no existe");
     }
 
+    // Eliminar la relación miembro-ministerio
     await prisma.memberMinistry.delete({ where: { id: membership.id } });
+
+    // Si el miembro era líder, actualizar a null en la tabla ministries
+    await prisma.ministries.updateMany({
+      where: { id: ministryId, leader_id: memberId },
+      data: { leader_id: null },
+    });
 
     return { success: true };
   } catch (error) {

@@ -63,7 +63,7 @@ export default function MinistriesPage() {
         if (row.leaderId) {
           return (
             <Link
-              href={`/members/${row.leaderId}/edit`}
+              href={`/members/edit/${row.leaderId}`}
               className="hover:underline text-primary"
             >
               {name}

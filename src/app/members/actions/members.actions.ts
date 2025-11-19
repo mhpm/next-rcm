@@ -470,6 +470,13 @@ export async function deleteMember(id: string) {
       throw new Error("Member not found");
     }
 
+    // Before deleting the member, check if they are a leader of any ministry
+    // and nullify the leader_id in those ministries.
+    await prisma.ministries.updateMany({
+      where: { leader_id: id },
+      data: { leader_id: null },
+    });
+
     await prisma.members.delete({
       where: { id },
     });

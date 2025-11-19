@@ -102,9 +102,12 @@ export const useUpdateMinistry = () => {
       id: string;
       data: Partial<MinistryFormData>;
     }) => updateMinistry(id, data),
-    onSuccess: (_, { id }) => {
+    onSuccess: (_, { id, data }) => {
       queryClient.invalidateQueries({ queryKey: ["ministries"] });
       queryClient.invalidateQueries({ queryKey: ["ministry", id] });
+      if (data.leaderId) {
+        queryClient.invalidateQueries({ queryKey: ["member", data.leaderId] });
+      }
     },
     onError: (error) => {
       console.error("Error updating ministry:", error);
@@ -177,6 +180,7 @@ export const useRemoveMemberFromMinistry = () => {
       // Invalidate the ministry detail to refresh members list
       queryClient.invalidateQueries({ queryKey: ["ministry", variables.ministryId] });
       queryClient.invalidateQueries({ queryKey: ["ministries"] });
+      queryClient.invalidateQueries({ queryKey: ["member", variables.memberId] });
     },
   });
 };

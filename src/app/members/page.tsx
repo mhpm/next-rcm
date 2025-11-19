@@ -224,7 +224,6 @@ export default function MembersPage() {
         columns={visibleColumnsArray}
         actions={actions}
         searchable
-        selectable
         pagination={true}
         itemsPerPage={10}
         addButton={addButtonConfig}
