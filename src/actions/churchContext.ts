@@ -222,12 +222,12 @@ export async function getChurchSlugFromAuth(): Promise<string | null> {
  * Helper para obtener el church_id desde headers en server actions
  * En Next.js 16, intentamos obtener desde headers si están disponibles
  */
-// getChurchIdFromHeaders eliminado: el tenant se resolverá exclusivamente desde auth/default
+// getChurchIdFromHeaders eliminado: el church se resolverá exclusivamente desde auth/default
 
 /**
  * Helper para obtener el church_id desde cookies en server actions
  */
-// getChurchIdFromCookies eliminado: el tenant se resolverá exclusivamente desde auth/default
+// getChurchIdFromCookies eliminado: el church se resolverá exclusivamente desde auth/default
 
 /**
  * Obtén el church-slug exclusivamente desde credenciales (auth) y/o default.

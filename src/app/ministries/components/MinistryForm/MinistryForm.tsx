@@ -138,7 +138,7 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
           ) : isEditMode ? (
             "Actualizar Ministerio"
           ) : (
-            "Guardar Cambios"
+            "Crear Ministerio"
           )}
         </button>
       </div>

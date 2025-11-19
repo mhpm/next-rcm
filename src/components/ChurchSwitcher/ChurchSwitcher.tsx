@@ -79,7 +79,7 @@ export function ChurchSwitcher({ className = "" }: ChurchSwitcherProps) {
         detailsRef.current.open = false;
       }
 
-      // Disparar evento de cambio de tenant
+      // Disparar evento de cambio de church
       window.dispatchEvent(new CustomEvent("churchCleared"));
 
       // Refrescar el router para re-renderizar Server Components y Server Actions

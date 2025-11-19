@@ -31,7 +31,7 @@ export function QueryProvider({ children }: QueryProviderProps) {
   useEffect(() => {
     const handleChurchChange = () => {
       // Limpiamos el caché para asegurar que todas las queries se refetch con el nuevo church
-      // Esto es más seguro que invalidar selectivamente en apps multi-tenant
+      // Esto es más seguro que invalidar selectivamente en apps multi-church
       queryClient.clear();
     };
 

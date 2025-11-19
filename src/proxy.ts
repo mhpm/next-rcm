@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getChurchSlugFromHost, isValidChurchSlug } from "@/lib/database";
 
-// Proxy function to handle multi-tenant routing and headers
+// Proxy function to handle multi-church routing and headers
 export function proxy(request: NextRequest) {
   const host = request.headers.get("host") || "localhost:3000";
 
@@ -73,7 +73,7 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - api routes that don't need tenant context
+     * - api routes that don't need church context
      */
     "/((?!_next/static|_next/image|favicon.ico|api/health).*)",
   ],
