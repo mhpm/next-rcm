@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/app/generated/prisma";
-import { cookies } from "next/headers";
 
 // Tipos para operaciones de creación
 type MemberCreateManyData = Prisma.MembersCreateManyInput;
@@ -11,9 +10,9 @@ type MemberMinistryCreateManyData = Prisma.MemberMinistryCreateManyInput;
  * Helper para crear un cliente Prisma con filtrado automático por church_id
  * Este helper debe ser usado en el servidor, donde tenemos acceso al store
  */
-export function createTenantPrisma(churchId: string) {
+export function createChurchPrisma(churchId: string) {
   // Extender el cliente Prisma con middleware para filtrado automático
-  const tenantPrisma = prisma.$extends({
+  const churchPrisma = prisma.$extends({
     query: {
       members: {
         async findMany({ args, query }) {
@@ -199,7 +198,7 @@ export function createTenantPrisma(churchId: string) {
     },
   });
 
-  return tenantPrisma;
+  return churchPrisma;
 }
 
 /**
@@ -207,7 +206,7 @@ export function createTenantPrisma(churchId: string) {
  *
  * NOTA: Este es un stub temporal hasta que exista login.
  * En el futuro, aquí se integrará con tu proveedor de autenticación (p. ej. NextAuth)
- * para extraer el tenant/iglesia del usuario autenticado.
+ * para extraer el church/iglesia del usuario autenticado.
  *
  * Por ahora, siempre retorna "demo" para utilizar esa iglesia como default.
  */
@@ -297,9 +296,9 @@ export async function getChurchId(): Promise<string> {
 }
 
 /**
- * Helper para crear un cliente Prisma con tenant automático en server actions
+ * Helper para crear un cliente Prisma con church automático en server actions
  */
-export async function getTenantPrisma() {
+export async function getChurchPrisma() {
   const churchId = await getChurchId();
-  return createTenantPrisma(churchId);
+  return createChurchPrisma(churchId);
 }

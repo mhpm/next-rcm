@@ -167,12 +167,12 @@ const deactivateExistingMember = async (id: string): Promise<Member> => {
 
 // ============ QUERY HOOKS ============
 
-// Hook para escuchar cambios de tenant y invalidar queries
-export const useTenantChangeListener = () => {
+// Hook para escuchar cambios de church y invalidar queries
+export const useChurchChangeListener = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const handleTenantChange = () => {
+    const handleChurchChange = () => {
       // Invalidar todas las queries relacionadas con members
       queryClient.invalidateQueries({ queryKey: ['members'] });
       queryClient.invalidateQueries({ queryKey: ['member'] });
@@ -180,27 +180,27 @@ export const useTenantChangeListener = () => {
       queryClient.invalidateQueries({ queryKey: ['emailAvailability'] });
     };
 
-    const handleTenantClear = () => {
-      // Limpiar todas las queries cuando se limpia el tenant
+    const handleChurchClear = () => {
+      // Limpiar todas las queries cuando se limpia el church
       queryClient.clear();
     };
 
-    // Agregar listeners para eventos de cambio de tenant
-    window.addEventListener('tenantChanged', handleTenantChange);
-    window.addEventListener('tenantCleared', handleTenantClear);
+    // Agregar listeners para eventos de cambio de church
+    window.addEventListener('churchChanged', handleChurchChange);
+    window.addEventListener('churchCleared', handleChurchClear);
 
     // Cleanup
     return () => {
-      window.removeEventListener('tenantChanged', handleTenantChange);
-      window.removeEventListener('tenantCleared', handleTenantClear);
+      window.removeEventListener('churchChanged', handleChurchChange);
+      window.removeEventListener('churchCleared', handleChurchClear);
     };
   }, [queryClient]);
 };
 
 // Hook for fetching all members with enhanced options
 export const useAllMembers = (options?: MembersQueryOptions) => {
-  // Escuchar cambios de tenant
-  useTenantChangeListener();
+  // Escuchar cambios de church
+  useChurchChangeListener();
   
   return useQuery({
     queryKey: ['members', 'all', options],
@@ -212,8 +212,8 @@ export const useAllMembers = (options?: MembersQueryOptions) => {
 
 // Hook for fetching all members (legacy - for backward compatibility)
 export const useMembers = () => {
-  // Escuchar cambios de tenant
-  useTenantChangeListener();
+  // Escuchar cambios de church
+  useChurchChangeListener();
   
   return useQuery({
     queryKey: ['members'],
@@ -225,8 +225,8 @@ export const useMembers = () => {
 
 // Hook for fetching a single member
 export const useMember = (id: string) => {
-  // Escuchar cambios de tenant
-  useTenantChangeListener();
+  // Escuchar cambios de church
+  useChurchChangeListener();
   
   return useQuery({
     queryKey: ['member', id],
@@ -239,8 +239,8 @@ export const useMember = (id: string) => {
 
 // Hook for fetching member statistics
 export const useMemberStats = () => {
-  // Escuchar cambios de tenant
-  useTenantChangeListener();
+  // Escuchar cambios de church
+  useChurchChangeListener();
   
   return useQuery({
     queryKey: ['members', 'stats'],

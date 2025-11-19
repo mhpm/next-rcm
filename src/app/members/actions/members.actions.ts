@@ -13,7 +13,7 @@ import {
   updateMemberSchema,
   insertMemberFormSchema,
 } from "@/app/members/schema/members.schema";
-import { getTenantPrisma, getChurchId } from "@/actions/tenantActions";
+import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
 
 // Get all members with optional filtering and pagination
 export async function getAllMembers(options?: {
@@ -34,7 +34,7 @@ export async function getAllMembers(options?: {
       orderDirection = "asc",
     } = options || {};
 
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
     const whereClause: Prisma.MembersWhereInput = {};
 
     // Add search filter (supports "first last" queries and single-term)
@@ -110,7 +110,7 @@ export async function getAllMembers(options?: {
 // Get members with limit (legacy function for backward compatibility)
 export async function getMembers(limit = 10) {
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
     const members = await prisma.members.findMany({
       take: limit,
       orderBy: {
@@ -135,7 +135,7 @@ export async function getMembers(limit = 10) {
 // Get member by specific field
 export async function getMemberBy(field: string, value: unknown) {
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
     const member = await prisma.members.findFirst({
       where: {
         [field]: value,
@@ -152,7 +152,7 @@ export async function getMemberBy(field: string, value: unknown) {
 // Get member by ID
 export async function getMemberById(id: string) {
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
 
     const member = await prisma.members.findUnique({
       where: { id },
@@ -219,7 +219,7 @@ export const createMember = withErrorHandling(async function createMember(
       }
     }
 
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
     const churchId = await getChurchId();
 
     // Prepare member data with explicit church_id
@@ -312,7 +312,7 @@ export const createMember = withErrorHandling(async function createMember(
 export async function updateMember(id: string, data: Partial<MemberFormData>) {
   try {
     const parsed = updateMemberSchema.parse({ id, ...data });
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
 
     // Ensure member exists
     const existingMember = await prisma.members.findUnique({
@@ -459,7 +459,7 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
 // Delete a member by ID
 export async function deleteMember(id: string) {
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
 
     // Check if member exists
     const existingMember = await prisma.members.findUnique({
@@ -487,7 +487,7 @@ export async function deleteMember(id: string) {
 // Soft delete a member (mark as inactive instead of deleting)
 export async function deactivateMember(id: string) {
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
 
     // Note: This requires adding an 'active' field to your schema
     // For now, we'll add it to notes as a workaround
@@ -510,7 +510,7 @@ export async function deactivateMember(id: string) {
 // Check if email is already taken
 export async function isEmailTaken(email: string, excludeId?: string) {
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
     const whereClause: Prisma.MembersWhereInput = { email };
 
     if (excludeId) {
@@ -531,7 +531,7 @@ export async function isEmailTaken(email: string, excludeId?: string) {
 // Get member statistics
 export async function getMemberStats() {
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
 
     const [total, byRole, byGender] = await Promise.all([
       prisma.members.count(),

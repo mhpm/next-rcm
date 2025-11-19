@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useRef, useEffect } from 'react';
-import { Provider } from 'react-redux';
-import { makeStore, AppStore } from '@/store';
-import { initializeTenant } from '@/store/tenantSlice';
+import { useRef, useEffect } from "react";
+import { Provider } from "react-redux";
+import { makeStore, AppStore } from "@/store";
+import { initializeChurch } from "@/store/slices/church/churchSlice";
 
 interface StoreProviderProps {
   children: React.ReactNode;
@@ -11,30 +11,34 @@ interface StoreProviderProps {
 
 export default function StoreProvider({ children }: StoreProviderProps) {
   const storeRef = useRef<AppStore | undefined>(undefined);
-  
+
   if (!storeRef.current) {
     // Crear el store
     storeRef.current = makeStore();
   }
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && storeRef.current) {
+    if (typeof window !== "undefined" && storeRef.current) {
       // En el cliente, intentar obtener desde localStorage o cookies
-      const savedChurchSlug = localStorage.getItem('church-slug');
+      const savedChurchSlug = localStorage.getItem("church-slug");
       if (savedChurchSlug) {
-        storeRef.current.dispatch(initializeTenant({ churchSlug: savedChurchSlug }));
+        storeRef.current.dispatch(
+          initializeChurch({ churchSlug: savedChurchSlug })
+        );
       } else {
         // Intentar obtener desde cookies
         const cookieChurchSlug = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('church-slug='))
-          ?.split('=')[1];
-        
+          .split("; ")
+          .find((row) => row.startsWith("church-slug="))
+          ?.split("=")[1];
+
         if (cookieChurchSlug) {
-          storeRef.current.dispatch(initializeTenant({ churchSlug: cookieChurchSlug }));
+          storeRef.current.dispatch(
+            initializeChurch({ churchSlug: cookieChurchSlug })
+          );
         } else {
           // Valor por defecto para desarrollo
-          storeRef.current.dispatch(initializeTenant({ churchSlug: 'demo' }));
+          storeRef.current.dispatch(initializeChurch({ churchSlug: "demo" }));
         }
       }
     }

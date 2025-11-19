@@ -19,5 +19,5 @@ export {
   PasswordField,
   EmailField,
 } from "./FormControls";
-export { TenantSwitcher } from "./TenantSwitcher";
+export { ChurchSwitcher } from "./ChurchSwitcher";
 export { default as BackLink } from "./BackLink/BackLink";

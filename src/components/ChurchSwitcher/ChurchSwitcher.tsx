@@ -2,18 +2,18 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useTenant } from "@/hooks/useTenant";
+import { useChurch } from "@/app/churches/hooks/useChurch";
 import {
   getAllChurches,
   type Church,
 } from "@/app/churches/actions/churches.actions";
 
-interface TenantSwitcherProps {
+interface ChurchSwitcherProps {
   className?: string;
 }
 
-export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
-  const { currentChurch, setChurch, clearChurch, isLoading } = useTenant();
+export function ChurchSwitcher({ className = "" }: ChurchSwitcherProps) {
+  const { currentChurch, setChurch, clearChurch, isLoading } = useChurch();
   const [churches, setChurches] = useState<Church[]>([]);
   const [loadingChurches, setLoadingChurches] = useState(true);
   const detailsRef = useRef<HTMLDetailsElement>(null);
@@ -36,7 +36,7 @@ export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
     loadChurches();
   }, []);
 
-  const handleTenantChange = async (church: Church) => {
+  const handleChurchChange = async (church: Church) => {
     try {
       // Convertir fechas Date a string para compatibilidad con el store
       const churchForStore = {
@@ -54,7 +54,7 @@ export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
 
       // Forzar recarga de datos en lugar de recargar toda la página
       window.dispatchEvent(
-        new CustomEvent("tenantChanged", {
+        new CustomEvent("churchChanged", {
           detail: { church: churchForStore },
         })
       );
@@ -66,11 +66,11 @@ export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
         console.warn("router.refresh failed or not available:", e);
       }
     } catch (error) {
-      console.error("Error changing tenant:", error);
+      console.error("Error changing church:", error);
     }
   };
 
-  const handleClearTenant = async () => {
+  const handleClearChurch = async () => {
     try {
       await clearChurch();
 
@@ -80,7 +80,7 @@ export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
       }
 
       // Disparar evento de cambio de tenant
-      window.dispatchEvent(new CustomEvent("tenantCleared"));
+      window.dispatchEvent(new CustomEvent("churchCleared"));
 
       // Refrescar el router para re-renderizar Server Components y Server Actions
       try {
@@ -89,7 +89,7 @@ export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
         console.warn("router.refresh failed or not available:", e);
       }
     } catch (error) {
-      console.error("Error clearing tenant:", error);
+      console.error("Error clearing church:", error);
     }
   };
 
@@ -155,7 +155,7 @@ export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
           churches.map((church) => (
             <li key={church.slug}>
               <button
-                onClick={() => handleTenantChange(church)}
+                onClick={() => handleChurchChange(church)}
                 className={`flex items-center gap-2 ${
                   currentChurch?.slug === church.slug
                     ? "active text-primary-content"
@@ -186,7 +186,7 @@ export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
         {/* Clear Selection */}
         <li>
           <button
-            onClick={handleClearTenant}
+            onClick={handleClearChurch}
             className="text-error hover:bg-error hover:text-error-content"
           >
             <span className="w-2 h-2 bg-error rounded-full"></span>
@@ -208,4 +208,4 @@ export function TenantSwitcher({ className = "" }: TenantSwitcherProps) {
   );
 }
 
-export default TenantSwitcher;
+export default ChurchSwitcher;

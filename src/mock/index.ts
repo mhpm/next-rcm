@@ -41,7 +41,7 @@ export const mockChurches: MockChurch[] = [
     createdAt: new Date("2015-07-10"),
     updatedAt: new Date("2024-10-30"),
   },
-  // Nuevo tenant de demostración
+  // Nuevo church de demostración
   {
     id: "clm4church004",
     name: "Iglesia Demo",
@@ -294,7 +294,7 @@ export const mockMembers: MockMember[] = [
     gender: "FEMENINO" as Gender,
     pictureUrl:
       "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
-    notes: "Pastora principal del tenant demo",
+    notes: "Pastora principal del church demo",
     passwordHash: "$2b$10$example.hash.for.andrea",
     church_id: "clm4church004",
     createdAt: new Date("2024-01-02"),

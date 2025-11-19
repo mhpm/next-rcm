@@ -44,7 +44,7 @@ export default function MinistryMembersTable({
   const addMembersMutation = useAddMembersToMinistry();
   const removeMemberMutation = useRemoveMemberFromMinistry();
 
-  // Fetch all members (tenant-scoped) for selection
+  // Fetch all members (church-scoped) for selection
   const { data: allMembersData, isLoading: isLoadingMembers } = useMembers();
 
   // Current member IDs in ministry

@@ -1,9 +1,9 @@
 "use server";
 
-import { getTenantPrisma, getChurchId } from "@/actions/tenantActions";
+import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
 import { Prisma } from "@/app/generated/prisma";
 
-// Get all ministries for the current tenant
+// Get all ministries for the current church
 export async function getAllMinistries(options?: {
   limit?: number;
   offset?: number;
@@ -20,7 +20,7 @@ export async function getAllMinistries(options?: {
       orderDirection = "asc",
     } = options || {};
 
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
     const whereClause: Prisma.MinistriesWhereInput = {};
 
     // Add search filter
@@ -72,7 +72,7 @@ export async function getAllMinistries(options?: {
 // Get ministry by ID
 export async function getMinistryById(id: string) {
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
 
     const ministry = await prisma.ministries.findUnique({
       where: { id },
@@ -104,8 +104,8 @@ export async function createMinistry(data: {
   leaderId?: string | null;
 }) {
   try {
-    const prisma = await getTenantPrisma();
-    // Explicitly connect to current tenant to satisfy Prisma types
+    const prisma = await getChurchPrisma();
+    // Explicitly connect to current church to satisfy Prisma types
     const churchId = await getChurchId();
 
     const ministry = await prisma.ministries.create({
@@ -144,10 +144,10 @@ export async function updateMinistry(
 ) {
   let churchId: string | undefined;
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
     churchId = await getChurchId();
 
-    // Pre-validación: asegurar que el ministerio existe en el tenant actual
+    // Pre-validación: asegurar que el ministerio existe en la iglesia actual
     const existingMinistry = await prisma.ministries.findFirst({
       where: { id },
       select: { id: true, name: true },
@@ -158,7 +158,7 @@ export async function updateMinistry(
       );
     }
 
-    // Pre-validación del líder (si se envió leaderId): debe existir en el tenant actual
+    // Pre-validación del líder (si se envió leaderId): debe existir en la iglesia actual
     if (Object.prototype.hasOwnProperty.call(data, "leaderId")) {
       const leaderIdValue = data.leaderId ?? null;
       if (leaderIdValue) {
@@ -218,11 +218,11 @@ export async function updateMinistry(
       },
     });
 
-    // Si es un error conocido de Prisma (por ejemplo, P2025 al intentar conectar líder que no existe en el tenant)
+    // Si es un error conocido de Prisma (por ejemplo, P2025 al intentar conectar líder que no existe en la iglesia)
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2025") {
         throw new Error(
-          "No se pudo asignar el líder: el miembro seleccionado no se encontró en esta iglesia. Verifica que el líder pertenezca al mismo tenant."
+          "No se pudo asignar el líder: el miembro seleccionado no se encontró en esta iglesia. Verifica que el líder pertenezca a la misma iglesia."
         );
       }
       throw new Error(
@@ -239,7 +239,7 @@ export async function updateMinistry(
 // Delete ministry
 export async function deleteMinistry(id: string) {
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
 
     await prisma.ministries.delete({
       where: { id },
@@ -257,7 +257,7 @@ export async function deleteMinistry(id: string) {
 // List members belonging to a ministry (joins MemberMinistry -> Members)
 export async function getMembersByMinistry(ministryId: string) {
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
 
     const memberships = await prisma.memberMinistry.findMany({
       where: { ministryId },
@@ -278,7 +278,7 @@ export async function addMemberToMinistry(
   memberId: string
 ) {
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
     const churchId = await getChurchId();
 
     // Create membership, respecting unique(memberId, ministryId)
@@ -312,7 +312,7 @@ export async function addMembersToMinistry(
   memberIds: string[]
 ) {
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
     const churchId = await getChurchId();
 
     if (!memberIds?.length) {
@@ -344,7 +344,7 @@ export async function removeMemberFromMinistry(
   memberId: string
 ) {
   try {
-    const prisma = await getTenantPrisma();
+    const prisma = await getChurchPrisma();
 
     // Find membership id first (since delete requires a unique identifier)
     const membership = await prisma.memberMinistry.findFirst({

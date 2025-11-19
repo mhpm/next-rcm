@@ -7,20 +7,20 @@ export type Church = Omit<Churches, 'createdAt' | 'updatedAt'> & {
   updatedAt: string;
 };
 
-interface TenantState {
+export interface ChurchState {
   currentChurch: Church | null;
   isLoading: boolean;
   error: string | null;
 }
 
-const initialState: TenantState = {
+const initialState: ChurchState = {
   currentChurch: null,
   isLoading: false,
   error: null,
 };
 
-const tenantSlice = createSlice({
-  name: 'tenant',
+const churchSlice = createSlice({
+  name: 'church',
   initialState,
   reducers: {
     setCurrentChurch: (state, action: PayloadAction<Church | Churches>) => {
@@ -48,7 +48,7 @@ const tenantSlice = createSlice({
       state.error = null;
     },
     // Acción para inicializar desde headers/cookies
-    initializeTenant: (state, action: PayloadAction<{ churchSlug?: string }>) => {
+    initializeChurch: (state, action: PayloadAction<{ churchSlug?: string }>) => {
       const { churchSlug } = action.payload;
       if (churchSlug) {
         // En un caso real, aquí harías una llamada a la API para obtener los datos completos
@@ -72,15 +72,7 @@ export const {
   setLoading,
   setError,
   clearError,
-  initializeTenant,
-} = tenantSlice.actions;
+  initializeChurch,
+} = churchSlice.actions;
 
-export default tenantSlice.reducer;
-
-// Selectores
-export const selectCurrentChurch = (state: { tenant: TenantState }) => state.tenant.currentChurch;
-export const selectChurchId = (state: { tenant: TenantState }) => state.tenant.currentChurch?.id;
-export const selectChurchSlug = (state: { tenant: TenantState }) => state.tenant.currentChurch?.slug;
-export const selectTenantLoading = (state: { tenant: TenantState }) => state.tenant.isLoading;
-export const selectTenantError = (state: { tenant: TenantState }) => state.tenant.error;
-export const selectHasTenant = (state: { tenant: TenantState }) => !!state.tenant.currentChurch;
+export default churchSlice.reducer;
