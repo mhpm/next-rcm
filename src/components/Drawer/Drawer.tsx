@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import clsx from "clsx";
 import { useDrawer } from "./useDrawer";
 import { DrawerItem } from "@/types";
 import {
@@ -66,6 +68,7 @@ export const Drawer = ({ children, items = Items }: Props) => {
   const isOpen = useDrawer((s) => s.isDrawerOpen);
   const toggleDrawer = useDrawer((s) => s.toggleDrawer);
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+  const pathname = usePathname();
 
   // default menu (keeps previous structure)
   const defaultItems: DrawerItem[] = [];
@@ -81,17 +84,9 @@ export const Drawer = ({ children, items = Items }: Props) => {
 
   const handleClick = (e: React.MouseEvent, item: DrawerItem) => {
     const href = item.href;
-    const isExternal = href ? /^https?:\/\//.test(href) : false;
 
     // call custom handler first
     item.onClick?.();
-
-    // if external link, prevent default and handle navigation
-    if (href && isExternal) {
-      e.preventDefault();
-      if (item.target === "_blank") window.open(href, "_blank");
-      else window.location.href = href;
-    }
 
     // if no href provided (plain action), prevent default
     if (!href) e.preventDefault();
@@ -111,7 +106,10 @@ export const Drawer = ({ children, items = Items }: Props) => {
         <li key={id}>
           <button
             onClick={() => handleParentClick(id)}
-            className="flex items-center justify-between w-full"
+            className={clsx(
+              "flex items-center rounded-none justify-between w-full",
+              pathname === item.href && "text-red-500"
+            )}
           >
             <div className="flex items-center">
               {item.icon}
@@ -140,24 +138,16 @@ export const Drawer = ({ children, items = Items }: Props) => {
             <ul className="pl-4">
               {item.children.map((child, i) => (
                 <li key={`${child.label}-${i}`}>
-                  {child.href && !/^https?:\/\//.test(child.href) ? (
-                    <Link
-                      href={child.href}
-                      onClick={(e) => handleClick(e, child)}
-                      className="text-lg"
-                    >
-                      {child.label}
-                    </Link>
-                  ) : (
-                    <a
-                      href={child.href ?? "#"}
-                      onClick={(e) => handleClick(e, child)}
-                      target={child.target}
-                      className="text-lg"
-                    >
-                      {child.label}
-                    </a>
-                  )}
+                  <Link
+                    href={child.href as string}
+                    onClick={(e) => handleClick(e, child)}
+                    className={clsx(
+                      "text-lg rounded-none",
+                      pathname === child.href && "active text-primary-content"
+                    )}
+                  >
+                    {child.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -168,26 +158,17 @@ export const Drawer = ({ children, items = Items }: Props) => {
 
     return (
       <li key={id} role="menuitem">
-        {item.href && !/^https?:\/\//.test(item.href) ? (
-          <Link
-            href={item.href}
-            onClick={(e) => handleClick(e, item)}
-            className="flex items-center"
-          >
-            {item.icon}
-            <span className="ml-2 text-lg md:text-xl">{item.label}</span>
-          </Link>
-        ) : (
-          <a
-            href={item.href ?? "#"}
-            onClick={(e) => handleClick(e, item)}
-            target={item.target}
-            className="flex items-center"
-          >
-            {item.icon}
-            <span className="ml-2 text-lg md:text-xl">{item.label}</span>
-          </a>
-        )}
+        <Link
+          href={item.href as string}
+          onClick={(e) => handleClick(e, item)}
+          className={clsx(
+            "flex mb-1 items-center rounded-none",
+            pathname === item.href && "border-l-4 border-primary"
+          )}
+        >
+          {item.icon}
+          <span className="ml-2 text-lg">{item.label}</span>
+        </Link>
       </li>
     );
   };
