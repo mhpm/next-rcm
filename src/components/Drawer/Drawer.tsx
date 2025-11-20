@@ -4,15 +4,65 @@ import { useState } from "react";
 import Link from "next/link";
 import { useDrawer } from "./useDrawer";
 import { DrawerItem } from "@/types";
+import {
+  FaPeopleRoof,
+  FaUserGroup,
+  FaUsersGear,
+  FaUsers,
+  FaPersonChalkboard,
+} from "react-icons/fa6";
+import { RiDashboard3Fill } from "react-icons/ri";
+import { ROUTES } from "@/routes";
 
 // using shared DrawerItem from src/types
+const Items: DrawerItem[] = [
+  {
+    label: "Dashboard",
+    icon: <RiDashboard3Fill size={24} className="text-primary" />,
+    href: ROUTES.DASHBOARD,
+  },
+  {
+    label: "Miembros",
+    icon: <FaUserGroup size={24} className="text-primary" />,
+    href: ROUTES.MEMBERS,
+  },
+  {
+    label: "Celulas",
+    icon: <FaPeopleRoof size={24} className="text-primary" />,
+    href: ROUTES.CELLS,
+  },
+  {
+    label: "Sectores",
+    icon: <FaUsersGear size={24} className="text-primary" />,
+    href: ROUTES.SECTORS,
+  },
+  {
+    label: "Subsectores",
+    icon: <FaUsers size={24} className="text-primary" />,
+    href: ROUTES.SUBSECTORS,
+  },
+  {
+    label: "Ministries",
+    icon: <FaPersonChalkboard size={24} className="text-primary" />,
+    href: ROUTES.MINISTRIES,
+  },
+  {
+    label: "Reportes",
+    children: [
+      { label: "Semanal", href: ROUTES.REPORTS.WEEKLY },
+      { label: "Metas", href: ROUTES.REPORTS.GOALS },
+      { label: "Cuatrimestral", href: ROUTES.REPORTS.QUARTERLY },
+      { label: "Anual", href: ROUTES.REPORTS.ANNUAL },
+    ],
+  },
+];
 
 type Props = {
   children: React.ReactNode;
   items?: DrawerItem[];
 };
 
-export const Drawer = ({ children, items }: Props) => {
+export const Drawer = ({ children, items = Items }: Props) => {
   const isOpen = useDrawer((s) => s.isDrawerOpen);
   const toggleDrawer = useDrawer((s) => s.toggleDrawer);
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
@@ -49,6 +99,8 @@ export const Drawer = ({ children, items }: Props) => {
     // close drawer after selection/navigation
     if (isOpen) toggleDrawer();
   };
+
+  console.log("🚀 ~ handleClick ~ isOpen:", isOpen);
 
   const renderItem = (item: DrawerItem, idx: number) => {
     const id = item.id ?? `${item.label}-${idx}`;

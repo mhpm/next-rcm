@@ -16,21 +16,73 @@ export default function Dashboard() {
   const { data: ministryStats, isLoading: isLoadingMinistries } =
     useMinistryStats();
 
-  const totalMembers = isLoading ? "…" : String(stats?.total ?? 0);
-  const totalMinistries = isLoadingMinistries
-    ? "…"
-    : String(ministryStats?.total ?? 0);
-  const membersInAnyMinistry = isLoadingMinistries
-    ? "…"
-    : String(ministryStats?.membersInAnyMinistry ?? 0);
-  const extraMinistryStats = [
+  const totalMembers = String(stats?.total ?? 0);
+  const totalMinistries = String(ministryStats?.total ?? 0);
+  const membersInAnyMinistry = String(ministryStats?.membersInAnyMinistry ?? 0);
+  const extraMinistryStats = isLoadingMinistries
+    ? undefined
+    : [
+        {
+          label: "Miembros activos:",
+          value: `${membersInAnyMinistry} / ${totalMembers}`,
+        },
+        {
+          label: "Miemrbos sin ministerio:",
+          value: `${Number(totalMembers) - Number(membersInAnyMinistry)}`,
+        },
+      ];
+
+  const statsCards = [
     {
-      label: "Miembros activos:",
-      value: `${membersInAnyMinistry} / ${totalMembers}`,
+      href: "/members",
+      title: "Miembros",
+      value: totalMembers,
+      change: "10.8%",
+      changeType: "increase" as const,
+      period: "vs. 12 ultimo cuatrimestre",
+      icon: <FaUserGroup size={24} />,
+      isLoading,
     },
     {
-      label: "Miemrbos sin ministerio:",
-      value: `${Number(totalMembers) - Number(membersInAnyMinistry)}`,
+      href: "/cells",
+      title: "Celulas",
+      value: "30",
+      change: "21.2%",
+      changeType: "increase" as const,
+      period: "vs. 12 ultimo cuatrimestre",
+      icon: <FaPeopleRoof size={24} />,
+      isLoading: false,
+    },
+    {
+      href: "/sectors",
+      title: "Sectores",
+      value: "3",
+      change: "6.8%",
+      changeType: "decrease" as const,
+      period: "vs. 28 ultimo cuatrimestre",
+      icon: <FaUsersGear size={24} />,
+      isLoading: false,
+    },
+    {
+      href: "/subsectors",
+      title: "Subsectores",
+      value: "10",
+      change: "8.5%",
+      changeType: "increase" as const,
+      period: "vs. 3 ultimo cuatrimestre",
+      icon: <FaUsers size={24} />,
+      isLoading: false,
+    },
+    {
+      href: "/ministries",
+      title: "Ministerios",
+      value: totalMinistries,
+      change: "8.5%",
+      changeType: "increase" as const,
+      period: "vs. 3 ultimo cuatrimestre",
+      icon: <FaPersonChalkboard size={24} />,
+      extraStats: extraMinistryStats,
+      isLoading: isLoadingMinistries,
     },
   ];
 
@@ -41,57 +93,20 @@ export default function Dashboard() {
         <Breadcrumbs />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Link href="/members" className="cursor-pointer">
-          <StatCard
-            title="Miembros"
-            value={totalMembers}
-            change="10.8%"
-            changeType="increase"
-            period="vs. 12 ultimo cuatrimestre"
-            icon={<FaUserGroup size={24} />}
-          />
-        </Link>
-        <Link href="/cells" className="cursor-pointer">
-          <StatCard
-            title="Celulas"
-            value="30"
-            change="21.2%"
-            changeType="increase"
-            period="vs. 12 ultimo cuatrimestre"
-            icon={<FaPeopleRoof size={24} />}
-          />
-        </Link>
-        <Link href="/sectors" className="cursor-pointer">
-          <StatCard
-            title="Sectores"
-            value="3"
-            change="6.8%"
-            changeType="decrease"
-            period="vs. 28 ultimo cuatrimestre"
-            icon={<FaUsersGear size={24} />}
-          />
-        </Link>
-        <Link href="/subsectors" className="cursor-pointer">
-          <StatCard
-            title="Subsectores"
-            value="10"
-            change="8.5%"
-            changeType="increase"
-            period="vs. 3 ultimo cuatrimestre"
-            icon={<FaUsers size={24} />}
-          />
-        </Link>
-        <Link href="/ministries" className="cursor-pointer">
-          <StatCard
-            title="Ministerios"
-            value={totalMinistries}
-            change="8.5%"
-            changeType="increase"
-            period="vs. 3 ultimo cuatrimestre"
-            icon={<FaPersonChalkboard size={24} />}
-            extraStats={extraMinistryStats}
-          />
-        </Link>
+        {statsCards.map((card) => (
+          <Link key={card.title} href={card.href} className="cursor-pointer">
+            <StatCard
+              title={card.title}
+              value={card.value}
+              change={card.change}
+              changeType={card.changeType}
+              period={card.period}
+              icon={card.icon}
+              extraStats={card.extraStats}
+              isLoading={card.isLoading}
+            />
+          </Link>
+        ))}
       </div>
     </div>
   );

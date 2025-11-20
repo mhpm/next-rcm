@@ -1,6 +1,9 @@
 import { FaArrowTrendUp, FaArrowTrendDown } from "react-icons/fa6";
 
-type StatCardExtraStat = { label: string; value: string | number };
+type StatCardExtraStat = {
+  label: string;
+  value: string | number;
+};
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -11,6 +14,7 @@ interface StatCardProps {
   period: string;
   iconBg?: string;
   extraStats?: StatCardExtraStat[];
+  isLoading?: boolean;
 }
 
 export const StatCard = ({
@@ -22,33 +26,53 @@ export const StatCard = ({
   period,
   iconBg = "bg-base-300",
   extraStats,
+  isLoading,
 }: StatCardProps) => (
   <div className="card bg-base-100 card-border shadow-md">
     <div className="stats relative">
       <div className="stat">
         <div className="stat-title text-bold font-extrabold text-lg text-secondary">
-          {title}
+          {isLoading ? <span className="skeleton h-4 w-24"></span> : title}
         </div>
-        <div className="stat-value">{value}</div>
+        <div className="stat-value">
+          {isLoading ? <span className="skeleton h-8 w-16"></span> : value}
+        </div>
         <div className={`rounded-full absolute top-4 right-4 p-2 ${iconBg}`}>
-          {icon}
+          {isLoading ? (
+            <span className="loading loading-spinner loading-sm" />
+          ) : (
+            icon
+          )}
         </div>
         <div className="stat-desc flex items-center gap-2 text-md">
-          <span
-            className={`flex items-center ${
-              changeType === "increase" ? "text-success" : "text-error"
-            }`}
-          >
-            {changeType === "increase" ? (
-              <FaArrowTrendUp />
-            ) : (
-              <FaArrowTrendDown />
-            )}
-            <span className="ml-1">{change}</span>
-          </span>
-          <span className="text-base-content/60">{period}</span>
+          {isLoading ? (
+            <span className="skeleton h-4 w-28"></span>
+          ) : (
+            <>
+              <span
+                className={`flex items-center ${
+                  changeType === "increase" ? "text-success" : "text-error"
+                }`}
+              >
+                {changeType === "increase" ? (
+                  <FaArrowTrendUp />
+                ) : (
+                  <FaArrowTrendDown />
+                )}
+                <span className="ml-1">{change}</span>
+              </span>
+              <span className="text-base-content/60">{period}</span>
+            </>
+          )}
         </div>
-        {extraStats && extraStats.length > 0 ? (
+        {isLoading ? (
+          <div className="mt-4">
+            <div className="grid grid-cols-1 gap-2">
+              <span className="skeleton h-4 w-32"></span>
+              <span className="skeleton h-4 w-12"></span>
+            </div>
+          </div>
+        ) : extraStats && extraStats.length > 0 ? (
           <div className="mt-4">
             <div className="grid grid-cols-1 gap-2">
               {extraStats.map((item) => (
