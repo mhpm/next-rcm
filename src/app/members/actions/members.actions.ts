@@ -1,6 +1,6 @@
 "use server";
 
-import { Prisma, MemberRole } from "@/app/generated/prisma";
+import { Prisma, MemberRole } from "@/generated/prisma/client";
 import { MemberFormData } from "@/types";
 import * as bcrypt from "bcryptjs";
 import { logger } from "@/lib/logger";

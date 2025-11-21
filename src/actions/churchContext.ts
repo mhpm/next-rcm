@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Prisma } from "@/app/generated/prisma";
+import { Prisma } from "@/generated/prisma/client";
 
 // Tipos para operaciones de creación
 type MemberCreateManyData = Prisma.MembersCreateManyInput;

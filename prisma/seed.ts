@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { PrismaClient, Prisma, $Enums } from "../src/app/generated/prisma";
+import { PrismaClient, Prisma, $Enums } from "../generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { mockData } from "../src/mock";
 
