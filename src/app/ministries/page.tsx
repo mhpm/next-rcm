@@ -70,7 +70,7 @@ export default function MinistriesPage() {
             </Link>
           );
         }
-        return <span className="text-neutral/45">{name}</span>;
+        return <span className="text-base-content/40">{name}</span>;
       },
     },
     {
