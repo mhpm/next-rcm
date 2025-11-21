@@ -21,7 +21,8 @@ export async function getAllMinistries(options?: {
     } = options || {};
 
     const prisma = await getChurchPrisma();
-    const whereClause: Prisma.MinistriesWhereInput = {};
+    const churchId = await getChurchId();
+    const whereClause: Prisma.MinistriesWhereInput = { church_id: churchId };
 
     // Add search filter
     if (search) {
@@ -73,6 +74,7 @@ export async function getAllMinistries(options?: {
 export async function getMinistryById(id: string) {
   try {
     const prisma = await getChurchPrisma();
+    const churchId = await getChurchId();
 
     const ministry = await prisma.ministries.findUnique({
       where: { id },
@@ -86,7 +88,7 @@ export async function getMinistryById(id: string) {
       },
     });
 
-    if (!ministry) {
+    if (!ministry || ministry.church_id !== churchId) {
       throw new Error("Ministry not found");
     }
 
@@ -148,11 +150,11 @@ export async function updateMinistry(
     churchId = await getChurchId();
 
     // Pre-validación: asegurar que el ministerio existe en la iglesia actual
-    const existingMinistry = await prisma.ministries.findFirst({
+    const existingMinistry = await prisma.ministries.findUnique({
       where: { id },
-      select: { id: true, name: true },
+      select: { id: true, name: true, church_id: true },
     });
-    if (!existingMinistry) {
+    if (!existingMinistry || existingMinistry.church_id !== churchId) {
       throw new Error(
         "El ministerio no existe en esta iglesia o el ID es inválido."
       );
@@ -163,7 +165,7 @@ export async function updateMinistry(
       const leaderIdValue = data.leaderId ?? null;
       if (leaderIdValue) {
         const existingLeader = await prisma.members.findFirst({
-          where: { id: leaderIdValue },
+          where: { id: leaderIdValue, church_id: churchId },
           select: { id: true, firstName: true, lastName: true },
         });
         if (!existingLeader) {

@@ -1,7 +1,7 @@
-'use server';
+"use server";
 
-import { prisma } from '@/lib/prisma';
-import type { Churches } from '@prisma/client';
+import prisma from "@/lib/prisma";
+import type { Churches } from "@prisma/client";
 
 export type Church = Churches;
 
@@ -19,14 +19,14 @@ export async function getAllChurches(): Promise<Church[]> {
         updatedAt: true,
       },
       orderBy: {
-        name: 'asc',
+        name: "asc",
       },
     });
 
     return churches;
   } catch (error) {
-    console.error('Error fetching churches:', error);
-    throw new Error('Failed to fetch churches');
+    console.error("Error fetching churches:", error);
+    throw new Error("Failed to fetch churches");
   }
 }
 
@@ -50,8 +50,8 @@ export async function getChurchBySlug(slug: string): Promise<Church | null> {
 
     return church;
   } catch (error) {
-    console.error('Error fetching church by slug:', error);
-    throw new Error('Failed to fetch church');
+    console.error("Error fetching church by slug:", error);
+    throw new Error("Failed to fetch church");
   }
 }
 
@@ -71,7 +71,7 @@ export async function churchExists(slug: string): Promise<boolean> {
 
     return !!church;
   } catch (error) {
-    console.error('Error checking if church exists:', error);
+    console.error("Error checking if church exists:", error);
     return false;
   }
 }
