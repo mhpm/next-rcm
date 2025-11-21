@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/app/generated/prisma";
 
-// test
 // Tipos para operaciones de creación
 type MemberCreateManyData = Prisma.MembersCreateManyInput;
 type MinistryCreateManyData = Prisma.MinistriesCreateManyInput;
