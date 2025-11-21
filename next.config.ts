@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@prisma/client", "prisma"],
+  serverExternalPackages: ["prisma"], // Remove @prisma/client to allow bundling
   experimental: {
     // Habilitar certificados TLS del sistema en Turbopack para evitar errores
     // al solicitar recursos externos (por ejemplo, Google Fonts)
@@ -35,13 +35,19 @@ const nextConfig: NextConfig = {
   webpack: (config, { dev, isServer }) => {
     // Configuración específica para Prisma en Vercel
     if (isServer) {
-      // No externalizar @prisma/client para que se bundle correctamente en Vercel
+      // Asegurar que @prisma/client se incluya correctamente en el bundle
       config.externals = config.externals.filter((external: any) => {
         if (typeof external === "string") {
           return !external.includes("@prisma/client");
         }
         return true;
       });
+      
+      // Añadir alias para el cliente generado
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@/app/generated/prisma': require.resolve('./src/app/generated/prisma'),
+      };
     }
 
     // Asegurar que los archivos .node de Prisma se incluyan correctamente

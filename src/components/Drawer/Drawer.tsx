@@ -95,8 +95,6 @@ export const Drawer = ({ children, items = Items }: Props) => {
     if (isOpen) toggleDrawer();
   };
 
-  console.log("🚀 ~ handleClick ~ isOpen:", isOpen);
-
   const renderItem = (item: DrawerItem, idx: number) => {
     const id = item.id ?? `${item.label}-${idx}`;
     const isItemOpen = openItems[id] ?? false;
