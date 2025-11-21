@@ -42,12 +42,6 @@ const nextConfig: NextConfig = {
         }
         return true;
       });
-      
-      // Añadir alias para el cliente generado
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        '@/app/generated/prisma': require.resolve('./src/app/generated/prisma'),
-      };
     }
 
     // Asegurar que los archivos .node de Prisma se incluyan correctamente
