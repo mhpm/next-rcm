@@ -1,7 +1,17 @@
+import "dotenv/config";
 import { PrismaClient, Prisma, $Enums } from "../src/app/generated/prisma";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { mockData } from "../src/mock";
 
-const prisma = new PrismaClient();
+// Create the adapter for PostgreSQL
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
+
+// Create the Prisma Client with the adapter
+const prisma = new PrismaClient({
+  adapter,
+});
 
 export async function main() {
   console.log("🌱 Starting database seeding...");
