@@ -92,7 +92,7 @@ export const Drawer = ({ children, items = Items }: Props) => {
     if (!href) e.preventDefault();
 
     // close drawer after selection/navigation
-    if (isOpen) toggleDrawer();
+    // if (isOpen) toggleDrawer();
   };
 
   const renderItem = (item: DrawerItem, idx: number) => {
