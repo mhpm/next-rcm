@@ -1,7 +1,7 @@
 "use server";
 
 import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
-import { Prisma } from "../../generated/prisma";
+import { Prisma } from "@/app/generated/prisma";
 
 // Get all ministries for the current church
 export async function getAllMinistries(options?: {
