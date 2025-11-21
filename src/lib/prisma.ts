@@ -1,4 +1,5 @@
 import { PrismaClient } from "@/app/generated/prisma";
+import { PrismaPg } from '@prisma/adapter-pg';
 
 declare global {
   var __prisma: PrismaClient | undefined;
@@ -15,7 +16,15 @@ const createPrismaClient = () => {
       ? ["query", "error", "warn"]
       : ["error", "warn"]; // Incluir warn en producción para mejor visibilidad
 
-  return new PrismaClient({ log });
+  // Create the adapter for PostgreSQL
+  const adapter = new PrismaPg({
+    connectionString: process.env.DATABASE_URL!,
+  });
+
+  return new PrismaClient({
+    log,
+    adapter,
+  });
 };
 
 export const prisma = globalThis.__prisma ?? createPrismaClient();
