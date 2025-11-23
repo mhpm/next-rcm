@@ -18,6 +18,8 @@ export async function main() {
 
   // Clear existing data in reverse order of dependencies
   console.log("🧹 Clearing existing data...");
+  await prisma.cells.deleteMany();
+  await prisma.sectors.deleteMany();
   await prisma.memberMinistry.deleteMany();
   await prisma.members.deleteMany();
   await prisma.ministries.deleteMany();
@@ -91,6 +93,98 @@ export async function main() {
   }
   console.log(`✅ Created ${mockData.ministries.length} ministries`);
 
+  console.log("🏘️ Seeding sectors and cells...");
+  for (const church of mockData.churches) {
+    const churchMembers = await prisma.members.findMany({
+      where: { church_id: church.id },
+      orderBy: { createdAt: "asc" },
+    });
+
+    if (churchMembers.length === 0) {
+      continue;
+    }
+
+    const numSectors = Math.max(1, Math.min(3, Math.ceil(churchMembers.length / 20)));
+    const sectorRecords: { id: string; name: string; church_id: string }[] = [];
+    const usedSectorLeaderIds = new Set<string>();
+
+    for (let i = 0; i < numSectors; i++) {
+      const sectorLeader =
+        churchMembers.find(
+          (m) =>
+            (m.role === $Enums.MemberRole.SUPERVISOR || m.role === $Enums.MemberRole.LIDER) &&
+            !usedSectorLeaderIds.has(m.id)
+        ) || churchMembers.find((m) => !usedSectorLeaderIds.has(m.id));
+
+      const sector = await prisma.sectors.create({
+        data: {
+          name: `Sector ${i + 1} - ${church.name}`,
+          church_id: church.id,
+          leader_id: sectorLeader?.id ?? null,
+        },
+      });
+
+      sectorRecords.push({ id: sector.id, name: sector.name, church_id: church.id });
+      if (sectorLeader) usedSectorLeaderIds.add(sectorLeader.id);
+    }
+
+    for (let idx = 0; idx < churchMembers.length; idx++) {
+      const sector = sectorRecords[idx % sectorRecords.length];
+      await prisma.members.update({
+        where: { id: churchMembers[idx].id },
+        data: { sector_id: sector.id },
+      });
+    }
+
+    for (const sector of sectorRecords) {
+      const sectorMembers = await prisma.members.findMany({
+        where: { church_id: church.id, sector_id: sector.id },
+        orderBy: { createdAt: "asc" },
+      });
+
+      if (sectorMembers.length === 0) {
+        continue;
+      }
+
+      const numCells = Math.max(1, Math.min(5, Math.ceil(sectorMembers.length / 10)));
+      const cellRecords: { id: string; name: string }[] = [];
+      const usedCellLeaderIds = new Set<string>();
+      const usedCellHostIds = new Set<string>();
+
+      for (let j = 0; j < numCells; j++) {
+        const cellLeader =
+          sectorMembers.find((m) => m.role === $Enums.MemberRole.LIDER && !usedCellLeaderIds.has(m.id)) ||
+          sectorMembers.find((m) => !usedCellLeaderIds.has(m.id));
+
+        const cellHost =
+          sectorMembers.find((m) => m.role === $Enums.MemberRole.ANFITRION && !usedCellHostIds.has(m.id)) ||
+          sectorMembers.find((m) => !usedCellHostIds.has(m.id));
+
+        const cell = await prisma.cells.create({
+          data: {
+            name: `Célula ${j + 1} - ${sector.name}`,
+            church_id: church.id,
+            sector_id: sector.id,
+            leader_id: cellLeader?.id ?? null,
+            host_id: cellHost?.id ?? null,
+          },
+        });
+
+        cellRecords.push({ id: cell.id, name: cell.name });
+        if (cellLeader) usedCellLeaderIds.add(cellLeader.id);
+        if (cellHost) usedCellHostIds.add(cellHost.id);
+      }
+
+      for (let k = 0; k < sectorMembers.length; k++) {
+        const cell = cellRecords[k % cellRecords.length];
+        await prisma.members.update({
+          where: { id: sectorMembers[k].id },
+          data: { cell_id: cell.id },
+        });
+      }
+    }
+  }
+
   // Seed Member-Ministry relationships
   console.log("🔗 Seeding member-ministry relationships...");
   for (const memberMinistry of mockData.memberMinistries) {
@@ -123,9 +217,13 @@ export async function main() {
     const relationships = mockData.memberMinistries.filter(
       (mm) => mm.church_id === church.id
     );
+    const sectorsCount = await prisma.sectors.count({ where: { church_id: church.id } });
+    const cellsCount = await prisma.cells.count({ where: { church_id: church.id } });
 
     console.log(`\n⛪ ${church.name}:`);
     console.log(`   👥 Members: ${members.length}`);
+    console.log(`   🏘️ Sectors: ${sectorsCount}`);
+    console.log(`   🧩 Cells: ${cellsCount}`);
     console.log(`   🙏 Ministries: ${ministries.length}`);
     console.log(`   🔗 Relationships: ${relationships.length}`);
 

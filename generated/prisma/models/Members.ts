@@ -54,6 +54,8 @@ export type MembersMinAggregateOutputType = {
   notes: string | null
   passwordHash: string | null
   church_id: string | null
+  sector_id: string | null
+  cell_id: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -78,6 +80,8 @@ export type MembersMaxAggregateOutputType = {
   notes: string | null
   passwordHash: string | null
   church_id: string | null
+  sector_id: string | null
+  cell_id: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -102,6 +106,8 @@ export type MembersCountAggregateOutputType = {
   notes: number
   passwordHash: number
   church_id: number
+  sector_id: number
+  cell_id: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -136,6 +142,8 @@ export type MembersMinAggregateInputType = {
   notes?: true
   passwordHash?: true
   church_id?: true
+  sector_id?: true
+  cell_id?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -160,6 +168,8 @@ export type MembersMaxAggregateInputType = {
   notes?: true
   passwordHash?: true
   church_id?: true
+  sector_id?: true
+  cell_id?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -184,6 +194,8 @@ export type MembersCountAggregateInputType = {
   notes?: true
   passwordHash?: true
   church_id?: true
+  sector_id?: true
+  cell_id?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -295,6 +307,8 @@ export type MembersGroupByOutputType = {
   notes: string | null
   passwordHash: string | null
   church_id: string
+  sector_id: string | null
+  cell_id: string | null
   createdAt: Date
   updatedAt: Date
   _count: MembersCountAggregateOutputType | null
@@ -342,11 +356,18 @@ export type MembersWhereInput = {
   notes?: Prisma.StringNullableFilter<"Members"> | string | null
   passwordHash?: Prisma.StringNullableFilter<"Members"> | string | null
   church_id?: Prisma.StringFilter<"Members"> | string
+  sector_id?: Prisma.StringNullableFilter<"Members"> | string | null
+  cell_id?: Prisma.StringNullableFilter<"Members"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Members"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Members"> | Date | string
   ministries?: Prisma.MemberMinistryListRelationFilter
   church?: Prisma.XOR<Prisma.ChurchesScalarRelationFilter, Prisma.ChurchesWhereInput>
   ledMinistries?: Prisma.MinistriesListRelationFilter
+  cells?: Prisma.CellsListRelationFilter
+  hostedCells?: Prisma.CellsListRelationFilter
+  cell?: Prisma.XOR<Prisma.CellsNullableScalarRelationFilter, Prisma.CellsWhereInput> | null
+  sector?: Prisma.XOR<Prisma.SectorsNullableScalarRelationFilter, Prisma.SectorsWhereInput> | null
+  ledSectors?: Prisma.SectorsListRelationFilter
 }
 
 export type MembersOrderByWithRelationInput = {
@@ -369,11 +390,18 @@ export type MembersOrderByWithRelationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
   church_id?: Prisma.SortOrder
+  sector_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  cell_id?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   ministries?: Prisma.MemberMinistryOrderByRelationAggregateInput
   church?: Prisma.ChurchesOrderByWithRelationInput
   ledMinistries?: Prisma.MinistriesOrderByRelationAggregateInput
+  cells?: Prisma.CellsOrderByRelationAggregateInput
+  hostedCells?: Prisma.CellsOrderByRelationAggregateInput
+  cell?: Prisma.CellsOrderByWithRelationInput
+  sector?: Prisma.SectorsOrderByWithRelationInput
+  ledSectors?: Prisma.SectorsOrderByRelationAggregateInput
 }
 
 export type MembersWhereUniqueInput = Prisma.AtLeast<{
@@ -399,11 +427,18 @@ export type MembersWhereUniqueInput = Prisma.AtLeast<{
   notes?: Prisma.StringNullableFilter<"Members"> | string | null
   passwordHash?: Prisma.StringNullableFilter<"Members"> | string | null
   church_id?: Prisma.StringFilter<"Members"> | string
+  sector_id?: Prisma.StringNullableFilter<"Members"> | string | null
+  cell_id?: Prisma.StringNullableFilter<"Members"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Members"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Members"> | Date | string
   ministries?: Prisma.MemberMinistryListRelationFilter
   church?: Prisma.XOR<Prisma.ChurchesScalarRelationFilter, Prisma.ChurchesWhereInput>
   ledMinistries?: Prisma.MinistriesListRelationFilter
+  cells?: Prisma.CellsListRelationFilter
+  hostedCells?: Prisma.CellsListRelationFilter
+  cell?: Prisma.XOR<Prisma.CellsNullableScalarRelationFilter, Prisma.CellsWhereInput> | null
+  sector?: Prisma.XOR<Prisma.SectorsNullableScalarRelationFilter, Prisma.SectorsWhereInput> | null
+  ledSectors?: Prisma.SectorsListRelationFilter
 }, "id" | "email">
 
 export type MembersOrderByWithAggregationInput = {
@@ -426,6 +461,8 @@ export type MembersOrderByWithAggregationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
   church_id?: Prisma.SortOrder
+  sector_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  cell_id?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.MembersCountOrderByAggregateInput
@@ -458,6 +495,8 @@ export type MembersScalarWhereWithAggregatesInput = {
   notes?: Prisma.StringNullableWithAggregatesFilter<"Members"> | string | null
   passwordHash?: Prisma.StringNullableWithAggregatesFilter<"Members"> | string | null
   church_id?: Prisma.StringWithAggregatesFilter<"Members"> | string
+  sector_id?: Prisma.StringNullableWithAggregatesFilter<"Members"> | string | null
+  cell_id?: Prisma.StringNullableWithAggregatesFilter<"Members"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Members"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Members"> | Date | string
 }
@@ -486,6 +525,11 @@ export type MembersCreateInput = {
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateInput = {
@@ -508,10 +552,15 @@ export type MembersUncheckedCreateInput = {
   notes?: string | null
   passwordHash?: string | null
   church_id: string
+  sector_id?: string | null
+  cell_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
   ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUpdateInput = {
@@ -538,6 +587,11 @@ export type MembersUpdateInput = {
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
+  sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
+  ledSectors?: Prisma.SectorsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateInput = {
@@ -560,10 +614,15 @@ export type MembersUncheckedUpdateInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
   ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersCreateManyInput = {
@@ -586,6 +645,8 @@ export type MembersCreateManyInput = {
   notes?: string | null
   passwordHash?: string | null
   church_id: string
+  sector_id?: string | null
+  cell_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -633,6 +694,8 @@ export type MembersUncheckedUpdateManyInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -667,6 +730,8 @@ export type MembersCountOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   church_id?: Prisma.SortOrder
+  sector_id?: Prisma.SortOrder
+  cell_id?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -695,6 +760,8 @@ export type MembersMaxOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   church_id?: Prisma.SortOrder
+  sector_id?: Prisma.SortOrder
+  cell_id?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -719,6 +786,8 @@ export type MembersMinOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   church_id?: Prisma.SortOrder
+  sector_id?: Prisma.SortOrder
+  cell_id?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -819,6 +888,138 @@ export type MembersUpdateOneWithoutLedMinistriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutLedMinistriesInput, Prisma.MembersUpdateWithoutLedMinistriesInput>, Prisma.MembersUncheckedUpdateWithoutLedMinistriesInput>
 }
 
+export type MembersCreateNestedOneWithoutCellsInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutCellsInput, Prisma.MembersUncheckedCreateWithoutCellsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutCellsInput
+  connect?: Prisma.MembersWhereUniqueInput
+}
+
+export type MembersCreateNestedOneWithoutHostedCellsInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutHostedCellsInput, Prisma.MembersUncheckedCreateWithoutHostedCellsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutHostedCellsInput
+  connect?: Prisma.MembersWhereUniqueInput
+}
+
+export type MembersCreateNestedManyWithoutCellInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutCellInput, Prisma.MembersUncheckedCreateWithoutCellInput> | Prisma.MembersCreateWithoutCellInput[] | Prisma.MembersUncheckedCreateWithoutCellInput[]
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutCellInput | Prisma.MembersCreateOrConnectWithoutCellInput[]
+  createMany?: Prisma.MembersCreateManyCellInputEnvelope
+  connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+}
+
+export type MembersUncheckedCreateNestedManyWithoutCellInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutCellInput, Prisma.MembersUncheckedCreateWithoutCellInput> | Prisma.MembersCreateWithoutCellInput[] | Prisma.MembersUncheckedCreateWithoutCellInput[]
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutCellInput | Prisma.MembersCreateOrConnectWithoutCellInput[]
+  createMany?: Prisma.MembersCreateManyCellInputEnvelope
+  connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+}
+
+export type MembersUpdateOneWithoutCellsNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutCellsInput, Prisma.MembersUncheckedCreateWithoutCellsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutCellsInput
+  upsert?: Prisma.MembersUpsertWithoutCellsInput
+  disconnect?: Prisma.MembersWhereInput | boolean
+  delete?: Prisma.MembersWhereInput | boolean
+  connect?: Prisma.MembersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutCellsInput, Prisma.MembersUpdateWithoutCellsInput>, Prisma.MembersUncheckedUpdateWithoutCellsInput>
+}
+
+export type MembersUpdateOneWithoutHostedCellsNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutHostedCellsInput, Prisma.MembersUncheckedCreateWithoutHostedCellsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutHostedCellsInput
+  upsert?: Prisma.MembersUpsertWithoutHostedCellsInput
+  disconnect?: Prisma.MembersWhereInput | boolean
+  delete?: Prisma.MembersWhereInput | boolean
+  connect?: Prisma.MembersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutHostedCellsInput, Prisma.MembersUpdateWithoutHostedCellsInput>, Prisma.MembersUncheckedUpdateWithoutHostedCellsInput>
+}
+
+export type MembersUpdateManyWithoutCellNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutCellInput, Prisma.MembersUncheckedCreateWithoutCellInput> | Prisma.MembersCreateWithoutCellInput[] | Prisma.MembersUncheckedCreateWithoutCellInput[]
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutCellInput | Prisma.MembersCreateOrConnectWithoutCellInput[]
+  upsert?: Prisma.MembersUpsertWithWhereUniqueWithoutCellInput | Prisma.MembersUpsertWithWhereUniqueWithoutCellInput[]
+  createMany?: Prisma.MembersCreateManyCellInputEnvelope
+  set?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  disconnect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  delete?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  update?: Prisma.MembersUpdateWithWhereUniqueWithoutCellInput | Prisma.MembersUpdateWithWhereUniqueWithoutCellInput[]
+  updateMany?: Prisma.MembersUpdateManyWithWhereWithoutCellInput | Prisma.MembersUpdateManyWithWhereWithoutCellInput[]
+  deleteMany?: Prisma.MembersScalarWhereInput | Prisma.MembersScalarWhereInput[]
+}
+
+export type MembersUncheckedUpdateManyWithoutCellNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutCellInput, Prisma.MembersUncheckedCreateWithoutCellInput> | Prisma.MembersCreateWithoutCellInput[] | Prisma.MembersUncheckedCreateWithoutCellInput[]
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutCellInput | Prisma.MembersCreateOrConnectWithoutCellInput[]
+  upsert?: Prisma.MembersUpsertWithWhereUniqueWithoutCellInput | Prisma.MembersUpsertWithWhereUniqueWithoutCellInput[]
+  createMany?: Prisma.MembersCreateManyCellInputEnvelope
+  set?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  disconnect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  delete?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  update?: Prisma.MembersUpdateWithWhereUniqueWithoutCellInput | Prisma.MembersUpdateWithWhereUniqueWithoutCellInput[]
+  updateMany?: Prisma.MembersUpdateManyWithWhereWithoutCellInput | Prisma.MembersUpdateManyWithWhereWithoutCellInput[]
+  deleteMany?: Prisma.MembersScalarWhereInput | Prisma.MembersScalarWhereInput[]
+}
+
+export type MembersCreateNestedOneWithoutLedSectorsInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSectorsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedSectorsInput
+  connect?: Prisma.MembersWhereUniqueInput
+}
+
+export type MembersCreateNestedManyWithoutSectorInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutSectorInput, Prisma.MembersUncheckedCreateWithoutSectorInput> | Prisma.MembersCreateWithoutSectorInput[] | Prisma.MembersUncheckedCreateWithoutSectorInput[]
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutSectorInput | Prisma.MembersCreateOrConnectWithoutSectorInput[]
+  createMany?: Prisma.MembersCreateManySectorInputEnvelope
+  connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+}
+
+export type MembersUncheckedCreateNestedManyWithoutSectorInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutSectorInput, Prisma.MembersUncheckedCreateWithoutSectorInput> | Prisma.MembersCreateWithoutSectorInput[] | Prisma.MembersUncheckedCreateWithoutSectorInput[]
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutSectorInput | Prisma.MembersCreateOrConnectWithoutSectorInput[]
+  createMany?: Prisma.MembersCreateManySectorInputEnvelope
+  connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+}
+
+export type MembersUpdateOneWithoutLedSectorsNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSectorsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedSectorsInput
+  upsert?: Prisma.MembersUpsertWithoutLedSectorsInput
+  disconnect?: Prisma.MembersWhereInput | boolean
+  delete?: Prisma.MembersWhereInput | boolean
+  connect?: Prisma.MembersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutLedSectorsInput, Prisma.MembersUpdateWithoutLedSectorsInput>, Prisma.MembersUncheckedUpdateWithoutLedSectorsInput>
+}
+
+export type MembersUpdateManyWithoutSectorNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutSectorInput, Prisma.MembersUncheckedCreateWithoutSectorInput> | Prisma.MembersCreateWithoutSectorInput[] | Prisma.MembersUncheckedCreateWithoutSectorInput[]
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutSectorInput | Prisma.MembersCreateOrConnectWithoutSectorInput[]
+  upsert?: Prisma.MembersUpsertWithWhereUniqueWithoutSectorInput | Prisma.MembersUpsertWithWhereUniqueWithoutSectorInput[]
+  createMany?: Prisma.MembersCreateManySectorInputEnvelope
+  set?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  disconnect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  delete?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  update?: Prisma.MembersUpdateWithWhereUniqueWithoutSectorInput | Prisma.MembersUpdateWithWhereUniqueWithoutSectorInput[]
+  updateMany?: Prisma.MembersUpdateManyWithWhereWithoutSectorInput | Prisma.MembersUpdateManyWithWhereWithoutSectorInput[]
+  deleteMany?: Prisma.MembersScalarWhereInput | Prisma.MembersScalarWhereInput[]
+}
+
+export type MembersUncheckedUpdateManyWithoutSectorNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutSectorInput, Prisma.MembersUncheckedCreateWithoutSectorInput> | Prisma.MembersCreateWithoutSectorInput[] | Prisma.MembersUncheckedCreateWithoutSectorInput[]
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutSectorInput | Prisma.MembersCreateOrConnectWithoutSectorInput[]
+  upsert?: Prisma.MembersUpsertWithWhereUniqueWithoutSectorInput | Prisma.MembersUpsertWithWhereUniqueWithoutSectorInput[]
+  createMany?: Prisma.MembersCreateManySectorInputEnvelope
+  set?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  disconnect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  delete?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  update?: Prisma.MembersUpdateWithWhereUniqueWithoutSectorInput | Prisma.MembersUpdateWithWhereUniqueWithoutSectorInput[]
+  updateMany?: Prisma.MembersUpdateManyWithWhereWithoutSectorInput | Prisma.MembersUpdateManyWithWhereWithoutSectorInput[]
+  deleteMany?: Prisma.MembersScalarWhereInput | Prisma.MembersScalarWhereInput[]
+}
+
 export type MembersCreateNestedOneWithoutMinistriesInput = {
   create?: Prisma.XOR<Prisma.MembersCreateWithoutMinistriesInput, Prisma.MembersUncheckedCreateWithoutMinistriesInput>
   connectOrCreate?: Prisma.MembersCreateOrConnectWithoutMinistriesInput
@@ -856,6 +1057,11 @@ export type MembersCreateWithoutChurchInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutChurchInput = {
@@ -877,10 +1083,15 @@ export type MembersUncheckedCreateWithoutChurchInput = {
   pictureUrl?: string | null
   notes?: string | null
   passwordHash?: string | null
+  sector_id?: string | null
+  cell_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
   ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersCreateOrConnectWithoutChurchInput = {
@@ -932,6 +1143,8 @@ export type MembersScalarWhereInput = {
   notes?: Prisma.StringNullableFilter<"Members"> | string | null
   passwordHash?: Prisma.StringNullableFilter<"Members"> | string | null
   church_id?: Prisma.StringFilter<"Members"> | string
+  sector_id?: Prisma.StringNullableFilter<"Members"> | string | null
+  cell_id?: Prisma.StringNullableFilter<"Members"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Members"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Members"> | Date | string
 }
@@ -959,6 +1172,11 @@ export type MembersCreateWithoutLedMinistriesInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutLedMinistriesInput = {
@@ -981,9 +1199,14 @@ export type MembersUncheckedCreateWithoutLedMinistriesInput = {
   notes?: string | null
   passwordHash?: string | null
   church_id: string
+  sector_id?: string | null
+  cell_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersCreateOrConnectWithoutLedMinistriesInput = {
@@ -1025,6 +1248,11 @@ export type MembersUpdateWithoutLedMinistriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
+  sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
+  ledSectors?: Prisma.SectorsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutLedMinistriesInput = {
@@ -1047,9 +1275,594 @@ export type MembersUncheckedUpdateWithoutLedMinistriesInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutLeaderNestedInput
+}
+
+export type MembersCreateWithoutCellsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutLeaderInput
+}
+
+export type MembersUncheckedCreateWithoutCellsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  sector_id?: string | null
+  cell_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutLeaderInput
+}
+
+export type MembersCreateOrConnectWithoutCellsInput = {
+  where: Prisma.MembersWhereUniqueInput
+  create: Prisma.XOR<Prisma.MembersCreateWithoutCellsInput, Prisma.MembersUncheckedCreateWithoutCellsInput>
+}
+
+export type MembersCreateWithoutHostedCellsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutLeaderInput
+}
+
+export type MembersUncheckedCreateWithoutHostedCellsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  sector_id?: string | null
+  cell_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutLeaderInput
+}
+
+export type MembersCreateOrConnectWithoutHostedCellsInput = {
+  where: Prisma.MembersWhereUniqueInput
+  create: Prisma.XOR<Prisma.MembersCreateWithoutHostedCellsInput, Prisma.MembersUncheckedCreateWithoutHostedCellsInput>
+}
+
+export type MembersCreateWithoutCellInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutLeaderInput
+}
+
+export type MembersUncheckedCreateWithoutCellInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  sector_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutLeaderInput
+}
+
+export type MembersCreateOrConnectWithoutCellInput = {
+  where: Prisma.MembersWhereUniqueInput
+  create: Prisma.XOR<Prisma.MembersCreateWithoutCellInput, Prisma.MembersUncheckedCreateWithoutCellInput>
+}
+
+export type MembersCreateManyCellInputEnvelope = {
+  data: Prisma.MembersCreateManyCellInput | Prisma.MembersCreateManyCellInput[]
+  skipDuplicates?: boolean
+}
+
+export type MembersUpsertWithoutCellsInput = {
+  update: Prisma.XOR<Prisma.MembersUpdateWithoutCellsInput, Prisma.MembersUncheckedUpdateWithoutCellsInput>
+  create: Prisma.XOR<Prisma.MembersCreateWithoutCellsInput, Prisma.MembersUncheckedCreateWithoutCellsInput>
+  where?: Prisma.MembersWhereInput
+}
+
+export type MembersUpdateToOneWithWhereWithoutCellsInput = {
+  where?: Prisma.MembersWhereInput
+  data: Prisma.XOR<Prisma.MembersUpdateWithoutCellsInput, Prisma.MembersUncheckedUpdateWithoutCellsInput>
+}
+
+export type MembersUpdateWithoutCellsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
+  sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
+  ledSectors?: Prisma.SectorsUpdateManyWithoutLeaderNestedInput
+}
+
+export type MembersUncheckedUpdateWithoutCellsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutLeaderNestedInput
+}
+
+export type MembersUpsertWithoutHostedCellsInput = {
+  update: Prisma.XOR<Prisma.MembersUpdateWithoutHostedCellsInput, Prisma.MembersUncheckedUpdateWithoutHostedCellsInput>
+  create: Prisma.XOR<Prisma.MembersCreateWithoutHostedCellsInput, Prisma.MembersUncheckedCreateWithoutHostedCellsInput>
+  where?: Prisma.MembersWhereInput
+}
+
+export type MembersUpdateToOneWithWhereWithoutHostedCellsInput = {
+  where?: Prisma.MembersWhereInput
+  data: Prisma.XOR<Prisma.MembersUpdateWithoutHostedCellsInput, Prisma.MembersUncheckedUpdateWithoutHostedCellsInput>
+}
+
+export type MembersUpdateWithoutHostedCellsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
+  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
+  sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
+  ledSectors?: Prisma.SectorsUpdateManyWithoutLeaderNestedInput
+}
+
+export type MembersUncheckedUpdateWithoutHostedCellsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
+  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutLeaderNestedInput
+}
+
+export type MembersUpsertWithWhereUniqueWithoutCellInput = {
+  where: Prisma.MembersWhereUniqueInput
+  update: Prisma.XOR<Prisma.MembersUpdateWithoutCellInput, Prisma.MembersUncheckedUpdateWithoutCellInput>
+  create: Prisma.XOR<Prisma.MembersCreateWithoutCellInput, Prisma.MembersUncheckedCreateWithoutCellInput>
+}
+
+export type MembersUpdateWithWhereUniqueWithoutCellInput = {
+  where: Prisma.MembersWhereUniqueInput
+  data: Prisma.XOR<Prisma.MembersUpdateWithoutCellInput, Prisma.MembersUncheckedUpdateWithoutCellInput>
+}
+
+export type MembersUpdateManyWithWhereWithoutCellInput = {
+  where: Prisma.MembersScalarWhereInput
+  data: Prisma.XOR<Prisma.MembersUpdateManyMutationInput, Prisma.MembersUncheckedUpdateManyWithoutCellInput>
+}
+
+export type MembersCreateWithoutLedSectorsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
+}
+
+export type MembersUncheckedCreateWithoutLedSectorsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  sector_id?: string | null
+  cell_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+}
+
+export type MembersCreateOrConnectWithoutLedSectorsInput = {
+  where: Prisma.MembersWhereUniqueInput
+  create: Prisma.XOR<Prisma.MembersCreateWithoutLedSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSectorsInput>
+}
+
+export type MembersCreateWithoutSectorInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutLeaderInput
+}
+
+export type MembersUncheckedCreateWithoutSectorInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  cell_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutLeaderInput
+}
+
+export type MembersCreateOrConnectWithoutSectorInput = {
+  where: Prisma.MembersWhereUniqueInput
+  create: Prisma.XOR<Prisma.MembersCreateWithoutSectorInput, Prisma.MembersUncheckedCreateWithoutSectorInput>
+}
+
+export type MembersCreateManySectorInputEnvelope = {
+  data: Prisma.MembersCreateManySectorInput | Prisma.MembersCreateManySectorInput[]
+  skipDuplicates?: boolean
+}
+
+export type MembersUpsertWithoutLedSectorsInput = {
+  update: Prisma.XOR<Prisma.MembersUpdateWithoutLedSectorsInput, Prisma.MembersUncheckedUpdateWithoutLedSectorsInput>
+  create: Prisma.XOR<Prisma.MembersCreateWithoutLedSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSectorsInput>
+  where?: Prisma.MembersWhereInput
+}
+
+export type MembersUpdateToOneWithWhereWithoutLedSectorsInput = {
+  where?: Prisma.MembersWhereInput
+  data: Prisma.XOR<Prisma.MembersUpdateWithoutLedSectorsInput, Prisma.MembersUncheckedUpdateWithoutLedSectorsInput>
+}
+
+export type MembersUpdateWithoutLedSectorsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
+  sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
+}
+
+export type MembersUncheckedUpdateWithoutLedSectorsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+}
+
+export type MembersUpsertWithWhereUniqueWithoutSectorInput = {
+  where: Prisma.MembersWhereUniqueInput
+  update: Prisma.XOR<Prisma.MembersUpdateWithoutSectorInput, Prisma.MembersUncheckedUpdateWithoutSectorInput>
+  create: Prisma.XOR<Prisma.MembersCreateWithoutSectorInput, Prisma.MembersUncheckedCreateWithoutSectorInput>
+}
+
+export type MembersUpdateWithWhereUniqueWithoutSectorInput = {
+  where: Prisma.MembersWhereUniqueInput
+  data: Prisma.XOR<Prisma.MembersUpdateWithoutSectorInput, Prisma.MembersUncheckedUpdateWithoutSectorInput>
+}
+
+export type MembersUpdateManyWithWhereWithoutSectorInput = {
+  where: Prisma.MembersScalarWhereInput
+  data: Prisma.XOR<Prisma.MembersUpdateManyMutationInput, Prisma.MembersUncheckedUpdateManyWithoutSectorInput>
 }
 
 export type MembersCreateWithoutMinistriesInput = {
@@ -1075,6 +1888,11 @@ export type MembersCreateWithoutMinistriesInput = {
   updatedAt?: Date | string
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutMinistriesInput = {
@@ -1097,9 +1915,14 @@ export type MembersUncheckedCreateWithoutMinistriesInput = {
   notes?: string | null
   passwordHash?: string | null
   church_id: string
+  sector_id?: string | null
+  cell_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersCreateOrConnectWithoutMinistriesInput = {
@@ -1141,6 +1964,11 @@ export type MembersUpdateWithoutMinistriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
+  sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
+  ledSectors?: Prisma.SectorsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutMinistriesInput = {
@@ -1163,9 +1991,14 @@ export type MembersUncheckedUpdateWithoutMinistriesInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersCreateManyChurchInput = {
@@ -1187,6 +2020,8 @@ export type MembersCreateManyChurchInput = {
   pictureUrl?: string | null
   notes?: string | null
   passwordHash?: string | null
+  sector_id?: string | null
+  cell_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1214,6 +2049,11 @@ export type MembersUpdateWithoutChurchInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
+  sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
+  ledSectors?: Prisma.SectorsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutChurchInput = {
@@ -1235,10 +2075,15 @@ export type MembersUncheckedUpdateWithoutChurchInput = {
   pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
   ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateManyWithoutChurchInput = {
@@ -1260,6 +2105,228 @@ export type MembersUncheckedUpdateManyWithoutChurchInput = {
   pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MembersCreateManyCellInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  sector_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MembersUpdateWithoutCellInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
+  ledSectors?: Prisma.SectorsUpdateManyWithoutLeaderNestedInput
+}
+
+export type MembersUncheckedUpdateWithoutCellInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutLeaderNestedInput
+}
+
+export type MembersUncheckedUpdateManyWithoutCellInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MembersCreateManySectorInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  cell_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MembersUpdateWithoutSectorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
+  ledSectors?: Prisma.SectorsUpdateManyWithoutLeaderNestedInput
+}
+
+export type MembersUncheckedUpdateWithoutSectorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutLeaderNestedInput
+}
+
+export type MembersUncheckedUpdateManyWithoutSectorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1272,11 +2339,17 @@ export type MembersUncheckedUpdateManyWithoutChurchInput = {
 export type MembersCountOutputType = {
   ministries: number
   ledMinistries: number
+  cells: number
+  hostedCells: number
+  ledSectors: number
 }
 
 export type MembersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ministries?: boolean | MembersCountOutputTypeCountMinistriesArgs
   ledMinistries?: boolean | MembersCountOutputTypeCountLedMinistriesArgs
+  cells?: boolean | MembersCountOutputTypeCountCellsArgs
+  hostedCells?: boolean | MembersCountOutputTypeCountHostedCellsArgs
+  ledSectors?: boolean | MembersCountOutputTypeCountLedSectorsArgs
 }
 
 /**
@@ -1303,6 +2376,27 @@ export type MembersCountOutputTypeCountLedMinistriesArgs<ExtArgs extends runtime
   where?: Prisma.MinistriesWhereInput
 }
 
+/**
+ * MembersCountOutputType without action
+ */
+export type MembersCountOutputTypeCountCellsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CellsWhereInput
+}
+
+/**
+ * MembersCountOutputType without action
+ */
+export type MembersCountOutputTypeCountHostedCellsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CellsWhereInput
+}
+
+/**
+ * MembersCountOutputType without action
+ */
+export type MembersCountOutputTypeCountLedSectorsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SectorsWhereInput
+}
+
 
 export type MembersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1324,11 +2418,18 @@ export type MembersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   notes?: boolean
   passwordHash?: boolean
   church_id?: boolean
+  sector_id?: boolean
+  cell_id?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   ministries?: boolean | Prisma.Members$ministriesArgs<ExtArgs>
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
   ledMinistries?: boolean | Prisma.Members$ledMinistriesArgs<ExtArgs>
+  cells?: boolean | Prisma.Members$cellsArgs<ExtArgs>
+  hostedCells?: boolean | Prisma.Members$hostedCellsArgs<ExtArgs>
+  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
+  sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
+  ledSectors?: boolean | Prisma.Members$ledSectorsArgs<ExtArgs>
   _count?: boolean | Prisma.MembersCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["members"]>
 
@@ -1352,9 +2453,13 @@ export type MembersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   notes?: boolean
   passwordHash?: boolean
   church_id?: boolean
+  sector_id?: boolean
+  cell_id?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
+  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
+  sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
 }, ExtArgs["result"]["members"]>
 
 export type MembersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1377,9 +2482,13 @@ export type MembersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   notes?: boolean
   passwordHash?: boolean
   church_id?: boolean
+  sector_id?: boolean
+  cell_id?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
+  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
+  sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
 }, ExtArgs["result"]["members"]>
 
 export type MembersSelectScalar = {
@@ -1402,22 +2511,33 @@ export type MembersSelectScalar = {
   notes?: boolean
   passwordHash?: boolean
   church_id?: boolean
+  sector_id?: boolean
+  cell_id?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type MembersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "age" | "street" | "city" | "state" | "zip" | "country" | "birthDate" | "baptismDate" | "role" | "gender" | "pictureUrl" | "notes" | "passwordHash" | "church_id" | "createdAt" | "updatedAt", ExtArgs["result"]["members"]>
+export type MembersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "age" | "street" | "city" | "state" | "zip" | "country" | "birthDate" | "baptismDate" | "role" | "gender" | "pictureUrl" | "notes" | "passwordHash" | "church_id" | "sector_id" | "cell_id" | "createdAt" | "updatedAt", ExtArgs["result"]["members"]>
 export type MembersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ministries?: boolean | Prisma.Members$ministriesArgs<ExtArgs>
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
   ledMinistries?: boolean | Prisma.Members$ledMinistriesArgs<ExtArgs>
+  cells?: boolean | Prisma.Members$cellsArgs<ExtArgs>
+  hostedCells?: boolean | Prisma.Members$hostedCellsArgs<ExtArgs>
+  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
+  sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
+  ledSectors?: boolean | Prisma.Members$ledSectorsArgs<ExtArgs>
   _count?: boolean | Prisma.MembersCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MembersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
+  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
+  sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
 }
 export type MembersIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
+  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
+  sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
 }
 
 export type $MembersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1426,6 +2546,11 @@ export type $MembersPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     ministries: Prisma.$MemberMinistryPayload<ExtArgs>[]
     church: Prisma.$ChurchesPayload<ExtArgs>
     ledMinistries: Prisma.$MinistriesPayload<ExtArgs>[]
+    cells: Prisma.$CellsPayload<ExtArgs>[]
+    hostedCells: Prisma.$CellsPayload<ExtArgs>[]
+    cell: Prisma.$CellsPayload<ExtArgs> | null
+    sector: Prisma.$SectorsPayload<ExtArgs> | null
+    ledSectors: Prisma.$SectorsPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1447,6 +2572,8 @@ export type $MembersPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     notes: string | null
     passwordHash: string | null
     church_id: string
+    sector_id: string | null
+    cell_id: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["members"]>
@@ -1846,6 +2973,11 @@ export interface Prisma__MembersClient<T, Null = never, ExtArgs extends runtime.
   ministries<T extends Prisma.Members$ministriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ministriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberMinistryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   church<T extends Prisma.ChurchesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChurchesDefaultArgs<ExtArgs>>): Prisma.Prisma__ChurchesClient<runtime.Types.Result.GetResult<Prisma.$ChurchesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   ledMinistries<T extends Prisma.Members$ledMinistriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ledMinistriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MinistriesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cells<T extends Prisma.Members$cellsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$cellsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CellsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  hostedCells<T extends Prisma.Members$hostedCellsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$hostedCellsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CellsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cell<T extends Prisma.Members$cellArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$cellArgs<ExtArgs>>): Prisma.Prisma__CellsClient<runtime.Types.Result.GetResult<Prisma.$CellsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  sector<T extends Prisma.Members$sectorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$sectorArgs<ExtArgs>>): Prisma.Prisma__SectorsClient<runtime.Types.Result.GetResult<Prisma.$SectorsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  ledSectors<T extends Prisma.Members$ledSectorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ledSectorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SectorsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1894,6 +3026,8 @@ export interface MembersFieldRefs {
   readonly notes: Prisma.FieldRef<"Members", 'String'>
   readonly passwordHash: Prisma.FieldRef<"Members", 'String'>
   readonly church_id: Prisma.FieldRef<"Members", 'String'>
+  readonly sector_id: Prisma.FieldRef<"Members", 'String'>
+  readonly cell_id: Prisma.FieldRef<"Members", 'String'>
   readonly createdAt: Prisma.FieldRef<"Members", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Members", 'DateTime'>
 }
@@ -2337,6 +3471,116 @@ export type Members$ledMinistriesArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.MinistriesScalarFieldEnum | Prisma.MinistriesScalarFieldEnum[]
+}
+
+/**
+ * Members.cells
+ */
+export type Members$cellsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Cells
+   */
+  select?: Prisma.CellsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Cells
+   */
+  omit?: Prisma.CellsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CellsInclude<ExtArgs> | null
+  where?: Prisma.CellsWhereInput
+  orderBy?: Prisma.CellsOrderByWithRelationInput | Prisma.CellsOrderByWithRelationInput[]
+  cursor?: Prisma.CellsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CellsScalarFieldEnum | Prisma.CellsScalarFieldEnum[]
+}
+
+/**
+ * Members.hostedCells
+ */
+export type Members$hostedCellsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Cells
+   */
+  select?: Prisma.CellsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Cells
+   */
+  omit?: Prisma.CellsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CellsInclude<ExtArgs> | null
+  where?: Prisma.CellsWhereInput
+  orderBy?: Prisma.CellsOrderByWithRelationInput | Prisma.CellsOrderByWithRelationInput[]
+  cursor?: Prisma.CellsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CellsScalarFieldEnum | Prisma.CellsScalarFieldEnum[]
+}
+
+/**
+ * Members.cell
+ */
+export type Members$cellArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Cells
+   */
+  select?: Prisma.CellsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Cells
+   */
+  omit?: Prisma.CellsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CellsInclude<ExtArgs> | null
+  where?: Prisma.CellsWhereInput
+}
+
+/**
+ * Members.sector
+ */
+export type Members$sectorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Sectors
+   */
+  select?: Prisma.SectorsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Sectors
+   */
+  omit?: Prisma.SectorsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SectorsInclude<ExtArgs> | null
+  where?: Prisma.SectorsWhereInput
+}
+
+/**
+ * Members.ledSectors
+ */
+export type Members$ledSectorsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Sectors
+   */
+  select?: Prisma.SectorsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Sectors
+   */
+  omit?: Prisma.SectorsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SectorsInclude<ExtArgs> | null
+  where?: Prisma.SectorsWhereInput
+  orderBy?: Prisma.SectorsOrderByWithRelationInput | Prisma.SectorsOrderByWithRelationInput[]
+  cursor?: Prisma.SectorsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SectorsScalarFieldEnum | Prisma.SectorsScalarFieldEnum[]
 }
 
 /**

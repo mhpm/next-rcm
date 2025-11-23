@@ -16,6 +16,8 @@ model Churches {
   memberMinistries MemberMinistry[]
   members          Members[]
   ministries       Ministries[]
+  cells            Cells[]
+  sectors          Sectors[]
 
   @@map("churches")
 }
@@ -40,16 +42,26 @@ model Members {
   notes         String?
   passwordHash  String?          @map("password_hash")
   church_id     String
+  sector_id     String?
+  cell_id       String?
   createdAt     DateTime         @default(now()) @map("created_at")
   updatedAt     DateTime         @updatedAt @map("updated_at")
   ministries    MemberMinistry[]
+
   church        Churches         @relation(fields: [church_id], references: [id], onDelete: Cascade)
   ledMinistries Ministries[]     @relation("MinistryLeader")
+  cells         Cells[]          @relation("CellLeader")
+  hostedCells   Cells[]          @relation("CellHost")
+  cell          Cells?           @relation("MemberCell", fields: [cell_id], references: [id], onDelete: SetNull)
+  sector        Sectors?         @relation("MemberSector", fields: [sector_id], references: [id], onDelete: SetNull)
+  ledSectors    Sectors[]        @relation("SectorLeader")
 
   @@index([email])
   @@index([role])
   @@index([createdAt])
   @@index([church_id])
+  @@index([cell_id])
+  @@index([sector_id])
   @@map("members")
 }
 
@@ -69,6 +81,46 @@ model Ministries {
   @@index([church_id])
   @@index([leader_id])
   @@map("ministries")
+}
+
+model Cells{
+  id         String     @id @default(cuid())
+  name       String
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+  church_id  String
+  sector_id  String
+  leader_id  String?
+  host_id    String?
+
+  church     Churches   @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  sector     Sectors    @relation(fields: [sector_id], references: [id], onDelete: Cascade)
+  leader     Members?   @relation("CellLeader", fields: [leader_id], references: [id])
+  host       Members?   @relation("CellHost", fields: [host_id], references: [id])
+  members    Members[]  @relation("MemberCell")
+
+  @@index([church_id])
+  @@index([sector_id])
+  @@index([leader_id])
+  @@index([host_id])
+}
+
+model Sectors {
+  id        String     @id @default(cuid())
+  name      String
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  church_id String
+  leader_id String?
+
+  church    Churches   @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  cells     Cells[]
+  leader    Members?   @relation("SectorLeader", fields: [leader_id], references: [id])
+  members   Members[]  @relation("MemberSector")
+
+  @@index([church_id])
+  @@index([leader_id])
+  @@map("sectors")
 }
 
 model MemberMinistry {

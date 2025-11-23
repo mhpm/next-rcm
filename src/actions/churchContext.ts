@@ -128,6 +128,114 @@ export function createChurchPrisma(churchId: string) {
           return query(args);
         },
       },
+      sectors: {
+        async findMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async findFirst({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async findUnique({ args, query }) {
+          return query(args);
+        },
+        async count({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async create({ args, query }) {
+          const data = args.data as Prisma.SectorsCreateInput;
+          if (!data.church) {
+            (args.data as Prisma.SectorsCreateInput).church = {
+              connect: { id: churchId },
+            };
+          }
+          return query(args);
+        },
+        async createMany({ args, query }) {
+          if (Array.isArray(args.data)) {
+            args.data = args.data.map((item: Prisma.SectorsCreateManyInput) => ({
+              ...item,
+              church_id: item.church_id || churchId,
+            }));
+          } else {
+            args.data = {
+              ...args.data,
+              church_id: (args.data as Prisma.SectorsCreateManyInput).church_id || churchId,
+            };
+          }
+          return query(args);
+        },
+        async update({ args, query }) {
+          return query(args);
+        },
+        async updateMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async delete({ args, query }) {
+          return query(args);
+        },
+        async deleteMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+      },
+      cells: {
+        async findMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async findFirst({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async findUnique({ args, query }) {
+          return query(args);
+        },
+        async count({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async create({ args, query }) {
+          const data = args.data as Prisma.CellsCreateInput;
+          if (!data.church) {
+            (args.data as Prisma.CellsCreateInput).church = {
+              connect: { id: churchId },
+            };
+          }
+          return query(args);
+        },
+        async createMany({ args, query }) {
+          if (Array.isArray(args.data)) {
+            args.data = args.data.map((item: Prisma.CellsCreateManyInput) => ({
+              ...item,
+              church_id: item.church_id || churchId,
+            }));
+          } else {
+            args.data = {
+              ...args.data,
+              church_id: (args.data as Prisma.CellsCreateManyInput).church_id || churchId,
+            };
+          }
+          return query(args);
+        },
+        async update({ args, query }) {
+          return query(args);
+        },
+        async updateMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async delete({ args, query }) {
+          return query(args);
+        },
+        async deleteMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+      },
       memberMinistry: {
         async findMany({ args, query }) {
           args.where = { ...args.where, church_id: churchId };

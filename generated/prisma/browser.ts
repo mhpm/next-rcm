@@ -33,6 +33,16 @@ export type Members = Prisma.MembersModel
  */
 export type Ministries = Prisma.MinistriesModel
 /**
+ * Model Cells
+ * 
+ */
+export type Cells = Prisma.CellsModel
+/**
+ * Model Sectors
+ * 
+ */
+export type Sectors = Prisma.SectorsModel
+/**
  * Model MemberMinistry
  * 
  */

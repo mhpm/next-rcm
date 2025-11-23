@@ -54,6 +54,8 @@ export const ModelName = {
   Churches: 'Churches',
   Members: 'Members',
   Ministries: 'Ministries',
+  Cells: 'Cells',
+  Sectors: 'Sectors',
   MemberMinistry: 'MemberMinistry'
 } as const
 
@@ -104,6 +106,8 @@ export const MembersScalarFieldEnum = {
   notes: 'notes',
   passwordHash: 'passwordHash',
   church_id: 'church_id',
+  sector_id: 'sector_id',
+  cell_id: 'cell_id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -122,6 +126,32 @@ export const MinistriesScalarFieldEnum = {
 } as const
 
 export type MinistriesScalarFieldEnum = (typeof MinistriesScalarFieldEnum)[keyof typeof MinistriesScalarFieldEnum]
+
+
+export const CellsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  church_id: 'church_id',
+  sector_id: 'sector_id',
+  leader_id: 'leader_id',
+  host_id: 'host_id'
+} as const
+
+export type CellsScalarFieldEnum = (typeof CellsScalarFieldEnum)[keyof typeof CellsScalarFieldEnum]
+
+
+export const SectorsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  church_id: 'church_id',
+  leader_id: 'leader_id'
+} as const
+
+export type SectorsScalarFieldEnum = (typeof SectorsScalarFieldEnum)[keyof typeof SectorsScalarFieldEnum]
 
 
 export const MemberMinistryScalarFieldEnum = {

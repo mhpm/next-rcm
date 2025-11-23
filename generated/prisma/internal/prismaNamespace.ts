@@ -387,6 +387,8 @@ export const ModelName = {
   Churches: 'Churches',
   Members: 'Members',
   Ministries: 'Ministries',
+  Cells: 'Cells',
+  Sectors: 'Sectors',
   MemberMinistry: 'MemberMinistry'
 } as const
 
@@ -403,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "churches" | "members" | "ministries" | "memberMinistry"
+    modelProps: "churches" | "members" | "ministries" | "cells" | "sectors" | "memberMinistry"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -629,6 +631,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Cells: {
+      payload: Prisma.$CellsPayload<ExtArgs>
+      fields: Prisma.CellsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CellsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CellsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CellsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CellsPayload>
+        }
+        findFirst: {
+          args: Prisma.CellsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CellsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CellsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CellsPayload>
+        }
+        findMany: {
+          args: Prisma.CellsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CellsPayload>[]
+        }
+        create: {
+          args: Prisma.CellsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CellsPayload>
+        }
+        createMany: {
+          args: Prisma.CellsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CellsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CellsPayload>[]
+        }
+        delete: {
+          args: Prisma.CellsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CellsPayload>
+        }
+        update: {
+          args: Prisma.CellsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CellsPayload>
+        }
+        deleteMany: {
+          args: Prisma.CellsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CellsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CellsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CellsPayload>[]
+        }
+        upsert: {
+          args: Prisma.CellsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CellsPayload>
+        }
+        aggregate: {
+          args: Prisma.CellsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCells>
+        }
+        groupBy: {
+          args: Prisma.CellsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CellsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CellsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CellsCountAggregateOutputType> | number
+        }
+      }
+    }
+    Sectors: {
+      payload: Prisma.$SectorsPayload<ExtArgs>
+      fields: Prisma.SectorsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SectorsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectorsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SectorsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectorsPayload>
+        }
+        findFirst: {
+          args: Prisma.SectorsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectorsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SectorsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectorsPayload>
+        }
+        findMany: {
+          args: Prisma.SectorsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectorsPayload>[]
+        }
+        create: {
+          args: Prisma.SectorsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectorsPayload>
+        }
+        createMany: {
+          args: Prisma.SectorsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SectorsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectorsPayload>[]
+        }
+        delete: {
+          args: Prisma.SectorsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectorsPayload>
+        }
+        update: {
+          args: Prisma.SectorsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectorsPayload>
+        }
+        deleteMany: {
+          args: Prisma.SectorsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SectorsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SectorsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectorsPayload>[]
+        }
+        upsert: {
+          args: Prisma.SectorsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectorsPayload>
+        }
+        aggregate: {
+          args: Prisma.SectorsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSectors>
+        }
+        groupBy: {
+          args: Prisma.SectorsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SectorsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SectorsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SectorsCountAggregateOutputType> | number
+        }
+      }
+    }
     MemberMinistry: {
       payload: Prisma.$MemberMinistryPayload<ExtArgs>
       fields: Prisma.MemberMinistryFieldRefs
@@ -773,6 +923,8 @@ export const MembersScalarFieldEnum = {
   notes: 'notes',
   passwordHash: 'passwordHash',
   church_id: 'church_id',
+  sector_id: 'sector_id',
+  cell_id: 'cell_id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -791,6 +943,32 @@ export const MinistriesScalarFieldEnum = {
 } as const
 
 export type MinistriesScalarFieldEnum = (typeof MinistriesScalarFieldEnum)[keyof typeof MinistriesScalarFieldEnum]
+
+
+export const CellsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  church_id: 'church_id',
+  sector_id: 'sector_id',
+  leader_id: 'leader_id',
+  host_id: 'host_id'
+} as const
+
+export type CellsScalarFieldEnum = (typeof CellsScalarFieldEnum)[keyof typeof CellsScalarFieldEnum]
+
+
+export const SectorsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  church_id: 'church_id',
+  leader_id: 'leader_id'
+} as const
+
+export type SectorsScalarFieldEnum = (typeof SectorsScalarFieldEnum)[keyof typeof SectorsScalarFieldEnum]
 
 
 export const MemberMinistryScalarFieldEnum = {
@@ -1000,6 +1178,8 @@ export type GlobalOmitConfig = {
   churches?: Prisma.ChurchesOmit
   members?: Prisma.MembersOmit
   ministries?: Prisma.MinistriesOmit
+  cells?: Prisma.CellsOmit
+  sectors?: Prisma.SectorsOmit
   memberMinistry?: Prisma.MemberMinistryOmit
 }
 

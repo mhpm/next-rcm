@@ -11,5 +11,7 @@
 export type * from './models/Churches'
 export type * from './models/Members'
 export type * from './models/Ministries'
+export type * from './models/Cells'
+export type * from './models/Sectors'
 export type * from './models/MemberMinistry'
 export type * from './commonInputTypes'
