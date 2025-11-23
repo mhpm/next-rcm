@@ -10,7 +10,10 @@ import {
 
 // Use Prisma-generated types directly
 export type MockChurch = Churches;
-export type MockMember = Members;
+export type MockMember = Omit<Members, "sector_id" | "cell_id"> & {
+  sector_id?: string | null;
+  cell_id?: string | null;
+};
 // Make leader_id optional for mocks to avoid updating all fixtures
 export type MockMinistry = Omit<Ministries, "leader_id"> & {
   leader_id?: string | null;
