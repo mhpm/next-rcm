@@ -6,7 +6,7 @@ export default async function Home() {
   await delay(10000);
 
   return (
-    <div className="p-4 min-h-screen">
+    <div className="min-h-screen">
       <Dashboard />
     </div>
   );
