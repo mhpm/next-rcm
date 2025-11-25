@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  cacheComponents: true,
   serverExternalPackages: ["prisma"], // Remove @prisma/client to allow bundling
   experimental: {
     // Habilitar certificados TLS del sistema en Turbopack para evitar errores

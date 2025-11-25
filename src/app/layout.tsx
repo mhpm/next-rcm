@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import {
@@ -34,20 +35,23 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <StoreProvider>
-          <QueryProvider>
-            <ThemeProvider>
-              <NavigationLoader />
-              <Drawer>
-                <Navbar />
-                <main>{children}</main>
-              </Drawer>
-            </ThemeProvider>
-            <ToastContainer position="top-right" />
-          </QueryProvider>
-        </StoreProvider>
+        <Suspense fallback={null}>
+          <StoreProvider>
+            <QueryProvider>
+              <ThemeProvider>
+                <NavigationLoader />
+                <Drawer>
+                  <Navbar />
+                  <main>{children}</main>
+                </Drawer>
+              </ThemeProvider>
+              <ToastContainer position="top-right" />
+            </QueryProvider>
+          </StoreProvider>
+        </Suspense>
       </body>
     </html>
   );

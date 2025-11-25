@@ -9,16 +9,33 @@
  */
 export function generateUUID(): string {
   // Use crypto.randomUUID if available (modern browsers and Node.js 14.17+)
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return crypto.randomUUID();
   }
 
-  // Fallback implementation for older environments
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
+  // Fallback using crypto.getRandomValues where available
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.getRandomValues === "function"
+  ) {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join(
+      ""
+    );
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(
+      12,
+      16
+    )}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  }
+
+  // Last-resort deterministic fallback (should rarely be used)
+  const base = "00000000000000000000000000000000";
+  return `${base.slice(0, 8)}-${base.slice(8, 12)}-${
+    "4" + base.slice(13, 16)
+  }-${"8" + base.slice(17, 20)}-${base.slice(20)}`;
 }
 
 /**
@@ -35,7 +52,8 @@ export function uuidv4(): string {
  * @returns {boolean} True if the string is a valid UUID v4
  */
 export function isValidUUID(uuid: string): boolean {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   return uuidRegex.test(uuid);
 }
 
@@ -45,7 +63,8 @@ export function isValidUUID(uuid: string): boolean {
  * @returns {boolean} True if the string is a valid UUID
  */
 export function isValidUUIDAny(uuid: string): boolean {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   return uuidRegex.test(uuid);
 }
 
@@ -55,7 +74,17 @@ export function isValidUUIDAny(uuid: string): boolean {
  * @returns {string} A short 8-character UUID-like string
  */
 export function generateShortUUID(): string {
-  return Math.random().toString(36).substring(2, 10);
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.getRandomValues === "function"
+  ) {
+    const bytes = new Uint8Array(8);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, (b) => b.toString(36).padStart(2, "0"))
+      .join("")
+      .slice(0, 8);
+  }
+  return removeHyphens(generateUUID()).slice(0, 8);
 }
 
 /**
@@ -91,7 +120,7 @@ export function toLowerCaseUUID(uuid: string): string {
  * @returns {string} UUID without hyphens
  */
 export function removeHyphens(uuid: string): string {
-  return uuid.replace(/-/g, '');
+  return uuid.replace(/-/g, "");
 }
 
 /**
@@ -101,9 +130,12 @@ export function removeHyphens(uuid: string): string {
  */
 export function addHyphens(uuid: string): string {
   if (uuid.length !== 32) {
-    throw new Error('UUID without hyphens must be exactly 32 characters long');
+    throw new Error("UUID without hyphens must be exactly 32 characters long");
   }
-  return `${uuid.slice(0, 8)}-${uuid.slice(8, 12)}-${uuid.slice(12, 16)}-${uuid.slice(16, 20)}-${uuid.slice(20)}`;
+  return `${uuid.slice(0, 8)}-${uuid.slice(8, 12)}-${uuid.slice(
+    12,
+    16
+  )}-${uuid.slice(16, 20)}-${uuid.slice(20)}`;
 }
 
 // Default export

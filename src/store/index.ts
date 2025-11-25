@@ -13,7 +13,7 @@ export const makeStore = () => {
           ignoredActions: ["persist/PERSIST"],
         },
       }),
-    devTools: process.env.NODE_ENV !== "production",
+    devTools: false,
   });
 };
 

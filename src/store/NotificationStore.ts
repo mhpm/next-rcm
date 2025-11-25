@@ -1,6 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
+import { generateUUID } from '@/lib/uuid';
 
 export interface NotificationAction {
   label: string;
@@ -29,7 +30,7 @@ interface NotificationState {
 }
 
 const generateId = () => {
-  return `notification-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  return `notification-${generateUUID()}`;
 };
 
 export const useNotificationStore = create<NotificationState>((set, get) => ({
