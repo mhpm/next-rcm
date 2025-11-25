@@ -13,7 +13,7 @@ export const Navbar = () => {
     <div className="navbar bg-base-100 px-6">
       <div className="flex-none">
         <button
-          className="btn btn-ghost btn-square"
+          className="btn btn-ghost btn-square p-0"
           aria-label="open drawer"
           onClick={toggleDrawer}
         >
@@ -55,7 +55,7 @@ export const Navbar = () => {
         </label>
 
         {/* Notifications */}
-        <button className="btn btn-ghost btn-circle">
+        {/* <button className="btn btn-ghost btn-circle">
           <div className="indicator">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -73,7 +73,7 @@ export const Navbar = () => {
             </svg>
             <span className="badge badge-xs badge-error indicator-item"></span>
           </div>
-        </button>
+        </button> */}
 
         {/* Avatar */}
         <div className="dropdown dropdown-end">
