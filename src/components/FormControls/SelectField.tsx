@@ -16,6 +16,7 @@ type SelectFieldProps<T extends FieldValues> = {
   rules?: RegisterOptions<T, Path<T>>;
   error?: string;
   className?: string;
+  defaultValue?: string;
 };
 
 export function SelectField<T extends FieldValues>({
@@ -26,13 +27,14 @@ export function SelectField<T extends FieldValues>({
   rules,
   error,
   className = "select select-bordered w-full",
+  defaultValue,
 }: SelectFieldProps<T>) {
   return (
     <fieldset>
       <label className="label">
         <span className="label-text">{label}</span>
       </label>
-      <select className={className} {...register(name, rules)}>
+      <select className={className} {...register(name, rules)} defaultValue={defaultValue}>
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

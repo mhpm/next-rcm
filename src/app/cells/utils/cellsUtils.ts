@@ -13,7 +13,9 @@ export function transformCellToTableData(cell: any): CellTableData {
     name: cell.name,
     sectorName: cell.sector?.name ?? "Sin sector",
     leaderName,
+    leaderId: cell.leader?.id,
     hostName,
+    hostId: cell.host?.id,
     memberCount: cell.memberCount ?? cell._count?.members ?? 0,
     createdAt: new Date(cell.createdAt).toLocaleDateString("es-ES", {
       year: "numeric",

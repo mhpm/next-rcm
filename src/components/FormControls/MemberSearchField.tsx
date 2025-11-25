@@ -23,6 +23,8 @@ type MemberSearchFieldProps<T extends FieldValues> = {
   watch: UseFormWatch<T>;
   error?: string;
   minChars?: number; // default: 2
+  search?: (term: string) => Promise<MemberWithMinistries[]>;
+  resolveById?: (id: string) => Promise<MemberWithMinistries | null>;
 };
 
 export function MemberSearchField<T extends FieldValues>({
@@ -34,6 +36,8 @@ export function MemberSearchField<T extends FieldValues>({
   watch,
   error,
   minChars = 2,
+  search,
+  resolveById,
 }: MemberSearchFieldProps<T>) {
   return (
     <AutocompleteField<T, MemberWithMinistries>
@@ -45,20 +49,26 @@ export function MemberSearchField<T extends FieldValues>({
       watch={watch}
       error={error}
       minChars={minChars}
-      search={async (term) => {
-        const res = await getAllMembers({ search: term, limit: 10 });
-        return res.members;
-      }}
-      resolveById={async (id) => {
-        try {
-          const member = await getMemberById(id);
-          console.log("🚀 ~ MemberSearchField ~ member:", member);
-          return member ?? null;
-        } catch (e) {
-          console.error("Error fetching member by ID:", e);
-          return null;
-        }
-      }}
+      search={
+        search ||
+        (async (term) => {
+          const res = await getAllMembers({ search: term, limit: 10 });
+          return res.members;
+        })
+      }
+      resolveById={
+        resolveById ||
+        (async (id) => {
+          try {
+            const member = await getMemberById(id);
+            console.log("🚀 ~ MemberSearchField ~ member:", member);
+            return member ?? null;
+          } catch (e) {
+            console.error("Error fetching member by ID:", e);
+            return null;
+          }
+        })
+      }
       getItemId={(m) => m.id}
       getItemLabel={(m) => `${m.firstName} ${m.lastName}`}
       renderItem={(m) => (
