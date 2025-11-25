@@ -281,6 +281,26 @@ export async function getMembersByCell(cellId: string) {
   }
 }
 
+export async function getCellStats() {
+  try {
+    const prisma = await getChurchPrisma();
+    const churchId = await getChurchId();
+
+    const [total, membersInCells, membersWithoutCell] = await Promise.all([
+      prisma.cells.count({ where: { church_id: churchId } }),
+      prisma.members.count({
+        where: { church_id: churchId, cell_id: { not: null } },
+      }),
+      prisma.members.count({ where: { church_id: churchId, cell_id: null } }),
+    ]);
+
+    return { total, membersInCells, membersWithoutCell };
+  } catch (error) {
+    console.error("Error fetching cell stats:", error);
+    throw new Error("Failed to fetch cell statistics");
+  }
+}
+
 export async function searchMembersInCell(cellId: string, term: string) {
   try {
     const prisma = await getChurchPrisma();

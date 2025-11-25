@@ -78,10 +78,12 @@ export const StatCard = ({
               {extraStats.map((item) => (
                 <div
                   key={item.label}
-                  className="flex items-center justify-between text-sm"
+                  className="flex items-center justify-between text-sm border-b border-base-content/10 pb-2 border-dashed"
                 >
                   <span className="text-base-content/70">{item.label}</span>
-                  <span className="font-semibold">{String(item.value)}</span>
+                  <span className="badge bg-base-content/10 badge-sm rounded-full font-semibold">
+                    {String(item.value)}
+                  </span>
                 </div>
               ))}
             </div>

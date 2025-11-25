@@ -10,11 +10,13 @@ import {
 import Link from "next/link";
 import { useMemberStats } from "@/app/members/hooks/useMembers";
 import { useMinistryStats } from "@/app/ministries/hooks/useMinistries";
+import { useCellStats } from "@/app/cells/hooks/useCells";
 
 export default function Dashboard() {
   const { data: stats, isLoading } = useMemberStats();
   const { data: ministryStats, isLoading: isLoadingMinistries } =
     useMinistryStats();
+  const { data: cellStats, isLoading: isLoadingCells } = useCellStats();
 
   const totalMembers = String(stats?.total ?? 0);
   const totalMinistries = String(ministryStats?.total ?? 0);
@@ -32,7 +34,39 @@ export default function Dashboard() {
         },
       ];
 
+  const totalCells = String(cellStats?.total ?? 0);
+  const membersInCells = String(cellStats?.membersInCells ?? 0);
+  const membersWithoutCell = String(cellStats?.membersWithoutCell ?? 0);
+  const extraCellStats = isLoadingCells
+    ? undefined
+    : [
+        { label: "Miembros en células:", value: membersInCells },
+        { label: "Miembros sin célula:", value: membersWithoutCell },
+      ];
+
   const statsCards = [
+    {
+      href: "/ministries",
+      title: "Ministerios",
+      value: totalMinistries,
+      change: "8.5%",
+      changeType: "increase" as const,
+      period: "vs. 3 ultimo cuatrimestre",
+      icon: <FaPersonChalkboard size={24} />,
+      extraStats: extraMinistryStats,
+      isLoading: isLoadingMinistries,
+    },
+    {
+      href: "/cells",
+      title: "Celulas",
+      value: totalCells,
+      change: "21.2%",
+      changeType: "increase" as const,
+      period: "vs. 12 ultimo cuatrimestre",
+      icon: <FaPeopleRoof size={24} />,
+      extraStats: extraCellStats,
+      isLoading: isLoadingCells,
+    },
     {
       href: "/members",
       title: "Miembros",
@@ -43,16 +77,7 @@ export default function Dashboard() {
       icon: <FaUserGroup size={24} />,
       isLoading,
     },
-    {
-      href: "/cells",
-      title: "Celulas",
-      value: "30",
-      change: "21.2%",
-      changeType: "increase" as const,
-      period: "vs. 12 ultimo cuatrimestre",
-      icon: <FaPeopleRoof size={24} />,
-      isLoading: false,
-    },
+
     {
       href: "/sectors",
       title: "Sectores",
@@ -73,26 +98,15 @@ export default function Dashboard() {
       icon: <FaUsers size={24} />,
       isLoading: false,
     },
-    {
-      href: "/ministries",
-      title: "Ministerios",
-      value: totalMinistries,
-      change: "8.5%",
-      changeType: "increase" as const,
-      period: "vs. 3 ultimo cuatrimestre",
-      icon: <FaPersonChalkboard size={24} />,
-      extraStats: extraMinistryStats,
-      isLoading: isLoadingMinistries,
-    },
   ];
 
   return (
-    <div className="p-4 md:p-8">
+    <div className="p-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <Breadcrumbs />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {statsCards.map((card) => (
           <Link key={card.title} href={card.href} className="cursor-pointer">
             <StatCard

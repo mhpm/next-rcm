@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useDrawer } from "./useDrawer";
-import { DrawerItem } from "@/types";
 import {
   FaPeopleRoof,
   FaUserGroup,
@@ -15,6 +14,16 @@ import {
 } from "react-icons/fa6";
 import { RiDashboard3Fill } from "react-icons/ri";
 import { ROUTES } from "@/routes";
+
+interface DrawerItem {
+  id?: string;
+  label: string;
+  icon?: React.ReactNode;
+  href?: string;
+  target?: string;
+  onClick?: () => void;
+  children?: DrawerItem[];
+}
 
 // using shared DrawerItem from src/types
 const Items: DrawerItem[] = [
@@ -189,7 +198,7 @@ export const Drawer = ({ children, items = Items }: Props) => {
           onClick={toggleDrawer}
         ></label>
         <ul
-          className="menu bg-base-200 min-h-full h-80 rounded-box w-56"
+          className="menu bg-base-300 min-h-full h-80 rounded-box w-56"
           role="menu"
         >
           {menuItems.map((it, i) => renderItem(it, i))}

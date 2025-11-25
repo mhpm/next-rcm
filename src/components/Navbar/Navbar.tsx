@@ -3,7 +3,6 @@
 import { RiMenuFill, RiMenuUnfold4Line, RiUser3Fill } from "react-icons/ri";
 import { useDrawer } from "../Drawer/useDrawer";
 import { useTheme } from "../ThemeProvider";
-import { ChurchSwitcher } from "..";
 
 export const Navbar = () => {
   const toggleDrawer = useDrawer((s) => s.toggleDrawer);
@@ -11,7 +10,7 @@ export const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
 
   return (
-    <div className="navbar bg-base-100 px-4 shadow">
+    <div className="navbar bg-base-100 px-6">
       <div className="flex-none">
         <button
           className="btn btn-ghost btn-square"
@@ -26,8 +25,6 @@ export const Navbar = () => {
       </div>
 
       <div className="flex-none gap-2">
-        {/* TenantSwitcher */}
-        <ChurchSwitcher className="mr-4" />
         <label className="swap swap-rotate">
           {/* this hidden checkbox controls the state */}
           <input

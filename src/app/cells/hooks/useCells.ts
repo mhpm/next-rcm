@@ -8,6 +8,7 @@ import {
   addMemberToCell,
   addMembersToCell,
   removeMemberFromCell,
+  getCellStats,
 } from "../actions/cells.actions";
 import { CellsQueryOptions } from "../types/cells";
 
@@ -37,6 +38,19 @@ export const useCells = (options?: CellsQueryOptions) => {
     queryFn: () => fetchAllCells(options),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+  });
+};
+
+const fetchCellStats = async () => {
+  return getCellStats();
+};
+
+export const useCellStats = () => {
+  return useQuery({
+    queryKey: ["cells", "stats"],
+    queryFn: () => fetchCellStats(),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
   });
 };
 
