@@ -106,7 +106,7 @@ const CellForm: React.FC<CellFormProps> = ({
   }, [cellId, members, initialData?.leaderId, initialData?.hostId, setValue]);
 
   return (
-    <form onSubmit={handleSubmit(handleSubmitInternal)} className="space-y-4">
+    <form suppressHydrationWarning onSubmit={handleSubmit(handleSubmitInternal)} className="space-y-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-3 space-y-8">
           <div className="card bg-base-100 shadow-sm">

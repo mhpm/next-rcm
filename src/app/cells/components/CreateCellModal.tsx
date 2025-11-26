@@ -59,6 +59,7 @@ export default function CreateCellModal({
       title="Nueva Célula"
     >
       <form
+        suppressHydrationWarning
         onSubmit={handleSubmit(async (form) => {
           try {
             await createCellMutation.mutateAsync({
