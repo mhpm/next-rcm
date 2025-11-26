@@ -8,7 +8,7 @@ import { getAllSectors } from "../actions/cells.actions";
 import { useCreateCell } from "../hooks/useCells";
 import { useNotificationStore } from "@/store/NotificationStore";
 
-type FormValues = { name: string; sectorId: string };
+type FormValues = { name: string; sectorId?: string | null };
 
 type CreateCellModalProps = {
   open: boolean;
@@ -16,7 +16,11 @@ type CreateCellModalProps = {
   onCreated?: () => void;
 };
 
-export default function CreateCellModal({ open, onClose, onCreated }: CreateCellModalProps) {
+export default function CreateCellModal({
+  open,
+  onClose,
+  onCreated,
+}: CreateCellModalProps) {
   const createCellMutation = useCreateCell();
   const { showSuccess, showError } = useNotificationStore();
 
@@ -37,10 +41,13 @@ export default function CreateCellModal({ open, onClose, onCreated }: CreateCell
     gcTime: 10 * 60 * 1000,
   });
 
-  const sectorOptions = (sectors || []).map((s) => ({ value: s.id, label: s.name }));
-  const sectorSelectOptions = [{ value: "", label: "Selecciona un sector" }].concat(
-    sectorOptions
-  );
+  const sectorOptions = (sectors || []).map((s) => ({
+    value: s.id,
+    label: s.name,
+  }));
+  const sectorSelectOptions = [
+    { value: "", label: "Selecciona un sector" },
+  ].concat(sectorOptions);
 
   return (
     <Modal
@@ -54,13 +61,18 @@ export default function CreateCellModal({ open, onClose, onCreated }: CreateCell
       <form
         onSubmit={handleSubmit(async (form) => {
           try {
-            await createCellMutation.mutateAsync({ name: form.name, sectorId: form.sectorId });
+            await createCellMutation.mutateAsync({
+              name: form.name,
+              sectorId: form.sectorId || "",
+            });
             showSuccess("Célula creada exitosamente");
             onClose();
             reset({ name: "", sectorId: "" });
             onCreated?.();
           } catch (e) {
-            showError("Error al crear la célula");
+            const message =
+              e instanceof Error ? e.message : "Error al crear la célula";
+            showError(message);
           }
         })}
         className="space-y-4"
@@ -77,7 +89,7 @@ export default function CreateCellModal({ open, onClose, onCreated }: CreateCell
             name="sectorId"
             label="Sector"
             register={register}
-            rules={{ required: "El sector es requerido" }}
+            rules={{}}
             error={errors.sectorId?.message}
             options={sectorSelectOptions}
             className="select select-bordered w-full"
@@ -114,4 +126,3 @@ export default function CreateCellModal({ open, onClose, onCreated }: CreateCell
     </Modal>
   );
 }
-

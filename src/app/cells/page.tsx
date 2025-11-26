@@ -35,7 +35,26 @@ export default function CellsPage() {
       sortable: true,
       className: "font-semibold",
     },
-    { key: "sectorName", label: "Sector", sortable: true },
+    {
+      key: "sectorName",
+      label: "Sector",
+      sortable: true,
+      className: "font-semibold",
+      render: (value, row) => {
+        const name = value as string;
+        if (row.sectorId) {
+          return (
+            <Link
+              href={`/sectors/edit/${row.sectorId}`}
+              className="hover:underline text-primary"
+            >
+              {name}
+            </Link>
+          );
+        }
+        return <span className="text-base-content/40">{name}</span>;
+      },
+    },
     {
       key: "leaderName",
       label: "Líder",

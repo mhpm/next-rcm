@@ -76,7 +76,7 @@ export default function EditCellPage({
             <CellForm
               initialData={{
                 name: cellData?.name || "",
-                sectorId: cellData?.sector?.id || cellData?.sector_id || "",
+                sectorId: cellData?.sector?.id || cellData?.sector_id || null,
                 leaderId: cellData?.leader?.id || cellData?.leader_id || "",
                 hostId: cellData?.host?.id || cellData?.host_id || "",
                 id: cellData?.id,

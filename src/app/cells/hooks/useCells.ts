@@ -84,7 +84,7 @@ export const useCreateCell = () => {
   return useMutation({
     mutationFn: (data: {
       name: string;
-      sectorId: string;
+      sectorId?: string | null;
       leaderId?: string | null;
       hostId?: string | null;
     }) => createCell(data),
@@ -104,7 +104,7 @@ export const useUpdateCell = () => {
       id: string;
       data: {
         name?: string;
-        sectorId?: string;
+        sectorId?: string | null;
         leaderId?: string | null;
         hostId?: string | null;
       };

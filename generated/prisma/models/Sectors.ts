@@ -333,11 +333,6 @@ export type SectorsNullableScalarRelationFilter = {
   isNot?: Prisma.SectorsWhereInput | null
 }
 
-export type SectorsScalarRelationFilter = {
-  is?: Prisma.SectorsWhereInput
-  isNot?: Prisma.SectorsWhereInput
-}
-
 export type SectorsCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -471,10 +466,12 @@ export type SectorsCreateNestedOneWithoutCellsInput = {
   connect?: Prisma.SectorsWhereUniqueInput
 }
 
-export type SectorsUpdateOneRequiredWithoutCellsNestedInput = {
+export type SectorsUpdateOneWithoutCellsNestedInput = {
   create?: Prisma.XOR<Prisma.SectorsCreateWithoutCellsInput, Prisma.SectorsUncheckedCreateWithoutCellsInput>
   connectOrCreate?: Prisma.SectorsCreateOrConnectWithoutCellsInput
   upsert?: Prisma.SectorsUpsertWithoutCellsInput
+  disconnect?: Prisma.SectorsWhereInput | boolean
+  delete?: Prisma.SectorsWhereInput | boolean
   connect?: Prisma.SectorsWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.SectorsUpdateToOneWithWhereWithoutCellsInput, Prisma.SectorsUpdateWithoutCellsInput>, Prisma.SectorsUncheckedUpdateWithoutCellsInput>
 }

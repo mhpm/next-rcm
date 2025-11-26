@@ -9,7 +9,7 @@ import { getAllSectors, getMembersByCell } from "../../actions/cells.actions";
 
 export interface CellFormInput {
   name: string;
-  sectorId: string;
+  sectorId?: string | null;
   leaderId?: string | null;
   hostId?: string | null;
 }
@@ -128,7 +128,7 @@ const CellForm: React.FC<CellFormProps> = ({
                   name="sectorId"
                   label="Sector"
                   register={register}
-                  rules={{ required: "El sector es requerido" }}
+                  rules={{}}
                   error={errors.sectorId?.message}
                   options={sectorSelectOptions}
                   className="select select-bordered w-full"

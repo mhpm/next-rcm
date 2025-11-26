@@ -89,12 +89,12 @@ model Cells{
   createdAt  DateTime   @default(now()) @map("created_at")
   updatedAt  DateTime   @updatedAt @map("updated_at")
   church_id  String
-  sector_id  String
+  sector_id  String?
   leader_id  String?
   host_id    String?
 
   church     Churches   @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  sector     Sectors    @relation(fields: [sector_id], references: [id], onDelete: Cascade)
+  sector     Sectors?   @relation(fields: [sector_id], references: [id], onDelete: Cascade)
   leader     Members?   @relation("CellLeader", fields: [leader_id], references: [id])
   host       Members?   @relation("CellHost", fields: [host_id], references: [id])
   members    Members[]  @relation("MemberCell")

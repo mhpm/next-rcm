@@ -99,7 +99,7 @@ export async function getCellById(id: string) {
 
 export async function createCell(data: {
   name: string;
-  sectorId: string;
+  sectorId?: string | null;
   leaderId?: string | null;
   hostId?: string | null;
 }) {
@@ -111,7 +111,9 @@ export async function createCell(data: {
       data: {
         name: data.name,
         church: { connect: { id: churchId } },
-        sector: { connect: { id: data.sectorId } },
+        ...(data.sectorId && data.sectorId !== ""
+          ? { sector: { connect: { id: data.sectorId } } }
+          : {}),
         ...(data.leaderId && data.leaderId !== ""
           ? { leader: { connect: { id: data.leaderId } } }
           : {}),
@@ -135,7 +137,14 @@ export async function createCell(data: {
     return cell;
   } catch (error) {
     console.error("Error creating cell:", error);
-    throw new Error("Failed to create cell");
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      throw new Error(
+        `Error de base de datos al crear la célula: ${error.message}`
+      );
+    }
+    const message =
+      error instanceof Error ? error.message : "Failed to create cell";
+    throw new Error(message);
   }
 }
 
@@ -143,7 +152,7 @@ export async function updateCell(
   id: string,
   data: {
     name?: string;
-    sectorId?: string;
+    sectorId?: string | null;
     leaderId?: string | null;
     hostId?: string | null;
   }
@@ -165,7 +174,12 @@ export async function updateCell(
 
     const updateData: Prisma.CellsUpdateInput = {};
     if (data.name !== undefined) updateData.name = data.name;
-    if (data.sectorId) updateData.sector = { connect: { id: data.sectorId } };
+    if (Object.prototype.hasOwnProperty.call(data, "sectorId")) {
+      updateData.sector =
+        data.sectorId && data.sectorId !== ""
+          ? { connect: { id: data.sectorId } }
+          : { disconnect: true };
+    }
 
     if (Object.prototype.hasOwnProperty.call(data, "leaderId")) {
       updateData.leader =

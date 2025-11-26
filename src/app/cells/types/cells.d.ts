@@ -9,7 +9,7 @@ export interface CellsQueryOptions {
 export interface CellTableData {
   id: string;
   name: string;
-  sectorName: string;
+  sectorName?: string;
   leaderName: string;
   hostName: string;
   memberCount: number;
