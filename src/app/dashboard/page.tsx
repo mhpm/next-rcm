@@ -8,7 +8,7 @@ import {
   FaPersonChalkboard,
 } from "react-icons/fa6";
 import Link from "next/link";
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { getMemberStats } from "@/app/members/actions/members.actions";
 import { getMinistryStats } from "@/app/ministries/actions/ministries.actions";
 import { getCellStats } from "@/app/cells/actions/cells.actions";
@@ -56,6 +56,7 @@ export default async function Dashboard() {
     "use cache";
 
     cacheLife({ stale: 600, revalidate: 1800, expire: 86400 });
+    cacheTag("cells");
     const cellStats = await getCellStats();
     const totalCells = String(cellStats?.total ?? 0);
     const membersInCells = String(cellStats?.membersInCells ?? 0);

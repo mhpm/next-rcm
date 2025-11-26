@@ -2,6 +2,7 @@
 
 import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
 import { Prisma } from "@/generated/prisma/client";
+import { revalidateTag } from "next/cache";
 
 export async function getAllCells(options?: {
   limit?: number;
@@ -64,6 +65,7 @@ export async function deleteCell(id: string) {
   try {
     const prisma = await getChurchPrisma();
     await prisma.cells.delete({ where: { id } });
+    revalidateTag("cells", { expire: 0 });
     return { success: true };
   } catch (error) {
     console.error("Error deleting cell:", error);
@@ -133,6 +135,8 @@ export async function createCell(data: {
         data: { cell_id: cell.id },
       });
     }
+
+    revalidateTag("cells", { expire: 0 });
 
     return cell;
   } catch (error) {
@@ -221,6 +225,8 @@ export async function updateCell(
         data: { cell_id: id },
       });
     }
+
+    revalidateTag("cells", { expire: 0 });
 
     return cell;
   } catch (error) {
@@ -366,6 +372,7 @@ export async function addMemberToCell(cellId: string, memberId: string) {
       where: { id: memberId },
       data: { cell: { connect: { id: cellId } } },
     });
+    revalidateTag("cells", { expire: 0 });
     return updated;
   } catch (error) {
     console.error("Error adding member to cell:", error);
@@ -383,6 +390,7 @@ export async function addMembersToCell(cellId: string, memberIds: string[]) {
       where: { id: { in: memberIds }, church_id: churchId },
       data: { cell_id: cellId },
     });
+    revalidateTag("cells", { expire: 0 });
     return { count: result.count };
   } catch (error) {
     console.error("Error adding members to cell:", error);
@@ -425,6 +433,7 @@ export async function removeMemberFromCell(cellId: string, memberId: string) {
     if (Object.keys(updates).length > 0) {
       await prisma.cells.update({ where: { id: cellId }, data: updates });
     }
+    revalidateTag("cells", { expire: 0 });
     return { success: true };
   } catch (error) {
     console.error("Error removing member from cell:", error);
