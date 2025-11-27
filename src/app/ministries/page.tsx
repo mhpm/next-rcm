@@ -11,6 +11,7 @@ import { Modal } from "@/components/Modal/Modal";
 import { useNotificationStore } from "@/store/NotificationStore";
 import { transformMinistriesToTableData } from "./utils/ministriesUtils";
 import { MinistryTableData } from "./types/ministries";
+import CreateMinistryModal from "./components/CreateMinistryModal";
 
 export default function MinistriesPage() {
   const router = useRouter();
@@ -33,6 +34,7 @@ export default function MinistriesPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [ministryToDelete, setMinistryToDelete] =
     useState<MinistryTableData | null>(null);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   // Transform data for table
   const ministries = ministriesData?.ministries
@@ -103,7 +105,7 @@ export default function MinistriesPage() {
   // Add button configuration
   const addButton: AddButtonConfig = {
     text: "Nuevo Ministerio",
-    onClick: () => router.push("/ministries/new"),
+    onClick: () => setCreateModalOpen(true),
     variant: "primary",
     icon: <RiAddLine className="w-4 h-4" />,
   };
@@ -199,6 +201,11 @@ export default function MinistriesPage() {
           </div>
         </div>
       </Modal>
+      <CreateMinistryModal
+        open={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onCreated={() => refetch()}
+      />
     </div>
   );
 }

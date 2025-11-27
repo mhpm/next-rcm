@@ -20,6 +20,7 @@ export default async function Dashboard() {
     "use cache";
 
     cacheLife({ stale: 600, revalidate: 1800, expire: 86400 });
+    cacheTag("ministries");
     const ministryStats = await getMinistryStats();
     const totalMinistries = String(ministryStats?.total ?? 0);
     const totalMembers = String((await getMemberStats())?.total ?? 0);

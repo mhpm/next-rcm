@@ -3,14 +3,13 @@
 import React, { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { InputField, MemberSearchField } from "@/components/FormControls";
-
-// Tipos del formulario
-export interface MinistryFormInput {
-  name: string;
-  description?: string;
-  leaderId?: string | null;
-}
+import {
+  ministryFormSchema,
+  type MinistryFormInput,
+} from "@/app/ministries/schema/ministries.schema";
+export type { MinistryFormInput } from "@/app/ministries/schema/ministries.schema";
 
 interface MinistryFormProps {
   initialData?: Partial<MinistryFormInput> & { id?: string };
@@ -41,6 +40,7 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
   } = useForm<MinistryFormInput>({
     defaultValues: initialData,
     mode: "onChange",
+    resolver: zodResolver(ministryFormSchema),
   });
 
   // Reset cuando cambian los datos iniciales (útil en modo edición)
