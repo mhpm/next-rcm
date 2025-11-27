@@ -12,7 +12,7 @@ import {
 } from "@/types";
 import { useMembers } from "@/app/members/hooks/useMembers";
 import { useColumnVisibilityStore } from "@/components/ColumnVisibilityDropdown";
-import { Modal } from "@/components/Modal/Modal";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { useDeleteMember } from "@/app/members/hooks/useMembers";
 import { useNotificationStore } from "@/store/NotificationStore";
 import { transformMemberToTableData } from "./utils/membersUtils";
@@ -237,33 +237,13 @@ export default function MembersPage() {
         loading={loading}
       />
 
-      {/* Delete confirmation modal */}
-      <Modal
+      <DeleteConfirmationModal
         open={isDeleteModalOpen}
-        onClose={closeDeleteModal}
-        title="Confirmar eliminación"
-      >
-        <p className="text-sm">
-          {selectedMember
-            ? `¿Estás seguro de que quieres eliminar a ${selectedMember.firstName} ${selectedMember.lastName}?`
-            : "¿Estás seguro de que quieres eliminar este miembro?"}
-        </p>
-        <div className="mt-6 flex justify-end gap-3">
-          <button
-            onClick={closeDeleteModal}
-            className="px-4 py-2 rounded-md bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700"
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={handleConfirmDelete}
-            disabled={deleteMemberMutation.isPending}
-            className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {deleteMemberMutation.isPending ? "Eliminando..." : "Eliminar"}
-          </button>
-        </div>
-      </Modal>
+        entityName={selectedMember ? `${selectedMember.firstName} ${selectedMember.lastName}` : undefined}
+        onCancel={closeDeleteModal}
+        onConfirm={handleConfirmDelete}
+        isPending={deleteMemberMutation.isPending}
+      />
     </div>
   );
 }

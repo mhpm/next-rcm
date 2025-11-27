@@ -10,6 +10,7 @@ import { useMinistries, useDeleteMinistry } from "./hooks/useMinistries";
 import { Modal } from "@/components/Modal/Modal";
 import { useNotificationStore } from "@/store/NotificationStore";
 import { transformMinistriesToTableData } from "./utils/ministriesUtils";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { MinistryTableData } from "./types/ministries";
 import CreateMinistryModal from "./components/CreateMinistryModal";
 
@@ -160,47 +161,16 @@ export default function MinistriesPage() {
         addButton={addButton}
       />
 
-      {/* Delete Confirmation Modal */}
-      <Modal
+      <DeleteConfirmationModal
         open={deleteModalOpen}
-        onClose={() => {
+        entityName={ministryToDelete?.name}
+        onCancel={() => {
           setDeleteModalOpen(false);
           setMinistryToDelete(null);
         }}
-        title="Confirmar Eliminación"
-      >
-        <div className="space-y-4">
-          <p className="text-base-content">
-            ¿Estás seguro de que deseas eliminar el ministerio{" "}
-            <span className="font-semibold">{ministryToDelete?.name}</span>?
-          </p>
-          <p className="text-sm text-warning">
-            Esta acción no se puede deshacer.
-          </p>
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => {
-                setDeleteModalOpen(false);
-                setMinistryToDelete(null);
-              }}
-              className="btn btn-ghost"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleDeleteConfirm}
-              className="btn btn-error"
-              disabled={deleteMinistryMutation.isPending}
-            >
-              {deleteMinistryMutation.isPending ? (
-                <span className="loading loading-spinner loading-sm"></span>
-              ) : (
-                "Eliminar"
-              )}
-            </button>
-          </div>
-        </div>
-      </Modal>
+        onConfirm={handleDeleteConfirm}
+        isPending={deleteMinistryMutation.isPending}
+      />
       <CreateMinistryModal
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}

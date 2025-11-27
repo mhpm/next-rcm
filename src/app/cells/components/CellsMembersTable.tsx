@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from "react";
 import { DataTable } from "@/components";
 import { TableColumn, TableAction } from "@/types";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { Modal } from "@/components/Modal/Modal";
 import { MultiSelectField } from "@/components/FormControls/MultiSelectField";
 import { useMembers } from "@/app/members/hooks/useMembers";
@@ -130,52 +131,28 @@ export default function CellsMembersTable({
         loading={isProcessing}
       />
 
-      <Modal
+      <DeleteConfirmationModal
         open={isDeleteModalOpen}
-        onClose={() => {
+        entityName={memberToDelete?.nombre}
+        onCancel={() => {
           setIsDeleteModalOpen(false);
           setMemberToDelete(null);
         }}
-        title="Confirmar eliminación"
-      >
-        <div className="space-y-4">
-          <p className="text-sm">
-            ¿Estás seguro de que quieres eliminar{" "}
-            <span className="font-semibold">{memberToDelete?.nombre}</span> de
-            la célula?
-          </p>
-          <div className="flex justify-end gap-2">
-            <button
-              className="btn btn-ghost"
-              onClick={() => {
-                setIsDeleteModalOpen(false);
-                setMemberToDelete(null);
-              }}
-            >
-              Cancelar
-            </button>
-            <button
-              className="btn btn-error"
-              onClick={async () => {
-                if (!memberToDelete) return;
-                try {
-                  await removeMemberMutation.mutateAsync({
-                    cellId,
-                    memberId: memberToDelete.memberId,
-                  });
-                  setIsDeleteModalOpen(false);
-                  setMemberToDelete(null);
-                } catch (err) {
-                  console.error("Error al eliminar miembro de la célula:", err);
-                }
-              }}
-              disabled={removeMemberMutation.isPending}
-            >
-              {removeMemberMutation.isPending ? "Eliminando..." : "Eliminar"}
-            </button>
-          </div>
-        </div>
-      </Modal>
+        onConfirm={async () => {
+          if (!memberToDelete) return;
+          try {
+            await removeMemberMutation.mutateAsync({
+              cellId,
+              memberId: memberToDelete.memberId,
+            });
+            setIsDeleteModalOpen(false);
+            setMemberToDelete(null);
+          } catch (err) {
+            console.error("Error al eliminar miembro de la célula:", err);
+          }
+        }}
+        isPending={removeMemberMutation.isPending}
+      />
 
       <Modal
         open={isModalOpen}

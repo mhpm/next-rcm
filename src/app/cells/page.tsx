@@ -10,10 +10,14 @@ import { CellTableData } from "./types/cells";
 import { useState } from "react";
 import Link from "next/link";
 import CreateCellModal from "./components/CreateCellModal";
-import DeleteCellModal from "./components/DeleteCellModal";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
+import { useDeleteCell } from "./hooks/useCells";
+import { useNotificationStore } from "@/store/NotificationStore";
 
 export default function CellsPage() {
   const router = useRouter();
+  const deleteCellMutation = useDeleteCell();
+  const { showSuccess, showError } = useNotificationStore();
 
   const {
     data,
@@ -169,14 +173,27 @@ export default function CellsPage() {
         onCreated={() => refetch()}
       />
 
-      <DeleteCellModal
+      <DeleteConfirmationModal
         open={deleteModalOpen}
-        onClose={() => {
+        entityName={cellToDelete?.name}
+        onCancel={() => {
           setDeleteModalOpen(false);
           setCellToDelete(null);
         }}
-        cell={cellToDelete ?? undefined}
-        onDeleted={() => refetch()}
+        onConfirm={async () => {
+          const id = cellToDelete?.id;
+          if (!id) return;
+          try {
+            await deleteCellMutation.mutateAsync(id);
+            showSuccess("Célula eliminada exitosamente");
+            setDeleteModalOpen(false);
+            setCellToDelete(null);
+            refetch();
+          } catch (e) {
+            showError("Error al eliminar la célula");
+          }
+        }}
+        isPending={deleteCellMutation.isPending}
       />
     </div>
   );
