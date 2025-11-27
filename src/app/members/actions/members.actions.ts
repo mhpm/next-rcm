@@ -1,6 +1,8 @@
 "use server";
 
 import { Prisma, MemberRole } from "@/generated/prisma/client";
+import { z } from "zod";
+import { revalidateTag } from "next/cache";
 import { MemberFormData } from "@/types";
 import * as bcrypt from "bcryptjs";
 import { logger } from "@/lib/logger";
@@ -17,6 +19,16 @@ import {
 import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
 
 // Get all members with optional filtering and pagination
+// Zod validation for list options
+const getAllMembersOptionsSchema = z.object({
+  limit: z.number().int().min(1).max(200).optional(),
+  offset: z.number().int().min(0).optional(),
+  search: z.string().optional(),
+  role: z.nativeEnum(MemberRole).optional(),
+  orderBy: z.enum(["firstName", "lastName", "createdAt"]).optional(),
+  orderDirection: z.enum(["asc", "desc"]).optional(),
+});
+
 export async function getAllMembers(options?: {
   limit?: number;
   offset?: number;
@@ -26,6 +38,7 @@ export async function getAllMembers(options?: {
   orderDirection?: "asc" | "desc";
 }) {
   try {
+    const parsedOptions = getAllMembersOptionsSchema.parse(options ?? {});
     const {
       limit = 50,
       offset = 0,
@@ -33,7 +46,7 @@ export async function getAllMembers(options?: {
       role,
       orderBy = "lastName",
       orderDirection = "asc",
-    } = options || {};
+    } = parsedOptions;
 
     const prisma = await getChurchPrisma();
     const whereClause: Prisma.MembersWhereInput = {};
@@ -134,12 +147,18 @@ export async function getMembers(limit = 10) {
 }
 
 // Get member by specific field
+// Allowed fields for getMemberBy to prevent invalid queries
+const getMemberByFieldSchema = z.enum(["id", "email", "firstName", "lastName"]);
+const getMemberByValueSchema = z.union([z.string(), z.number()]);
+
 export async function getMemberBy(field: string, value: unknown) {
   try {
+    const safeField = getMemberByFieldSchema.parse(field);
+    const safeValue = getMemberByValueSchema.parse(value);
     const prisma = await getChurchPrisma();
     const member = await prisma.members.findFirst({
       where: {
-        [field]: value,
+        [safeField]: safeValue as any,
       },
     });
 
@@ -278,6 +297,12 @@ export const createMember = withErrorHandling(async function createMember(
       memberId: member.id,
       email: member.email,
     });
+
+    // Revalidate dashboard caches
+    revalidateTag("members", { expire: 0 });
+    if (parsed.ministries && parsed.ministries.length > 0) {
+      revalidateTag("ministries", { expire: 0 });
+    }
 
     return member;
   } catch (error) {
@@ -442,6 +467,11 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
         },
       },
     });
+    // Revalidate dashboard caches
+    revalidateTag("members", { expire: 0 });
+    if (parsed.ministries !== undefined) {
+      revalidateTag("ministries", { expire: 0 });
+    }
     return updatedMember;
   } catch (error) {
     if (
@@ -482,6 +512,10 @@ export async function deleteMember(id: string) {
       where: { id },
     });
 
+    // Revalidate dashboard caches
+    revalidateTag("members", { expire: 0 });
+    revalidateTag("ministries", { expire: 0 });
+
     return { success: true, message: "Member deleted successfully" };
   } catch (error) {
     console.error("Error deleting member:", error);
@@ -505,6 +539,8 @@ export async function deactivateMember(id: string) {
         notes: `DEACTIVATED: ${new Date().toISOString()}`,
       },
     });
+
+    revalidateTag("members", { expire: 0 });
 
     return updatedMember;
   } catch (error) {
@@ -555,14 +591,20 @@ export async function getMemberStats() {
 
     return {
       total,
-      byRole: byRole.reduce((acc, item) => {
-        acc[item.role] = item._count.role;
-        return acc;
-      }, {} as Record<string, number>),
-      byGender: byGender.reduce((acc, item) => {
-        acc[item.gender] = item._count.gender;
-        return acc;
-      }, {} as Record<string, number>),
+      byRole: byRole.reduce(
+        (acc, item) => {
+          acc[item.role] = item._count.role;
+          return acc;
+        },
+        {} as Record<string, number>
+      ),
+      byGender: byGender.reduce(
+        (acc, item) => {
+          acc[item.gender] = item._count.gender;
+          return acc;
+        },
+        {} as Record<string, number>
+      ),
     };
   } catch (error) {
     console.error("Error fetching member stats:", error);

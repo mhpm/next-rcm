@@ -86,6 +86,7 @@ export default async function Dashboard() {
     "use cache";
 
     cacheLife({ stale: 600, revalidate: 1800, expire: 86400 });
+    cacheTag("members");
     const stats = await getMemberStats();
     const totalMembers = String(stats?.total ?? 0);
     return (
