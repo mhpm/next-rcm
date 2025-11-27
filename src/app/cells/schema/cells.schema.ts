@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CellsModelSchema } from "@/generated/schemas/variants/pure/Cells.pure";
+import { CellsModelSchema } from "@/generated/zod/schemas/variants/pure/Cells.pure";
 
 export const optionalString = z.preprocess(
   (v) => (v === "" || v === undefined ? undefined : v),

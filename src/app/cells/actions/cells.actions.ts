@@ -5,16 +5,15 @@ import { Prisma } from "@/generated/prisma/client";
 import type { Cells, Members, Sectors } from "@/generated/prisma/client";
 import type { CellListItem, CellWithRelations } from "../types/cells";
 import { revalidateTag } from "next/cache";
-import { CellsCreateInputObjectSchema } from "@/generated/schemas/objects/CellsCreateInput.schema";
-import { CellsUpdateInputObjectSchema } from "@/generated/schemas/objects/CellsUpdateInput.schema";
-import { CellsFindManySchema } from "@/generated/schemas/findManyCells.schema";
-import { CellsFindUniqueSchema } from "@/generated/schemas/findUniqueCells.schema";
-import { CellsDeleteOneSchema } from "@/generated/schemas/deleteOneCells.schema";
-import { CellsCreateOneSchema } from "@/generated/schemas/createOneCells.schema";
-import { CellsUpdateOneSchema } from "@/generated/schemas/updateOneCells.schema";
-import { MembersFindManySchema } from "@/generated/schemas/findManyMembers.schema";
-import { MembersUpdateManySchema } from "@/generated/schemas/updateManyMembers.schema";
-import { MembersUpdateOneSchema } from "@/generated/schemas/updateOneMembers.schema";
+import { CellsCreateInputObjectSchema } from "@/generated/zod/schemas/objects/CellsCreateInput.schema";
+import { CellsUpdateInputObjectSchema } from "@/generated/zod/schemas/objects/CellsUpdateInput.schema";
+import { CellsFindManySchema } from "@/generated/zod/schemas/findManyCells.schema";
+import { CellsFindUniqueSchema } from "@/generated/zod/schemas/findUniqueCells.schema";
+import { CellsDeleteOneSchema } from "@/generated/zod/schemas/deleteOneCells.schema";
+import { CellsCreateOneSchema } from "@/generated/zod/schemas/createOneCells.schema";
+import { CellsUpdateOneSchema } from "@/generated/zod/schemas/updateOneCells.schema";
+import { MembersFindManySchema } from "@/generated/zod/schemas/findManyMembers.schema";
+import { MembersUpdateOneSchema } from "@/generated/zod/schemas/updateOneMembers.schema";
 
 export async function getAllCells(options?: {
   limit?: number;
