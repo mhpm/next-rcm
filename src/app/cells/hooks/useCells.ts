@@ -11,6 +11,7 @@ import {
   getCellStats,
 } from "../actions/cells.actions";
 import { CellsQueryOptions } from "../types/cells";
+import type { CellListItem, CellWithRelations } from "../types/cells";
 
 const withTimeout = <T>(promise: Promise<T>, timeout = 10000): Promise<T> => {
   return Promise.race([
@@ -33,7 +34,7 @@ const fetchAllCells = async (options?: CellsQueryOptions) => {
 };
 
 export const useCells = (options?: CellsQueryOptions) => {
-  return useQuery({
+  return useQuery<{ cells: CellListItem[]; total: number; hasMore: boolean }>({
     queryKey: ["cells", "all", options],
     queryFn: () => fetchAllCells(options),
     staleTime: 5 * 60 * 1000,
@@ -70,7 +71,7 @@ export const useDeleteCell = () => {
 };
 
 export const useCell = (id: string) => {
-  return useQuery({
+  return useQuery<CellWithRelations>({
     queryKey: ["cell", id],
     queryFn: () => withTimeout(getCellById(id)),
     enabled: !!id,

@@ -1,15 +1,9 @@
 import { z } from "zod";
+import { MemberRole, Gender } from "@/generated/prisma/enums";
 
-// Enum schemas matching the TypeScript types
-const MemberRoleSchema = z.enum([
-  "MIEMBRO",
-  "SUPERVISOR",
-  "LIDER",
-  "ANFITRION",
-  "PASTOR",
-  "TESORERO",
-]);
-const GenderSchema = z.enum(["MASCULINO", "FEMENINO"]);
+// Enum schemas from Prisma enums (source of truth)
+const MemberRoleSchema = z.enum(MemberRole);
+const GenderSchema = z.enum(Gender);
 
 // Main member validation schema for form data
 export const memberSchema = z

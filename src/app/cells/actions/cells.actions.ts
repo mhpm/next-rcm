@@ -2,7 +2,19 @@
 
 import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
 import { Prisma } from "@/generated/prisma/client";
+import type { Cells, Members, Sectors } from "@/generated/prisma/client";
+import type { CellListItem, CellWithRelations } from "../types/cells";
 import { revalidateTag } from "next/cache";
+import { CellsCreateInputObjectSchema } from "@/generated/schemas/objects/CellsCreateInput.schema";
+import { CellsUpdateInputObjectSchema } from "@/generated/schemas/objects/CellsUpdateInput.schema";
+import { CellsFindManySchema } from "@/generated/schemas/findManyCells.schema";
+import { CellsFindUniqueSchema } from "@/generated/schemas/findUniqueCells.schema";
+import { CellsDeleteOneSchema } from "@/generated/schemas/deleteOneCells.schema";
+import { CellsCreateOneSchema } from "@/generated/schemas/createOneCells.schema";
+import { CellsUpdateOneSchema } from "@/generated/schemas/updateOneCells.schema";
+import { MembersFindManySchema } from "@/generated/schemas/findManyMembers.schema";
+import { MembersUpdateManySchema } from "@/generated/schemas/updateManyMembers.schema";
+import { MembersUpdateOneSchema } from "@/generated/schemas/updateOneMembers.schema";
 
 export async function getAllCells(options?: {
   limit?: number;
@@ -10,7 +22,7 @@ export async function getAllCells(options?: {
   search?: string;
   orderBy?: "name" | "createdAt";
   orderDirection?: "asc" | "desc";
-}) {
+}): Promise<{ cells: CellListItem[]; total: number; hasMore: boolean }> {
   try {
     const {
       limit = 50,
@@ -29,23 +41,34 @@ export async function getAllCells(options?: {
       whereClause.OR = [{ name: { contains: search, mode: "insensitive" } }];
     }
 
+    const findArgs = {
+      where: whereClause,
+      take: limit,
+      skip: offset,
+      orderBy: { [orderBy]: orderDirection },
+      include: {
+        leader: true,
+        host: true,
+        sector: true,
+        _count: { select: { members: true } },
+      },
+    } satisfies Prisma.CellsFindManyArgs;
+
+    CellsFindManySchema.parse(findArgs);
+
     const [cells, total] = await Promise.all([
-      prisma.cells.findMany({
-        where: whereClause,
-        take: limit,
-        skip: offset,
-        orderBy: { [orderBy]: orderDirection },
-        include: {
-          leader: true,
-          host: true,
-          sector: true,
-          _count: { select: { members: true } },
-        },
-      }),
-      prisma.cells.count({ where: whereClause }),
+      prisma.cells.findMany(findArgs) as Promise<
+        (Cells & {
+          leader: Members | null;
+          host: Members | null;
+          sector: Sectors | null;
+          _count: { members: number };
+        })[]
+      >,
+      prisma.cells.count({ where: whereClause }) as Promise<number>,
     ]);
 
-    const cellsWithCount = cells.map((cell) => ({
+    const cellsWithCount: CellListItem[] = cells.map((cell) => ({
       ...cell,
       memberCount: cell._count.members,
     }));
@@ -64,7 +87,9 @@ export async function getAllCells(options?: {
 export async function deleteCell(id: string) {
   try {
     const prisma = await getChurchPrisma();
-    await prisma.cells.delete({ where: { id } });
+    const deleteArgs = { where: { id } } satisfies Prisma.CellsDeleteArgs;
+    CellsDeleteOneSchema.parse(deleteArgs);
+    await prisma.cells.delete(deleteArgs);
     revalidateTag("cells", { expire: 0 });
     return { success: true };
   } catch (error) {
@@ -73,12 +98,12 @@ export async function deleteCell(id: string) {
   }
 }
 
-export async function getCellById(id: string) {
+export async function getCellById(id: string): Promise<CellWithRelations> {
   try {
     const prisma = await getChurchPrisma();
     const churchId = await getChurchId();
 
-    const cell = await prisma.cells.findUnique({
+    const findUniqueArgs = {
       where: { id },
       include: {
         leader: true,
@@ -86,13 +111,16 @@ export async function getCellById(id: string) {
         sector: true,
         members: true,
       },
-    });
+    } satisfies Prisma.CellsFindUniqueArgs;
+    CellsFindUniqueSchema.parse(findUniqueArgs);
+
+    const cell = await prisma.cells.findUnique(findUniqueArgs);
 
     if (!cell || cell.church_id !== churchId) {
       throw new Error("Cell not found");
     }
 
-    return cell;
+    return cell as CellWithRelations;
   } catch (error) {
     console.error("Error fetching cell:", error);
     throw new Error("Failed to fetch cell");
@@ -109,21 +137,25 @@ export async function createCell(data: {
     const prisma = await getChurchPrisma();
     const churchId = await getChurchId();
 
-    const cell = await prisma.cells.create({
-      data: {
-        name: data.name,
-        church: { connect: { id: churchId } },
-        ...(data.sectorId && data.sectorId !== ""
-          ? { sector: { connect: { id: data.sectorId } } }
-          : {}),
-        ...(data.leaderId && data.leaderId !== ""
-          ? { leader: { connect: { id: data.leaderId } } }
-          : {}),
-        ...(data.hostId && data.hostId !== ""
-          ? { host: { connect: { id: data.hostId } } }
-          : {}),
-      },
-    });
+    const prismaData: Prisma.CellsCreateInput = {
+      name: data.name,
+      church: { connect: { id: churchId } },
+      ...(data.sectorId && data.sectorId !== ""
+        ? { sector: { connect: { id: data.sectorId } } }
+        : {}),
+      ...(data.leaderId && data.leaderId !== ""
+        ? { leader: { connect: { id: data.leaderId } } }
+        : {}),
+      ...(data.hostId && data.hostId !== ""
+        ? { host: { connect: { id: data.hostId } } }
+        : {}),
+    };
+
+    CellsCreateInputObjectSchema.parse(prismaData);
+
+    const createArgs = { data: prismaData } satisfies Prisma.CellsCreateArgs;
+    CellsCreateOneSchema.parse(createArgs);
+    const cell = await prisma.cells.create(createArgs);
 
     // Asegurar que líder/anfitrión figuren como miembros de la célula
     const ensureMemberIds = [data.leaderId, data.hostId].filter(
@@ -198,10 +230,14 @@ export async function updateCell(
           : { disconnect: true };
     }
 
-    const cell = await prisma.cells.update({
+    CellsUpdateInputObjectSchema.parse(updateData);
+
+    const updateArgs = {
       where: { id },
       data: updateData,
-    });
+    } satisfies Prisma.CellsUpdateArgs;
+    CellsUpdateOneSchema.parse(updateArgs);
+    const cell = await prisma.cells.update(updateArgs);
 
     // Si se asignó líder/anfitrión, asegurar su membresía en la célula
     const setIds: string[] = [];
@@ -290,10 +326,12 @@ export async function getSectorById(id: string) {
 export async function getMembersByCell(cellId: string) {
   try {
     const prisma = await getChurchPrisma();
-    const members = await prisma.members.findMany({
+    const membersFindArgs = {
       where: { cell_id: cellId },
       orderBy: { createdAt: "asc" },
-    });
+    } satisfies Prisma.MembersFindManyArgs;
+    MembersFindManySchema.parse(membersFindArgs);
+    const members = await prisma.members.findMany(membersFindArgs);
     return members;
   } catch (error) {
     console.error("Error fetching cell members:", error);
@@ -325,7 +363,7 @@ export async function searchMembersInCell(cellId: string, term: string) {
   try {
     const prisma = await getChurchPrisma();
     const churchId = await getChurchId();
-    const members = await prisma.members.findMany({
+    const searchArgs = {
       where: {
         church_id: churchId,
         cell_id: cellId,
@@ -337,7 +375,9 @@ export async function searchMembersInCell(cellId: string, term: string) {
       },
       orderBy: { createdAt: "asc" },
       take: 10,
-    });
+    } satisfies Prisma.MembersFindManyArgs;
+    MembersFindManySchema.parse(searchArgs);
+    const members = await prisma.members.findMany(searchArgs);
     return members.map((m) => ({ ...m, ministries: [] }));
   } catch (error) {
     console.error("Error searching members in cell:", error);
@@ -368,10 +408,12 @@ export async function addMemberToCell(cellId: string, memberId: string) {
       throw new Error("El miembro no pertenece a esta iglesia");
     }
 
-    const updated = await prisma.members.update({
+    const updateMemberArgs = {
       where: { id: memberId },
       data: { cell: { connect: { id: cellId } } },
-    });
+    } satisfies Prisma.MembersUpdateArgs;
+    MembersUpdateOneSchema.parse(updateMemberArgs);
+    const updated = await prisma.members.update(updateMemberArgs);
     revalidateTag("cells", { expire: 0 });
     return updated;
   } catch (error) {
@@ -386,10 +428,11 @@ export async function addMembersToCell(cellId: string, memberIds: string[]) {
     const churchId = await getChurchId();
     if (!memberIds?.length) return { count: 0 };
 
-    const result = await prisma.members.updateMany({
+    const updateManyArgs = {
       where: { id: { in: memberIds }, church_id: churchId },
       data: { cell_id: cellId },
-    });
+    } satisfies Prisma.MembersUpdateManyArgs;
+    const result = await prisma.members.updateMany(updateManyArgs);
     revalidateTag("cells", { expire: 0 });
     return { count: result.count };
   } catch (error) {
@@ -418,10 +461,12 @@ export async function removeMemberFromCell(cellId: string, memberId: string) {
     if (!cell || cell.church_id !== churchId) {
       throw new Error("La célula no pertenece a esta iglesia");
     }
-    await prisma.members.update({
+    const removeMemberArgs = {
       where: { id: memberId },
       data: { cell_id: null },
-    });
+    } satisfies Prisma.MembersUpdateArgs;
+    MembersUpdateOneSchema.parse(removeMemberArgs);
+    await prisma.members.update(removeMemberArgs);
 
     const updates: Prisma.CellsUpdateInput = {};
     if (cell.leader_id === memberId) {
@@ -431,7 +476,12 @@ export async function removeMemberFromCell(cellId: string, memberId: string) {
       updates.host = { disconnect: true };
     }
     if (Object.keys(updates).length > 0) {
-      await prisma.cells.update({ where: { id: cellId }, data: updates });
+      const updateCellArgs = {
+        where: { id: cellId },
+        data: updates,
+      } satisfies Prisma.CellsUpdateArgs;
+      CellsUpdateOneSchema.parse(updateCellArgs);
+      await prisma.cells.update(updateCellArgs);
     }
     revalidateTag("cells", { expire: 0 });
     return { success: true };

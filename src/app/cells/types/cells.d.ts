@@ -1,3 +1,5 @@
+import type { Prisma } from "@/generated/prisma/client";
+
 export interface CellsQueryOptions {
   limit?: number;
   offset?: number;
@@ -23,3 +25,16 @@ export interface CellsListResult<T = unknown> {
   total: number;
   hasMore: boolean;
 }
+
+export type CellWithRelations = Prisma.CellsGetPayload<{
+  include: { leader: true; host: true; sector: true; members: true };
+}>;
+
+export type CellListItem = Prisma.CellsGetPayload<{
+  include: {
+    leader: true;
+    host: true;
+    sector: true;
+    _count: { select: { members: true } };
+  };
+}> & { memberCount: number };

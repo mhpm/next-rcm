@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import CellForm, { CellFormInput } from "../../components/CellForm/CellForm";
+import CellForm from "../../components/CellForm/CellForm";
+import type { CellFormInput } from "../../schema/cells.schema";
 import CellsMembersTable from "../../components/CellsMembersTable";
 import { useCell, useUpdateCell } from "../../hooks/useCells";
 import { useNotificationStore } from "@/store/NotificationStore";
@@ -76,7 +77,7 @@ export default function EditCellPage({
             <CellForm
               initialData={{
                 name: cellData?.name || "",
-                sectorId: cellData?.sector?.id || cellData?.sector_id || null,
+                sectorId: cellData?.sector?.id || cellData?.sector_id || "",
                 leaderId: cellData?.leader?.id || cellData?.leader_id || "",
                 hostId: cellData?.host?.id || cellData?.host_id || "",
                 id: cellData?.id,

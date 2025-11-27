@@ -3,16 +3,13 @@
 import React, { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
 import { InputField, SelectField } from "@/components/FormControls";
 import { getAllSectors, getMembersByCell } from "../../actions/cells.actions";
-
-export interface CellFormInput {
-  name: string;
-  sectorId?: string | null;
-  leaderId?: string | null;
-  hostId?: string | null;
-}
+import { cellFormSchema } from "../../schema/cells.schema";
+import type { CellFormInput } from "../../schema/cells.schema";
 
 interface CellFormProps {
   initialData?: Partial<CellFormInput> & { id?: string };
@@ -34,8 +31,15 @@ const CellForm: React.FC<CellFormProps> = ({
     reset,
     setValue,
     formState: { errors },
-  } = useForm<CellFormInput>({
-    defaultValues: initialData,
+  } = useForm<z.infer<typeof cellFormSchema>>({
+    resolver: zodResolver(cellFormSchema),
+    defaultValues: {
+      name: initialData?.name ?? "",
+      sectorId: initialData?.sectorId ?? "",
+      leaderId: initialData?.leaderId ?? "",
+      hostId: initialData?.hostId ?? "",
+      id: initialData?.id,
+    },
     mode: "onChange",
   });
 
@@ -45,7 +49,13 @@ const CellForm: React.FC<CellFormProps> = ({
     if (prevInitialDataRef.current === json) return;
     prevInitialDataRef.current = json;
     if (initialData) {
-      reset(initialData);
+      reset({
+        name: initialData.name ?? "",
+        sectorId: initialData.sectorId ?? "",
+        leaderId: initialData.leaderId ?? "",
+        hostId: initialData.hostId ?? "",
+        id: initialData.id,
+      });
     }
   }, [initialData, reset]);
 
@@ -106,7 +116,11 @@ const CellForm: React.FC<CellFormProps> = ({
   }, [cellId, members, initialData?.leaderId, initialData?.hostId, setValue]);
 
   return (
-    <form suppressHydrationWarning onSubmit={handleSubmit(handleSubmitInternal)} className="space-y-4">
+    <form
+      suppressHydrationWarning
+      onSubmit={handleSubmit(handleSubmitInternal)}
+      className="space-y-4"
+    >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-3 space-y-8">
           <div className="card bg-base-100 shadow-sm">
@@ -115,7 +129,7 @@ const CellForm: React.FC<CellFormProps> = ({
                 {isEditMode ? "Editar Célula" : "Nueva Célula"}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <InputField<CellFormInput>
+                <InputField<z.infer<typeof cellFormSchema>>
                   name="name"
                   label="Nombre de la Célula"
                   register={register}
@@ -124,7 +138,7 @@ const CellForm: React.FC<CellFormProps> = ({
                   error={errors.name?.message}
                 />
 
-                <SelectField<CellFormInput>
+                <SelectField<z.infer<typeof cellFormSchema>>
                   name="sectorId"
                   label="Sector"
                   register={register}
@@ -140,7 +154,7 @@ const CellForm: React.FC<CellFormProps> = ({
                   </p>
                 )}
 
-                <SelectField<CellFormInput>
+                <SelectField<z.infer<typeof cellFormSchema>>
                   name="leaderId"
                   label="Líder de la Célula"
                   register={register}

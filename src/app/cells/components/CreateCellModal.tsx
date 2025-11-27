@@ -3,12 +3,15 @@
 import { Modal } from "@/components/Modal/Modal";
 import { InputField, SelectField } from "@/components/FormControls";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { getAllSectors } from "../actions/cells.actions";
 import { useCreateCell } from "../hooks/useCells";
+import { cellCreateSchema } from "../schema/cells.schema";
 import { useNotificationStore } from "@/store/NotificationStore";
 
-type FormValues = { name: string; sectorId?: string | null };
+type FormValues = z.infer<typeof cellCreateSchema>;
 
 type CreateCellModalProps = {
   open: boolean;
@@ -30,6 +33,7 @@ export default function CreateCellModal({
     reset,
     formState: { errors },
   } = useForm<FormValues>({
+    resolver: zodResolver(cellCreateSchema),
     defaultValues: { name: "", sectorId: "" },
     mode: "onChange",
   });
