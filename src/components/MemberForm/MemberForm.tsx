@@ -20,6 +20,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   memberFormSchema,
+  memberFormSchemaEdit,
   MemberFormInput,
 } from "@/app/members/schema/members.schema";
 
@@ -32,6 +33,9 @@ interface MemberFormProps {
   onSubmit: SubmitHandler<FormValues>;
   isEditMode?: boolean;
   isSubmitting?: boolean;
+  title?: string;
+  subtitle?: string;
+  resetAfterSubmit?: boolean;
 }
 
 export const MemberForm: React.FC<MemberFormProps> = ({
@@ -39,6 +43,9 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   onSubmit,
   isEditMode = false,
   isSubmitting = false,
+  title,
+  subtitle,
+  resetAfterSubmit = false,
 }) => {
   // 4. Usamos FormValues en useForm
   const {
@@ -49,35 +56,85 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     trigger,
     setValue,
     reset,
+    clearErrors,
+    unregister,
     formState: { errors },
   } = useForm<FormValues>({
-    defaultValues: initialData,
+    defaultValues: { gender: "MASCULINO", ...(initialData || {}) },
     mode: "onChange",
     reValidateMode: "onChange",
-    resolver: zodResolver(memberFormSchema),
+    resolver: zodResolver(isEditMode ? memberFormSchemaEdit : memberFormSchema),
+    shouldUnregister: true,
   });
 
   // Reset form when initialData changes (for async data loading)
   useEffect(() => {
     if (initialData) {
-      reset(initialData);
+      reset({ gender: "MASCULINO", ...initialData });
     }
   }, [initialData, reset]);
 
+  // Asegurar que los ministerios iniciales queden en el estado del formulario
+  useEffect(() => {
+    if (initialData?.ministries && initialData.ministries.length > 0) {
+      setValue("ministries", initialData.ministries, { shouldValidate: false });
+    }
+  }, [initialData?.ministries, setValue]);
+
+  // En edición, asegúrate de que el toggle de cambiar contraseña esté apagado
+  // y los campos de contraseña estén limpios al montar o al cambiar initialData
+  useEffect(() => {
+    if (isEditMode) {
+      setChangePassword(false);
+      setValue("password", "", { shouldValidate: false, shouldDirty: false });
+      setValue("confirmPassword", "", {
+        shouldValidate: false,
+        shouldDirty: false,
+      });
+      clearErrors(["password", "confirmPassword"]);
+      unregister("password");
+      unregister("confirmPassword");
+    }
+  }, [isEditMode, initialData, setValue, clearErrors, unregister]);
+
   // Hook para obtener ministerios
+  // Cargar suficientes ministerios para asegurar que los seleccionados del miembro aparezcan
   const { data: ministriesData, isLoading: isLoadingMinistries } =
-    useMinistries();
+    useMinistries({ limit: 1000, offset: 0 });
 
   const password = watch("password");
   const emailValue = watch("email");
+  const roleValue = watch("role");
 
   // Toggle to show password fields only when needed
   const [changePassword, setChangePassword] = useState(!isEditMode);
+
+  const requiresPassword = useMemo(() => {
+    return (
+      roleValue === "PASTOR" ||
+      roleValue === "LIDER" ||
+      roleValue === "SUPERVISOR"
+    );
+  }, [roleValue]);
+
+  const showPasswordCard = isEditMode ? true : requiresPassword;
 
   // Trigger immediate re-validation of confirmPassword when password changes
   useEffect(() => {
     trigger("confirmPassword");
   }, [password, trigger]);
+
+  // Cuando el rol deja de requerir contraseña, limpia y desregistra los campos
+  useEffect(() => {
+    const fieldsVisible = isEditMode ? changePassword : requiresPassword;
+    if (!fieldsVisible) {
+      setValue("password", "", { shouldValidate: false, shouldDirty: false });
+      setValue("confirmPassword", "", { shouldValidate: false, shouldDirty: false });
+      clearErrors(["password", "confirmPassword"]);
+      unregister("password");
+      unregister("confirmPassword");
+    }
+  }, [requiresPassword, changePassword, isEditMode, setValue, clearErrors, unregister]);
 
   // Debounce email value to avoid excessive API calls
   const debouncedEmail = useDebounce(emailValue, 500);
@@ -153,22 +210,34 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     setValue("ministries", values, { shouldValidate: true });
   };
 
+  const onInternalSubmit = async (values: FormValues) => {
+    try {
+      await onSubmit(values);
+      if (!isEditMode && resetAfterSubmit) {
+        reset({ gender: "MASCULINO" });
+        clearErrors();
+      }
+    } catch {
+      // No reset on error
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onInternalSubmit)}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Columna Izquierda */}
         <div className="lg:col-span-2 space-y-8">
           {/* Basic Information */}
           <div className="card bg-base-100 shadow-sm">
             <div className="card-body">
-              <h3 className="card-title text-lg font-semibold text-base-content">
-                Editar Miembro
-              </h3>
-              <p className="text-sm text-base-content/70 mb-2">
-                {isEditMode
-                  ? "Actualiza la información del miembro"
-                  : "Ingresa los datos básicos del miembro"}
-              </p>
+              {title && (
+                <h2 className="card-title text-2xl font-semibold text-base-content">
+                  {title}
+                </h2>
+              )}
+              {subtitle && (
+                <p className="text-sm text-base-content/70 mb-4">{subtitle}</p>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InputField<FormValues>
                   name="firstName"
@@ -189,23 +258,19 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   label="Correo Electrónico"
                   register={register}
                   rules={{
-                    required: "El correo es requerido",
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Formato de correo inválido",
-                    },
                     validate: (value) => {
-                      if (!value) return true;
-
-                      // En modo edición, si el email es el mismo que el original, no validar
+                      const v = typeof value === "string" ? value : "";
+                      if (!v) return true;
+                      const ok =
+                        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(v);
+                      if (!ok) return "Formato de correo inválido";
                       if (
                         isEditMode &&
                         initialData?.email &&
-                        value === initialData.email
+                        v === initialData.email
                       ) {
                         return true;
                       }
-
                       if (emailValidationStatus === "taken") {
                         return "Este correo ya está en uso";
                       }
@@ -345,58 +410,64 @@ export const MemberForm: React.FC<MemberFormProps> = ({
             </div>
           </div>
 
-          {/* Password */}
-          <div className="card bg-base-100 shadow-sm">
-            <div className="card-body">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="card-title">
-                  {isEditMode ? "Cambiar Contraseña" : "Crear Contraseña"}
-                </h2>
-                {isEditMode && (
-                  <label className="label cursor-pointer">
-                    <span className="label-text mr-2">Editar</span>
-                    <input
-                      type="checkbox"
-                      className="toggle toggle-primary"
-                      checked={changePassword}
-                      onChange={(e) => setChangePassword(e.target.checked)}
+          {showPasswordCard && (
+            <div className="card bg-base-100 shadow-sm">
+              <div className="card-body">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="card-title">
+                    {isEditMode ? "Cambiar Contraseña" : "Crear Contraseña"}
+                  </h2>
+                  {isEditMode && (
+                    <label className="label cursor-pointer">
+                      <span className="label-text mr-2">Editar</span>
+                      <input
+                        type="checkbox"
+                        className="toggle toggle-primary"
+                        checked={changePassword}
+                        onChange={(e) => setChangePassword(e.target.checked)}
+                      />
+                    </label>
+                  )}
+                </div>
+                {(isEditMode ? changePassword : requiresPassword) && (
+                  <div className="space-y-4">
+                    <PasswordField<FormValues>
+                      name="password"
+                      label={isEditMode ? "Nueva Contraseña" : "Contraseña"}
+                      register={register}
+                      rules={{
+                        required: requiresPassword
+                          ? "La contraseña es requerida para este rol"
+                          : false,
+                      }}
+                      error={errors.password?.message}
+                      placeholder="Contraseña"
                     />
-                  </label>
+                    <PasswordField<FormValues>
+                      name="confirmPassword"
+                      label="Confirmar Contraseña"
+                      register={register}
+                      rules={{
+                        validate: (value) => {
+                          const shouldValidate = isEditMode
+                            ? changePassword
+                            : requiresPassword;
+                          if (!shouldValidate) return true;
+                          if (requiresPassword && !value)
+                            return "Confirma la contraseña";
+                          return (
+                            value === password || "Las contraseñas no coinciden"
+                          );
+                        },
+                      }}
+                      error={errors.confirmPassword?.message}
+                      placeholder="Confirmar Contraseña"
+                    />
+                  </div>
                 )}
               </div>
-              {changePassword && (
-                <div className="space-y-4">
-                  <PasswordField<FormValues>
-                    name="password"
-                    label={isEditMode ? "Nueva Contraseña" : "Contraseña"}
-                    register={register}
-                    rules={{
-                      required: !isEditMode
-                        ? "La contraseña es requerida"
-                        : changePassword
-                        ? "La contraseña es requerida"
-                        : false,
-                    }}
-                    error={errors.password?.message}
-                    placeholder="Contraseña"
-                  />
-                  <PasswordField<FormValues>
-                    name="confirmPassword"
-                    label="Confirmar Contraseña"
-                    register={register}
-                    rules={{
-                      validate: (value) =>
-                        !changePassword ||
-                        value === password ||
-                        "Las contraseñas no coinciden",
-                    }}
-                    error={errors.confirmPassword?.message}
-                    placeholder="Confirmar Contraseña"
-                  />
-                </div>
-              )}
             </div>
-          </div>
+          )}
         </div>
       </div>
 

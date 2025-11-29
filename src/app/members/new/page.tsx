@@ -24,7 +24,7 @@ export default function NewMemberPage() {
   const formDataToMember = (formData: FormValues): MemberFormData => ({
     firstName: formData.firstName,
     lastName: formData.lastName,
-    email: formData.email,
+    email: formData.email || undefined,
     phone: formData.phone || undefined,
     age:
       typeof formData.age === "string"
@@ -87,13 +87,12 @@ export default function NewMemberPage() {
         <BackLink text="Volver atrás" fallbackHref="/dashboard" />
         <Breadcrumbs />
       </div>
-
-      <div className="mb-6 rounded-2xl bg-base-100 p-4 shadow-sm card">
-        <h1 className="text-2xl font-bold">Añadir Miembro</h1>
-      </div>
       <MemberForm
+        title="Añadir Miembro"
+        subtitle="Ingresa la información del nuevo miembro"
         onSubmit={handleSubmit}
         isSubmitting={createMemberMutation.isPending}
+        resetAfterSubmit
       />
       {/* Alertas de error y éxito */}
       {error && (

@@ -246,7 +246,7 @@ export const createMember = withErrorHandling(async function createMember(
     const memberData = {
       firstName: parsed.firstName,
       lastName: parsed.lastName,
-      email: parsed.email,
+      ...(parsed.email !== undefined ? { email: parsed.email } : {}),
       phone: parsed.phone || null,
       age: parsed.age || null,
       street: parsed.street || null,
@@ -258,7 +258,6 @@ export const createMember = withErrorHandling(async function createMember(
       baptismDate: parsed.baptismDate || null,
       role: parsed.role,
       gender: parsed.gender,
-      // ministerio: parsed.ministerio || "", // Removed - will be handled via MemberMinistry relation
       notes: parsed.notes || null,
       passwordHash,
       pictureUrl, // Now includes the uploaded image URL
@@ -554,6 +553,7 @@ export async function deactivateMember(id: string) {
 // Check if email is already taken
 export async function isEmailTaken(email: string, excludeId?: string) {
   try {
+    if (!email) return false;
     const prisma = await getChurchPrisma();
     const whereClause: Prisma.MembersWhereInput = { email };
 

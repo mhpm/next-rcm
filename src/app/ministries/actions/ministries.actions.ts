@@ -3,15 +3,7 @@
 import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
 import { Prisma } from "@/generated/prisma/client";
 import { revalidateTag } from "next/cache";
-import { MinistriesCreateInputObjectSchema } from "@/generated/zod/schemas/objects/MinistriesCreateInput.schema";
-import { MinistriesUpdateInputObjectSchema } from "@/generated/zod/schemas/objects/MinistriesUpdateInput.schema";
-import { MinistriesFindManySchema } from "@/generated/zod/schemas/findManyMinistries.schema";
-import { MinistriesFindUniqueSchema } from "@/generated/zod/schemas/findUniqueMinistries.schema";
-import { MinistriesDeleteOneSchema } from "@/generated/zod/schemas/deleteOneMinistries.schema";
-import { MinistriesCreateOneSchema } from "@/generated/zod/schemas/createOneMinistries.schema";
-import { MinistriesUpdateOneSchema } from "@/generated/zod/schemas/updateOneMinistries.schema";
-import { MemberMinistryCreateOneSchema } from "@/generated/zod/schemas/createOneMemberMinistry.schema";
-import { MemberMinistryCreateManySchema } from "@/generated/zod/schemas/createManyMemberMinistry.schema";
+// Removed generated Zod schemas; rely on Prisma types directly and normal Zod for forms
 
 // Get all ministries for the current church
 export async function getAllMinistries(options?: {
@@ -56,7 +48,6 @@ export async function getAllMinistries(options?: {
         },
       },
     } satisfies Prisma.MinistriesFindManyArgs;
-    MinistriesFindManySchema.parse(findManyArgs);
 
     const [ministries, total] = await Promise.all([
       prisma.ministries.findMany(findManyArgs),
@@ -93,7 +84,6 @@ export async function getMinistryById(id: string) {
         members: { include: { member: true } },
       },
     } satisfies Prisma.MinistriesFindUniqueArgs;
-    MinistriesFindUniqueSchema.parse(findUniqueArgs);
     const ministry = await prisma.ministries.findUnique(findUniqueArgs);
 
     if (!ministry || ministry.church_id !== churchId) {
@@ -126,12 +116,7 @@ export async function createMinistry(data: {
         ? { leader: { connect: { id: data.leaderId } } }
         : {}),
     };
-    MinistriesCreateInputObjectSchema.parse(prismaData);
-    const createArgs = {
-      data: prismaData,
-    } satisfies Prisma.MinistriesCreateArgs;
-    MinistriesCreateOneSchema.parse(createArgs);
-    const ministry = await prisma.ministries.create(createArgs);
+    const ministry = await prisma.ministries.create({ data: prismaData });
 
     // Si se asignó líder al crear el ministerio, asegurar que pertenezca al ministerio
     if (data.leaderId && data.leaderId !== "") {
@@ -139,16 +124,14 @@ export async function createMinistry(data: {
         where: { ministryId: ministry.id, memberId: data.leaderId },
       });
       if (!existingMembership) {
-        const createMembershipArgs = {
-          data: {
-            church: { connect: { id: churchId } },
-            member: { connect: { id: data.leaderId } },
-            ministry: { connect: { id: ministry.id } },
-          },
-        } satisfies Prisma.MemberMinistryCreateArgs;
-        MemberMinistryCreateOneSchema.parse(createMembershipArgs);
         try {
-          await prisma.memberMinistry.create(createMembershipArgs);
+          await prisma.memberMinistry.create({
+            data: {
+              church: { connect: { id: churchId } },
+              member: { connect: { id: data.leaderId } },
+              ministry: { connect: { id: ministry.id } },
+            },
+          });
         } catch (e) {
           if (
             e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -227,13 +210,10 @@ export async function updateMinistry(
           : { disconnect: true };
     }
 
-    MinistriesUpdateInputObjectSchema.parse(updateData);
-    const updateArgs = {
+    const ministry = await prisma.ministries.update({
       where: { id },
       data: updateData,
-    } satisfies Prisma.MinistriesUpdateArgs;
-    MinistriesUpdateOneSchema.parse(updateArgs);
-    const ministry = await prisma.ministries.update(updateArgs);
+    });
 
     // After updating the ministry, if a new leader was assigned, ensure they are a member.
     if (data.leaderId) {
@@ -324,9 +304,7 @@ export async function deleteMinistry(id: string) {
     // Asegurar que todos los miembros (incluyendo líder) pierdan relación con el ministerio
     await prisma.memberMinistry.deleteMany({ where: { ministryId: id } });
 
-    const deleteArgs = { where: { id } } satisfies Prisma.MinistriesDeleteArgs;
-    MinistriesDeleteOneSchema.parse(deleteArgs);
-    await prisma.ministries.delete(deleteArgs);
+    await prisma.ministries.delete({ where: { id } });
 
     revalidateTag("ministries", { expire: 0 });
     return { success: true };
@@ -366,18 +344,17 @@ export async function addMemberToMinistry(
     const churchId = await getChurchId();
 
     // Create membership, respecting unique(memberId, ministryId)
-    const createArgs = {
+    const membership = await prisma.memberMinistry.create({
       data: {
         ministry: { connect: { id: ministryId } },
         member: { connect: { id: memberId } },
         church: { connect: { id: churchId } },
       },
       include: { member: true, ministry: true },
-    } satisfies Prisma.MemberMinistryCreateArgs;
-    MemberMinistryCreateOneSchema.parse(createArgs);
-    const membership = await prisma.memberMinistry.create(createArgs);
+    });
 
     revalidateTag("ministries", { expire: 0 });
+    revalidateTag("members", { expire: 0 });
 
     return membership;
   } catch (error: unknown) {
@@ -408,18 +385,17 @@ export async function addMembersToMinistry(
     }
 
     // Use createMany for efficient bulk insert, skipping duplicates
-    const createManyArgs = {
+    const result = await prisma.memberMinistry.createMany({
       data: memberIds.map((memberId) => ({
         ministryId,
         memberId,
         church_id: churchId,
       })),
       skipDuplicates: true,
-    } satisfies Prisma.MemberMinistryCreateManyArgs;
-    MemberMinistryCreateManySchema.parse(createManyArgs);
-    const result = await prisma.memberMinistry.createMany(createManyArgs);
+    });
 
     revalidateTag("ministries", { expire: 0 });
+    revalidateTag("members", { expire: 0 });
 
     return { count: result.count };
   } catch (error: unknown) {
@@ -456,6 +432,7 @@ export async function removeMemberFromMinistry(
     });
 
     revalidateTag("ministries", { expire: 0 });
+    revalidateTag("members", { expire: 0 });
     return { success: true };
   } catch (error) {
     console.error("Error removing member from ministry:", error);

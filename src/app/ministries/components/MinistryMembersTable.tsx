@@ -26,7 +26,7 @@ type MinistryMembersTableProps = {
       id: string;
       firstName: string;
       lastName: string;
-      email: string;
+      email: string | null;
       role: string;
     };
   }>;
@@ -68,7 +68,7 @@ export default function MinistryMembersTable({
       memberships.map((mm) => ({
         id: mm.member.id,
         nombre: `${mm.member.firstName} ${mm.member.lastName}`,
-        email: mm.member.email,
+        email: mm.member.email || "",
         rol: mm.member.role,
         agregadoEl:
           typeof mm.createdAt === "string"

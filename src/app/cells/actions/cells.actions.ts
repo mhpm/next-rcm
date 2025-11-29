@@ -5,15 +5,7 @@ import { Prisma } from "@/generated/prisma/client";
 import type { Cells, Members, Sectors } from "@/generated/prisma/client";
 import type { CellListItem, CellWithRelations } from "../types/cells";
 import { revalidateTag } from "next/cache";
-import { CellsCreateInputObjectSchema } from "@/generated/zod/schemas/objects/CellsCreateInput.schema";
-import { CellsUpdateInputObjectSchema } from "@/generated/zod/schemas/objects/CellsUpdateInput.schema";
-import { CellsFindManySchema } from "@/generated/zod/schemas/findManyCells.schema";
-import { CellsFindUniqueSchema } from "@/generated/zod/schemas/findUniqueCells.schema";
-import { CellsDeleteOneSchema } from "@/generated/zod/schemas/deleteOneCells.schema";
-import { CellsCreateOneSchema } from "@/generated/zod/schemas/createOneCells.schema";
-import { CellsUpdateOneSchema } from "@/generated/zod/schemas/updateOneCells.schema";
-import { MembersFindManySchema } from "@/generated/zod/schemas/findManyMembers.schema";
-import { MembersUpdateOneSchema } from "@/generated/zod/schemas/updateOneMembers.schema";
+// Removed prisma-zod types usage; rely on Prisma types and normal Zod for form payloads
 
 export async function getAllCells(options?: {
   limit?: number;
@@ -53,7 +45,7 @@ export async function getAllCells(options?: {
       },
     } satisfies Prisma.CellsFindManyArgs;
 
-    CellsFindManySchema.parse(findArgs);
+    // Validation of Prisma args removed (using Prisma types directly)
 
     const [cells, total] = await Promise.all([
       prisma.cells.findMany(findArgs) as Promise<
@@ -86,9 +78,7 @@ export async function getAllCells(options?: {
 export async function deleteCell(id: string) {
   try {
     const prisma = await getChurchPrisma();
-    const deleteArgs = { where: { id } } satisfies Prisma.CellsDeleteArgs;
-    CellsDeleteOneSchema.parse(deleteArgs);
-    await prisma.cells.delete(deleteArgs);
+    await prisma.cells.delete({ where: { id } });
     revalidateTag("cells", { expire: 0 });
     return { success: true };
   } catch (error) {
@@ -111,7 +101,7 @@ export async function getCellById(id: string): Promise<CellWithRelations> {
         members: true,
       },
     } satisfies Prisma.CellsFindUniqueArgs;
-    CellsFindUniqueSchema.parse(findUniqueArgs);
+    // Validation of Prisma args removed
 
     const cell = await prisma.cells.findUnique(findUniqueArgs);
 
@@ -150,11 +140,7 @@ export async function createCell(data: {
         : {}),
     };
 
-    CellsCreateInputObjectSchema.parse(prismaData);
-
-    const createArgs = { data: prismaData } satisfies Prisma.CellsCreateArgs;
-    CellsCreateOneSchema.parse(createArgs);
-    const cell = await prisma.cells.create(createArgs);
+    const cell = await prisma.cells.create({ data: prismaData });
 
     // Asegurar que líder/anfitrión figuren como miembros de la célula
     const ensureMemberIds = [data.leaderId, data.hostId].filter(
@@ -229,14 +215,7 @@ export async function updateCell(
           : { disconnect: true };
     }
 
-    CellsUpdateInputObjectSchema.parse(updateData);
-
-    const updateArgs = {
-      where: { id },
-      data: updateData,
-    } satisfies Prisma.CellsUpdateArgs;
-    CellsUpdateOneSchema.parse(updateArgs);
-    const cell = await prisma.cells.update(updateArgs);
+    const cell = await prisma.cells.update({ where: { id }, data: updateData });
 
     // Si se asignó líder/anfitrión, asegurar su membresía en la célula
     const setIds: string[] = [];
@@ -329,7 +308,6 @@ export async function getMembersByCell(cellId: string) {
       where: { cell_id: cellId },
       orderBy: { createdAt: "asc" },
     } satisfies Prisma.MembersFindManyArgs;
-    MembersFindManySchema.parse(membersFindArgs);
     const members = await prisma.members.findMany(membersFindArgs);
     return members;
   } catch (error) {
@@ -375,7 +353,6 @@ export async function searchMembersInCell(cellId: string, term: string) {
       orderBy: { createdAt: "asc" },
       take: 10,
     } satisfies Prisma.MembersFindManyArgs;
-    MembersFindManySchema.parse(searchArgs);
     const members = await prisma.members.findMany(searchArgs);
     return members.map((m) => ({ ...m, ministries: [] }));
   } catch (error) {
@@ -411,7 +388,6 @@ export async function addMemberToCell(cellId: string, memberId: string) {
       where: { id: memberId },
       data: { cell: { connect: { id: cellId } } },
     } satisfies Prisma.MembersUpdateArgs;
-    MembersUpdateOneSchema.parse(updateMemberArgs);
     const updated = await prisma.members.update(updateMemberArgs);
     revalidateTag("cells", { expire: 0 });
     return updated;
@@ -464,7 +440,6 @@ export async function removeMemberFromCell(cellId: string, memberId: string) {
       where: { id: memberId },
       data: { cell_id: null },
     } satisfies Prisma.MembersUpdateArgs;
-    MembersUpdateOneSchema.parse(removeMemberArgs);
     await prisma.members.update(removeMemberArgs);
 
     const updates: Prisma.CellsUpdateInput = {};
@@ -479,7 +454,6 @@ export async function removeMemberFromCell(cellId: string, memberId: string) {
         where: { id: cellId },
         data: updates,
       } satisfies Prisma.CellsUpdateArgs;
-      CellsUpdateOneSchema.parse(updateCellArgs);
       await prisma.cells.update(updateCellArgs);
     }
     revalidateTag("cells", { expire: 0 });

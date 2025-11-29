@@ -33,10 +33,10 @@ export const memberSchema = z
 
     email: z
       .string()
-      .min(1, "El email es requerido")
       .email({ message: "Formato de email inválido" })
       .max(100, "El email no puede exceder 100 caracteres")
-      .toLowerCase(),
+      .optional()
+      .transform((v) => (typeof v === "string" ? v.toLowerCase() : v)),
 
     role: MemberRoleSchema,
 
@@ -172,7 +172,8 @@ export const memberSearchSchema = z.object({
 });
 
 // Form-specific schema for react-hook-form (dates as strings, no transformations)
-export const memberFormSchema = z
+// Base form schema used by both create and edit variants
+const memberFormBase = z
   .object({
     // Optional fields
     id: z.string().optional(),
@@ -199,9 +200,20 @@ export const memberFormSchema = z
 
     email: z
       .string()
-      .min(1, "El email es requerido")
-      .email({ message: "Formato de email inválido" })
-      .max(100, "El email no puede exceder 100 caracteres"),
+      .optional()
+      .transform((val) => {
+        if (val === undefined) return undefined;
+        const trimmed = val.trim();
+        if (trimmed.length === 0) return undefined;
+        return trimmed.toLowerCase();
+      })
+      .refine(
+        (val) => val === undefined || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+        { message: "Formato de email inválido" }
+      )
+      .refine((val) => val === undefined || val.length <= 100, {
+        message: "El email no puede exceder 100 caracteres",
+      }),
 
     role: MemberRoleSchema,
     gender: GenderSchema,
@@ -345,6 +357,50 @@ export const memberFormSchema = z
     }
   );
 
+// Create: requiere contraseña para roles de liderazgo
+export const memberFormSchema = memberFormBase.superRefine((data, ctx) => {
+  const requiresPassword = ["PASTOR", "LIDER", "SUPERVISOR"].includes(
+    String(data.role)
+  );
+  if (requiresPassword) {
+    if (!data.password || data.password.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["password"],
+        message: "La contraseña es requerida para este rol",
+      });
+    }
+    if (!data.confirmPassword || data.confirmPassword.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["confirmPassword"],
+        message: "Confirma la contraseña",
+      });
+    }
+  }
+});
+
+// Edit: valida contraseña solo si el usuario decide cambiarla
+export const memberFormSchemaEdit = memberFormBase.superRefine((data, ctx) => {
+  const intendsChange = Boolean(data.password || data.confirmPassword);
+  if (intendsChange) {
+    if (!data.password || data.password.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["password"],
+        message: "La contraseña es requerida",
+      });
+    }
+    if (!data.confirmPassword || data.confirmPassword.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["confirmPassword"],
+        message: "Confirma la contraseña",
+      });
+    }
+  }
+});
+
 // Form-specific schema for client-side validation (dates as strings)
 export const insertMemberFormSchema = memberSchema
   // Avoid overriding existing keys with safeExtend; omit then add back as strings
@@ -423,14 +479,36 @@ export const insertMemberFormSchema = memberSchema
         "La fecha de bautismo debe ser posterior a la fecha de nacimiento",
       path: ["baptismDate"],
     }
-  );
+  )
+  .superRefine((data, ctx) => {
+    const requiresPassword = ["PASTOR", "LIDER", "SUPERVISOR"].includes(
+      String(data.role)
+    );
+    if (requiresPassword) {
+      if (!data.password || data.password.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["password"],
+          message: "La contraseña es requerida para este rol",
+        });
+      }
+      if (!data.confirmPassword || data.confirmPassword.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["confirmPassword"],
+          message: "Confirma la contraseña",
+        });
+      }
+    }
+  });
 
 // Export types for use in components
 export type MemberSchema = z.infer<typeof memberSchema>;
 export type MemberFormSchema = z.infer<typeof memberFormSchema>;
+export type MemberFormSchemaEdit = z.infer<typeof memberFormSchemaEdit>;
 export type InsertMemberFormSchema = z.infer<typeof insertMemberFormSchema>;
 export type UpdateMemberSchema = z.infer<typeof updateMemberSchema>;
 export type MemberSearchSchema = z.infer<typeof memberSearchSchema>;
 
 // Type for form inputs (before transformation)
-export type MemberFormInput = z.input<typeof memberFormSchema>;
+export type MemberFormInput = z.input<typeof memberFormBase>;

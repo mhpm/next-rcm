@@ -291,7 +291,7 @@ export type MembersGroupByOutputType = {
   id: string
   firstName: string
   lastName: string
-  email: string
+  email: string | null
   phone: string | null
   age: number | null
   street: string | null
@@ -340,7 +340,7 @@ export type MembersWhereInput = {
   id?: Prisma.StringFilter<"Members"> | string
   firstName?: Prisma.StringFilter<"Members"> | string
   lastName?: Prisma.StringFilter<"Members"> | string
-  email?: Prisma.StringFilter<"Members"> | string
+  email?: Prisma.StringNullableFilter<"Members"> | string | null
   phone?: Prisma.StringNullableFilter<"Members"> | string | null
   age?: Prisma.IntNullableFilter<"Members"> | number | null
   street?: Prisma.StringNullableFilter<"Members"> | string | null
@@ -374,7 +374,7 @@ export type MembersOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
-  email?: Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   age?: Prisma.SortOrderInput | Prisma.SortOrder
   street?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -445,7 +445,7 @@ export type MembersOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
-  email?: Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   age?: Prisma.SortOrderInput | Prisma.SortOrder
   street?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -479,7 +479,7 @@ export type MembersScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Members"> | string
   firstName?: Prisma.StringWithAggregatesFilter<"Members"> | string
   lastName?: Prisma.StringWithAggregatesFilter<"Members"> | string
-  email?: Prisma.StringWithAggregatesFilter<"Members"> | string
+  email?: Prisma.StringNullableWithAggregatesFilter<"Members"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"Members"> | string | null
   age?: Prisma.IntNullableWithAggregatesFilter<"Members"> | number | null
   street?: Prisma.StringNullableWithAggregatesFilter<"Members"> | string | null
@@ -505,7 +505,7 @@ export type MembersCreateInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -536,7 +536,7 @@ export type MembersUncheckedCreateInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -567,7 +567,7 @@ export type MembersUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -598,7 +598,7 @@ export type MembersUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -629,7 +629,7 @@ export type MembersCreateManyInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -655,7 +655,7 @@ export type MembersUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -678,7 +678,7 @@ export type MembersUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1038,7 +1038,7 @@ export type MembersCreateWithoutChurchInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1068,7 +1068,7 @@ export type MembersUncheckedCreateWithoutChurchInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1127,7 +1127,7 @@ export type MembersScalarWhereInput = {
   id?: Prisma.StringFilter<"Members"> | string
   firstName?: Prisma.StringFilter<"Members"> | string
   lastName?: Prisma.StringFilter<"Members"> | string
-  email?: Prisma.StringFilter<"Members"> | string
+  email?: Prisma.StringNullableFilter<"Members"> | string | null
   phone?: Prisma.StringNullableFilter<"Members"> | string | null
   age?: Prisma.IntNullableFilter<"Members"> | number | null
   street?: Prisma.StringNullableFilter<"Members"> | string | null
@@ -1153,7 +1153,7 @@ export type MembersCreateWithoutLedMinistriesInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1183,7 +1183,7 @@ export type MembersUncheckedCreateWithoutLedMinistriesInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1229,7 +1229,7 @@ export type MembersUpdateWithoutLedMinistriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1259,7 +1259,7 @@ export type MembersUncheckedUpdateWithoutLedMinistriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1289,7 +1289,7 @@ export type MembersCreateWithoutCellsInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1319,7 +1319,7 @@ export type MembersUncheckedCreateWithoutCellsInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1354,7 +1354,7 @@ export type MembersCreateWithoutHostedCellsInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1384,7 +1384,7 @@ export type MembersUncheckedCreateWithoutHostedCellsInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1419,7 +1419,7 @@ export type MembersCreateWithoutCellInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1449,7 +1449,7 @@ export type MembersUncheckedCreateWithoutCellInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1500,7 +1500,7 @@ export type MembersUpdateWithoutCellsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1530,7 +1530,7 @@ export type MembersUncheckedUpdateWithoutCellsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1571,7 +1571,7 @@ export type MembersUpdateWithoutHostedCellsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1601,7 +1601,7 @@ export type MembersUncheckedUpdateWithoutHostedCellsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1647,7 +1647,7 @@ export type MembersCreateWithoutLedSectorsInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1677,7 +1677,7 @@ export type MembersUncheckedCreateWithoutLedSectorsInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1712,7 +1712,7 @@ export type MembersCreateWithoutSectorInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1742,7 +1742,7 @@ export type MembersUncheckedCreateWithoutSectorInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1793,7 +1793,7 @@ export type MembersUpdateWithoutLedSectorsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1823,7 +1823,7 @@ export type MembersUncheckedUpdateWithoutLedSectorsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1869,7 +1869,7 @@ export type MembersCreateWithoutMinistriesInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1899,7 +1899,7 @@ export type MembersUncheckedCreateWithoutMinistriesInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -1945,7 +1945,7 @@ export type MembersUpdateWithoutMinistriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1975,7 +1975,7 @@ export type MembersUncheckedUpdateWithoutMinistriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2005,7 +2005,7 @@ export type MembersCreateManyChurchInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -2030,7 +2030,7 @@ export type MembersUpdateWithoutChurchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2060,7 +2060,7 @@ export type MembersUncheckedUpdateWithoutChurchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2090,7 +2090,7 @@ export type MembersUncheckedUpdateManyWithoutChurchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2115,7 +2115,7 @@ export type MembersCreateManyCellInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -2140,7 +2140,7 @@ export type MembersUpdateWithoutCellInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2170,7 +2170,7 @@ export type MembersUncheckedUpdateWithoutCellInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2200,7 +2200,7 @@ export type MembersUncheckedUpdateManyWithoutCellInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2225,7 +2225,7 @@ export type MembersCreateManySectorInput = {
   id?: string
   firstName: string
   lastName: string
-  email: string
+  email?: string | null
   phone?: string | null
   age?: number | null
   street?: string | null
@@ -2250,7 +2250,7 @@ export type MembersUpdateWithoutSectorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2280,7 +2280,7 @@ export type MembersUncheckedUpdateWithoutSectorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2310,7 +2310,7 @@ export type MembersUncheckedUpdateManyWithoutSectorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2556,7 +2556,7 @@ export type $MembersPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     id: string
     firstName: string
     lastName: string
-    email: string
+    email: string | null
     phone: string | null
     age: number | null
     street: string | null

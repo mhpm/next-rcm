@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CellsModelSchema } from "@/generated/zod/schemas/variants/pure/Cells.pure";
+// Removed generated model schema usage; using plain Zod definitions
 
 export const optionalString = z.preprocess(
   (v) => (v === "" || v === undefined ? undefined : v),
@@ -7,20 +7,20 @@ export const optionalString = z.preprocess(
 );
 
 export const cellFormSchema = z.object({
-  id: CellsModelSchema.shape.id.optional(),
-  name: CellsModelSchema.shape.name.min(1, "El nombre es requerido"),
+  id: z.string().optional(),
+  name: z.string().min(1, "El nombre es requerido"),
   sectorId: z.string(),
   leaderId: z.string(),
   hostId: z.string(),
 });
 
 export const cellCreateSchema = z.object({
-  name: CellsModelSchema.shape.name.min(1),
+  name: z.string().min(1),
   sectorId: z.string(),
 });
 
 export const cellUpdateSchema = z.object({
-  name: CellsModelSchema.shape.name.optional(),
+  name: z.string().optional(),
   sectorId: optionalString,
   leaderId: optionalString,
   hostId: optionalString,

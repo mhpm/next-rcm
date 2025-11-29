@@ -24,7 +24,7 @@ export interface MemberFormData {
   id?: string;
   firstName: string;
   lastName: string;
-  email: string;
+  email?: string;
   phone?: string;
   age?: number;
   street?: string;

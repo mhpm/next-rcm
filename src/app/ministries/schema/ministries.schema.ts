@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MinistriesModelSchema } from "@/generated/zod/schemas/variants/pure/Ministries.pure";
+// Removed generated model schema usage; using plain Zod definitions
 
 export const optionalString = z.preprocess(
   (v) => (v === "" || v === undefined ? undefined : v),
@@ -7,20 +7,20 @@ export const optionalString = z.preprocess(
 );
 
 export const ministryFormSchema = z.object({
-  id: MinistriesModelSchema.shape.id.optional(),
-  name: MinistriesModelSchema.shape.name.min(1, "El nombre es requerido"),
+  id: z.string().optional(),
+  name: z.string().min(1, "El nombre es requerido"),
   description: z.string().optional(),
   leaderId: z.union([z.string(), z.null()]).optional(),
 });
 
 export const ministryCreateSchema = z.object({
-  name: MinistriesModelSchema.shape.name.min(1),
+  name: z.string().min(1),
   description: z.string().optional(),
   leaderId: z.union([z.string(), z.null()]).optional(),
 });
 
 export const ministryUpdateSchema = z.object({
-  name: MinistriesModelSchema.shape.name.optional(),
+  name: z.string().optional(),
   description: optionalString,
   leaderId: optionalString,
 });

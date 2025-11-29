@@ -3,11 +3,6 @@ generator client {
   output        = "../generated/prisma"
 }
 
-generator zod {
-  provider = "prisma-zod-generator"
-  output   = "../generated/zod"
-}
-
 datasource db {
   provider = "postgresql"
 }
@@ -31,7 +26,7 @@ model Members {
   id            String           @id @default(cuid())
   firstName     String           @map("first_name")
   lastName      String           @map("last_name")
-  email         String           @unique
+  email         String?          @unique
   phone         String?
   age           Int?
   street        String?
