@@ -20,6 +20,7 @@ model Churches {
   sectors          Sectors[]
 
   @@map("churches")
+  groups Groups[]
 }
 
 model Members {
@@ -63,6 +64,8 @@ model Members {
   @@index([cell_id])
   @@index([sector_id])
   @@map("members")
+  groups Groups[] @relation("MemberGroup")
+  ledGroups Groups[] @relation("GroupLeader")
 }
 
 model Ministries {
@@ -121,6 +124,27 @@ model Sectors {
   @@index([church_id])
   @@index([leader_id])
   @@map("sectors")
+}
+
+model Groups {
+  id        String     @id @default(cuid())
+  name      String
+  leader_id String?
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  church_id String
+  parent_id String?
+
+  leader    Members?   @relation("GroupLeader", fields: [leader_id], references: [id])
+  church    Churches   @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  members   Members[]  @relation("MemberGroup")
+  parent    Groups?    @relation("GroupHierarchy", fields: [parent_id], references: [id], onDelete: SetNull)
+  subgroups Groups[]   @relation("GroupHierarchy")
+
+  @@index([church_id])
+  @@index([leader_id])
+  @@index([parent_id])
+  @@map("groups")
 }
 
 model MemberMinistry {
