@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { Member, MemberWithMinistries, MemberFormData } from '@/types';
-import { MemberRole } from '@prisma/client';
+import { MemberRole } from '@/generated/prisma/enums';
 import {
   getAllMembers,
   getMemberById,
@@ -49,7 +49,11 @@ interface MemberStats {
 const withTimeout = <T>(promise: Promise<T>, ms = 15000): Promise<T> => {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => {
-      reject(new Error('Tiempo de espera agotado al obtener datos. Intenta nuevamente.'));
+      reject(
+        new Error(
+          'Tiempo de espera agotado al obtener datos. Intenta nuevamente.'
+        )
+      );
     }, ms);
     promise
       .then((value) => {
@@ -71,7 +75,11 @@ const fetchAllMembers = async (options?: MembersQueryOptions) => {
     const result = await withTimeout(getAllMembers(options));
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Error desconocido al obtener miembros');
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : 'Error desconocido al obtener miembros'
+    );
   }
 };
 
@@ -81,7 +89,11 @@ const fetchMembers = async (): Promise<MemberWithMinistries[]> => {
     const result = await withTimeout(getAllMembers({ limit: 50 }));
     return result.members;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Error desconocido al obtener miembros');
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : 'Error desconocido al obtener miembros'
+    );
   }
 };
 
@@ -102,17 +114,24 @@ const fetchMemberStats = async (): Promise<MemberStats> => {
     const stats = await getMemberStats();
     return stats;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Error al obtener estadísticas');
+    throw new Error(
+      error instanceof Error ? error.message : 'Error al obtener estadísticas'
+    );
   }
 };
 
 // Check if email is available
-const checkEmailAvailability = async (email: string, excludeId?: string): Promise<boolean> => {
+const checkEmailAvailability = async (
+  email: string,
+  excludeId?: string
+): Promise<boolean> => {
   try {
     const isTaken = await isEmailTaken(email, excludeId);
     return !isTaken; // Return true if email is available (not taken)
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Error al verificar email');
+    throw new Error(
+      error instanceof Error ? error.message : 'Error al verificar email'
+    );
   }
 };
 
@@ -151,7 +170,9 @@ const deleteExistingMember = async (id: string): Promise<void> => {
   try {
     await deleteMemberAction(id);
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Error al eliminar miembro');
+    throw new Error(
+      error instanceof Error ? error.message : 'Error al eliminar miembro'
+    );
   }
 };
 
@@ -161,7 +182,9 @@ const deactivateExistingMember = async (id: string): Promise<Member> => {
     const member = await deactivateMember(id);
     return member;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Error al desactivar miembro');
+    throw new Error(
+      error instanceof Error ? error.message : 'Error al desactivar miembro'
+    );
   }
 };
 
@@ -201,7 +224,7 @@ export const useChurchChangeListener = () => {
 export const useAllMembers = (options?: MembersQueryOptions) => {
   // Escuchar cambios de church
   useChurchChangeListener();
-  
+
   return useQuery({
     queryKey: ['members', 'all', options],
     queryFn: () => fetchAllMembers(options),
@@ -214,7 +237,7 @@ export const useAllMembers = (options?: MembersQueryOptions) => {
 export const useMembers = () => {
   // Escuchar cambios de church
   useChurchChangeListener();
-  
+
   return useQuery({
     queryKey: ['members'],
     queryFn: fetchMembers,
@@ -227,7 +250,7 @@ export const useMembers = () => {
 export const useMember = (id: string) => {
   // Escuchar cambios de church
   useChurchChangeListener();
-  
+
   return useQuery({
     queryKey: ['member', id],
     queryFn: () => fetchMember(id),
@@ -241,7 +264,7 @@ export const useMember = (id: string) => {
 export const useMemberStats = () => {
   // Escuchar cambios de church
   useChurchChangeListener();
-  
+
   return useQuery({
     queryKey: ['members', 'stats'],
     queryFn: fetchMemberStats,
@@ -327,7 +350,10 @@ export const useDeactivateMember = () => {
     mutationFn: deactivateExistingMember,
     onSuccess: (deactivatedMember) => {
       // Update the individual member cache
-      queryClient.setQueryData(['member', deactivatedMember.id], deactivatedMember);
+      queryClient.setQueryData(
+        ['member', deactivatedMember.id],
+        deactivatedMember
+      );
 
       // Invalidate and refetch member-related queries
       queryClient.invalidateQueries({ queryKey: ['members'] });
@@ -362,9 +388,9 @@ export const usePrefetchMember = () => {
 };
 
 // Export types for use in components
-export type { 
-  MemberResponse, 
-  MembersResponse, 
-  MembersQueryOptions, 
-  MemberStats 
+export type {
+  MemberResponse,
+  MembersResponse,
+  MembersQueryOptions,
+  MemberStats,
 };

@@ -1,12 +1,6 @@
 // Import Prisma-generated types - single source of truth
-import {
-  Churches,
-  Members,
-  Ministries,
-  MemberMinistry,
-  MemberRole,
-  Gender,
-} from "@/generated/prisma/client";
+import { Churches, Members, Ministries, MemberMinistry } from "@/generated/prisma/browser";
+import { MemberRole, Gender } from "@/generated/prisma/enums";
 
 // Use Prisma-generated types directly
 export type MockChurch = Churches;
