@@ -13,7 +13,8 @@ import {
 import { useMember, useUpdateMember } from "@/app/members/hooks/useMembers";
 import { MemberFormInput } from "@/app/members/schema/members.schema";
 import { MemberFormData } from "@/app/members/types/member";
-import { MemberRole, Gender, MemberMinistry, Ministries } from "@prisma/client";
+import { MemberRole, Gender } from "@/generated/prisma/enums";
+import { MemberMinistry, Ministries } from "@/generated/prisma/browser";
 import { useNotificationStore } from "@/store/NotificationStore";
 
 type FormValues = MemberFormInput;

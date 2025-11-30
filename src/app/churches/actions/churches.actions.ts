@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import type { Churches } from "@prisma/client";
+import type { Churches } from "@/generated/prisma/client";
 
 export type Church = Churches;
 

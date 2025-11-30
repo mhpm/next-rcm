@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { Churches } from '@prisma/client';
+import type { Churches } from '@/generated/prisma/browser';
 
 // Tipo Church para el estado de Redux con fechas serializables
 export type Church = Omit<Churches, 'createdAt' | 'updatedAt'> & {
@@ -28,8 +28,14 @@ const churchSlice = createSlice({
       // Convertir fechas a strings si son objetos Date
       state.currentChurch = {
         ...church,
-        createdAt: typeof church.createdAt === 'string' ? church.createdAt : church.createdAt.toISOString(),
-        updatedAt: typeof church.updatedAt === 'string' ? church.updatedAt : church.updatedAt.toISOString(),
+        createdAt:
+          typeof church.createdAt === 'string'
+            ? church.createdAt
+            : church.createdAt.toISOString(),
+        updatedAt:
+          typeof church.updatedAt === 'string'
+            ? church.updatedAt
+            : church.updatedAt.toISOString(),
       };
       state.error = null;
     },
@@ -48,7 +54,10 @@ const churchSlice = createSlice({
       state.error = null;
     },
     // Acción para inicializar desde headers/cookies
-    initializeChurch: (state, action: PayloadAction<{ churchSlug?: string }>) => {
+    initializeChurch: (
+      state,
+      action: PayloadAction<{ churchSlug?: string }>
+    ) => {
       const { churchSlug } = action.payload;
       if (churchSlug) {
         // En un caso real, aquí harías una llamada a la API para obtener los datos completos

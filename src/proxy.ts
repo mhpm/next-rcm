@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getChurchSlugFromHost, isValidChurchSlug } from "@/lib/database";
+import { getChurchSlugFromHost, isValidChurchSlug } from "@/lib/church-context";
 
 // Proxy function to handle multi-church routing and headers
 export function proxy(request: NextRequest) {

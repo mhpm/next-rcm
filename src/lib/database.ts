@@ -1,20 +1,22 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '../../generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { getChurchSlugFromHost, isValidChurchSlug } from './church-context';
 
 // Cache for database connections
 const databaseConnections = new Map<string, PrismaClient>();
 
 // Get database URL for a specific church
 function getDatabaseUrl(churchSlug: string): string {
-  console.log("🚀 ~ getDatabaseUrl ~ getDatabaseUrl:", getDatabaseUrl);
+  console.log('🚀 ~ getDatabaseUrl ~ getDatabaseUrl:', getDatabaseUrl);
   // In production, this would come from environment variables or a configuration service
   // For now, we'll use a pattern-based approach
   const baseUrl =
-    process.env.DATABASE_URL || "postgresql://user:password@localhost:5432";
-  console.log("DATABASE_URL: ", process.env.DATABASE_URL);
+    process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432';
+  console.log('DATABASE_URL: ', process.env.DATABASE_URL);
 
   // Extract the base URL without the database name
-  const urlParts = baseUrl.split("/");
-  const baseWithoutDb = urlParts.slice(0, -1).join("/");
+  const urlParts = baseUrl.split('/');
+  const baseWithoutDb = urlParts.slice(0, -1).join('/');
 
   // Create church-specific database URL
   return `${baseWithoutDb}/${churchSlug}_church_db`;
@@ -30,16 +32,13 @@ export function getDatabaseConnection(churchSlug: string): PrismaClient {
   // Create new connection for this church
   const databaseUrl = getDatabaseUrl(churchSlug);
 
+  const adapter = new PrismaPg({ connectionString: databaseUrl });
   const prisma = new PrismaClient({
-    datasources: {
-      db: {
-        url: databaseUrl,
-      },
-    },
+    adapter,
     log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "error", "warn"]
-        : ["error"],
+      process.env.NODE_ENV === 'development'
+        ? ['query', 'error', 'warn']
+        : ['error'],
   });
 
   // Cache the connection
@@ -69,42 +68,7 @@ export async function closeAllDatabaseConnections(): Promise<void> {
   databaseConnections.clear();
 }
 
-// Get church slug from subdomain or domain
-export function getChurchSlugFromHost(host: string): string {
-  // Remove port if present
-  const cleanHost = host.split(":")[0];
-
-  // Handle different patterns:
-  // 1. Subdomain: church1.myapp.com -> church1
-  // 2. Custom domain: church1.org -> church1
-  // 3. Localhost with query param or path-based routing
-
-  if (cleanHost.includes(".")) {
-    const parts = cleanHost.split(".");
-
-    // If it's a subdomain of our main domain
-    if (
-      parts.length >= 3 &&
-      (parts[1] === "myapp" || parts[1] === "churchapp")
-    ) {
-      return parts[0];
-    }
-
-    // If it's a custom domain, use the first part
-    return parts[0];
-  }
-
-  // For localhost or IP addresses, we'll need to handle this differently
-  // This could be done via path parameters or query strings
-  return "default";
-}
-
-// Validate church slug format
-export function isValidChurchSlug(slug: string): boolean {
-  // Church slug should be alphanumeric with hyphens, 3-50 characters
-  const slugRegex = /^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$/;
-  return slugRegex.test(slug);
-}
+// getChurchSlugFromHost and isValidChurchSlug are imported from edge-safe module
 
 // Initialize database for a new church (creates tables if they don't exist)
 export async function initializeChurchDatabase(
