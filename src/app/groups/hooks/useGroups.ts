@@ -5,6 +5,7 @@ import {
   deleteGroup,
   getGroupHierarchy,
   updateGroup,
+  getGroupsList,
 } from '../actions/groups.actions';
 import type { GroupFormData, GroupsQueryOptions } from '../types/groups';
 
@@ -33,6 +34,14 @@ export const useCreateGroup = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['groups'] });
     },
+  });
+};
+
+export const useGroupsList = (excludeId?: string) => {
+  return useQuery({
+    queryKey: ['groups', 'list', excludeId ?? 'none'],
+    queryFn: () => getGroupsList(excludeId),
+    staleTime: 5 * 60 * 1000,
   });
 };
 

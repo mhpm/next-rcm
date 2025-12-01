@@ -1,14 +1,15 @@
 'use client';
 
 import { Modal } from '@/components/Modal/Modal';
-import { InputField } from '@/components/FormControls';
+import { InputField, SelectField } from '@/components/FormControls';
 import MemberSearchField from '@/components/FormControls/MemberSearchField';
-import AutocompleteField from '@/components/FormControls/AutocompleteField';
+// AutocompleteField reemplazado por SelectField para seleccionar un solo grupo
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { groupCreateSchema } from '../schema/groups.schema';
 import type { GroupCreateSchema } from '../schema/groups.schema';
-import { useCreateGroup } from '../hooks/useGroups';
+import { useCreateGroup, useGroupsList } from '../hooks/useGroups';
+import React from 'react';
 import { useNotificationStore } from '@/store/NotificationStore';
 import { searchGroups, getGroupById } from '../actions/groups.actions';
 
@@ -17,6 +18,9 @@ type CreateGroupModalProps = {
   onClose: () => void;
   onCreated?: () => void;
   initialParentId?: string;
+  initialParentName?: string;
+  showParentField?: boolean;
+  parentReadonly?: boolean;
 };
 
 export default function CreateGroupModal({
@@ -24,6 +28,9 @@ export default function CreateGroupModal({
   onClose,
   onCreated,
   initialParentId,
+  initialParentName,
+  showParentField = true,
+  parentReadonly = false,
 }: CreateGroupModalProps) {
   const createMutation = useCreateGroup();
   const { showSuccess, showError } = useNotificationStore();
@@ -40,6 +47,22 @@ export default function CreateGroupModal({
     defaultValues: { name: '', leaderId: '', parentId: initialParentId || '' },
     mode: 'onChange',
   });
+
+  const { data: groupsList } = useGroupsList();
+  const [fieldResetKey, setFieldResetKey] = React.useState(0);
+
+  React.useEffect(() => {
+    if (parentReadonly && initialParentId) {
+      setValue('parentId', initialParentId);
+    }
+  }, [parentReadonly, initialParentId, setValue]);
+
+  React.useEffect(() => {
+    if (open) {
+      reset({ name: '', leaderId: '', parentId: initialParentId || '' });
+      setFieldResetKey((k) => k + 1);
+    }
+  }, [open, initialParentId, reset]);
 
   return (
     <Modal
@@ -81,6 +104,7 @@ export default function CreateGroupModal({
           />
 
           <MemberSearchField<GroupCreateSchema>
+            key={`leader-${fieldResetKey}`}
             name="leaderId"
             label="Líder (opcional)"
             register={register}
@@ -89,23 +113,32 @@ export default function CreateGroupModal({
             error={errors.leaderId?.message as string}
           />
 
-          <AutocompleteField<GroupCreateSchema, { id: string; name: string }>
-            name="parentId"
-            label="Grupo padre (opcional)"
-            placeholder="Buscar grupos por nombre..."
-            register={register}
-            setValue={setValue}
-            watch={watch}
-            error={errors.parentId?.message}
-            minChars={2}
-            search={async (term) => searchGroups(term)}
-            resolveById={async (id) => {
-              const g = await getGroupById(id);
-              return g ? { id: g.id, name: g.name } : null;
-            }}
-            getItemId={(g) => g.id}
-            getItemLabel={(g) => g.name}
-          />
+          {showParentField && (
+            <SelectField<GroupCreateSchema>
+              name="parentId"
+              label="Grupo padre"
+              register={register}
+              defaultValue={initialParentId || ''}
+              error={errors.parentId?.message}
+              disabled={parentReadonly}
+              options={
+                parentReadonly && initialParentId
+                  ? [
+                      {
+                        value: initialParentId,
+                        label: initialParentName || 'Grupo padre seleccionado',
+                      },
+                    ]
+                  : [
+                      { value: '', label: 'Sin grupo padre' },
+                      ...(groupsList || []).map((g) => ({
+                        value: g.id,
+                        label: g.name,
+                      })),
+                    ]
+              }
+            />
+          )}
         </div>
 
         <div className="flex justify-end gap-2 mt-8">

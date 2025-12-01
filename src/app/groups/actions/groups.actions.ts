@@ -65,6 +65,19 @@ export async function searchGroups(term: string) {
   return groups;
 }
 
+export async function getGroupsList(excludeId?: string) {
+  const prisma = await getChurchPrisma();
+  const churchId = await getChurchId();
+  const where: Prisma.GroupsWhereInput = { church_id: churchId };
+  if (excludeId) where.id = { not: excludeId };
+  const groups = await prisma.groups.findMany({
+    where,
+    orderBy: { name: 'asc' },
+    select: { id: true, name: true },
+  });
+  return groups;
+}
+
 export async function getGroupById(id: string) {
   const prisma = await getChurchPrisma();
   const group = await prisma.groups.findUnique({

@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { Modal } from "@/components/Modal/Modal";
-import { InputField } from "@/components/FormControls";
-import MemberSearchField from "@/components/FormControls/MemberSearchField";
-import AutocompleteField from "@/components/FormControls/AutocompleteField";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useUpdateGroup } from "../hooks/useGroups";
-import { useNotificationStore } from "@/store/NotificationStore";
-import { searchGroups, getGroupById } from "../actions/groups.actions";
+import { Modal } from '@/components/Modal/Modal';
+import { InputField } from '@/components/FormControls';
+import MemberSearchField from '@/components/FormControls/MemberSearchField';
+import { SelectField } from '@/components/FormControls/SelectField';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useUpdateGroup, useGroupsList } from '../hooks/useGroups';
+import { useNotificationStore } from '@/store/NotificationStore';
+import { searchGroups, getGroupById } from '../actions/groups.actions';
 
 const schema = z.object({
-  name: z.string().min(1, "El nombre es requerido"),
-  leaderId: z.string().optional().or(z.literal("")),
-  parentId: z.string().optional().or(z.literal("")),
+  name: z.string().min(1, 'El nombre es requerido'),
+  leaderId: z.string().optional().or(z.literal('')),
+  parentId: z.string().optional().or(z.literal('')),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -22,27 +22,58 @@ type FormValues = z.infer<typeof schema>;
 type EditGroupModalProps = {
   open: boolean;
   onClose: () => void;
-  group: { id: string; name: string; leaderId?: string | null; parentId?: string | null } | null;
+  group: {
+    id: string;
+    name: string;
+    leaderId?: string | null;
+    parentId?: string | null;
+  } | null;
   onUpdated?: () => void;
 };
 
-export default function EditGroupModal({ open, onClose, group, onUpdated }: EditGroupModalProps) {
+export default function EditGroupModal({
+  open,
+  onClose,
+  group,
+  onUpdated,
+}: EditGroupModalProps) {
   const updateMutation = useUpdateGroup();
   const { showSuccess, showError } = useNotificationStore();
 
-  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormValues>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: group?.name || "", leaderId: group?.leaderId || "", parentId: group?.parentId || "" },
-    mode: "onChange",
-    values: { name: group?.name || "", leaderId: group?.leaderId || "", parentId: group?.parentId || "" },
+    defaultValues: {
+      name: group?.name || '',
+      leaderId: group?.leaderId || '',
+      parentId: group?.parentId || '',
+    },
+    mode: 'onChange',
+    values: {
+      name: group?.name || '',
+      leaderId: group?.leaderId || '',
+      parentId: group?.parentId || '',
+    },
   });
+
+  const { data: groupsList } = useGroupsList(group?.id);
 
   return (
     <Modal
       open={open}
       onClose={() => {
         onClose();
-        reset({ name: group?.name || "", leaderId: group?.leaderId || "", parentId: group?.parentId || "" });
+        reset({
+          name: group?.name || '',
+          leaderId: group?.leaderId || '',
+          parentId: group?.parentId || '',
+        });
       }}
       title="Editar Grupo"
     >
@@ -51,12 +82,20 @@ export default function EditGroupModal({ open, onClose, group, onUpdated }: Edit
         onSubmit={handleSubmit(async (form) => {
           if (!group) return;
           try {
-            await updateMutation.mutateAsync({ id: group.id, data: { name: form.name, leaderId: form.leaderId || undefined, parentId: form.parentId || undefined } });
-            showSuccess("Grupo actualizado");
+            await updateMutation.mutateAsync({
+              id: group.id,
+              data: {
+                name: form.name,
+                leaderId: form.leaderId || undefined,
+                parentId: form.parentId || undefined,
+              },
+            });
+            showSuccess('Grupo actualizado');
             onClose();
             onUpdated?.();
           } catch (e) {
-            const message = e instanceof Error ? e.message : "Error al actualizar el grupo";
+            const message =
+              e instanceof Error ? e.message : 'Error al actualizar el grupo';
             showError(message);
           }
         })}
@@ -67,7 +106,7 @@ export default function EditGroupModal({ open, onClose, group, onUpdated }: Edit
             name="name"
             label="Nombre del Grupo"
             register={register}
-            rules={{ required: "El nombre es requerido" }}
+            rules={{ required: 'El nombre es requerido' }}
             error={errors.name?.message}
           />
 
@@ -80,29 +119,41 @@ export default function EditGroupModal({ open, onClose, group, onUpdated }: Edit
             error={errors.leaderId?.message as string}
           />
 
-          <AutocompleteField<FormValues, { id: string; name: string }>
+          <SelectField<FormValues>
             name="parentId"
             label="Grupo padre"
-            placeholder="Buscar grupos por nombre..."
             register={register}
-            setValue={setValue}
-            watch={watch}
+            defaultValue={group?.parentId || ''}
             error={errors.parentId?.message}
-            minChars={2}
-            search={async (term) => searchGroups(term)}
-            resolveById={async (id) => {
-              const g = await getGroupById(id);
-              return g ? { id: g.id, name: g.name } : null;
-            }}
-            getItemId={(g) => g.id}
-            getItemLabel={(g) => g.name}
+            options={[
+              { value: '', label: 'Sin grupo padre' },
+              ...(groupsList || []).map((g) => ({
+                value: g.id,
+                label: g.name,
+              })),
+            ]}
           />
         </div>
 
         <div className="flex justify-end gap-2 mt-8">
-          <button type="button" className="btn btn-ghost" onClick={() => onClose()} disabled={updateMutation.isPending}>Cancelar</button>
-          <button type="submit" className="btn btn-primary" disabled={updateMutation.isPending}>
-            {updateMutation.isPending ? <span className="loading loading-spinner loading-sm"></span> : "Guardar"}
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => onClose()}
+            disabled={updateMutation.isPending}
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={updateMutation.isPending}
+          >
+            {updateMutation.isPending ? (
+              <span className="loading loading-spinner loading-sm"></span>
+            ) : (
+              'Guardar'
+            )}
           </button>
         </div>
       </form>

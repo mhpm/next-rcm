@@ -36,6 +36,7 @@ export interface GroupNode {
   leaderName?: string;
   leaderId?: string | null;
   memberCount: number;
+  subgroupCount: number;
   fields: GroupFieldItem[];
   children: GroupNode[];
 }
