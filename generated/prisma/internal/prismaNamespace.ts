@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.0.0
- * Query Engine version: 0c19ccc313cf9911a90d99d2ac2eb0280c76c513
+ * Prisma Client JS version: 7.0.1
+ * Query Engine version: f09f2815f091dbba658cdcd2264306d88bb5bda6
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.0.0",
-  engine: "0c19ccc313cf9911a90d99d2ac2eb0280c76c513"
+  client: "7.0.1",
+  engine: "f09f2815f091dbba658cdcd2264306d88bb5bda6"
 }
 
 /**
@@ -389,6 +389,8 @@ export const ModelName = {
   Ministries: 'Ministries',
   Cells: 'Cells',
   Sectors: 'Sectors',
+  Groups: 'Groups',
+  GroupFields: 'GroupFields',
   MemberMinistry: 'MemberMinistry'
 } as const
 
@@ -405,7 +407,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "churches" | "members" | "ministries" | "cells" | "sectors" | "memberMinistry"
+    modelProps: "churches" | "members" | "ministries" | "cells" | "sectors" | "groups" | "groupFields" | "memberMinistry"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -779,6 +781,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Groups: {
+      payload: Prisma.$GroupsPayload<ExtArgs>
+      fields: Prisma.GroupsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.GroupsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.GroupsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupsPayload>
+        }
+        findFirst: {
+          args: Prisma.GroupsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.GroupsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupsPayload>
+        }
+        findMany: {
+          args: Prisma.GroupsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupsPayload>[]
+        }
+        create: {
+          args: Prisma.GroupsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupsPayload>
+        }
+        createMany: {
+          args: Prisma.GroupsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.GroupsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupsPayload>[]
+        }
+        delete: {
+          args: Prisma.GroupsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupsPayload>
+        }
+        update: {
+          args: Prisma.GroupsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupsPayload>
+        }
+        deleteMany: {
+          args: Prisma.GroupsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.GroupsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.GroupsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupsPayload>[]
+        }
+        upsert: {
+          args: Prisma.GroupsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupsPayload>
+        }
+        aggregate: {
+          args: Prisma.GroupsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateGroups>
+        }
+        groupBy: {
+          args: Prisma.GroupsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GroupsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.GroupsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GroupsCountAggregateOutputType> | number
+        }
+      }
+    }
+    GroupFields: {
+      payload: Prisma.$GroupFieldsPayload<ExtArgs>
+      fields: Prisma.GroupFieldsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.GroupFieldsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupFieldsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.GroupFieldsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupFieldsPayload>
+        }
+        findFirst: {
+          args: Prisma.GroupFieldsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupFieldsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.GroupFieldsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupFieldsPayload>
+        }
+        findMany: {
+          args: Prisma.GroupFieldsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupFieldsPayload>[]
+        }
+        create: {
+          args: Prisma.GroupFieldsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupFieldsPayload>
+        }
+        createMany: {
+          args: Prisma.GroupFieldsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.GroupFieldsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupFieldsPayload>[]
+        }
+        delete: {
+          args: Prisma.GroupFieldsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupFieldsPayload>
+        }
+        update: {
+          args: Prisma.GroupFieldsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupFieldsPayload>
+        }
+        deleteMany: {
+          args: Prisma.GroupFieldsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.GroupFieldsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.GroupFieldsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupFieldsPayload>[]
+        }
+        upsert: {
+          args: Prisma.GroupFieldsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupFieldsPayload>
+        }
+        aggregate: {
+          args: Prisma.GroupFieldsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateGroupFields>
+        }
+        groupBy: {
+          args: Prisma.GroupFieldsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GroupFieldsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.GroupFieldsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GroupFieldsCountAggregateOutputType> | number
+        }
+      }
+    }
     MemberMinistry: {
       payload: Prisma.$MemberMinistryPayload<ExtArgs>
       fields: Prisma.MemberMinistryFieldRefs
@@ -971,6 +1121,34 @@ export const SectorsScalarFieldEnum = {
 export type SectorsScalarFieldEnum = (typeof SectorsScalarFieldEnum)[keyof typeof SectorsScalarFieldEnum]
 
 
+export const GroupsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  leader_id: 'leader_id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  church_id: 'church_id',
+  parent_id: 'parent_id'
+} as const
+
+export type GroupsScalarFieldEnum = (typeof GroupsScalarFieldEnum)[keyof typeof GroupsScalarFieldEnum]
+
+
+export const GroupFieldsScalarFieldEnum = {
+  id: 'id',
+  group_id: 'group_id',
+  key: 'key',
+  label: 'label',
+  type: 'type',
+  value: 'value',
+  required: 'required',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GroupFieldsScalarFieldEnum = (typeof GroupFieldsScalarFieldEnum)[keyof typeof GroupFieldsScalarFieldEnum]
+
+
 export const MemberMinistryScalarFieldEnum = {
   id: 'id',
   memberId: 'memberId',
@@ -991,6 +1169,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -1005,6 +1191,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -1080,6 +1275,41 @@ export type EnumGenderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
  * Reference to a field of type 'Gender[]'
  */
 export type ListEnumGenderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Gender[]'>
+    
+
+
+/**
+ * Reference to a field of type 'GroupFieldType'
+ */
+export type EnumGroupFieldTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GroupFieldType'>
+    
+
+
+/**
+ * Reference to a field of type 'GroupFieldType[]'
+ */
+export type ListEnumGroupFieldTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GroupFieldType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -1180,6 +1410,8 @@ export type GlobalOmitConfig = {
   ministries?: Prisma.MinistriesOmit
   cells?: Prisma.CellsOmit
   sectors?: Prisma.SectorsOmit
+  groups?: Prisma.GroupsOmit
+  groupFields?: Prisma.GroupFieldsOmit
   memberMinistry?: Prisma.MemberMinistryOmit
 }
 

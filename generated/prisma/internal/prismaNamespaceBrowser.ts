@@ -56,6 +56,8 @@ export const ModelName = {
   Ministries: 'Ministries',
   Cells: 'Cells',
   Sectors: 'Sectors',
+  Groups: 'Groups',
+  GroupFields: 'GroupFields',
   MemberMinistry: 'MemberMinistry'
 } as const
 
@@ -154,6 +156,34 @@ export const SectorsScalarFieldEnum = {
 export type SectorsScalarFieldEnum = (typeof SectorsScalarFieldEnum)[keyof typeof SectorsScalarFieldEnum]
 
 
+export const GroupsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  leader_id: 'leader_id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  church_id: 'church_id',
+  parent_id: 'parent_id'
+} as const
+
+export type GroupsScalarFieldEnum = (typeof GroupsScalarFieldEnum)[keyof typeof GroupsScalarFieldEnum]
+
+
+export const GroupFieldsScalarFieldEnum = {
+  id: 'id',
+  group_id: 'group_id',
+  key: 'key',
+  label: 'label',
+  type: 'type',
+  value: 'value',
+  required: 'required',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GroupFieldsScalarFieldEnum = (typeof GroupFieldsScalarFieldEnum)[keyof typeof GroupFieldsScalarFieldEnum]
+
+
 export const MemberMinistryScalarFieldEnum = {
   id: 'id',
   memberId: 'memberId',
@@ -174,6 +204,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: 'DbNull',
+  JsonNull: 'JsonNull'
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -188,4 +226,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: 'DbNull',
+  JsonNull: 'JsonNull',
+  AnyNull: 'AnyNull'
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

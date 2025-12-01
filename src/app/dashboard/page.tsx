@@ -12,6 +12,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { getMemberStats } from "@/app/members/actions/members.actions";
 import { getMinistryStats } from "@/app/ministries/actions/ministries.actions";
 import { getCellStats } from "@/app/cells/actions/cells.actions";
+import { getGroupStats } from "@/app/groups/actions/groups.actions";
 
 export default async function Dashboard() {
   // Shell se prerendera; contenido dinámico se manejará en límites de Suspense
@@ -104,6 +105,35 @@ export default async function Dashboard() {
     );
   }
 
+  async function GroupsCard() {
+    "use cache";
+
+    cacheLife({ stale: 600, revalidate: 1800, expire: 86400 });
+    cacheTag("groups");
+    const stats = await getGroupStats();
+    const totalGroups = String(stats?.total ?? 0);
+    const extraGroupStats = [
+      { label: "Grupos padres:", value: String(stats?.parents ?? 0) },
+      { label: "Subgrupos:", value: String(stats?.subgroups ?? 0) },
+      { label: "Miembros en grupos:", value: String(stats?.membersInGroups ?? 0) },
+      { label: "Miembros sin grupo:", value: String(stats?.membersWithoutGroup ?? 0) },
+    ];
+    return (
+      <Link href="/groups" className="cursor-pointer">
+        <StatCard
+          title="Grupos"
+          value={totalGroups}
+          change="12.1%"
+          changeType="increase"
+          period="vs. último cuatrimestre"
+          icon={<FaUsers size={24} />}
+          extraStats={extraGroupStats}
+          isLoading={false}
+        />
+      </Link>
+    );
+  }
+
   return (
     <div className="space-y-6 p-8">
       <div className="flex justify-between items-center mb-6">
@@ -149,6 +179,19 @@ export default async function Dashboard() {
           }
         >
           <MembersCard />
+        </Suspense>
+        <Suspense
+          fallback={
+            <div className="card bg-base-100 shadow-md">
+              <div className="stats">
+                <div className="stat">
+                  <span className="skeleton h-8 w-24"></span>
+                </div>
+              </div>
+            </div>
+          }
+        >
+          <GroupsCard />
         </Suspense>
         <Link href="/sectors" className="cursor-pointer">
           <StatCard

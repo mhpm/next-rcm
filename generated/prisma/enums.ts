@@ -9,6 +9,17 @@
 * 🟢 You can import this file directly.
 */
 
+export const GroupFieldType = {
+  TEXT: 'TEXT',
+  NUMBER: 'NUMBER',
+  BOOLEAN: 'BOOLEAN',
+  DATE: 'DATE',
+  JSON: 'JSON'
+} as const
+
+export type GroupFieldType = (typeof GroupFieldType)[keyof typeof GroupFieldType]
+
+
 export const MemberRole = {
   MIEMBRO: 'MIEMBRO',
   SUPERVISOR: 'SUPERVISOR',

@@ -43,6 +43,16 @@ export type Cells = Prisma.CellsModel
  */
 export type Sectors = Prisma.SectorsModel
 /**
+ * Model Groups
+ * 
+ */
+export type Groups = Prisma.GroupsModel
+/**
+ * Model GroupFields
+ * 
+ */
+export type GroupFields = Prisma.GroupFieldsModel
+/**
  * Model MemberMinistry
  * 
  */

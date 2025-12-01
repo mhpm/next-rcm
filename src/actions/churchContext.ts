@@ -1,5 +1,5 @@
-import prisma from "@/lib/prisma";
-import { Prisma } from "@/generated/prisma/client";
+import prisma from '@/lib/prisma';
+import { Prisma } from '@/generated/prisma/client';
 
 // Tipos para operaciones de creación
 type MemberCreateManyData = Prisma.MembersCreateManyInput;
@@ -155,14 +155,18 @@ export function createChurchPrisma(churchId: string) {
         },
         async createMany({ args, query }) {
           if (Array.isArray(args.data)) {
-            args.data = args.data.map((item: Prisma.SectorsCreateManyInput) => ({
-              ...item,
-              church_id: item.church_id || churchId,
-            }));
+            args.data = args.data.map(
+              (item: Prisma.SectorsCreateManyInput) => ({
+                ...item,
+                church_id: item.church_id || churchId,
+              })
+            );
           } else {
             args.data = {
               ...args.data,
-              church_id: (args.data as Prisma.SectorsCreateManyInput).church_id || churchId,
+              church_id:
+                (args.data as Prisma.SectorsCreateManyInput).church_id ||
+                churchId,
             };
           }
           return query(args);
@@ -216,7 +220,65 @@ export function createChurchPrisma(churchId: string) {
           } else {
             args.data = {
               ...args.data,
-              church_id: (args.data as Prisma.CellsCreateManyInput).church_id || churchId,
+              church_id:
+                (args.data as Prisma.CellsCreateManyInput).church_id ||
+                churchId,
+            };
+          }
+          return query(args);
+        },
+        async update({ args, query }) {
+          return query(args);
+        },
+        async updateMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async delete({ args, query }) {
+          return query(args);
+        },
+        async deleteMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+      },
+      groups: {
+        async findMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async findFirst({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async findUnique({ args, query }) {
+          return query(args);
+        },
+        async count({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async create({ args, query }) {
+          const data = args.data as Prisma.GroupsCreateInput;
+          if (!data.church) {
+            (args.data as Prisma.GroupsCreateInput).church = {
+              connect: { id: churchId },
+            };
+          }
+          return query(args);
+        },
+        async createMany({ args, query }) {
+          if (Array.isArray(args.data)) {
+            args.data = args.data.map((item: Prisma.GroupsCreateManyInput) => ({
+              ...item,
+              church_id: item.church_id || churchId,
+            }));
+          } else {
+            args.data = {
+              ...args.data,
+              church_id:
+                (args.data as Prisma.GroupsCreateManyInput).church_id ||
+                churchId,
             };
           }
           return query(args);
@@ -323,7 +385,7 @@ export async function getChurchSlugFromAuth(): Promise<string | null> {
   // Ejemplo a futuro:
   // const session = await auth();
   // return session?.user?.churchSlug ?? null;
-  return "demo";
+  return 'demo';
 }
 
 /**
@@ -344,9 +406,9 @@ export async function getChurchSlugFromAuth(): Promise<string | null> {
  * Por ahora, siempre retorna "demo" hasta que exista login.
  */
 export async function getChurchSlugFromSources(): Promise<string> {
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     throw new Error(
-      "getChurchSlugFromSources should only be called on the server"
+      'getChurchSlugFromSources should only be called on the server'
     );
   }
 
@@ -359,11 +421,11 @@ export async function getChurchSlugFromSources(): Promise<string> {
 
     // 3. Default final solo si todo lo demás falla
     console.log("[getChurchSlug] No slug found, using default 'demo'");
-    return "demo";
+    return 'demo';
   } catch (error) {
-    console.error("Error getting church slug from sources", error);
+    console.error('Error getting church slug from sources', error);
     // Default de seguridad
-    return "demo";
+    return 'demo';
   }
 }
 
@@ -377,7 +439,7 @@ export async function getChurchId(): Promise<string> {
     try {
       await prisma.$connect();
     } catch (e) {
-      console.warn("Prisma connect warning:", e);
+      console.warn('Prisma connect warning:', e);
     }
 
     const churchSlug = await getChurchSlugFromSources();
@@ -398,8 +460,8 @@ export async function getChurchId(): Promise<string> {
 
     return church.id;
   } catch (error) {
-    console.error("Error getting church ID:", error);
-    throw new Error("Failed to get church context");
+    console.error('Error getting church ID:', error);
+    throw new Error('Failed to get church context');
   }
 }
 

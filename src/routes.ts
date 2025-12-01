@@ -3,6 +3,7 @@ export const ROUTES = {
   HOME: "/",
   DASHBOARD: "/dashboard",
   MEMBERS: "/members",
+  GROUPS: "/groups",
   CELLS: "/cells",
   SECTORS: "/sectors",
   SUBSECTORS: "/subsectors",
