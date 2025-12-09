@@ -183,6 +183,8 @@ model Reports {
   id        String       @id @default(cuid())
   church_id String
   scope     ReportScope  @default(CELL)
+  title     String
+  description String?
   cell_id   String?
   group_id  String?
   sector_id String?

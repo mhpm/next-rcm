@@ -1303,6 +1303,8 @@ export const ReportsScalarFieldEnum = {
   id: 'id',
   church_id: 'church_id',
   scope: 'scope',
+  title: 'title',
+  description: 'description',
   cell_id: 'cell_id',
   group_id: 'group_id',
   sector_id: 'sector_id',
