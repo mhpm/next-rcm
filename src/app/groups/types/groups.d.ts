@@ -1,15 +1,25 @@
+import { GroupFieldType } from "@/generated/prisma/client";
+
 export interface GroupsQueryOptions {
   limit?: number;
   offset?: number;
   search?: string;
-  orderBy?: 'name' | 'createdAt';
-  orderDirection?: 'asc' | 'desc';
+  orderBy?: "name" | "createdAt";
+  orderDirection?: "asc" | "desc";
+}
+
+export interface GroupFieldItem {
+  key: string;
+  label?: string | null;
+  type: GroupFieldType;
+  value?: unknown;
 }
 
 export interface GroupFormData {
   name: string;
   leaderId?: string | null;
   parentId?: string | null;
+  fields?: GroupFieldItem[];
 }
 
 export interface GroupTableData {
@@ -21,13 +31,6 @@ export interface GroupTableData {
   createdAt: string;
   updatedAt: string;
   [key: string]: unknown;
-}
-
-export interface GroupFieldItem {
-  key: string;
-  label?: string | null;
-  type: string;
-  value?: unknown;
 }
 
 export interface GroupNode {

@@ -1,20 +1,19 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useGroupHierarchy, useDeleteGroup } from '../hooks/useGroups';
-import type { GroupNode } from '../types/groups';
-import CreateGroupModal from './CreateGroupModal';
-import EditGroupModal from './EditGroupModal';
-import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
-import { useNotificationStore } from '@/store/NotificationStore';
+import React from "react";
+import { useGroupHierarchy, useDeleteGroup } from "../hooks/useGroups";
+import type { GroupNode } from "../types/groups";
+import CreateGroupModal from "./CreateGroupModal";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
+import { useNotificationStore } from "@/store/NotificationStore";
 import {
   RiAddLine,
   RiEdit2Fill,
   RiDeleteBinLine,
   RiUserAddLine,
   RiArrowDownSLine,
-} from 'react-icons/ri';
-import { useRouter } from 'next/navigation';
+} from "react-icons/ri";
+import { useRouter } from "next/navigation";
 
 function toNodes(data: any[]): GroupNode[] {
   return (data || []).map((g) => ({
@@ -22,11 +21,11 @@ function toNodes(data: any[]): GroupNode[] {
     name: g.name,
     leaderName: g.leader
       ? `${g.leader.firstName} ${g.leader.lastName}`
-      : 'Sin líder',
+      : "Sin líder",
     leaderId: g.leader?.id ?? null,
     memberCount: g._count?.members ?? 0,
     subgroupCount:
-      g._count && typeof g._count.subgroups === 'number'
+      g._count && typeof g._count.subgroups === "number"
         ? g._count.subgroups
         : Array.isArray(g.subgroups)
         ? g.subgroups.length
@@ -57,13 +56,7 @@ export default function GroupHierarchy() {
   const [createParentName, setCreateParentName] = React.useState<
     string | undefined
   >(undefined);
-  const [editOpen, setEditOpen] = React.useState(false);
-  const [editGroup, setEditGroup] = React.useState<{
-    id: string;
-    name: string;
-    leaderId?: string | null;
-    parentId?: string | null;
-  } | null>(null);
+
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [deleteTarget, setDeleteTarget] = React.useState<{
     id: string;
@@ -84,15 +77,15 @@ export default function GroupHierarchy() {
 
   return (
     <div className="bg-base-300 rounded-lg overflow-hidden shadow-md">
-      <div className="p-4 sm:p-6 border-b border-base-300 flex items-center justify-between">
+      <div className="p-4 sm:p-6 border-b border-base-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold">Vista jerárquica</h3>
+          <h3 className="text-lg font-semibold">Grupos</h3>
           <p className="text-sm text-base-content/70 mt-1">
-            Explora los grupos padres y sus hijos
+            Explora y gestiona los grupos de tu iglesia
           </p>
         </div>
         <button
-          className="btn btn-primary btn-sm"
+          className="btn btn-primary btn-sm w-full sm:w-auto"
           onClick={() => {
             setCreateParentId(undefined);
             setCreateShowParentField(false);
@@ -127,8 +120,7 @@ export default function GroupHierarchy() {
                 setCreateOpen(true);
               }}
               onEdit={(g) => {
-                setEditGroup(g);
-                setEditOpen(true);
+                router.push(`/groups/edit/${g.id}`);
               }}
               onDelete={(g) => {
                 setDeleteTarget({ id: g.id, name: g.name });
@@ -151,12 +143,7 @@ export default function GroupHierarchy() {
         parentReadonly={createParentReadonly}
         showParentField={createShowParentField}
       />
-      <EditGroupModal
-        open={editOpen}
-        onClose={() => setEditOpen(false)}
-        group={editGroup}
-        onUpdated={() => refetch()}
-      />
+
       <DeleteConfirmationModal
         open={deleteOpen}
         entityName={deleteTarget?.name}
@@ -168,12 +155,12 @@ export default function GroupHierarchy() {
           if (!deleteTarget) return;
           try {
             await deleteMutation.mutateAsync(deleteTarget.id);
-            showSuccess('Grupo eliminado');
+            showSuccess("Grupo eliminado");
             setDeleteOpen(false);
             setDeleteTarget(null);
             refetch();
           } catch (e) {
-            showError('Error al eliminar el grupo');
+            showError("Error al eliminar el grupo");
           }
         }}
         isPending={deleteMutation.isPending}
@@ -204,88 +191,94 @@ function ParentCollapse({
   return (
     <div
       className={`collapse ${
-        open ? 'collapse-open' : 'collapse-close'
+        open ? "collapse-open" : "collapse-close"
       } bg-base-200`}
     >
-      <div className="collapse-title pr-3 text-base font-semibold">
-        <div className="flex items-center justify-between pointer-events-none">
-          <span className="pointer-events-auto">{node.name}</span>
-          <div className="flex items-center gap-2">
-            <span className="badge badge-soft badge-sm">
-              Miembros: {node.memberCount}
-            </span>
-            <span className="badge badge-soft badge-sm">
-              Subgrupos: {node.subgroupCount}
-            </span>
-            <button
-              className="btn btn-ghost btn-xs group pointer-events-auto"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                onAddMembers(node.id);
-              }}
-              title="Agregar miembros"
-            >
-              <RiUserAddLine className="w-4 h-4 transition-colors group-hover:text-primary" />
-            </button>
-            <button
-              className="btn btn-ghost btn-xs pointer-events-auto"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                onAddChild(node.id);
-              }}
-              title="Agregar subgrupo"
-            >
-              <RiAddLine className="w-4 h-4 transition-colors group-hover:text-primary" />
-            </button>
-            <button
-              className="btn btn-ghost btn-xs group pointer-events-auto"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                onEdit({
-                  id: node.id,
-                  name: node.name,
-                  leaderId: node.leaderId || null,
-                  parentId: undefined,
-                });
-              }}
-              title="Editar"
-            >
-              <RiEdit2Fill className="w-4 h-4 transition-colors group-hover:text-primary" />
-            </button>
-            <button
-              className="btn btn-ghost btn-xs group pointer-events-auto"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                onDelete({ id: node.id, name: node.name });
-              }}
-              title="Eliminar"
-            >
-              <RiDeleteBinLine className="w-4 h-4 transition-colors group-hover:text-error" />
-            </button>
-            <button
-              className="btn btn-ghost btn-xs pointer-events-auto"
-              aria-label="Toggle"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                setOpen((prev) => !prev);
-              }}
-            >
-              <RiArrowDownSLine
-                className={`w-6 h-6 transition-transform ${
-                  open ? 'rotate-180' : ''
-                }`}
-              />
-            </button>
+      <div className="collapse-title p-3 sm:px-4 text-base font-semibold h-auto min-h-12">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pointer-events-none">
+          <span className="pointer-events-auto text-sm sm:text-base wrap-break-word pr-2">
+            {node.name}
+          </span>
+          <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+            <div className="flex gap-2">
+              <span className="badge badge-soft badge-xs sm:badge-sm whitespace-nowrap">
+                Miembros: {node.memberCount}
+              </span>
+              <span className="badge badge-soft badge-xs sm:badge-sm whitespace-nowrap">
+                Subgrupos: {node.subgroupCount}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <button
+                className="btn btn-ghost btn-xs btn-square group pointer-events-auto"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onAddMembers(node.id);
+                }}
+                title="Agregar miembros"
+              >
+                <RiUserAddLine className="w-4 h-4 transition-colors group-hover:text-primary" />
+              </button>
+              <button
+                className="btn btn-ghost btn-xs btn-square pointer-events-auto"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onAddChild(node.id);
+                }}
+                title="Agregar subgrupo"
+              >
+                <RiAddLine className="w-4 h-4 transition-colors group-hover:text-primary" />
+              </button>
+              <button
+                className="btn btn-ghost btn-xs btn-square group pointer-events-auto"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onEdit({
+                    id: node.id,
+                    name: node.name,
+                    leaderId: node.leaderId || null,
+                    parentId: undefined,
+                  });
+                }}
+                title="Editar"
+              >
+                <RiEdit2Fill className="w-4 h-4 transition-colors group-hover:text-primary" />
+              </button>
+              <button
+                className="btn btn-ghost btn-xs btn-square group pointer-events-auto"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onDelete({ id: node.id, name: node.name });
+                }}
+                title="Eliminar"
+              >
+                <RiDeleteBinLine className="w-4 h-4 transition-colors group-hover:text-error" />
+              </button>
+              <button
+                className="btn btn-ghost btn-xs btn-square pointer-events-auto"
+                aria-label="Toggle"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setOpen((prev) => !prev);
+                }}
+              >
+                <RiArrowDownSLine
+                  className={`w-5 h-5 transition-transform ${
+                    open ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -308,7 +301,7 @@ function ParentCollapse({
                     <li key={f.key} className="flex gap-2">
                       <span className="font-semibold">{f.label || f.key}:</span>
                       <span className="text-base-content/80">
-                        {String(f.value ?? '')}
+                        {String(f.value ?? "")}
                       </span>
                     </li>
                   ))}
@@ -362,88 +355,94 @@ function ChildItem({
   return (
     <div
       className={`collapse ${
-        open ? 'collapse-open' : 'collapse-close'
+        open ? "collapse-open" : "collapse-close"
       } bg-base-100 border border-base-300`}
     >
-      <div className="collapse-title pr-3 text-base font-semibold">
-        <div className="flex items-center justify-between pointer-events-none">
-          <span className="pointer-events-auto">{node.name}</span>
-          <div className="flex items-center gap-2">
-            <span className="badge badge-soft badge-sm">
-              Miembros: {node.memberCount}
-            </span>
-            <span className="badge badge-soft badge-sm">
-              Subgrupos: {node.subgroupCount}
-            </span>
-            <button
-              className="btn btn-ghost btn-xs group pointer-events-auto"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                onAddMembers(node.id);
-              }}
-              title="Agregar miembros"
-            >
-              <RiUserAddLine className="w-4 h-4 transition-colors group-hover:text-primary" />
-            </button>
-            <button
-              className="btn btn-ghost btn-xs pointer-events-auto"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                onAddChild(node.id);
-              }}
-              title="Agregar subgrupo"
-            >
-              <RiAddLine className="w-4 h-4 transition-colors group-hover:text-primary" />
-            </button>
-            <button
-              className="btn btn-ghost btn-xs group pointer-events-auto"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                onEdit({
-                  id: node.id,
-                  name: node.name,
-                  leaderId: node.leaderId || null,
-                  parentId: undefined,
-                });
-              }}
-              title="Editar"
-            >
-              <RiEdit2Fill className="w-4 h-4 transition-colors group-hover:text-primary" />
-            </button>
-            <button
-              className="btn btn-ghost btn-xs group pointer-events-auto"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                onDelete({ id: node.id, name: node.name });
-              }}
-              title="Eliminar"
-            >
-              <RiDeleteBinLine className="w-4 h-4 transition-colors group-hover:text-error" />
-            </button>
-            <button
-              className="btn btn-ghost btn-xs pointer-events-auto"
-              aria-label="Toggle"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                setOpen((prev) => !prev);
-              }}
-            >
-              <RiArrowDownSLine
-                className={`w-5 h-5 transition-transform ${
-                  open ? 'rotate-180' : ''
-                }`}
-              />
-            </button>
+      <div className="collapse-title p-3 sm:px-4 text-base font-semibold h-auto min-h-12">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pointer-events-none">
+          <span className="pointer-events-auto text-sm sm:text-base wrap-break-word pr-2">
+            {node.name}
+          </span>
+          <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+            <div className="flex gap-2">
+              <span className="badge badge-soft badge-xs sm:badge-sm whitespace-nowrap">
+                Miembros: {node.memberCount}
+              </span>
+              <span className="badge badge-soft badge-xs sm:badge-sm whitespace-nowrap">
+                Subgrupos: {node.subgroupCount}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <button
+                className="btn btn-ghost btn-xs btn-square group pointer-events-auto"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onAddMembers(node.id);
+                }}
+                title="Agregar miembros"
+              >
+                <RiUserAddLine className="w-4 h-4 transition-colors group-hover:text-primary" />
+              </button>
+              <button
+                className="btn btn-ghost btn-xs btn-square pointer-events-auto"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onAddChild(node.id);
+                }}
+                title="Agregar subgrupo"
+              >
+                <RiAddLine className="w-4 h-4 transition-colors group-hover:text-primary" />
+              </button>
+              <button
+                className="btn btn-ghost btn-xs btn-square group pointer-events-auto"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onEdit({
+                    id: node.id,
+                    name: node.name,
+                    leaderId: node.leaderId || null,
+                    parentId: undefined,
+                  });
+                }}
+                title="Editar"
+              >
+                <RiEdit2Fill className="w-4 h-4 transition-colors group-hover:text-primary" />
+              </button>
+              <button
+                className="btn btn-ghost btn-xs btn-square group pointer-events-auto"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onDelete({ id: node.id, name: node.name });
+                }}
+                title="Eliminar"
+              >
+                <RiDeleteBinLine className="w-4 h-4 transition-colors group-hover:text-error" />
+              </button>
+              <button
+                className="btn btn-ghost btn-xs btn-square pointer-events-auto"
+                aria-label="Toggle"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setOpen((prev) => !prev);
+                }}
+              >
+                <RiArrowDownSLine
+                  className={`w-5 h-5 transition-transform ${
+                    open ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -464,7 +463,7 @@ function ChildItem({
                     <li key={f.key} className="flex gap-2">
                       <span className="font-semibold">{f.label || f.key}:</span>
                       <span className="text-base-content/80">
-                        {String(f.value ?? '')}
+                        {String(f.value ?? "")}
                       </span>
                     </li>
                   ))}

@@ -1,16 +1,16 @@
-'use server';
+"use server";
 
-import { getChurchPrisma, getChurchId } from '@/actions/churchContext';
-import { Prisma } from '@/generated/prisma/client';
-import type { Groups, Members } from '@/generated/prisma/client';
-import { revalidateTag } from 'next/cache';
+import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
+import { Prisma, GroupFieldType } from "@/generated/prisma/client";
+import type { Groups, Members } from "@/generated/prisma/client";
+import { revalidateTag } from "next/cache";
 
 export async function getAllGroups(options?: {
   limit?: number;
   offset?: number;
   search?: string;
-  orderBy?: 'name' | 'createdAt';
-  orderDirection?: 'asc' | 'desc';
+  orderBy?: "name" | "createdAt";
+  orderDirection?: "asc" | "desc";
 }): Promise<{
   groups: (Groups & { leader: Members | null; _count: { members: number } })[];
   total: number;
@@ -20,8 +20,8 @@ export async function getAllGroups(options?: {
     limit = 50,
     offset = 0,
     search,
-    orderBy = 'name',
-    orderDirection = 'asc',
+    orderBy = "name",
+    orderDirection = "asc",
   } = options || {};
 
   const prisma = await getChurchPrisma();
@@ -29,7 +29,7 @@ export async function getAllGroups(options?: {
 
   const whereClause: Prisma.GroupsWhereInput = { church_id: churchId };
   if (search && search.trim().length > 0) {
-    whereClause.OR = [{ name: { contains: search, mode: 'insensitive' } }];
+    whereClause.OR = [{ name: { contains: search, mode: "insensitive" } }];
   }
 
   const findArgs = {
@@ -56,9 +56,9 @@ export async function searchGroups(term: string) {
   const groups = await prisma.groups.findMany({
     where: {
       church_id: churchId,
-      name: { contains: term, mode: 'insensitive' },
+      name: { contains: term, mode: "insensitive" },
     },
-    orderBy: { name: 'asc' },
+    orderBy: { name: "asc" },
     take: 10,
     select: { id: true, name: true },
   });
@@ -72,7 +72,7 @@ export async function getGroupsList(excludeId?: string) {
   if (excludeId) where.id = { not: excludeId };
   const groups = await prisma.groups.findMany({
     where,
-    orderBy: { name: 'asc' },
+    orderBy: { name: "asc" },
     select: { id: true, name: true },
   });
   return groups;
@@ -82,7 +82,7 @@ export async function getGroupById(id: string) {
   const prisma = await getChurchPrisma();
   const group = await prisma.groups.findUnique({
     where: { id },
-    include: { leader: true, members: true },
+    include: { leader: true, members: true, fields: true, parent: true },
   });
   return group;
 }
@@ -91,30 +91,51 @@ export async function createGroup(data: {
   name: string;
   leaderId?: string | null;
   parentId?: string | null;
+  fields?: {
+    key: string;
+    label?: string | null;
+    type: GroupFieldType;
+    value?: any;
+  }[];
 }) {
   const prisma = await getChurchPrisma();
   const churchId = await getChurchId();
 
-  const prismaData: Prisma.GroupsCreateInput = {
-    name: data.name,
-    church: { connect: { id: churchId } },
-    ...(data.leaderId && data.leaderId !== ''
-      ? { leader: { connect: { id: data.leaderId } } }
-      : {}),
-    ...(data.parentId && data.parentId !== ''
-      ? { parent: { connect: { id: data.parentId } } }
-      : {}),
-  };
+  return await prisma.$transaction(async (tx) => {
+    const prismaData: Prisma.GroupsCreateInput = {
+      name: data.name,
+      church: { connect: { id: churchId } },
+      ...(data.leaderId && data.leaderId !== ""
+        ? { leader: { connect: { id: data.leaderId } } }
+        : {}),
+      ...(data.parentId && data.parentId !== ""
+        ? { parent: { connect: { id: data.parentId } } }
+        : {}),
+    };
 
-  const created = await prisma.groups.create({ data: prismaData });
-  revalidateTag('groups', { expire: 0 });
-  return created;
+    const created = await tx.groups.create({ data: prismaData });
+
+    if (data.fields && data.fields.length > 0) {
+      await tx.groupFields.createMany({
+        data: data.fields.map((field) => ({
+          group_id: created.id,
+          key: field.key,
+          label: field.label,
+          type: field.type,
+          value: field.value ?? Prisma.JsonNull,
+        })),
+      });
+    }
+
+    revalidateTag("groups", { expire: 0 });
+    return created;
+  });
 }
 
 export async function deleteGroup(id: string) {
   const prisma = await getChurchPrisma();
   await prisma.groups.delete({ where: { id } });
-  revalidateTag('groups', { expire: 0 });
+  revalidateTag("groups", { expire: 0 });
   return { success: true };
 }
 
@@ -124,20 +145,20 @@ export async function getGroupHierarchy() {
 
   const parents = await prisma.groups.findMany({
     where: { church_id: churchId, parent_id: null },
-    orderBy: { name: 'asc' },
+    orderBy: { name: "asc" },
     include: {
       leader: true,
       fields: true,
       _count: { select: { members: true, subgroups: true } },
       subgroups: {
-        orderBy: { name: 'asc' },
+        orderBy: { name: "asc" },
         include: {
           leader: true,
           fields: true,
           _count: { select: { members: true, subgroups: true } },
           // optional second level if present
           subgroups: {
-            orderBy: { name: 'asc' },
+            orderBy: { name: "asc" },
             include: {
               leader: true,
               fields: true,
@@ -154,29 +175,80 @@ export async function getGroupHierarchy() {
 
 export async function updateGroup(
   id: string,
-  data: { name?: string; leaderId?: string | null; parentId?: string | null }
+  data: {
+    name?: string;
+    leaderId?: string | null;
+    parentId?: string | null;
+    fields?: {
+      key: string;
+      label?: string | null;
+      type: GroupFieldType;
+      value?: any;
+    }[];
+  }
 ) {
   const prisma = await getChurchPrisma();
-  const updateData: Prisma.GroupsUpdateInput = {};
-  if (data.name !== undefined) updateData.name = data.name;
-  if (Object.prototype.hasOwnProperty.call(data, 'leaderId')) {
-    updateData.leader =
-      data.leaderId && data.leaderId !== ''
-        ? { connect: { id: data.leaderId } }
-        : { disconnect: true };
-  }
-  if (Object.prototype.hasOwnProperty.call(data, 'parentId')) {
-    updateData.parent =
-      data.parentId && data.parentId !== ''
-        ? { connect: { id: data.parentId } }
-        : { disconnect: true };
-  }
-  const updated = await prisma.groups.update({
-    where: { id },
-    data: updateData,
+
+  return await prisma.$transaction(async (tx) => {
+    const updateData: Prisma.GroupsUpdateInput = {};
+    if (data.name !== undefined) updateData.name = data.name;
+    if (Object.prototype.hasOwnProperty.call(data, "leaderId")) {
+      updateData.leader =
+        data.leaderId && data.leaderId !== ""
+          ? { connect: { id: data.leaderId } }
+          : { disconnect: true };
+    }
+    if (Object.prototype.hasOwnProperty.call(data, "parentId")) {
+      updateData.parent =
+        data.parentId && data.parentId !== ""
+          ? { connect: { id: data.parentId } }
+          : { disconnect: true };
+    }
+
+    if (data.fields) {
+      // 1. Delete fields not present in the new list
+      const newKeys = data.fields.map((f) => f.key);
+      await tx.groupFields.deleteMany({
+        where: {
+          group_id: id,
+          key: { notIn: newKeys },
+        },
+      });
+
+      // 2. Upsert fields
+      for (const field of data.fields) {
+        await tx.groupFields.upsert({
+          where: {
+            group_id_key: {
+              group_id: id,
+              key: field.key,
+            },
+          },
+          create: {
+            group_id: id,
+            key: field.key,
+            label: field.label,
+            type: field.type,
+            value: field.value ?? Prisma.JsonNull,
+          },
+          update: {
+            label: field.label,
+            type: field.type,
+            value: field.value ?? Prisma.JsonNull,
+          },
+        });
+      }
+    }
+
+    const updated = await tx.groups.update({
+      where: { id },
+      data: updateData,
+      include: { fields: true },
+    });
+
+    revalidateTag("groups", { expire: 0 });
+    return updated;
   });
-  revalidateTag('groups', { expire: 0 });
-  return updated;
 }
 
 export async function getGroupStats() {

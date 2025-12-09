@@ -34,9 +34,14 @@ export function SelectField<T extends FieldValues>({
   return (
     <fieldset>
       <label className="label">
-        <span className="label-text">{label}</span>
+        <span className="label-text mb-2">{label}</span>
       </label>
-      <select className={className} {...register(name, rules)} defaultValue={defaultValue} disabled={disabled}>
+      <select
+        className={className}
+        {...register(name, rules)}
+        defaultValue={defaultValue}
+        disabled={disabled}
+      >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
