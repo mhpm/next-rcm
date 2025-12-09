@@ -277,6 +277,40 @@ export type BoolWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedBoolFilter<$PrismaModel>
 }
 
+export type EnumReportScopeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReportScope | Prisma.EnumReportScopeFieldRefInput<$PrismaModel>
+  in?: $Enums.ReportScope[] | Prisma.ListEnumReportScopeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ReportScope[] | Prisma.ListEnumReportScopeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumReportScopeFilter<$PrismaModel> | $Enums.ReportScope
+}
+
+export type EnumReportScopeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReportScope | Prisma.EnumReportScopeFieldRefInput<$PrismaModel>
+  in?: $Enums.ReportScope[] | Prisma.ListEnumReportScopeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ReportScope[] | Prisma.ListEnumReportScopeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumReportScopeWithAggregatesFilter<$PrismaModel> | $Enums.ReportScope
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumReportScopeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumReportScopeFilter<$PrismaModel>
+}
+
+export type EnumReportFieldTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReportFieldType | Prisma.EnumReportFieldTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ReportFieldType[] | Prisma.ListEnumReportFieldTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ReportFieldType[] | Prisma.ListEnumReportFieldTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumReportFieldTypeFilter<$PrismaModel> | $Enums.ReportFieldType
+}
+
+export type EnumReportFieldTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReportFieldType | Prisma.EnumReportFieldTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ReportFieldType[] | Prisma.ListEnumReportFieldTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ReportFieldType[] | Prisma.ListEnumReportFieldTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumReportFieldTypeWithAggregatesFilter<$PrismaModel> | $Enums.ReportFieldType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumReportFieldTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumReportFieldTypeFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -524,6 +558,40 @@ export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedBoolFilter<$PrismaModel>
   _max?: Prisma.NestedBoolFilter<$PrismaModel>
+}
+
+export type NestedEnumReportScopeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReportScope | Prisma.EnumReportScopeFieldRefInput<$PrismaModel>
+  in?: $Enums.ReportScope[] | Prisma.ListEnumReportScopeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ReportScope[] | Prisma.ListEnumReportScopeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumReportScopeFilter<$PrismaModel> | $Enums.ReportScope
+}
+
+export type NestedEnumReportScopeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReportScope | Prisma.EnumReportScopeFieldRefInput<$PrismaModel>
+  in?: $Enums.ReportScope[] | Prisma.ListEnumReportScopeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ReportScope[] | Prisma.ListEnumReportScopeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumReportScopeWithAggregatesFilter<$PrismaModel> | $Enums.ReportScope
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumReportScopeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumReportScopeFilter<$PrismaModel>
+}
+
+export type NestedEnumReportFieldTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReportFieldType | Prisma.EnumReportFieldTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ReportFieldType[] | Prisma.ListEnumReportFieldTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ReportFieldType[] | Prisma.ListEnumReportFieldTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumReportFieldTypeFilter<$PrismaModel> | $Enums.ReportFieldType
+}
+
+export type NestedEnumReportFieldTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReportFieldType | Prisma.EnumReportFieldTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ReportFieldType[] | Prisma.ListEnumReportFieldTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ReportFieldType[] | Prisma.ListEnumReportFieldTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumReportFieldTypeWithAggregatesFilter<$PrismaModel> | $Enums.ReportFieldType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumReportFieldTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumReportFieldTypeFilter<$PrismaModel>
 }
 
 

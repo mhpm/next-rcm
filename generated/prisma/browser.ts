@@ -53,6 +53,16 @@ export type Groups = Prisma.GroupsModel
  */
 export type GroupFields = Prisma.GroupFieldsModel
 /**
+ * Model Reports
+ * 
+ */
+export type Reports = Prisma.ReportsModel
+/**
+ * Model ReportFields
+ * 
+ */
+export type ReportFields = Prisma.ReportFieldsModel
+/**
  * Model MemberMinistry
  * 
  */

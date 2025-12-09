@@ -58,6 +58,8 @@ export const ModelName = {
   Sectors: 'Sectors',
   Groups: 'Groups',
   GroupFields: 'GroupFields',
+  Reports: 'Reports',
+  ReportFields: 'ReportFields',
   MemberMinistry: 'MemberMinistry'
 } as const
 
@@ -182,6 +184,35 @@ export const GroupFieldsScalarFieldEnum = {
 } as const
 
 export type GroupFieldsScalarFieldEnum = (typeof GroupFieldsScalarFieldEnum)[keyof typeof GroupFieldsScalarFieldEnum]
+
+
+export const ReportsScalarFieldEnum = {
+  id: 'id',
+  church_id: 'church_id',
+  scope: 'scope',
+  cell_id: 'cell_id',
+  group_id: 'group_id',
+  sector_id: 'sector_id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReportsScalarFieldEnum = (typeof ReportsScalarFieldEnum)[keyof typeof ReportsScalarFieldEnum]
+
+
+export const ReportFieldsScalarFieldEnum = {
+  id: 'id',
+  report_id: 'report_id',
+  key: 'key',
+  label: 'label',
+  type: 'type',
+  value: 'value',
+  required: 'required',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReportFieldsScalarFieldEnum = (typeof ReportFieldsScalarFieldEnum)[keyof typeof ReportFieldsScalarFieldEnum]
 
 
 export const MemberMinistryScalarFieldEnum = {

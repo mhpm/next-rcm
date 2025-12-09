@@ -298,6 +298,93 @@ export function createChurchPrisma(churchId: string) {
           return query(args);
         },
       },
+      reports: {
+        async findMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId } as Prisma.ReportsWhereInput;
+          return query(args);
+        },
+        async findFirst({ args, query }) {
+          args.where = { ...args.where, church_id: churchId } as Prisma.ReportsWhereInput;
+          return query(args);
+        },
+        async findUnique({ args, query }) {
+          return query(args);
+        },
+        async count({ args, query }) {
+          args.where = { ...args.where, church_id: churchId } as Prisma.ReportsWhereInput;
+          return query(args);
+        },
+        async create({ args, query }) {
+          const data = args.data as Prisma.ReportsCreateInput;
+          if (!data.church) {
+            (args.data as Prisma.ReportsCreateInput).church = { connect: { id: churchId } };
+          }
+          return query(args);
+        },
+        async createMany({ args, query }) {
+          if (Array.isArray(args.data)) {
+            args.data = args.data.map((item: Prisma.ReportsCreateManyInput) => ({
+              ...item,
+              church_id: item.church_id || churchId,
+            }));
+          } else {
+            args.data = { ...args.data, church_id: (args.data as Prisma.ReportsCreateManyInput).church_id || churchId };
+          }
+          return query(args);
+        },
+        async update({ args, query }) {
+          return query(args);
+        },
+        async updateMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId } as Prisma.ReportsWhereInput;
+          return query(args);
+        },
+        async delete({ args, query }) {
+          return query(args);
+        },
+        async deleteMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId } as Prisma.ReportsWhereInput;
+          return query(args);
+        },
+      },
+      reportFields: {
+        async findMany({ args, query }) {
+          args.where = { ...args.where, report: { church_id: churchId } } as Prisma.ReportFieldsWhereInput;
+          return query(args);
+        },
+        async findFirst({ args, query }) {
+          args.where = { ...args.where, report: { church_id: churchId } } as Prisma.ReportFieldsWhereInput;
+          return query(args);
+        },
+        async findUnique({ args, query }) {
+          return query(args);
+        },
+        async count({ args, query }) {
+          args.where = { ...args.where, report: { church_id: churchId } } as Prisma.ReportFieldsWhereInput;
+          return query(args);
+        },
+        async create({ args, query }) {
+          // No se fuerza church_id aquí; se deriva del report
+          return query(args);
+        },
+        async createMany({ args, query }) {
+          return query(args);
+        },
+        async update({ args, query }) {
+          return query(args);
+        },
+        async updateMany({ args, query }) {
+          args.where = { ...args.where, report: { church_id: churchId } } as Prisma.ReportFieldsWhereInput;
+          return query(args);
+        },
+        async delete({ args, query }) {
+          return query(args);
+        },
+        async deleteMany({ args, query }) {
+          args.where = { ...args.where, report: { church_id: churchId } } as Prisma.ReportFieldsWhereInput;
+          return query(args);
+        },
+      },
       memberMinistry: {
         async findMany({ args, query }) {
           args.where = { ...args.where, church_id: churchId };

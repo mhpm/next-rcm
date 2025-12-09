@@ -20,6 +20,27 @@ export const GroupFieldType = {
 export type GroupFieldType = (typeof GroupFieldType)[keyof typeof GroupFieldType]
 
 
+export const ReportFieldType = {
+  TEXT: 'TEXT',
+  NUMBER: 'NUMBER',
+  BOOLEAN: 'BOOLEAN',
+  DATE: 'DATE',
+  JSON: 'JSON'
+} as const
+
+export type ReportFieldType = (typeof ReportFieldType)[keyof typeof ReportFieldType]
+
+
+export const ReportScope = {
+  CELL: 'CELL',
+  GROUP: 'GROUP',
+  SECTOR: 'SECTOR',
+  CHURCH: 'CHURCH'
+} as const
+
+export type ReportScope = (typeof ReportScope)[keyof typeof ReportScope]
+
+
 export const MemberRole = {
   MIEMBRO: 'MIEMBRO',
   SUPERVISOR: 'SUPERVISOR',

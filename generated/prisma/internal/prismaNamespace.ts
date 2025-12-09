@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.0.1
- * Query Engine version: f09f2815f091dbba658cdcd2264306d88bb5bda6
+ * Prisma Client JS version: 7.1.0
+ * Query Engine version: ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.0.1",
-  engine: "f09f2815f091dbba658cdcd2264306d88bb5bda6"
+  client: "7.1.0",
+  engine: "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba"
 }
 
 /**
@@ -391,6 +391,8 @@ export const ModelName = {
   Sectors: 'Sectors',
   Groups: 'Groups',
   GroupFields: 'GroupFields',
+  Reports: 'Reports',
+  ReportFields: 'ReportFields',
   MemberMinistry: 'MemberMinistry'
 } as const
 
@@ -407,7 +409,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "churches" | "members" | "ministries" | "cells" | "sectors" | "groups" | "groupFields" | "memberMinistry"
+    modelProps: "churches" | "members" | "ministries" | "cells" | "sectors" | "groups" | "groupFields" | "reports" | "reportFields" | "memberMinistry"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -929,6 +931,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Reports: {
+      payload: Prisma.$ReportsPayload<ExtArgs>
+      fields: Prisma.ReportsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReportsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReportsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>
+        }
+        findFirst: {
+          args: Prisma.ReportsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReportsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>
+        }
+        findMany: {
+          args: Prisma.ReportsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>[]
+        }
+        create: {
+          args: Prisma.ReportsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>
+        }
+        createMany: {
+          args: Prisma.ReportsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ReportsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>[]
+        }
+        delete: {
+          args: Prisma.ReportsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>
+        }
+        update: {
+          args: Prisma.ReportsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>
+        }
+        deleteMany: {
+          args: Prisma.ReportsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReportsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ReportsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>[]
+        }
+        upsert: {
+          args: Prisma.ReportsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>
+        }
+        aggregate: {
+          args: Prisma.ReportsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReports>
+        }
+        groupBy: {
+          args: Prisma.ReportsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReportsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReportsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReportsCountAggregateOutputType> | number
+        }
+      }
+    }
+    ReportFields: {
+      payload: Prisma.$ReportFieldsPayload<ExtArgs>
+      fields: Prisma.ReportFieldsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReportFieldsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportFieldsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReportFieldsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportFieldsPayload>
+        }
+        findFirst: {
+          args: Prisma.ReportFieldsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportFieldsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReportFieldsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportFieldsPayload>
+        }
+        findMany: {
+          args: Prisma.ReportFieldsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportFieldsPayload>[]
+        }
+        create: {
+          args: Prisma.ReportFieldsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportFieldsPayload>
+        }
+        createMany: {
+          args: Prisma.ReportFieldsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ReportFieldsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportFieldsPayload>[]
+        }
+        delete: {
+          args: Prisma.ReportFieldsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportFieldsPayload>
+        }
+        update: {
+          args: Prisma.ReportFieldsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportFieldsPayload>
+        }
+        deleteMany: {
+          args: Prisma.ReportFieldsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReportFieldsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ReportFieldsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportFieldsPayload>[]
+        }
+        upsert: {
+          args: Prisma.ReportFieldsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportFieldsPayload>
+        }
+        aggregate: {
+          args: Prisma.ReportFieldsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReportFields>
+        }
+        groupBy: {
+          args: Prisma.ReportFieldsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReportFieldsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReportFieldsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReportFieldsCountAggregateOutputType> | number
+        }
+      }
+    }
     MemberMinistry: {
       payload: Prisma.$MemberMinistryPayload<ExtArgs>
       fields: Prisma.MemberMinistryFieldRefs
@@ -1149,6 +1299,35 @@ export const GroupFieldsScalarFieldEnum = {
 export type GroupFieldsScalarFieldEnum = (typeof GroupFieldsScalarFieldEnum)[keyof typeof GroupFieldsScalarFieldEnum]
 
 
+export const ReportsScalarFieldEnum = {
+  id: 'id',
+  church_id: 'church_id',
+  scope: 'scope',
+  cell_id: 'cell_id',
+  group_id: 'group_id',
+  sector_id: 'sector_id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReportsScalarFieldEnum = (typeof ReportsScalarFieldEnum)[keyof typeof ReportsScalarFieldEnum]
+
+
+export const ReportFieldsScalarFieldEnum = {
+  id: 'id',
+  report_id: 'report_id',
+  key: 'key',
+  label: 'label',
+  type: 'type',
+  value: 'value',
+  required: 'required',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReportFieldsScalarFieldEnum = (typeof ReportFieldsScalarFieldEnum)[keyof typeof ReportFieldsScalarFieldEnum]
+
+
 export const MemberMinistryScalarFieldEnum = {
   id: 'id',
   memberId: 'memberId',
@@ -1314,6 +1493,34 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'ReportScope'
+ */
+export type EnumReportScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportScope'>
+    
+
+
+/**
+ * Reference to a field of type 'ReportScope[]'
+ */
+export type ListEnumReportScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportScope[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ReportFieldType'
+ */
+export type EnumReportFieldTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportFieldType'>
+    
+
+
+/**
+ * Reference to a field of type 'ReportFieldType[]'
+ */
+export type ListEnumReportFieldTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportFieldType[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -1375,7 +1582,7 @@ export type PrismaClientOptions = ({
    *  { emit: 'stdout', level: 'error' }
    * 
    * ```
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/logging#the-log-option).
+   * Read more in our [docs](https://pris.ly/d/logging).
    */
   log?: (LogLevel | LogDefinition)[]
   /**
@@ -1403,6 +1610,22 @@ export type PrismaClientOptions = ({
    * ```
    */
   omit?: GlobalOmitConfig
+  /**
+   * SQL commenter plugins that add metadata to SQL queries as comments.
+   * Comments follow the sqlcommenter format: https://google.github.io/sqlcommenter/
+   * 
+   * @example
+   * ```
+   * const prisma = new PrismaClient({
+   *   adapter,
+   *   comments: [
+   *     traceContext(),
+   *     queryInsights(),
+   *   ],
+   * })
+   * ```
+   */
+  comments?: runtime.SqlCommenterPlugin[]
 }
 export type GlobalOmitConfig = {
   churches?: Prisma.ChurchesOmit
@@ -1412,6 +1635,8 @@ export type GlobalOmitConfig = {
   sectors?: Prisma.SectorsOmit
   groups?: Prisma.GroupsOmit
   groupFields?: Prisma.GroupFieldsOmit
+  reports?: Prisma.ReportsOmit
+  reportFields?: Prisma.ReportFieldsOmit
   memberMinistry?: Prisma.MemberMinistryOmit
 }
 
