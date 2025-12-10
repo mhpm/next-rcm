@@ -189,6 +189,7 @@ export type ChurchesWhereInput = {
   sectors?: Prisma.SectorsListRelationFilter
   groups?: Prisma.GroupsListRelationFilter
   reports?: Prisma.ReportsListRelationFilter
+  reportEntries?: Prisma.ReportEntriesListRelationFilter
 }
 
 export type ChurchesOrderByWithRelationInput = {
@@ -204,6 +205,7 @@ export type ChurchesOrderByWithRelationInput = {
   sectors?: Prisma.SectorsOrderByRelationAggregateInput
   groups?: Prisma.GroupsOrderByRelationAggregateInput
   reports?: Prisma.ReportsOrderByRelationAggregateInput
+  reportEntries?: Prisma.ReportEntriesOrderByRelationAggregateInput
 }
 
 export type ChurchesWhereUniqueInput = Prisma.AtLeast<{
@@ -222,6 +224,7 @@ export type ChurchesWhereUniqueInput = Prisma.AtLeast<{
   sectors?: Prisma.SectorsListRelationFilter
   groups?: Prisma.GroupsListRelationFilter
   reports?: Prisma.ReportsListRelationFilter
+  reportEntries?: Prisma.ReportEntriesListRelationFilter
 }, "id" | "slug">
 
 export type ChurchesOrderByWithAggregationInput = {
@@ -259,6 +262,7 @@ export type ChurchesCreateInput = {
   sectors?: Prisma.SectorsCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateInput = {
@@ -274,6 +278,7 @@ export type ChurchesUncheckedCreateInput = {
   sectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUpdateInput = {
@@ -289,6 +294,7 @@ export type ChurchesUpdateInput = {
   sectors?: Prisma.SectorsUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateInput = {
@@ -304,6 +310,7 @@ export type ChurchesUncheckedUpdateInput = {
   sectors?: Prisma.SectorsUncheckedUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateManyInput = {
@@ -451,6 +458,20 @@ export type ChurchesUpdateOneRequiredWithoutReportsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ChurchesUpdateToOneWithWhereWithoutReportsInput, Prisma.ChurchesUpdateWithoutReportsInput>, Prisma.ChurchesUncheckedUpdateWithoutReportsInput>
 }
 
+export type ChurchesCreateNestedOneWithoutReportEntriesInput = {
+  create?: Prisma.XOR<Prisma.ChurchesCreateWithoutReportEntriesInput, Prisma.ChurchesUncheckedCreateWithoutReportEntriesInput>
+  connectOrCreate?: Prisma.ChurchesCreateOrConnectWithoutReportEntriesInput
+  connect?: Prisma.ChurchesWhereUniqueInput
+}
+
+export type ChurchesUpdateOneRequiredWithoutReportEntriesNestedInput = {
+  create?: Prisma.XOR<Prisma.ChurchesCreateWithoutReportEntriesInput, Prisma.ChurchesUncheckedCreateWithoutReportEntriesInput>
+  connectOrCreate?: Prisma.ChurchesCreateOrConnectWithoutReportEntriesInput
+  upsert?: Prisma.ChurchesUpsertWithoutReportEntriesInput
+  connect?: Prisma.ChurchesWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChurchesUpdateToOneWithWhereWithoutReportEntriesInput, Prisma.ChurchesUpdateWithoutReportEntriesInput>, Prisma.ChurchesUncheckedUpdateWithoutReportEntriesInput>
+}
+
 export type ChurchesCreateNestedOneWithoutMemberMinistriesInput = {
   create?: Prisma.XOR<Prisma.ChurchesCreateWithoutMemberMinistriesInput, Prisma.ChurchesUncheckedCreateWithoutMemberMinistriesInput>
   connectOrCreate?: Prisma.ChurchesCreateOrConnectWithoutMemberMinistriesInput
@@ -477,6 +498,7 @@ export type ChurchesCreateWithoutMembersInput = {
   sectors?: Prisma.SectorsCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutMembersInput = {
@@ -491,6 +513,7 @@ export type ChurchesUncheckedCreateWithoutMembersInput = {
   sectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutMembersInput = {
@@ -521,6 +544,7 @@ export type ChurchesUpdateWithoutMembersInput = {
   sectors?: Prisma.SectorsUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutMembersInput = {
@@ -535,6 +559,7 @@ export type ChurchesUncheckedUpdateWithoutMembersInput = {
   sectors?: Prisma.SectorsUncheckedUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutMinistriesInput = {
@@ -549,6 +574,7 @@ export type ChurchesCreateWithoutMinistriesInput = {
   sectors?: Prisma.SectorsCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutMinistriesInput = {
@@ -563,6 +589,7 @@ export type ChurchesUncheckedCreateWithoutMinistriesInput = {
   sectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutMinistriesInput = {
@@ -593,6 +620,7 @@ export type ChurchesUpdateWithoutMinistriesInput = {
   sectors?: Prisma.SectorsUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutMinistriesInput = {
@@ -607,6 +635,7 @@ export type ChurchesUncheckedUpdateWithoutMinistriesInput = {
   sectors?: Prisma.SectorsUncheckedUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutCellsInput = {
@@ -621,6 +650,7 @@ export type ChurchesCreateWithoutCellsInput = {
   sectors?: Prisma.SectorsCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutCellsInput = {
@@ -635,6 +665,7 @@ export type ChurchesUncheckedCreateWithoutCellsInput = {
   sectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutCellsInput = {
@@ -665,6 +696,7 @@ export type ChurchesUpdateWithoutCellsInput = {
   sectors?: Prisma.SectorsUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutCellsInput = {
@@ -679,6 +711,7 @@ export type ChurchesUncheckedUpdateWithoutCellsInput = {
   sectors?: Prisma.SectorsUncheckedUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutSectorsInput = {
@@ -693,6 +726,7 @@ export type ChurchesCreateWithoutSectorsInput = {
   cells?: Prisma.CellsCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutSectorsInput = {
@@ -707,6 +741,7 @@ export type ChurchesUncheckedCreateWithoutSectorsInput = {
   cells?: Prisma.CellsUncheckedCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutSectorsInput = {
@@ -737,6 +772,7 @@ export type ChurchesUpdateWithoutSectorsInput = {
   cells?: Prisma.CellsUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutSectorsInput = {
@@ -751,6 +787,7 @@ export type ChurchesUncheckedUpdateWithoutSectorsInput = {
   cells?: Prisma.CellsUncheckedUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutGroupsInput = {
@@ -765,6 +802,7 @@ export type ChurchesCreateWithoutGroupsInput = {
   cells?: Prisma.CellsCreateNestedManyWithoutChurchInput
   sectors?: Prisma.SectorsCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutGroupsInput = {
@@ -779,6 +817,7 @@ export type ChurchesUncheckedCreateWithoutGroupsInput = {
   cells?: Prisma.CellsUncheckedCreateNestedManyWithoutChurchInput
   sectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutGroupsInput = {
@@ -809,6 +848,7 @@ export type ChurchesUpdateWithoutGroupsInput = {
   cells?: Prisma.CellsUpdateManyWithoutChurchNestedInput
   sectors?: Prisma.SectorsUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutGroupsInput = {
@@ -823,6 +863,7 @@ export type ChurchesUncheckedUpdateWithoutGroupsInput = {
   cells?: Prisma.CellsUncheckedUpdateManyWithoutChurchNestedInput
   sectors?: Prisma.SectorsUncheckedUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutReportsInput = {
@@ -837,6 +878,7 @@ export type ChurchesCreateWithoutReportsInput = {
   cells?: Prisma.CellsCreateNestedManyWithoutChurchInput
   sectors?: Prisma.SectorsCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutReportsInput = {
@@ -851,6 +893,7 @@ export type ChurchesUncheckedCreateWithoutReportsInput = {
   cells?: Prisma.CellsUncheckedCreateNestedManyWithoutChurchInput
   sectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutReportsInput = {
@@ -881,6 +924,7 @@ export type ChurchesUpdateWithoutReportsInput = {
   cells?: Prisma.CellsUpdateManyWithoutChurchNestedInput
   sectors?: Prisma.SectorsUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutReportsInput = {
@@ -895,6 +939,83 @@ export type ChurchesUncheckedUpdateWithoutReportsInput = {
   cells?: Prisma.CellsUncheckedUpdateManyWithoutChurchNestedInput
   sectors?: Prisma.SectorsUncheckedUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutChurchNestedInput
+}
+
+export type ChurchesCreateWithoutReportEntriesInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
+  members?: Prisma.MembersCreateNestedManyWithoutChurchInput
+  ministries?: Prisma.MinistriesCreateNestedManyWithoutChurchInput
+  cells?: Prisma.CellsCreateNestedManyWithoutChurchInput
+  sectors?: Prisma.SectorsCreateNestedManyWithoutChurchInput
+  groups?: Prisma.GroupsCreateNestedManyWithoutChurchInput
+  reports?: Prisma.ReportsCreateNestedManyWithoutChurchInput
+}
+
+export type ChurchesUncheckedCreateWithoutReportEntriesInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
+  members?: Prisma.MembersUncheckedCreateNestedManyWithoutChurchInput
+  ministries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutChurchInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutChurchInput
+  sectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutChurchInput
+  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutChurchInput
+  reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutChurchInput
+}
+
+export type ChurchesCreateOrConnectWithoutReportEntriesInput = {
+  where: Prisma.ChurchesWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChurchesCreateWithoutReportEntriesInput, Prisma.ChurchesUncheckedCreateWithoutReportEntriesInput>
+}
+
+export type ChurchesUpsertWithoutReportEntriesInput = {
+  update: Prisma.XOR<Prisma.ChurchesUpdateWithoutReportEntriesInput, Prisma.ChurchesUncheckedUpdateWithoutReportEntriesInput>
+  create: Prisma.XOR<Prisma.ChurchesCreateWithoutReportEntriesInput, Prisma.ChurchesUncheckedCreateWithoutReportEntriesInput>
+  where?: Prisma.ChurchesWhereInput
+}
+
+export type ChurchesUpdateToOneWithWhereWithoutReportEntriesInput = {
+  where?: Prisma.ChurchesWhereInput
+  data: Prisma.XOR<Prisma.ChurchesUpdateWithoutReportEntriesInput, Prisma.ChurchesUncheckedUpdateWithoutReportEntriesInput>
+}
+
+export type ChurchesUpdateWithoutReportEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
+  members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
+  ministries?: Prisma.MinistriesUpdateManyWithoutChurchNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutChurchNestedInput
+  sectors?: Prisma.SectorsUpdateManyWithoutChurchNestedInput
+  groups?: Prisma.GroupsUpdateManyWithoutChurchNestedInput
+  reports?: Prisma.ReportsUpdateManyWithoutChurchNestedInput
+}
+
+export type ChurchesUncheckedUpdateWithoutReportEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
+  members?: Prisma.MembersUncheckedUpdateManyWithoutChurchNestedInput
+  ministries?: Prisma.MinistriesUncheckedUpdateManyWithoutChurchNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutChurchNestedInput
+  sectors?: Prisma.SectorsUncheckedUpdateManyWithoutChurchNestedInput
+  groups?: Prisma.GroupsUncheckedUpdateManyWithoutChurchNestedInput
+  reports?: Prisma.ReportsUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutMemberMinistriesInput = {
@@ -909,6 +1030,7 @@ export type ChurchesCreateWithoutMemberMinistriesInput = {
   sectors?: Prisma.SectorsCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutMemberMinistriesInput = {
@@ -923,6 +1045,7 @@ export type ChurchesUncheckedCreateWithoutMemberMinistriesInput = {
   sectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutChurchInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutChurchInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutMemberMinistriesInput = {
@@ -953,6 +1076,7 @@ export type ChurchesUpdateWithoutMemberMinistriesInput = {
   sectors?: Prisma.SectorsUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutMemberMinistriesInput = {
@@ -967,6 +1091,7 @@ export type ChurchesUncheckedUpdateWithoutMemberMinistriesInput = {
   sectors?: Prisma.SectorsUncheckedUpdateManyWithoutChurchNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutChurchNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 
@@ -982,6 +1107,7 @@ export type ChurchesCountOutputType = {
   sectors: number
   groups: number
   reports: number
+  reportEntries: number
 }
 
 export type ChurchesCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -992,6 +1118,7 @@ export type ChurchesCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   sectors?: boolean | ChurchesCountOutputTypeCountSectorsArgs
   groups?: boolean | ChurchesCountOutputTypeCountGroupsArgs
   reports?: boolean | ChurchesCountOutputTypeCountReportsArgs
+  reportEntries?: boolean | ChurchesCountOutputTypeCountReportEntriesArgs
 }
 
 /**
@@ -1053,6 +1180,13 @@ export type ChurchesCountOutputTypeCountReportsArgs<ExtArgs extends runtime.Type
   where?: Prisma.ReportsWhereInput
 }
 
+/**
+ * ChurchesCountOutputType without action
+ */
+export type ChurchesCountOutputTypeCountReportEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReportEntriesWhereInput
+}
+
 
 export type ChurchesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1067,6 +1201,7 @@ export type ChurchesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   sectors?: boolean | Prisma.Churches$sectorsArgs<ExtArgs>
   groups?: boolean | Prisma.Churches$groupsArgs<ExtArgs>
   reports?: boolean | Prisma.Churches$reportsArgs<ExtArgs>
+  reportEntries?: boolean | Prisma.Churches$reportEntriesArgs<ExtArgs>
   _count?: boolean | Prisma.ChurchesCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["churches"]>
 
@@ -1103,6 +1238,7 @@ export type ChurchesInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   sectors?: boolean | Prisma.Churches$sectorsArgs<ExtArgs>
   groups?: boolean | Prisma.Churches$groupsArgs<ExtArgs>
   reports?: boolean | Prisma.Churches$reportsArgs<ExtArgs>
+  reportEntries?: boolean | Prisma.Churches$reportEntriesArgs<ExtArgs>
   _count?: boolean | Prisma.ChurchesCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ChurchesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1118,6 +1254,7 @@ export type $ChurchesPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     sectors: Prisma.$SectorsPayload<ExtArgs>[]
     groups: Prisma.$GroupsPayload<ExtArgs>[]
     reports: Prisma.$ReportsPayload<ExtArgs>[]
+    reportEntries: Prisma.$ReportEntriesPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1526,6 +1663,7 @@ export interface Prisma__ChurchesClient<T, Null = never, ExtArgs extends runtime
   sectors<T extends Prisma.Churches$sectorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Churches$sectorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SectorsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   groups<T extends Prisma.Churches$groupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Churches$groupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reports<T extends Prisma.Churches$reportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Churches$reportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReportsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reportEntries<T extends Prisma.Churches$reportEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Churches$reportEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReportEntriesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2113,6 +2251,30 @@ export type Churches$reportsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.ReportsScalarFieldEnum | Prisma.ReportsScalarFieldEnum[]
+}
+
+/**
+ * Churches.reportEntries
+ */
+export type Churches$reportEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReportEntries
+   */
+  select?: Prisma.ReportEntriesSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReportEntries
+   */
+  omit?: Prisma.ReportEntriesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReportEntriesInclude<ExtArgs> | null
+  where?: Prisma.ReportEntriesWhereInput
+  orderBy?: Prisma.ReportEntriesOrderByWithRelationInput | Prisma.ReportEntriesOrderByWithRelationInput[]
+  cursor?: Prisma.ReportEntriesWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReportEntriesScalarFieldEnum | Prisma.ReportEntriesScalarFieldEnum[]
 }
 
 /**

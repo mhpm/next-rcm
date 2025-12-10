@@ -85,6 +85,16 @@ export type Reports = Prisma.ReportsModel
  */
 export type ReportFields = Prisma.ReportFieldsModel
 /**
+ * Model ReportEntries
+ * 
+ */
+export type ReportEntries = Prisma.ReportEntriesModel
+/**
+ * Model ReportEntryValues
+ * 
+ */
+export type ReportEntryValues = Prisma.ReportEntryValuesModel
+/**
  * Model MemberMinistry
  * 
  */

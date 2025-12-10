@@ -6,6 +6,7 @@ import {
   FaUsersGear,
   FaUsers,
   FaPersonChalkboard,
+  FaFileLines,
 } from "react-icons/fa6";
 import Link from "next/link";
 import { cacheLife, cacheTag } from "next/cache";
@@ -13,6 +14,7 @@ import { getMemberStats } from "@/app/members/actions/members.actions";
 import { getMinistryStats } from "@/app/ministries/actions/ministries.actions";
 import { getCellStats } from "@/app/cells/actions/cells.actions";
 import { getGroupStats } from "@/app/groups/actions/groups.actions";
+import { getChurchPrisma } from "@/actions/churchContext";
 
 export default async function Dashboard() {
   // Shell se prerendera; contenido dinámico se manejará en límites de Suspense
@@ -134,6 +136,41 @@ export default async function Dashboard() {
     );
   }
 
+  async function ReportsCard() {
+    "use cache";
+
+    cacheLife({ stale: 600, revalidate: 1800, expire: 86400 });
+    cacheTag("reports");
+    const prisma = await getChurchPrisma();
+    const [total, cell, group, sector, church] = await Promise.all([
+      prisma.reports.count(),
+      prisma.reports.count({ where: { scope: "CELL" } }),
+      prisma.reports.count({ where: { scope: "GROUP" } }),
+      prisma.reports.count({ where: { scope: "SECTOR" } }),
+      prisma.reports.count({ where: { scope: "CHURCH" } }),
+    ]);
+    const extra = [
+      { label: "Célula:", value: String(cell) },
+      { label: "Grupo:", value: String(group) },
+      { label: "Sector:", value: String(sector) },
+      { label: "Iglesia:", value: String(church) },
+    ];
+    return (
+      <Link href="/reports" className="cursor-pointer">
+        <StatCard
+          title="Reportes"
+          value={String(total)}
+          change="2.3%"
+          changeType="increase"
+          period="vs. último cuatrimestre"
+          icon={<FaFileLines size={24} />}
+          extraStats={extra}
+          isLoading={false}
+        />
+      </Link>
+    );
+  }
+
   return (
     <div className="space-y-6 p-8">
       <div className="flex justify-between items-center mb-6">
@@ -192,6 +229,19 @@ export default async function Dashboard() {
           }
         >
           <GroupsCard />
+        </Suspense>
+        <Suspense
+          fallback={
+            <div className="card bg-base-100 shadow-md">
+              <div className="stats">
+                <div className="stat">
+                  <span className="skeleton h-8 w-24"></span>
+                </div>
+              </div>
+            </div>
+          }
+        >
+          <ReportsCard />
         </Suspense>
         <Link href="/sectors" className="cursor-pointer">
           <StatCard

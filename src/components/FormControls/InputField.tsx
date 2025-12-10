@@ -18,6 +18,9 @@ type InputFieldProps<T extends FieldValues> = {
   error?: string;
   className?: string;
   defaultValue?: string | number | readonly string[];
+  readOnly?: boolean;
+  disabled?: boolean;
+  tabIndex?: number;
 };
 
 export function InputField<T extends FieldValues>({
@@ -30,6 +33,9 @@ export function InputField<T extends FieldValues>({
   error,
   className = "input input-bordered w-full",
   defaultValue,
+  readOnly,
+  disabled,
+  tabIndex,
 }: InputFieldProps<T>) {
   return (
     <fieldset>
@@ -41,6 +47,9 @@ export function InputField<T extends FieldValues>({
         placeholder={placeholder || label}
         className={className}
         defaultValue={defaultValue}
+        readOnly={readOnly}
+        disabled={disabled}
+        tabIndex={tabIndex}
         {...register(name, rules)}
       />
       {error && <p className="text-error text-sm mt-1">{error}</p>}
