@@ -15,6 +15,7 @@ interface StatCardProps {
   iconBg?: string;
   extraStats?: StatCardExtraStat[];
   isLoading?: boolean;
+  action?: React.ReactNode;
 }
 
 export const StatCard = ({
@@ -27,8 +28,9 @@ export const StatCard = ({
   iconBg = "bg-base-300",
   extraStats,
   isLoading,
+  action,
 }: StatCardProps) => (
-  <div className="card bg-base-100 card-border shadow-md">
+  <div className="card bg-base-100 card-border shadow-md h-full">
     <div className="stats relative">
       <div className="stat">
         <div className="stat-title text-bold font-extrabold text-lg text-secondary">
@@ -89,6 +91,7 @@ export const StatCard = ({
             </div>
           </div>
         ) : null}
+        {action && <div className="mt-4 pt-2 flex justify-end">{action}</div>}
       </div>
     </div>
   </div>

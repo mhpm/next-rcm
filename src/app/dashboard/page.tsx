@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { DashboardGrid } from "./components/DashboardGrid";
 import { Breadcrumbs, StatCard } from "@/components";
 import {
   FaPeopleRoof,
@@ -17,8 +17,6 @@ import { getGroupStats } from "@/app/groups/actions/groups.actions";
 import { getChurchPrisma } from "@/actions/churchContext";
 
 export default async function Dashboard() {
-  // Shell se prerendera; contenido dinámico se manejará en límites de Suspense
-
   async function MinistriesCard() {
     "use cache";
 
@@ -41,18 +39,24 @@ export default async function Dashboard() {
       },
     ];
     return (
-      <Link href="/ministries" className="cursor-pointer">
-        <StatCard
-          title="Ministerios"
-          value={totalMinistries}
-          change="8.5%"
-          changeType="increase"
-          period="vs. 3 ultimo cuatrimestre"
-          icon={<FaPersonChalkboard size={24} />}
-          extraStats={extraMinistryStats}
-          isLoading={false}
-        />
-      </Link>
+      <StatCard
+        title="Ministerios"
+        value={totalMinistries}
+        change="8.5%"
+        changeType="increase"
+        period="vs. 3 ultimo cuatrimestre"
+        icon={<FaPersonChalkboard size={24} />}
+        extraStats={extraMinistryStats}
+        isLoading={false}
+        action={
+          <Link
+            href="/ministries"
+            className="btn btn-sm btn-primary btn-outline w-full"
+          >
+            Ver más detalles
+          </Link>
+        }
+      />
     );
   }
 
@@ -70,18 +74,24 @@ export default async function Dashboard() {
       { label: "Miembros sin célula:", value: membersWithoutCell },
     ];
     return (
-      <Link href="/cells" className="cursor-pointer">
-        <StatCard
-          title="Celulas"
-          value={totalCells}
-          change="21.2%"
-          changeType="increase"
-          period="vs. 12 ultimo cuatrimestre"
-          icon={<FaPeopleRoof size={24} />}
-          extraStats={extraCellStats}
-          isLoading={false}
-        />
-      </Link>
+      <StatCard
+        title="Celulas"
+        value={totalCells}
+        change="21.2%"
+        changeType="increase"
+        period="vs. 12 ultimo cuatrimestre"
+        icon={<FaPeopleRoof size={24} />}
+        extraStats={extraCellStats}
+        isLoading={false}
+        action={
+          <Link
+            href="/cells"
+            className="btn btn-sm btn-primary btn-outline w-full"
+          >
+            Ver más detalles
+          </Link>
+        }
+      />
     );
   }
 
@@ -93,17 +103,23 @@ export default async function Dashboard() {
     const stats = await getMemberStats();
     const totalMembers = String(stats?.total ?? 0);
     return (
-      <Link href="/members" className="cursor-pointer">
-        <StatCard
-          title="Miembros"
-          value={totalMembers}
-          change="10.8%"
-          changeType="increase"
-          period="vs. 12 ultimo cuatrimestre"
-          icon={<FaUserGroup size={24} />}
-          isLoading={false}
-        />
-      </Link>
+      <StatCard
+        title="Miembros"
+        value={totalMembers}
+        change="10.8%"
+        changeType="increase"
+        period="vs. 12 ultimo cuatrimestre"
+        icon={<FaUserGroup size={24} />}
+        isLoading={false}
+        action={
+          <Link
+            href="/members"
+            className="btn btn-sm btn-primary btn-outline w-full"
+          >
+            Ver más detalles
+          </Link>
+        }
+      />
     );
   }
 
@@ -117,22 +133,34 @@ export default async function Dashboard() {
     const extraGroupStats = [
       { label: "Grupos padres:", value: String(stats?.parents ?? 0) },
       { label: "Subgrupos:", value: String(stats?.subgroups ?? 0) },
-      { label: "Miembros en grupos:", value: String(stats?.membersInGroups ?? 0) },
-      { label: "Miembros sin grupo:", value: String(stats?.membersWithoutGroup ?? 0) },
+      {
+        label: "Miembros en grupos:",
+        value: String(stats?.membersInGroups ?? 0),
+      },
+      {
+        label: "Miembros sin grupo:",
+        value: String(stats?.membersWithoutGroup ?? 0),
+      },
     ];
     return (
-      <Link href="/groups" className="cursor-pointer">
-        <StatCard
-          title="Grupos"
-          value={totalGroups}
-          change="12.1%"
-          changeType="increase"
-          period="vs. último cuatrimestre"
-          icon={<FaUsers size={24} />}
-          extraStats={extraGroupStats}
-          isLoading={false}
-        />
-      </Link>
+      <StatCard
+        title="Grupos"
+        value={totalGroups}
+        change="12.1%"
+        changeType="increase"
+        period="vs. último cuatrimestre"
+        icon={<FaUsers size={24} />}
+        extraStats={extraGroupStats}
+        isLoading={false}
+        action={
+          <Link
+            href="/groups"
+            className="btn btn-sm btn-primary btn-outline w-full"
+          >
+            Ver más detalles
+          </Link>
+        }
+      />
     );
   }
 
@@ -156,20 +184,66 @@ export default async function Dashboard() {
       { label: "Iglesia:", value: String(church) },
     ];
     return (
-      <Link href="/reports" className="cursor-pointer">
-        <StatCard
-          title="Reportes"
-          value={String(total)}
-          change="2.3%"
-          changeType="increase"
-          period="vs. último cuatrimestre"
-          icon={<FaFileLines size={24} />}
-          extraStats={extra}
-          isLoading={false}
-        />
-      </Link>
+      <StatCard
+        title="Reportes"
+        value={String(total)}
+        change="2.3%"
+        changeType="increase"
+        period="vs. último cuatrimestre"
+        icon={<FaFileLines size={24} />}
+        extraStats={extra}
+        isLoading={false}
+        action={
+          <Link
+            href="/reports"
+            className="btn btn-sm btn-primary btn-outline w-full"
+          >
+            Ver más detalles
+          </Link>
+        }
+      />
     );
   }
+
+  const SectorsCard = (
+    <StatCard
+      title="Sectores"
+      value="3"
+      change="6.8%"
+      changeType="decrease"
+      period="vs. 28 ultimo cuatrimestre"
+      icon={<FaUsersGear size={24} />}
+      isLoading={false}
+      action={
+        <Link
+          href="/sectors"
+          className="btn btn-sm btn-primary btn-outline w-full"
+        >
+          Ver más detalles
+        </Link>
+      }
+    />
+  );
+
+  const SubsectorsCard = (
+    <StatCard
+      title="Subsectores"
+      value="10"
+      change="8.5%"
+      changeType="increase"
+      period="vs. 3 ultimo cuatrimestre"
+      icon={<FaUsers size={24} />}
+      isLoading={false}
+      action={
+        <Link
+          href="/subsectors"
+          className="btn btn-sm btn-primary btn-outline w-full"
+        >
+          Ver más detalles
+        </Link>
+      }
+    />
+  );
 
   return (
     <div className="space-y-6 p-8">
@@ -177,95 +251,15 @@ export default async function Dashboard() {
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <Breadcrumbs />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Suspense
-          fallback={
-            <div className="card bg-base-100 shadow-md">
-              <div className="stats">
-                <div className="stat">
-                  <span className="skeleton h-8 w-24"></span>
-                </div>
-              </div>
-            </div>
-          }
-        >
-          <MinistriesCard />
-        </Suspense>
-        <Suspense
-          fallback={
-            <div className="card bg-base-100 shadow-md">
-              <div className="stats">
-                <div className="stat">
-                  <span className="skeleton h-8 w-24"></span>
-                </div>
-              </div>
-            </div>
-          }
-        >
-          <CellsCard />
-        </Suspense>
-        <Suspense
-          fallback={
-            <div className="card bg-base-100 shadow-md">
-              <div className="stats">
-                <div className="stat">
-                  <span className="skeleton h-8 w-24"></span>
-                </div>
-              </div>
-            </div>
-          }
-        >
-          <MembersCard />
-        </Suspense>
-        <Suspense
-          fallback={
-            <div className="card bg-base-100 shadow-md">
-              <div className="stats">
-                <div className="stat">
-                  <span className="skeleton h-8 w-24"></span>
-                </div>
-              </div>
-            </div>
-          }
-        >
-          <GroupsCard />
-        </Suspense>
-        <Suspense
-          fallback={
-            <div className="card bg-base-100 shadow-md">
-              <div className="stats">
-                <div className="stat">
-                  <span className="skeleton h-8 w-24"></span>
-                </div>
-              </div>
-            </div>
-          }
-        >
-          <ReportsCard />
-        </Suspense>
-        <Link href="/sectors" className="cursor-pointer">
-          <StatCard
-            title="Sectores"
-            value="3"
-            change="6.8%"
-            changeType="decrease"
-            period="vs. 28 ultimo cuatrimestre"
-            icon={<FaUsersGear size={24} />}
-            isLoading={false}
-          />
-        </Link>
-        <Link href="/subsectors" className="cursor-pointer">
-          <StatCard
-            title="Subsectores"
-            value="10"
-            change="8.5%"
-            changeType="increase"
-            period="vs. 3 ultimo cuatrimestre"
-            icon={<FaUsers size={24} />}
-            isLoading={false}
-          />
-        </Link>
-      </div>
+      <DashboardGrid
+        ministriesCard={<MinistriesCard />}
+        cellsCard={<CellsCard />}
+        membersCard={<MembersCard />}
+        groupsCard={<GroupsCard />}
+        reportsCard={<ReportsCard />}
+        sectorsCard={SectorsCard}
+        subsectorsCard={SubsectorsCard}
+      />
     </div>
   );
 }
