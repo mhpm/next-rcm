@@ -13,6 +13,7 @@ export type ReportFieldInput = {
   label?: string | null;
   type: ReportFieldType;
   value?: unknown;
+  options?: string[]; // Add options
   required?: boolean;
 };
 
@@ -20,6 +21,7 @@ export type CreateReportInput = {
   title: string;
   description?: string | null;
   scope: ReportScope;
+  color?: string | null;
   cellId?: string | null;
   groupId?: string | null;
   sectorId?: string | null;
@@ -49,8 +51,10 @@ export async function createReport(input: CreateReportInput) {
         required: !!f.required,
       };
       if (typeof f.value !== "undefined") {
-        // value es Json? en el esquema; Prisma acepta InputJsonValue
         (base as any).value = f.value as Prisma.InputJsonValue;
+      }
+      if (f.options && Array.isArray(f.options)) {
+        (base as any).options = f.options as Prisma.InputJsonValue;
       }
       return base;
     });
@@ -60,6 +64,7 @@ export async function createReport(input: CreateReportInput) {
       title: input.title.trim(),
       description: input.description ?? null,
       scope,
+      color: input.color,
       church: { connect: { id: churchId } },
       ...(fieldsCreate.length > 0 ? { fields: { create: fieldsCreate } } : {}),
     },
@@ -180,6 +185,7 @@ export type ReportFieldUpdateInput = {
   type: ReportFieldType;
   required?: boolean;
   value?: unknown;
+  options?: string[]; // Add options
 };
 
 export type UpdateReportWithFieldsInput = {
@@ -187,6 +193,7 @@ export type UpdateReportWithFieldsInput = {
   title: string;
   description?: string | null;
   scope: ReportScope;
+  color?: string | null;
   fields: ReportFieldUpdateInput[];
 };
 
@@ -202,6 +209,7 @@ export async function updateReportWithFields(
         title: input.title,
         description: input.description ?? null,
         scope: input.scope,
+        color: input.color,
       },
     });
 
@@ -235,6 +243,9 @@ export async function updateReportWithFields(
       if (typeof f.value !== "undefined") {
         (base as any).value = f.value as Prisma.InputJsonValue;
       }
+      if (f.options && Array.isArray(f.options)) {
+        (base as any).options = f.options as Prisma.InputJsonValue;
+      }
 
       if (f.id) {
         await tx.reportFields.update({
@@ -251,6 +262,9 @@ export async function updateReportWithFields(
         };
         if (typeof f.value !== "undefined") {
           (createData as any).value = f.value as Prisma.InputJsonValue;
+        }
+        if (f.options && Array.isArray(f.options)) {
+          (createData as any).options = f.options as Prisma.InputJsonValue;
         }
         await tx.reportFields.create({ data: createData });
       }

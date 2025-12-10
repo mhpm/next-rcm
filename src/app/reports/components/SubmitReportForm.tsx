@@ -16,6 +16,7 @@ type FieldDef = {
   label?: string | null;
   type: ReportFieldType;
   required?: boolean;
+  options?: string[]; // Add options
 };
 
 type FormValues = {
@@ -178,6 +179,24 @@ export default function SubmitReportForm({
                     label={f.label || f.key}
                     register={register}
                     type="date"
+                    rules={f.required ? { required: "Requerido" } : undefined}
+                  />
+                );
+              }
+              if (f.type === "SELECT") {
+                return (
+                  <SelectField<FormValues>
+                    key={f.id}
+                    name={baseName}
+                    label={f.label || f.key}
+                    register={register}
+                    options={[
+                      { value: "", label: "Selecciona una opción" },
+                      ...(f.options || []).map((opt) => ({
+                        value: opt,
+                        label: opt,
+                      })),
+                    ]}
                     rules={f.required ? { required: "Requerido" } : undefined}
                   />
                 );

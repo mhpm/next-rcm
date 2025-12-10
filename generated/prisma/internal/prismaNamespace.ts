@@ -1455,6 +1455,7 @@ export const ReportsScalarFieldEnum = {
   scope: 'scope',
   title: 'title',
   description: 'description',
+  color: 'color',
   cell_id: 'cell_id',
   group_id: 'group_id',
   sector_id: 'sector_id',
@@ -1472,6 +1473,7 @@ export const ReportFieldsScalarFieldEnum = {
   label: 'label',
   type: 'type',
   value: 'value',
+  options: 'options',
   required: 'required',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

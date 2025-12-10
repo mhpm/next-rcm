@@ -12,6 +12,7 @@ type ReportCardProps = {
     title: string;
     description: string | null;
     createdAt: string | Date;
+    color?: string | null;
   };
 };
 
@@ -28,7 +29,10 @@ export default function ReportCard({ report }: ReportCardProps) {
   };
 
   return (
-    <div className="card bg-base-100 border border-base-300 hover:shadow-md transition-shadow">
+    <div
+      className="card bg-base-100 border border-base-300 hover:shadow-md transition-shadow border-t-8"
+      style={{ borderTopColor: report.color || "#3b82f6" }}
+    >
       <div className="card-body">
         <div className="flex items-start justify-between gap-4">
           <Link href={`/reports/${report.id}/submit`} className="flex-1">

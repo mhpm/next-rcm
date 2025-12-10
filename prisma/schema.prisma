@@ -189,6 +189,7 @@ model Reports {
   scope     ReportScope  @default(CELL)
   title     String
   description String?
+  color     String?          @default("#3b82f6") // Default blue-500
   cell_id   String?
   group_id  String?
   sector_id String?
@@ -215,6 +216,7 @@ enum ReportFieldType {
   BOOLEAN
   DATE
   JSON
+  SELECT
 }
 
 enum ReportScope {
@@ -231,6 +233,7 @@ model ReportFields {
   label     String?
   type      ReportFieldType @default(TEXT)
   value     Json?
+  options   Json?           // Para almacenar opciones de SELECT (array de strings o objetos)
   required  Boolean         @default(false)
   createdAt DateTime        @default(now()) @map("created_at")
   updatedAt DateTime        @updatedAt @map("updated_at")

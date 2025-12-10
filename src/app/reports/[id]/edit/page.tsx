@@ -30,6 +30,9 @@ export default async function EditReportPage({
             label: f.label ?? undefined,
             type: f.type,
             value: (f as any).value,
+            options: Array.isArray((f as any).options)
+              ? (f as any).options.map((opt: string) => ({ value: opt }))
+              : undefined,
             required: f.required,
           })),
         }}

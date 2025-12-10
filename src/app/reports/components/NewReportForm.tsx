@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useForm, useFieldArray, useWatch } from "react-hook-form";
+import { useForm, useFieldArray, useWatch, Control } from "react-hook-form";
 import { InputField, SelectField } from "@/components/FormControls";
 import type { ReportFieldType, ReportScope } from "@/generated/prisma/client";
 import { createReport } from "../actions/reports.actions";
@@ -43,10 +43,61 @@ type FormValues = {
     label?: string;
     type: ReportFieldType;
     value?: unknown;
+    options?: { value: string }[]; // Changed to object array for useFieldArray
     required?: boolean;
     id?: string;
   }[];
+  color?: string;
 };
+
+function OptionsEditor({
+  nestIndex,
+  control,
+  register,
+}: {
+  nestIndex: number;
+  control: Control<FormValues>;
+  register: any;
+}) {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: `fields.${nestIndex}.options`,
+  });
+
+  return (
+    <div className="pl-4 border-l-2 border-base-200 ml-1 space-y-2">
+      <label className="label text-xs font-semibold uppercase text-base-content/50">
+        Opciones
+      </label>
+      {fields.map((item, k) => (
+        <div key={item.id} className="flex gap-2">
+          <input
+            {...register(`fields.${nestIndex}.options.${k}.value`, {
+              required: true,
+            })}
+            className="input input-bordered input-sm flex-1"
+            placeholder={`Opción ${k + 1}`}
+          />
+          <button
+            type="button"
+            className="btn btn-ghost btn-xs text-error"
+            onClick={() => remove(k)}
+            disabled={fields.length <= 1}
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        className="btn btn-ghost btn-xs gap-1"
+        onClick={() => append({ value: "" })}
+      >
+        <span>+ Añadir opción</span>
+      </button>
+    </div>
+  );
+}
 
 function SortableField({
   id,
@@ -78,13 +129,57 @@ function SortableField({
   );
 }
 
+const COLORS = [
+  "#3b82f6", // blue
+  "#ef4444", // red
+  "#10b981", // green
+  "#f59e0b", // orange
+  "#8b5cf6", // purple
+  "#ec4899", // pink
+  "#06b6d4", // cyan
+  "#6366f1", // violet
+];
+
+function ColorPicker({
+  selected,
+  onChange,
+}: {
+  selected: string;
+  onChange: (color: string) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <label className="label-text font-medium">Color del formulario</label>
+      <div className="flex flex-wrap gap-2">
+        {COLORS.map((color) => (
+          <button
+            key={color}
+            type="button"
+            className={`w-8 h-8 rounded-full border-2 transition-all ${
+              selected === color
+                ? "border-base-content scale-110"
+                : "border-transparent hover:scale-105"
+            }`}
+            style={{ backgroundColor: color }}
+            onClick={() => onChange(color)}
+            aria-label={`Select color ${color}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function LivePreview({ values }: { values: Partial<FormValues> }) {
   return (
     <div className="mockup-window border border-base-300 bg-base-200 shadow-xl h-full">
       <div className="flex justify-center px-4 py-8 bg-base-100 h-full overflow-y-auto max-h-[calc(100vh-200px)]">
         <div className="w-full max-w-lg space-y-6">
-          <div className="text-center mb-8 border-b border-base-200 pb-6">
-            <h2 className="text-2xl font-bold text-base-content">
+          <div
+            className="text-center mb-8 border-b border-base-200 pb-6 rounded-t-lg border-t-8"
+            style={{ borderTopColor: values.color || "#3b82f6" }}
+          >
+            <h2 className="text-2xl font-bold text-base-content mt-4">
               {values.title || "Título del Reporte"}
             </h2>
             {values.description ? (
@@ -180,6 +275,15 @@ function LivePreview({ values }: { values: Partial<FormValues> }) {
                     <option>No</option>
                   </select>
                 )}
+
+                {field.type === "SELECT" && (
+                  <select className="select select-bordered w-full" disabled>
+                    <option>Selecciona una opción</option>
+                    {field.options?.map((opt, idx) => (
+                      <option key={idx}>{opt.value}</option>
+                    ))}
+                  </select>
+                )}
               </div>
             ))}
 
@@ -211,7 +315,7 @@ export default function NewReportForm() {
     handleSubmit,
     formState: { isSubmitting },
   } = useForm<FormValues>({
-    defaultValues: { scope: "CELL", fields: [] },
+    defaultValues: { scope: "CELL", fields: [], color: "#3b82f6" },
   });
   const { fields, append, remove, move } = useFieldArray({
     control,
@@ -233,7 +337,11 @@ export default function NewReportForm() {
         title: data.title,
         description: data.description,
         scope: data.scope,
-        fields: data.fields,
+        color: data.color,
+        fields: data.fields.map((f) => ({
+          ...f,
+          options: f.options?.map((o) => o.value),
+        })),
       });
       router.push(`/reports`);
     } catch (error) {
@@ -250,6 +358,10 @@ export default function NewReportForm() {
       label: "",
       type,
       value: type === "NUMBER" ? 0 : type === "BOOLEAN" ? "false" : "",
+      options:
+        type === "SELECT"
+          ? [{ value: "Opción 1" }, { value: "Opción 2" }]
+          : undefined,
     });
   };
 
@@ -260,6 +372,7 @@ export default function NewReportForm() {
       label: (f as any).label || "",
       type: (f as any).type,
       value: (f as any).value,
+      options: (f as any).options ? [...(f as any).options] : undefined,
       required: (f as any).required || false,
     });
   };
@@ -315,6 +428,10 @@ export default function NewReportForm() {
                     { value: "CHURCH", label: "Iglesia" },
                   ]}
                 />
+                <ColorPicker
+                  selected={watchedValues.color || "#3b82f6"}
+                  onChange={(color) => setValue("color", color)}
+                />
               </div>
             </div>
           </div>
@@ -355,6 +472,11 @@ export default function NewReportForm() {
                     <li>
                       <button type="button" onClick={() => addField("DATE")}>
                         Fecha
+                      </button>
+                    </li>
+                    <li>
+                      <button type="button" onClick={() => addField("SELECT")}>
+                        Opción Múltiple
                       </button>
                     </li>
                   </ul>
@@ -437,6 +559,14 @@ export default function NewReportForm() {
                                 </label>
                               </div>
                             </div>
+
+                            {field.type === "SELECT" && (
+                              <OptionsEditor
+                                nestIndex={index}
+                                control={control}
+                                register={register}
+                              />
+                            )}
 
                             <div className="collapse collapse-arrow border border-base-200 bg-base-100 rounded-md">
                               <input type="checkbox" />

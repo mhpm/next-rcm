@@ -15,6 +15,7 @@ export default async function ReportsPage() {
       description: true,
       scope: true,
       createdAt: true,
+      color: true,
     },
   });
 

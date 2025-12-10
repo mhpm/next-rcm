@@ -47,7 +47,10 @@ export default async function SubmitReportPage({
         <Breadcrumbs />
       </div>
 
-      <div className="bg-base-100 p-6 rounded-box shadow-md max-w-4xl mx-auto">
+      <div
+        className="bg-base-100 p-6 rounded-box shadow-md max-w-4xl mx-auto border-t-8"
+        style={{ borderTopColor: report.color || "#3b82f6" }}
+      >
         <SubmitReportForm
           reportId={report.id}
           title={report.title}
@@ -59,6 +62,9 @@ export default async function SubmitReportPage({
             label: f.label,
             type: f.type,
             required: f.required,
+            options: Array.isArray(f.options)
+              ? (f.options as string[])
+              : undefined,
           }))}
           cells={cellOptions}
           groups={groupOptions}
