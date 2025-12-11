@@ -625,6 +625,12 @@ export interface DataTableProps<T = Record<string, unknown>> {
   searchPlaceholder?: string;
 
   /**
+   * Optional content to display next to the search input.
+   * Useful for adding filter buttons or other controls.
+   */
+  searchEndContent?: React.ReactNode;
+
+  /**
    * Whether rows can be selected with checkboxes.
    * When true, adds a checkbox column and enables multi-row selection.
    *

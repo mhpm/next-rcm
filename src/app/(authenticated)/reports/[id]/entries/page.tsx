@@ -43,6 +43,7 @@ export default async function ReportEntriesPage({
     const base: Row = {
       id: e.id,
       createdAt: new Date(e.createdAt).toLocaleString(),
+      raw_createdAt: e.createdAt.toISOString(),
       entidad,
     };
     for (const f of report.fields) {
@@ -59,6 +60,7 @@ export default async function ReportEntriesPage({
           currency: "MXN",
         }).format(Number(val));
       base[f.id] = display;
+      base[`raw_${f.id}`] = val; // Store raw value for filtering
     }
     return base;
   });
@@ -85,6 +87,15 @@ export default async function ReportEntriesPage({
         title="Entradas del reporte"
         subTitle={`Total: ${entries.length}`}
         reportId={id}
+        fields={report.fields.map((f) => ({
+          id: f.id,
+          key: f.key,
+          label: f.label,
+          type: f.type,
+          options: Array.isArray(f.options)
+            ? (f.options as string[])
+            : undefined,
+        }))}
       />
     </div>
   );

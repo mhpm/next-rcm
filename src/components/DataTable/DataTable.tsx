@@ -38,6 +38,7 @@ function DataTable<T extends Record<string, unknown>>({
   onShowAllColumns,
   onHideAllColumns,
   showColumnVisibility = false,
+  searchEndContent,
 }: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -341,15 +342,18 @@ function DataTable<T extends Record<string, unknown>>({
 
           {/* Search - Mobile First */}
           {searchable && (
-            <div className="relative w-full sm:w-auto sm:max-w-md">
-              <RiSearchLine className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/70 z-10 w-5 h-5 pointer-events-none" />
-              <input
-                type="text"
-                placeholder={searchPlaceholder}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="input input-bordered pl-10 w-full sm:w-64"
-              />
+            <div className="flex flex-row gap-2 w-full sm:w-auto md:max-w-md">
+              <div className="relative w-full md:w-64">
+                <RiSearchLine className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/70 z-10 w-5 h-5 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder={searchPlaceholder}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="input input-bordered pl-10 w-full md:w-64"
+                />
+              </div>
+              {searchEndContent}
             </div>
           )}
         </div>
