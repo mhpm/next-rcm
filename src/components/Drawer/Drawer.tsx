@@ -91,6 +91,10 @@ export const Drawer = ({ children, items = Items }: Props) => {
     }));
   };
 
+  if (pathname.startsWith("/public")) {
+    return <>{children}</>;
+  }
+
   const handleClick = (e: React.MouseEvent, item: DrawerItem) => {
     const href = item.href;
 

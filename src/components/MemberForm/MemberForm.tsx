@@ -6,9 +6,9 @@ import { useMemo, useEffect } from "react";
 import Link from "next/link";
 import { FaLink } from "react-icons/fa6";
 
-import { useEmailAvailability } from "@/app/members/hooks/useMembers";
+import { useEmailAvailability } from "@/app/(authenticated)/members/hooks/useMembers";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useMinistries } from "@/app/ministries/hooks/useMinistries";
+import { useMinistries } from "@/app/(authenticated)/ministries/hooks/useMinistries";
 import {
   InputField,
   SelectField,
@@ -22,7 +22,7 @@ import {
   memberFormSchema,
   memberFormSchemaEdit,
   MemberFormInput,
-} from "@/app/members/schema/members.schema";
+} from "@/app/(authenticated)/members/schema/members.schema";
 
 // Usamos el tipo de entrada del esquema (antes de transformaciones)
 export type FormValues = MemberFormInput;
@@ -129,12 +129,22 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     const fieldsVisible = isEditMode ? changePassword : requiresPassword;
     if (!fieldsVisible) {
       setValue("password", "", { shouldValidate: false, shouldDirty: false });
-      setValue("confirmPassword", "", { shouldValidate: false, shouldDirty: false });
+      setValue("confirmPassword", "", {
+        shouldValidate: false,
+        shouldDirty: false,
+      });
       clearErrors(["password", "confirmPassword"]);
       unregister("password");
       unregister("confirmPassword");
     }
-  }, [requiresPassword, changePassword, isEditMode, setValue, clearErrors, unregister]);
+  }, [
+    requiresPassword,
+    changePassword,
+    isEditMode,
+    setValue,
+    clearErrors,
+    unregister,
+  ]);
 
   // Debounce email value to avoid excessive API calls
   const debouncedEmail = useDebounce(emailValue, 500);

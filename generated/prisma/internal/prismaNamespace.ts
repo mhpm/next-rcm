@@ -1456,6 +1456,7 @@ export const ReportsScalarFieldEnum = {
   title: 'title',
   description: 'description',
   color: 'color',
+  publicToken: 'publicToken',
   cell_id: 'cell_id',
   group_id: 'group_id',
   sector_id: 'sector_id',

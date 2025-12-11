@@ -3,11 +3,15 @@
 import { RiMenuFill, RiMenuUnfold4Line, RiUser3Fill } from "react-icons/ri";
 import { useDrawer } from "../Drawer/useDrawer";
 import { useTheme } from "../ThemeProvider";
+import { usePathname } from "next/navigation";
 
 export const Navbar = () => {
   const toggleDrawer = useDrawer((s) => s.toggleDrawer);
   const isOpen = useDrawer((s) => s.isDrawerOpen);
   const { isDark, toggleTheme } = useTheme();
+  const pathname = usePathname();
+
+  if (pathname.startsWith("/public")) return null;
 
   return (
     <div className="navbar bg-base-100 px-6">

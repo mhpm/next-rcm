@@ -190,6 +190,7 @@ model Reports {
   title     String
   description String?
   color     String?          @default("#3b82f6") // Default blue-500
+  publicToken String?        @unique
   cell_id   String?
   group_id  String?
   sector_id String?
