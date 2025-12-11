@@ -12,18 +12,18 @@ export const useDashboardStore = create<DashboardStore>()(
   persist(
     (set) => ({
       cardsOrder: [
-        "ministries",
-        "cells",
         "members",
-        "groups",
         "reports",
         "sectors",
         "subsectors",
+        "ministries",
+        "cells",
+        "groups",
       ],
       setCardsOrder: (order) => set({ cardsOrder: order }),
     }),
     {
-      name: "dashboard-cards-order",
+      name: "dashboard-cards-order-v2",
     }
   )
 );

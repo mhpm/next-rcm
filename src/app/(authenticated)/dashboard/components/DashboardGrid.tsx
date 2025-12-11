@@ -26,7 +26,6 @@ interface DashboardGridProps {
   groupsCard: React.ReactNode;
   reportsCard: React.ReactNode;
   sectorsCard: React.ReactNode;
-  subsectorsCard: React.ReactNode;
 }
 
 export function DashboardGrid({
@@ -36,7 +35,6 @@ export function DashboardGrid({
   groupsCard,
   reportsCard,
   sectorsCard,
-  subsectorsCard,
 }: DashboardGridProps) {
   const { cardsOrder, setCardsOrder } = useDashboardStore();
   const [mounted, setMounted] = useState(false);
@@ -59,7 +57,6 @@ export function DashboardGrid({
     groups: groupsCard,
     reports: reportsCard,
     sectors: sectorsCard,
-    subsectors: subsectorsCard,
   };
 
   function handleDragEnd(event: DragEndEvent) {
@@ -76,12 +73,31 @@ export function DashboardGrid({
   // Use the order from store if available, otherwise fallback to default keys
   // Note: During SSR, cardsOrder might be default from store definition, which matches.
   // We use mounted check to ensure client-side hydration doesn't mismatch if localStorage has different order.
-  
+
+  // Map each card ID to its column span class
+  // Small cards (4 per row): members, reports, sectors, subsectors
+  // Large cards (3 per row): ministries, cells, groups
+  const getColSpan = (id: string) => {
+    switch (id) {
+      case "members":
+      case "reports":
+      case "sectors":
+      case "ministries":
+      case "cells":
+      case "groups":
+        return "col-span-12 md:col-span-4";
+      default:
+        return "col-span-12 md:col-span-4";
+    }
+  };
+
   if (!mounted) {
     return (
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-12 gap-6">
         {cardsOrder.map((id) => (
-           <div key={id} className="h-full">{cardsMap[id]}</div>
+          <div key={id} className={getColSpan(id)}>
+            {cardsMap[id]}
+          </div>
         ))}
       </div>
     );
@@ -94,9 +110,9 @@ export function DashboardGrid({
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={cardsOrder} strategy={rectSortingStrategy}>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-12 gap-6">
           {cardsOrder.map((id) => (
-            <DraggableCard key={id} id={id}>
+            <DraggableCard key={id} id={id} className={getColSpan(id)}>
               {cardsMap[id]}
             </DraggableCard>
           ))}

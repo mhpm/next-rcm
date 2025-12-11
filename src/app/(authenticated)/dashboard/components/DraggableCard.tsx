@@ -6,9 +6,11 @@ import { CSS } from "@dnd-kit/utilities";
 export function DraggableCard({
   id,
   children,
+  className,
 }: {
   id: string;
   children: React.ReactNode;
+  className?: string;
 }) {
   const {
     attributes,
@@ -32,7 +34,7 @@ export function DraggableCard({
       style={style}
       {...attributes}
       {...listeners}
-      className="h-full"
+      className={`h-full ${className || ""}`}
     >
       {children}
     </div>

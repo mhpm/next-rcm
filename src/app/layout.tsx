@@ -45,9 +45,7 @@ export default function RootLayout({
                 <NavigationLoader />
                 <Drawer>
                   <Navbar />
-                  <main className="container mx-auto md:max-w-7xl md:mx-auto">
-                    {children}
-                  </main>
+                  <main className="">{children}</main>
                 </Drawer>
               </ThemeProvider>
               <ToastContainer position="top-right" />

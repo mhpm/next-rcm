@@ -51,7 +51,7 @@ export default async function Dashboard() {
         action={
           <Link
             href="/ministries"
-            className="btn btn-sm btn-primary btn-outline w-full"
+            className="btn btn-sm btn-primary btn-soft w-full"
           >
             Ver más detalles
           </Link>
@@ -86,7 +86,7 @@ export default async function Dashboard() {
         action={
           <Link
             href="/cells"
-            className="btn btn-sm btn-primary btn-outline w-full"
+            className="btn btn-sm btn-primary btn-soft w-full"
           >
             Ver más detalles
           </Link>
@@ -114,7 +114,7 @@ export default async function Dashboard() {
         action={
           <Link
             href="/members"
-            className="btn btn-sm btn-primary btn-outline w-full"
+            className="btn btn-sm btn-primary btn-soft w-full"
           >
             Ver más detalles
           </Link>
@@ -155,7 +155,7 @@ export default async function Dashboard() {
         action={
           <Link
             href="/groups"
-            className="btn btn-sm btn-primary btn-outline w-full"
+            className="btn btn-sm btn-primary btn-soft w-full"
           >
             Ver más detalles
           </Link>
@@ -170,19 +170,8 @@ export default async function Dashboard() {
     cacheLife({ stale: 600, revalidate: 1800, expire: 86400 });
     cacheTag("reports");
     const prisma = await getChurchPrisma();
-    const [total, cell, group, sector, church] = await Promise.all([
-      prisma.reports.count(),
-      prisma.reports.count({ where: { scope: "CELL" } }),
-      prisma.reports.count({ where: { scope: "GROUP" } }),
-      prisma.reports.count({ where: { scope: "SECTOR" } }),
-      prisma.reports.count({ where: { scope: "CHURCH" } }),
-    ]);
-    const extra = [
-      { label: "Célula:", value: String(cell) },
-      { label: "Grupo:", value: String(group) },
-      { label: "Sector:", value: String(sector) },
-      { label: "Iglesia:", value: String(church) },
-    ];
+    const [total] = await Promise.all([prisma.reports.count()]);
+
     return (
       <StatCard
         title="Reportes"
@@ -191,12 +180,11 @@ export default async function Dashboard() {
         changeType="increase"
         period="vs. último cuatrimestre"
         icon={<FaFileLines size={24} />}
-        extraStats={extra}
         isLoading={false}
         action={
           <Link
             href="/reports"
-            className="btn btn-sm btn-primary btn-outline w-full"
+            className="btn btn-sm btn-primary btn-soft w-full"
           >
             Ver más detalles
           </Link>
@@ -217,27 +205,7 @@ export default async function Dashboard() {
       action={
         <Link
           href="/sectors"
-          className="btn btn-sm btn-primary btn-outline w-full"
-        >
-          Ver más detalles
-        </Link>
-      }
-    />
-  );
-
-  const SubsectorsCard = (
-    <StatCard
-      title="Subsectores"
-      value="10"
-      change="8.5%"
-      changeType="increase"
-      period="vs. 3 ultimo cuatrimestre"
-      icon={<FaUsers size={24} />}
-      isLoading={false}
-      action={
-        <Link
-          href="/subsectors"
-          className="btn btn-sm btn-primary btn-outline w-full"
+          className="btn btn-sm btn-primary btn-soft w-full"
         >
           Ver más detalles
         </Link>
@@ -258,7 +226,6 @@ export default async function Dashboard() {
         groupsCard={<GroupsCard />}
         reportsCard={<ReportsCard />}
         sectorsCard={SectorsCard}
-        subsectorsCard={SubsectorsCard}
       />
     </div>
   );

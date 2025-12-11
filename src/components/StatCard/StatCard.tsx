@@ -30,10 +30,10 @@ export const StatCard = ({
   isLoading,
   action,
 }: StatCardProps) => (
-  <div className="card bg-base-100 card-border shadow-md h-full">
+  <div className="card bg-base-100 card-border shadow h-full">
     <div className="stats relative">
       <div className="stat">
-        <div className="stat-title text-bold font-extrabold text-lg text-primary">
+        <div className="stat-title text-bold font-extrabold text-lg">
           {isLoading ? <span className="skeleton h-4 w-24"></span> : title}
         </div>
         <div className="stat-value">
