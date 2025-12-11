@@ -53,6 +53,11 @@ export default async function ReportEntriesPage({
       else if (f.type === "BOOLEAN") display = val ? "Sí" : "No";
       else if (f.type === "DATE")
         display = new Date(String(val)).toLocaleDateString();
+      else if (f.type === "CURRENCY")
+        display = new Intl.NumberFormat("es-MX", {
+          style: "currency",
+          currency: "MXN",
+        }).format(Number(val));
       base[f.id] = display;
     }
     return base;
@@ -79,6 +84,7 @@ export default async function ReportEntriesPage({
         columns={columns}
         title="Entradas del reporte"
         subTitle={`Total: ${entries.length}`}
+        reportId={id}
       />
     </div>
   );

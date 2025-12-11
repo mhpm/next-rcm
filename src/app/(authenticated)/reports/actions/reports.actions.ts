@@ -296,3 +296,79 @@ export async function deleteReportEntryAction(formData: FormData) {
     revalidatePath(`/reports/${existing.report_id}/entries`);
   }
 }
+
+export type UpdateReportEntryInput = {
+  id: string;
+  scope: ReportScope;
+  cellId?: string | null;
+  groupId?: string | null;
+  sectorId?: string | null;
+  values: { fieldId: string; value?: unknown }[];
+};
+
+export async function updateReportEntry(input: UpdateReportEntryInput) {
+  const prisma = await getChurchPrisma();
+
+  const { scope, cellId, groupId, sectorId } = input;
+  if (scope === "CELL" && !cellId)
+    throw new Error("Debes seleccionar una célula");
+  if (scope === "GROUP" && !groupId)
+    throw new Error("Debes seleccionar un grupo");
+  if (scope === "SECTOR" && !sectorId)
+    throw new Error("Debes seleccionar un sector");
+
+  const connectByScope =
+    scope === "CELL"
+      ? { cell: { connect: { id: cellId! } } }
+      : scope === "GROUP"
+      ? { group: { connect: { id: groupId! } } }
+      : scope === "SECTOR"
+      ? { sector: { connect: { id: sectorId! } } }
+      : {};
+
+  await prisma.$transaction(async (tx) => {
+    // 1. Update entry metadata
+    await tx.reportEntries.update({
+      where: { id: input.id },
+      data: {
+        scope,
+        // Reset relations first (optional, but cleaner if switching scopes)
+        cell: { disconnect: true },
+        group: { disconnect: true },
+        sector: { disconnect: true },
+        ...connectByScope,
+      },
+    });
+
+    // 2. Update values
+    // Delete existing values for this entry
+    await tx.reportEntryValues.deleteMany({
+      where: { entry_id: input.id },
+    });
+
+    // Create new values
+    if (input.values.length > 0) {
+      await tx.reportEntryValues.createMany({
+        data: input.values.map((v) => {
+            const val: Prisma.ReportEntryValuesCreateManyInput = {
+                entry_id: input.id,
+                report_field_id: v.fieldId,
+            };
+            if (typeof v.value !== "undefined") {
+                val.value = v.value as Prisma.InputJsonValue;
+            }
+            return val;
+        }),
+      });
+    }
+  });
+
+  const entry = await prisma.reportEntries.findUnique({
+    where: { id: input.id },
+    select: { report_id: true },
+  });
+
+  if (entry) {
+    revalidatePath(`/reports/${entry.report_id}/entries`);
+  }
+}

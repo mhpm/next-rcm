@@ -23,6 +23,7 @@ export default async function EditReportPage({
           title: report.title,
           description: report.description ?? undefined,
           scope: report.scope,
+          color: report.color,
           fields: report.fields.map((f) => ({
             id: undefined, // Dejar id undefined para que useFieldArray genere uno nuevo
             fieldId: f.id, // Guardar el ID real de la BD

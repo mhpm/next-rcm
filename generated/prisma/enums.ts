@@ -23,6 +23,7 @@ export type GroupFieldType = (typeof GroupFieldType)[keyof typeof GroupFieldType
 export const ReportFieldType = {
   TEXT: 'TEXT',
   NUMBER: 'NUMBER',
+  CURRENCY: 'CURRENCY',
   BOOLEAN: 'BOOLEAN',
   DATE: 'DATE',
   JSON: 'JSON',

@@ -154,7 +154,7 @@ export default function PublicReportForm({
           <div className="grid grid-cols-1 gap-4 mt-4">
             {fields.map((f) => {
               const baseName = `values.${f.id}` as const;
-              if (f.type === "NUMBER") {
+              if (f.type === "NUMBER" || f.type === "CURRENCY") {
                 return (
                   <InputField<FormValues>
                     key={f.id}
@@ -162,10 +162,13 @@ export default function PublicReportForm({
                     label={f.label || f.key}
                     register={register}
                     type="number"
+                    step={f.type === "CURRENCY" ? "0.01" : "1"}
+                    placeholder={f.type === "CURRENCY" ? "0.00" : "0"}
                     rules={{
                       ...(f.required ? { required: "Requerido" } : {}),
                       valueAsNumber: true,
                     }}
+                    startIcon={f.type === "CURRENCY" ? <span className="text-gray-500 font-bold">$</span> : undefined}
                   />
                 );
               }

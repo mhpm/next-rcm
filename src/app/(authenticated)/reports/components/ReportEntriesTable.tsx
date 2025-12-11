@@ -19,6 +19,7 @@ type ReportEntriesTableProps = {
   columns: TableColumn<Row>[];
   title?: string;
   subTitle?: string;
+  reportId: string;
 };
 
 export default function ReportEntriesTable({
@@ -26,6 +27,7 @@ export default function ReportEntriesTable({
   columns,
   title = "Entradas del reporte",
   subTitle,
+  reportId,
 }: ReportEntriesTableProps) {
   const router = useRouter();
   const { showSuccess, showError } = useNotificationStore();
@@ -37,6 +39,20 @@ export default function ReportEntriesTable({
   const actions: TableAction<Row>[] = useMemo(
     () => [
       {
+        label: "Ver",
+        variant: "ghost",
+        onClick: (row) => {
+          router.push(`/reports/${reportId}/entries/${row.id}`);
+        },
+      },
+      {
+        label: "Editar",
+        variant: "ghost",
+        onClick: (row) => {
+          router.push(`/reports/${reportId}/entries/${row.id}/edit`);
+        },
+      },
+      {
         label: "Eliminar",
         variant: "error",
         onClick: (row) => {
@@ -45,7 +61,7 @@ export default function ReportEntriesTable({
         },
       },
     ],
-    []
+    [reportId, router]
   );
 
   const handleConfirmDelete = async () => {

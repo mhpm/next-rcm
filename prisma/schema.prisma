@@ -214,6 +214,7 @@ model Reports {
 enum ReportFieldType {
   TEXT
   NUMBER
+  CURRENCY
   BOOLEAN
   DATE
   JSON

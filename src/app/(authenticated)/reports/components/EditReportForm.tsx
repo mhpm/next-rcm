@@ -217,7 +217,12 @@ export default function EditReportForm({
       key: "",
       label: "",
       type,
-      value: type === "NUMBER" ? 0 : type === "BOOLEAN" ? "false" : "",
+      value:
+        type === "NUMBER" || type === "CURRENCY"
+          ? 0
+          : type === "BOOLEAN"
+          ? "false"
+          : "",
       options:
         type === "SELECT"
           ? [{ value: "Opción 1" }, { value: "Opción 2" }]
@@ -312,6 +317,30 @@ export default function EditReportForm({
                   onChange={(color) => setValue("color", color)}
                 />
               </div>
+              <div className="flex items-center justify-end gap-3 pt-6 border-t border-base-200">
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => router.push("/reports")}
+                  disabled={isSubmitting}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary px-8"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="loading loading-spinner loading-xs"></span>{" "}
+                      Guardando...
+                    </>
+                  ) : (
+                    "Guardar cambios"
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -340,6 +369,14 @@ export default function EditReportForm({
                     <li>
                       <button type="button" onClick={() => addField("NUMBER")}>
                         Número
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => addField("CURRENCY")}
+                      >
+                        Moneda
                       </button>
                     </li>
                     <li>
@@ -376,6 +413,7 @@ export default function EditReportForm({
                               <span className="text-xs font-medium opacity-70">
                                 {field.type === "TEXT" && "Texto"}
                                 {field.type === "NUMBER" && "Número"}
+                                {field.type === "CURRENCY" && "Moneda"}
                                 {field.type === "BOOLEAN" && "Sí/No"}
                                 {field.type === "DATE" && "Fecha"}
                                 {field.type === "SELECT" && "Opción Múltiple"}
@@ -498,31 +536,6 @@ export default function EditReportForm({
               </DndContext>
             </div>
           </div>
-
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-base-200">
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={() => router.push("/reports")}
-              disabled={isSubmitting}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary px-8"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="loading loading-spinner loading-xs"></span>{" "}
-                  Guardando...
-                </>
-              ) : (
-                "Guardar cambios"
-              )}
-            </button>
-          </div>
         </form>
       </div>
 
@@ -625,6 +638,15 @@ export default function EditReportForm({
                           className="input input-bordered w-full"
                           placeholder="0"
                           disabled
+                        />
+                      )}
+                      {field.type === "CURRENCY" && (
+                        <input
+                          type="number"
+                          className="input input-bordered w-full"
+                          placeholder="0.00"
+                          disabled
+                          step="0.01"
                         />
                       )}
                       {field.type === "DATE" && (

@@ -4,7 +4,10 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { InputField, SelectField } from "@/components/FormControls";
 import type { ReportFieldType, ReportScope } from "@/generated/prisma/client";
-import { createReportEntry } from "../actions/reports.actions";
+import {
+  createReportEntry,
+  updateReportEntry,
+} from "@/app/(authenticated)/reports/actions/reports.actions";
 import { useRouter } from "next/navigation";
 import { useNotificationStore } from "@/store/NotificationStore";
 
@@ -36,6 +39,8 @@ export default function SubmitReportForm({
   cells,
   groups,
   sectors,
+  initialValues,
+  entryId,
 }: {
   reportId: string;
   title: string;
@@ -45,6 +50,8 @@ export default function SubmitReportForm({
   cells: Option[];
   groups: Option[];
   sectors: Option[];
+  initialValues?: FormValues;
+  entryId?: string;
 }) {
   const router = useRouter();
   const { showSuccess, showError } = useNotificationStore();
@@ -55,7 +62,7 @@ export default function SubmitReportForm({
     reset,
     formState: { isSubmitting },
   } = useForm<FormValues>({
-    defaultValues: { scope },
+    defaultValues: initialValues || { scope },
   });
 
   const onSubmit = async (data: FormValues) => {
@@ -67,18 +74,30 @@ export default function SubmitReportForm({
         })
       );
 
-      await createReportEntry({
-        reportId,
-        scope,
-        cellId: scope === "CELL" ? data.cellId : undefined,
-        groupId: scope === "GROUP" ? data.groupId : undefined,
-        sectorId: scope === "SECTOR" ? data.sectorId : undefined,
-        values,
-      });
-
-      showSuccess("Reporte enviado exitosamente");
-      reset(); // Limpiar el formulario para una nueva entrada
-      router.refresh();
+      if (entryId) {
+        await updateReportEntry({
+          id: entryId,
+          scope,
+          cellId: scope === "CELL" ? data.cellId : undefined,
+          groupId: scope === "GROUP" ? data.groupId : undefined,
+          sectorId: scope === "SECTOR" ? data.sectorId : undefined,
+          values,
+        });
+        showSuccess("Entrada actualizada exitosamente");
+        router.push(`/reports/${reportId}/entries`);
+      } else {
+        await createReportEntry({
+          reportId,
+          scope,
+          cellId: scope === "CELL" ? data.cellId : undefined,
+          groupId: scope === "GROUP" ? data.groupId : undefined,
+          sectorId: scope === "SECTOR" ? data.sectorId : undefined,
+          values,
+        });
+        showSuccess("Reporte enviado exitosamente");
+        reset(); // Limpiar el formulario para una nueva entrada
+        router.refresh();
+      }
     } catch (error) {
       console.error("Error al enviar reporte:", error);
       showError("Error al enviar el reporte");
@@ -136,7 +155,7 @@ export default function SubmitReportForm({
           <div className="grid grid-cols-1 gap-4 mt-4">
             {fields.map((f) => {
               const baseName = `values.${f.id}` as const;
-              if (f.type === "NUMBER") {
+              if (f.type === "NUMBER" || f.type === "CURRENCY") {
                 return (
                   <InputField<FormValues>
                     key={f.id}
@@ -144,10 +163,17 @@ export default function SubmitReportForm({
                     label={f.label || f.key}
                     register={register}
                     type="number"
+                    step={f.type === "CURRENCY" ? "0.01" : "1"}
+                    placeholder={f.type === "CURRENCY" ? "0.00" : "0"}
                     rules={{
                       ...(f.required ? { required: "Requerido" } : {}),
                       valueAsNumber: true,
                     }}
+                    startIcon={
+                      f.type === "CURRENCY" ? (
+                        <span className="text-gray-500 font-bold">$</span>
+                      ) : undefined
+                    }
                   />
                 );
               }

@@ -21,6 +21,8 @@ type InputFieldProps<T extends FieldValues> = {
   readOnly?: boolean;
   disabled?: boolean;
   tabIndex?: number;
+  startIcon?: React.ReactNode;
+  step?: string;
 };
 
 export function InputField<T extends FieldValues>({
@@ -36,22 +38,32 @@ export function InputField<T extends FieldValues>({
   readOnly,
   disabled,
   tabIndex,
+  startIcon,
+  step,
 }: InputFieldProps<T>) {
   return (
     <fieldset>
       <label className="label mb-2">
         <span className="label-text">{label}</span>
       </label>
-      <input
-        type={type}
-        placeholder={placeholder || label}
-        className={className}
-        defaultValue={defaultValue}
-        readOnly={readOnly}
-        disabled={disabled}
-        tabIndex={tabIndex}
-        {...register(name, rules)}
-      />
+      <div className={`relative flex items-center ${startIcon ? "gap-2" : ""}`}>
+        {startIcon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+            {startIcon}
+          </div>
+        )}
+        <input
+          type={type}
+          placeholder={placeholder || label}
+          className={`${className} ${startIcon ? "pl-8" : ""}`}
+          defaultValue={defaultValue}
+          readOnly={readOnly}
+          disabled={disabled}
+          tabIndex={tabIndex}
+          step={step}
+          {...register(name, rules)}
+        />
+      </div>
       {error && <p className="text-error text-sm mt-1">{error}</p>}
     </fieldset>
   );
