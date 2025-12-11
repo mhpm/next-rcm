@@ -15,7 +15,6 @@ export const useDashboardStore = create<DashboardStore>()(
         "members",
         "reports",
         "sectors",
-        "subsectors",
         "ministries",
         "cells",
         "groups",
@@ -23,7 +22,7 @@ export const useDashboardStore = create<DashboardStore>()(
       setCardsOrder: (order) => set({ cardsOrder: order }),
     }),
     {
-      name: "dashboard-cards-order-v2",
+      name: "dashboard-cards-order-v3",
     }
   )
 );

@@ -16,7 +16,18 @@ import { getCellStats } from "@/app/(authenticated)/cells/actions/cells.actions"
 import { getGroupStats } from "@/app/(authenticated)/groups/actions/groups.actions";
 import { getChurchPrisma } from "@/actions/churchContext";
 
+import { getMemberGrowthStats } from "./actions/dashboard.actions";
+import GrowthChart from "./components/GrowthChart";
+
 export default async function Dashboard() {
+  async function ChartCard() {
+    "use cache";
+    cacheLife({ stale: 600, revalidate: 3600, expire: 86400 });
+    cacheTag("chart-growth");
+    const data = await getMemberGrowthStats();
+    return <GrowthChart data={data} />;
+  }
+
   async function MinistriesCard() {
     "use cache";
 
@@ -226,6 +237,7 @@ export default async function Dashboard() {
         groupsCard={<GroupsCard />}
         reportsCard={<ReportsCard />}
         sectorsCard={SectorsCard}
+        chartCard={<ChartCard />}
       />
     </div>
   );

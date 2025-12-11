@@ -299,6 +299,7 @@ export const createMember = withErrorHandling(async function createMember(
 
     // Revalidate dashboard caches
     revalidateTag("members", { expire: 0 });
+    revalidateTag("chart-growth", { expire: 0 });
     if (parsed.ministries && parsed.ministries.length > 0) {
       revalidateTag("ministries", { expire: 0 });
     }
@@ -591,20 +592,14 @@ export async function getMemberStats() {
 
     return {
       total,
-      byRole: byRole.reduce(
-        (acc, item) => {
-          acc[item.role] = item._count.role;
-          return acc;
-        },
-        {} as Record<string, number>
-      ),
-      byGender: byGender.reduce(
-        (acc, item) => {
-          acc[item.gender] = item._count.gender;
-          return acc;
-        },
-        {} as Record<string, number>
-      ),
+      byRole: byRole.reduce((acc, item) => {
+        acc[item.role] = item._count.role;
+        return acc;
+      }, {} as Record<string, number>),
+      byGender: byGender.reduce((acc, item) => {
+        acc[item.gender] = item._count.gender;
+        return acc;
+      }, {} as Record<string, number>),
     };
   } catch (error) {
     console.error("Error fetching member stats:", error);
