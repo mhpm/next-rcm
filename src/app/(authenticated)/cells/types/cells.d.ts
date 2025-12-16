@@ -27,14 +27,14 @@ export interface CellsListResult<T = unknown> {
 }
 
 export type CellWithRelations = Prisma.CellsGetPayload<{
-  include: { leader: true; host: true; sector: true; members: true };
+  include: { leader: true; host: true; subSector: { include: { sector: true } }; members: true };
 }>;
 
 export type CellListItem = Prisma.CellsGetPayload<{
   include: {
     leader: true;
     host: true;
-    sector: true;
+    subSector: { include: { sector: true } };
     _count: { select: { members: true } };
   };
-}> & { memberCount: number };
+}> & { memberCount: number; sector?: Prisma.SectorsGetPayload<{}> | null };

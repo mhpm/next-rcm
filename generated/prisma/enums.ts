@@ -36,7 +36,9 @@ export type ReportFieldType = (typeof ReportFieldType)[keyof typeof ReportFieldT
 export const ReportScope = {
   CELL: 'CELL',
   GROUP: 'GROUP',
+  SUBSECTOR: 'SUBSECTOR',
   SECTOR: 'SECTOR',
+  ZONE: 'ZONE',
   CHURCH: 'CHURCH'
 } as const
 

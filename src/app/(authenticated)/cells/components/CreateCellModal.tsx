@@ -10,6 +10,7 @@ import { getAllSectors } from "../actions/cells.actions";
 import { useCreateCell } from "../hooks/useCells";
 import { cellCreateSchema } from "../schema/cells.schema";
 import { useNotificationStore } from "@/store/NotificationStore";
+import { useEffect } from "react";
 
 type FormValues = z.infer<typeof cellCreateSchema>;
 
@@ -30,35 +31,66 @@ export default function CreateCellModal({
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     reset,
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm<FormValues & { subSectorId?: string }>({
     resolver: zodResolver(cellCreateSchema),
-    defaultValues: { name: "", sectorId: "" },
+    defaultValues: { name: "", sectorId: "", subSectorId: "" },
     mode: "onChange",
   });
 
-  const { data: sectors, isLoading: loadingSectors } = useQuery({
+  const { data: sectorsData, isLoading: loadingSectors } = useQuery({
     queryKey: ["sectors", "all"],
     queryFn: () => getAllSectors(),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 
-  const sectorOptions = (sectors || []).map((s) => ({
+  const sectors = sectorsData || [];
+
+  const selectedSectorId = watch("sectorId");
+
+  // Reset sub-sector when parent sector changes
+  useEffect(() => {
+    setValue("subSectorId", "");
+  }, [selectedSectorId, setValue]);
+
+  // Filter for parent sectors (those with no parent_id - actually all are sectors now)
+  const parentSectors = Array.isArray(sectors) ? sectors : [];
+
+  const parentSectorOptions = parentSectors.map((s: any) => ({
     value: s.id,
     label: s.name,
   }));
+
   const sectorSelectOptions = [
     { value: "", label: "Selecciona un sector" },
-  ].concat(sectorOptions);
+  ].concat(parentSectorOptions);
+
+  // Filter for sub-sectors of the selected parent
+  const selectedSector = Array.isArray(sectors)
+    ? sectors.find((s: any) => s.id === selectedSectorId)
+    : null;
+
+  const subSectors = selectedSector?.subSectors || [];
+
+  const subSectorOptions = [
+    { value: "", label: "Selecciona un sub-sector" },
+  ].concat(
+    subSectors.map((s: any) => ({
+      value: s.id,
+      label: s.name,
+    }))
+  );
 
   return (
     <Modal
       open={open}
       onClose={() => {
         onClose();
-        reset({ name: "", sectorId: "" });
+        reset({ name: "", sectorId: "", subSectorId: "" });
       }}
       title="Nueva Célula"
     >
@@ -66,13 +98,17 @@ export default function CreateCellModal({
         suppressHydrationWarning
         onSubmit={handleSubmit(async (form) => {
           try {
+            // We must pass subSectorId. If user selected a subsector, use it.
+            // If user only selected a sector, we can't really create the cell unless we force subsector.
+            // But let's assume we pass the subSectorId if present.
             await createCellMutation.mutateAsync({
               name: form.name,
-              sectorId: form.sectorId || "",
+              subSectorId: form.subSectorId || "",
+              // We don't pass sectorId anymore as createCell expects subSectorId
             });
             showSuccess("Célula creada exitosamente");
             onClose();
-            reset({ name: "", sectorId: "" });
+            reset({ name: "", sectorId: "", subSectorId: "" });
             onCreated?.();
           } catch (e) {
             const message =
@@ -99,6 +135,19 @@ export default function CreateCellModal({
             options={sectorSelectOptions}
             className="select select-bordered w-full"
           />
+
+          {subSectors.length > 0 && (
+            <SelectField<FormValues & { subSectorId?: string }>
+              name="subSectorId"
+              label="Subsectores"
+              register={register}
+              rules={{}}
+              // No error mapping needed as it's optional in schema but we use it for selection
+              options={subSectorOptions}
+              className="select select-bordered w-full"
+            />
+          )}
+
           {loadingSectors && (
             <p className="text-sm text-base-content/60">Cargando sectores...</p>
           )}
@@ -109,7 +158,7 @@ export default function CreateCellModal({
             className="btn btn-ghost"
             onClick={() => {
               onClose();
-              reset({ name: "", sectorId: "" });
+              reset({ name: "", sectorId: "", subSectorId: "" });
             }}
             disabled={createCellMutation.isPending}
           >

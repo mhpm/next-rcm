@@ -55,7 +55,9 @@ export const ModelName = {
   Members: 'Members',
   Ministries: 'Ministries',
   Cells: 'Cells',
+  Zones: 'Zones',
   Sectors: 'Sectors',
+  SubSectors: 'SubSectors',
   Groups: 'Groups',
   GroupFields: 'GroupFields',
   Reports: 'Reports',
@@ -112,7 +114,9 @@ export const MembersScalarFieldEnum = {
   notes: 'notes',
   passwordHash: 'passwordHash',
   church_id: 'church_id',
+  zone_id: 'zone_id',
   sector_id: 'sector_id',
+  sub_sector_id: 'sub_sector_id',
   cell_id: 'cell_id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -140,12 +144,24 @@ export const CellsScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   church_id: 'church_id',
-  sector_id: 'sector_id',
+  sub_sector_id: 'sub_sector_id',
   leader_id: 'leader_id',
   host_id: 'host_id'
 } as const
 
 export type CellsScalarFieldEnum = (typeof CellsScalarFieldEnum)[keyof typeof CellsScalarFieldEnum]
+
+
+export const ZonesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  church_id: 'church_id',
+  supervisor_id: 'supervisor_id'
+} as const
+
+export type ZonesScalarFieldEnum = (typeof ZonesScalarFieldEnum)[keyof typeof ZonesScalarFieldEnum]
 
 
 export const SectorsScalarFieldEnum = {
@@ -154,10 +170,23 @@ export const SectorsScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   church_id: 'church_id',
-  leader_id: 'leader_id'
+  zone_id: 'zone_id',
+  supervisor_id: 'supervisor_id'
 } as const
 
 export type SectorsScalarFieldEnum = (typeof SectorsScalarFieldEnum)[keyof typeof SectorsScalarFieldEnum]
+
+
+export const SubSectorsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  sector_id: 'sector_id',
+  supervisor_id: 'supervisor_id'
+} as const
+
+export type SubSectorsScalarFieldEnum = (typeof SubSectorsScalarFieldEnum)[keyof typeof SubSectorsScalarFieldEnum]
 
 
 export const GroupsScalarFieldEnum = {
@@ -198,7 +227,9 @@ export const ReportsScalarFieldEnum = {
   publicToken: 'publicToken',
   cell_id: 'cell_id',
   group_id: 'group_id',
+  zone_id: 'zone_id',
   sector_id: 'sector_id',
+  sub_sector_id: 'sub_sector_id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -229,7 +260,9 @@ export const ReportEntriesScalarFieldEnum = {
   scope: 'scope',
   cell_id: 'cell_id',
   group_id: 'group_id',
+  zone_id: 'zone_id',
   sector_id: 'sector_id',
+  sub_sector_id: 'sub_sector_id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

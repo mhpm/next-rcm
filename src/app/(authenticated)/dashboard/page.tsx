@@ -14,6 +14,7 @@ import { getMemberStats } from "@/app/(authenticated)/members/actions/members.ac
 import { getMinistryStats } from "@/app/(authenticated)/ministries/actions/ministries.actions";
 import { getCellStats } from "@/app/(authenticated)/cells/actions/cells.actions";
 import { getGroupStats } from "@/app/(authenticated)/groups/actions/groups.actions";
+import { getSectorStats } from "@/app/(authenticated)/sectors/actions/sectors.actions";
 import { getChurchPrisma } from "@/actions/churchContext";
 
 import { getMemberGrowthStats } from "./actions/dashboard.actions";
@@ -204,25 +205,39 @@ export default async function Dashboard() {
     );
   }
 
-  const SectorsCard = (
-    <StatCard
-      title="Sectores"
-      value="3"
-      change="6.8%"
-      changeType="decrease"
-      period="vs. 28 ultimo cuatrimestre"
-      icon={<FaUsersGear size={24} />}
-      isLoading={false}
-      action={
-        <Link
-          href="/sectors"
-          className="btn btn-sm btn-primary btn-soft w-full"
-        >
-          Ver más detalles
-        </Link>
-      }
-    />
-  );
+  async function SectorsCard() {
+    "use cache";
+    cacheLife({ stale: 600, revalidate: 1800, expire: 86400 });
+    cacheTag("sectors");
+    const stats = await getSectorStats();
+
+    const extraStats = [
+      { label: "Sub-sectores:", value: String(stats.totalSubSectors) },
+      { label: "Células:", value: String(stats.totalCells) },
+      { label: "Miembros:", value: String(stats.totalMembers) },
+    ];
+
+    return (
+      <StatCard
+        title="Sectores"
+        value={String(stats.totalSectors)}
+        change="6.8%"
+        changeType="decrease"
+        period="vs. último cuatrimestre"
+        icon={<FaUsersGear size={24} />}
+        extraStats={extraStats}
+        isLoading={false}
+        action={
+          <Link
+            href="/sectors"
+            className="btn btn-sm btn-primary btn-soft w-full"
+          >
+            Ver más detalles
+          </Link>
+        }
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 p-8">
@@ -236,7 +251,7 @@ export default async function Dashboard() {
         membersCard={<MembersCard />}
         groupsCard={<GroupsCard />}
         reportsCard={<ReportsCard />}
-        sectorsCard={SectorsCard}
+        sectorsCard={<SectorsCard />}
         chartCard={<ChartCard />}
       />
     </div>

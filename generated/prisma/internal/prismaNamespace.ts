@@ -388,7 +388,9 @@ export const ModelName = {
   Members: 'Members',
   Ministries: 'Ministries',
   Cells: 'Cells',
+  Zones: 'Zones',
   Sectors: 'Sectors',
+  SubSectors: 'SubSectors',
   Groups: 'Groups',
   GroupFields: 'GroupFields',
   Reports: 'Reports',
@@ -411,7 +413,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "churches" | "members" | "ministries" | "cells" | "sectors" | "groups" | "groupFields" | "reports" | "reportFields" | "reportEntries" | "reportEntryValues" | "memberMinistry"
+    modelProps: "churches" | "members" | "ministries" | "cells" | "zones" | "sectors" | "subSectors" | "groups" | "groupFields" | "reports" | "reportFields" | "reportEntries" | "reportEntryValues" | "memberMinistry"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -711,6 +713,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Zones: {
+      payload: Prisma.$ZonesPayload<ExtArgs>
+      fields: Prisma.ZonesFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ZonesFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonesPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ZonesFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonesPayload>
+        }
+        findFirst: {
+          args: Prisma.ZonesFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonesPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ZonesFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonesPayload>
+        }
+        findMany: {
+          args: Prisma.ZonesFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonesPayload>[]
+        }
+        create: {
+          args: Prisma.ZonesCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonesPayload>
+        }
+        createMany: {
+          args: Prisma.ZonesCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ZonesCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonesPayload>[]
+        }
+        delete: {
+          args: Prisma.ZonesDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonesPayload>
+        }
+        update: {
+          args: Prisma.ZonesUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonesPayload>
+        }
+        deleteMany: {
+          args: Prisma.ZonesDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ZonesUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ZonesUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonesPayload>[]
+        }
+        upsert: {
+          args: Prisma.ZonesUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonesPayload>
+        }
+        aggregate: {
+          args: Prisma.ZonesAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateZones>
+        }
+        groupBy: {
+          args: Prisma.ZonesGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ZonesGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ZonesCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ZonesCountAggregateOutputType> | number
+        }
+      }
+    }
     Sectors: {
       payload: Prisma.$SectorsPayload<ExtArgs>
       fields: Prisma.SectorsFieldRefs
@@ -782,6 +858,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.SectorsCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.SectorsCountAggregateOutputType> | number
+        }
+      }
+    }
+    SubSectors: {
+      payload: Prisma.$SubSectorsPayload<ExtArgs>
+      fields: Prisma.SubSectorsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SubSectorsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubSectorsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SubSectorsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubSectorsPayload>
+        }
+        findFirst: {
+          args: Prisma.SubSectorsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubSectorsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SubSectorsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubSectorsPayload>
+        }
+        findMany: {
+          args: Prisma.SubSectorsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubSectorsPayload>[]
+        }
+        create: {
+          args: Prisma.SubSectorsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubSectorsPayload>
+        }
+        createMany: {
+          args: Prisma.SubSectorsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SubSectorsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubSectorsPayload>[]
+        }
+        delete: {
+          args: Prisma.SubSectorsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubSectorsPayload>
+        }
+        update: {
+          args: Prisma.SubSectorsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubSectorsPayload>
+        }
+        deleteMany: {
+          args: Prisma.SubSectorsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SubSectorsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SubSectorsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubSectorsPayload>[]
+        }
+        upsert: {
+          args: Prisma.SubSectorsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubSectorsPayload>
+        }
+        aggregate: {
+          args: Prisma.SubSectorsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSubSectors>
+        }
+        groupBy: {
+          args: Prisma.SubSectorsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SubSectorsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SubSectorsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SubSectorsCountAggregateOutputType> | number
         }
       }
     }
@@ -1373,7 +1523,9 @@ export const MembersScalarFieldEnum = {
   notes: 'notes',
   passwordHash: 'passwordHash',
   church_id: 'church_id',
+  zone_id: 'zone_id',
   sector_id: 'sector_id',
+  sub_sector_id: 'sub_sector_id',
   cell_id: 'cell_id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1401,12 +1553,24 @@ export const CellsScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   church_id: 'church_id',
-  sector_id: 'sector_id',
+  sub_sector_id: 'sub_sector_id',
   leader_id: 'leader_id',
   host_id: 'host_id'
 } as const
 
 export type CellsScalarFieldEnum = (typeof CellsScalarFieldEnum)[keyof typeof CellsScalarFieldEnum]
+
+
+export const ZonesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  church_id: 'church_id',
+  supervisor_id: 'supervisor_id'
+} as const
+
+export type ZonesScalarFieldEnum = (typeof ZonesScalarFieldEnum)[keyof typeof ZonesScalarFieldEnum]
 
 
 export const SectorsScalarFieldEnum = {
@@ -1415,10 +1579,23 @@ export const SectorsScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   church_id: 'church_id',
-  leader_id: 'leader_id'
+  zone_id: 'zone_id',
+  supervisor_id: 'supervisor_id'
 } as const
 
 export type SectorsScalarFieldEnum = (typeof SectorsScalarFieldEnum)[keyof typeof SectorsScalarFieldEnum]
+
+
+export const SubSectorsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  sector_id: 'sector_id',
+  supervisor_id: 'supervisor_id'
+} as const
+
+export type SubSectorsScalarFieldEnum = (typeof SubSectorsScalarFieldEnum)[keyof typeof SubSectorsScalarFieldEnum]
 
 
 export const GroupsScalarFieldEnum = {
@@ -1459,7 +1636,9 @@ export const ReportsScalarFieldEnum = {
   publicToken: 'publicToken',
   cell_id: 'cell_id',
   group_id: 'group_id',
+  zone_id: 'zone_id',
   sector_id: 'sector_id',
+  sub_sector_id: 'sub_sector_id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1490,7 +1669,9 @@ export const ReportEntriesScalarFieldEnum = {
   scope: 'scope',
   cell_id: 'cell_id',
   group_id: 'group_id',
+  zone_id: 'zone_id',
   sector_id: 'sector_id',
+  sub_sector_id: 'sub_sector_id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1814,7 +1995,9 @@ export type GlobalOmitConfig = {
   members?: Prisma.MembersOmit
   ministries?: Prisma.MinistriesOmit
   cells?: Prisma.CellsOmit
+  zones?: Prisma.ZonesOmit
   sectors?: Prisma.SectorsOmit
+  subSectors?: Prisma.SubSectorsOmit
   groups?: Prisma.GroupsOmit
   groupFields?: Prisma.GroupFieldsOmit
   reports?: Prisma.ReportsOmit

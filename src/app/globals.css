@@ -78,3 +78,9 @@ html,
 body {
   min-height: 100vh;
 }
+
+/* Ensure tooltips render above other elements */
+.tooltip:before,
+.tooltip:after {
+  z-index: 9999 !important;
+}

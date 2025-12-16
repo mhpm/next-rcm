@@ -40,7 +40,9 @@ export async function getAllCells(options?: {
       include: {
         leader: true,
         host: true,
-        sector: true,
+        subSector: {
+          include: { sector: true },
+        },
         _count: { select: { members: true } },
       },
     } satisfies Prisma.CellsFindManyArgs;
@@ -48,19 +50,13 @@ export async function getAllCells(options?: {
     // Validation of Prisma args removed (using Prisma types directly)
 
     const [cells, total] = await Promise.all([
-      prisma.cells.findMany(findArgs) as Promise<
-        (Cells & {
-          leader: Members | null;
-          host: Members | null;
-          sector: Sectors | null;
-          _count: { members: number };
-        })[]
-      >,
-      prisma.cells.count({ where: whereClause }) as Promise<number>,
+      prisma.cells.findMany(findArgs),
+      prisma.cells.count({ where: whereClause }),
     ]);
 
     const cellsWithCount: CellListItem[] = cells.map((cell) => ({
       ...cell,
+      sector: cell.subSector?.sector, // Map sector from subSector
       memberCount: cell._count.members,
     }));
 
@@ -97,7 +93,9 @@ export async function getCellById(id: string): Promise<CellWithRelations> {
       include: {
         leader: true,
         host: true,
-        sector: true,
+        subSector: {
+          include: { sector: true },
+        },
         members: true,
       },
     } satisfies Prisma.CellsFindUniqueArgs;
@@ -118,7 +116,7 @@ export async function getCellById(id: string): Promise<CellWithRelations> {
 
 export async function createCell(data: {
   name: string;
-  sectorId?: string | null;
+  subSectorId?: string | null;
   leaderId?: string | null;
   hostId?: string | null;
 }) {
@@ -129,8 +127,8 @@ export async function createCell(data: {
     const prismaData: Prisma.CellsCreateInput = {
       name: data.name,
       church: { connect: { id: churchId } },
-      ...(data.sectorId && data.sectorId !== ""
-        ? { sector: { connect: { id: data.sectorId } } }
+      ...(data.subSectorId && data.subSectorId !== ""
+        ? { subSector: { connect: { id: data.subSectorId } } }
         : {}),
       ...(data.leaderId && data.leaderId !== ""
         ? { leader: { connect: { id: data.leaderId } } }
@@ -173,7 +171,7 @@ export async function updateCell(
   id: string,
   data: {
     name?: string;
-    sectorId?: string | null;
+    subSectorId?: string | null;
     leaderId?: string | null;
     hostId?: string | null;
   }
@@ -195,10 +193,10 @@ export async function updateCell(
 
     const updateData: Prisma.CellsUpdateInput = {};
     if (data.name !== undefined) updateData.name = data.name;
-    if (Object.prototype.hasOwnProperty.call(data, "sectorId")) {
-      updateData.sector =
-        data.sectorId && data.sectorId !== ""
-          ? { connect: { id: data.sectorId } }
+    if (Object.prototype.hasOwnProperty.call(data, "subSectorId")) {
+      updateData.subSector =
+        data.subSectorId && data.subSectorId !== ""
+          ? { connect: { id: data.subSectorId } }
           : { disconnect: true };
     }
 
@@ -282,6 +280,7 @@ export async function getAllSectors() {
     const sectors = await prisma.sectors.findMany({
       where: { church_id: churchId },
       orderBy: { name: "asc" },
+      include: { subSectors: true },
     });
     return sectors;
   } catch (error) {

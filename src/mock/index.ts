@@ -4,9 +4,11 @@ import { MemberRole, Gender } from "@/generated/prisma/enums";
 
 // Use Prisma-generated types directly
 export type MockChurch = Churches;
-export type MockMember = Omit<Members, "sector_id" | "cell_id"> & {
+export type MockMember = Omit<Members, "sector_id" | "cell_id" | "zone_id" | "sub_sector_id"> & {
   sector_id?: string | null;
   cell_id?: string | null;
+  zone_id?: string | null;
+  sub_sector_id?: string | null;
 };
 // Make leader_id optional for mocks to avoid updating all fixtures
 export type MockMinistry = Omit<Ministries, "leader_id"> & {

@@ -60,10 +60,20 @@ export type Ministries = Prisma.MinistriesModel
  */
 export type Cells = Prisma.CellsModel
 /**
+ * Model Zones
+ * 
+ */
+export type Zones = Prisma.ZonesModel
+/**
  * Model Sectors
  * 
  */
 export type Sectors = Prisma.SectorsModel
+/**
+ * Model SubSectors
+ * 
+ */
+export type SubSectors = Prisma.SubSectorsModel
 /**
  * Model Groups
  * 
