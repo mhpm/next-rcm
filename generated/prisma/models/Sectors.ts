@@ -398,11 +398,6 @@ export type SectorsMinOrderByAggregateInput = {
   supervisor_id?: Prisma.SortOrder
 }
 
-export type SectorsScalarRelationFilter = {
-  is?: Prisma.SectorsWhereInput
-  isNot?: Prisma.SectorsWhereInput
-}
-
 export type SectorsCreateNestedManyWithoutChurchInput = {
   create?: Prisma.XOR<Prisma.SectorsCreateWithoutChurchInput, Prisma.SectorsUncheckedCreateWithoutChurchInput> | Prisma.SectorsCreateWithoutChurchInput[] | Prisma.SectorsUncheckedCreateWithoutChurchInput[]
   connectOrCreate?: Prisma.SectorsCreateOrConnectWithoutChurchInput | Prisma.SectorsCreateOrConnectWithoutChurchInput[]
@@ -551,10 +546,12 @@ export type SectorsCreateNestedOneWithoutSubSectorsInput = {
   connect?: Prisma.SectorsWhereUniqueInput
 }
 
-export type SectorsUpdateOneRequiredWithoutSubSectorsNestedInput = {
+export type SectorsUpdateOneWithoutSubSectorsNestedInput = {
   create?: Prisma.XOR<Prisma.SectorsCreateWithoutSubSectorsInput, Prisma.SectorsUncheckedCreateWithoutSubSectorsInput>
   connectOrCreate?: Prisma.SectorsCreateOrConnectWithoutSubSectorsInput
   upsert?: Prisma.SectorsUpsertWithoutSubSectorsInput
+  disconnect?: Prisma.SectorsWhereInput | boolean
+  delete?: Prisma.SectorsWhereInput | boolean
   connect?: Prisma.SectorsWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.SectorsUpdateToOneWithWhereWithoutSubSectorsInput, Prisma.SectorsUpdateWithoutSubSectorsInput>, Prisma.SectorsUncheckedUpdateWithoutSubSectorsInput>
 }

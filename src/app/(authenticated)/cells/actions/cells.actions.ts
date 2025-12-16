@@ -41,7 +41,13 @@ export async function getAllCells(options?: {
         leader: true,
         host: true,
         subSector: {
-          include: { sector: true },
+          include: {
+            sector: {
+              include: {
+                zone: true,
+              },
+            },
+          },
         },
         _count: { select: { members: true } },
       },

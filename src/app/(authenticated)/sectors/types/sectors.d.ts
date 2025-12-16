@@ -54,6 +54,14 @@ export interface SectorTableData {
   [key: string]: unknown; // Index signature for DataTable compatibility
 }
 
+export interface CellNode {
+  id: string;
+  name: string;
+  leaderName: string;
+  hostName: string;
+  membersCount: number;
+}
+
 export interface SectorNode {
   id: string;
   name: string;
@@ -64,6 +72,7 @@ export interface SectorNode {
   cellsCount: number;
   subSectorsCount: number;
   children: SectorNode[];
+  cells?: CellNode[];
 }
 
 export type SectorWithDetails = Sectors & {

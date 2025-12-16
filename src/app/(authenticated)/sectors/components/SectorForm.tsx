@@ -127,7 +127,7 @@ const SectorForm: React.FC<SectorFormProps> = ({
                     const res = await getAllMembers({
                       search: term,
                       limit: 10,
-                      role: MemberRole.SUPERVISOR,
+                      // Removed role filter to allow searching all members
                     });
                     return res.members;
                   }}

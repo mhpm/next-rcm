@@ -2,7 +2,23 @@
 
 import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
 import { Prisma } from "@/generated/prisma/client";
+import { MemberRole } from "@/generated/prisma/enums";
 import { revalidateTag } from "next/cache";
+
+// Helper to ensure member has SUPERVISOR role
+async function ensureSupervisorRole(prisma: any, memberId: string) {
+  const member = await prisma.members.findUnique({
+    where: { id: memberId },
+    select: { role: true },
+  });
+
+  if (member && member.role !== MemberRole.SUPERVISOR) {
+    await prisma.members.update({
+      where: { id: memberId },
+      data: { role: MemberRole.SUPERVISOR },
+    });
+  }
+}
 
 // Get all sectors for the current church
 export async function getAllSectors(options?: {
@@ -111,7 +127,11 @@ export async function getSectorById(id: string) {
       },
     });
 
-    if (subSector && subSector.sector.church_id === churchId) {
+    if (
+      subSector &&
+      subSector.sector &&
+      subSector.sector.church_id === churchId
+    ) {
       return { ...subSector, type: "SUB_SECTOR" as const };
     }
 
@@ -139,6 +159,7 @@ export async function getSectorHierarchy() {
           cells: {
             include: {
               leader: true,
+              host: true,
               _count: { select: { members: true } },
             },
           },
@@ -160,6 +181,10 @@ export async function createSector(data: {
   try {
     const prisma = await getChurchPrisma();
     const churchId = await getChurchId();
+
+    if (data.supervisorId) {
+      await ensureSupervisorRole(prisma, data.supervisorId);
+    }
 
     const sector = await prisma.sectors.create({
       data: {
@@ -188,6 +213,10 @@ export async function createSubSector(data: {
 }) {
   try {
     const prisma = await getChurchPrisma();
+
+    if (data.supervisorId) {
+      await ensureSupervisorRole(prisma, data.supervisorId);
+    }
 
     // Verify sector exists
     const sector = await prisma.sectors.findUnique({
@@ -228,6 +257,10 @@ export async function updateSector(
   try {
     const prisma = await getChurchPrisma();
     const churchId = await getChurchId();
+
+    if (data.supervisorId) {
+      await ensureSupervisorRole(prisma, data.supervisorId);
+    }
 
     // Verify ownership
     const existingSector = await prisma.sectors.findUnique({
@@ -275,6 +308,10 @@ export async function updateSubSector(
 ) {
   try {
     const prisma = await getChurchPrisma();
+
+    if (data.supervisorId) {
+      await ensureSupervisorRole(prisma, data.supervisorId);
+    }
 
     const subSector = await prisma.subSectors.update({
       where: { id },

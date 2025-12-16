@@ -6,7 +6,7 @@ import {
   useDeleteSector,
   useDeleteSubSector,
 } from "../hooks/useSectors";
-import type { SectorNode } from "../types/sectors";
+import type { SectorNode, CellNode } from "../types/sectors";
 import CreateSectorModal from "./CreateSectorModal";
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { useNotificationStore } from "@/store/NotificationStore";
@@ -41,7 +41,28 @@ function toNodes(
         (acc, child) => acc + child.membersCount,
         0
       );
+    } else if (s.cells) {
+      // For subsectors, count members in cells
+      membersCount = s.cells.reduce(
+        (acc: number, cell: any) => acc + (cell._count?.members ?? 0),
+        0
+      );
     }
+
+    const cells: CellNode[] | undefined =
+      !isSector && s.cells
+        ? s.cells.map((c: any) => ({
+            id: c.id,
+            name: c.name,
+            leaderName: c.leader
+              ? `${c.leader.firstName} ${c.leader.lastName}`
+              : "Sin líder",
+            hostName: c.host
+              ? `${c.host.firstName} ${c.host.lastName}`
+              : "Sin anfitrión",
+            membersCount: c._count?.members ?? 0,
+          }))
+        : undefined;
 
     return {
       id: s.id,
@@ -55,6 +76,7 @@ function toNodes(
       cellsCount,
       subSectorsCount: isSector ? children.length : 0,
       children,
+      cells,
     };
   });
 }
@@ -224,9 +246,11 @@ function ParentCollapse({
                   Supervisor: {node.supervisorName}
                 </div>
               )}
-            <div className="badge badge-soft text-xs">
-              {node.subSectorsCount} subsectores
-            </div>
+            {node.type === "SECTOR" && (
+              <div className="badge badge-soft text-xs">
+                {node.subSectorsCount} subsectores
+              </div>
+            )}
             <div className="badge badge-soft text-xs">
               {node.cellsCount} células
             </div>
@@ -298,9 +322,28 @@ function ParentCollapse({
                 onAddMembers={onAddMembers}
               />
             ))
+          ) : node.cells && node.cells.length > 0 ? (
+            <div className="space-y-2">
+              {node.cells.map((cell) => (
+                <div
+                  key={cell.id}
+                  className="bg-base-100 p-3 rounded-lg border border-base-200 flex justify-between items-center"
+                >
+                  <div>
+                    <div className="font-medium">{cell.name}</div>
+                    <div className="text-xs text-base-content/70 mt-1">
+                      Líder: {cell.leaderName} | Anfitrión: {cell.hostName}
+                    </div>
+                  </div>
+                  <div className="badge badge-sm badge-ghost">
+                    {cell.membersCount} miembros
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="text-sm text-base-content/50 py-2 italic">
-              No hay subsectores
+              {node.type === "SECTOR" ? "No hay subsectores" : "No hay células"}
             </div>
           )}
         </div>

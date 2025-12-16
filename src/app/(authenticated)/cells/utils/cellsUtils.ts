@@ -8,10 +8,19 @@ export function transformCellToTableData(cell: any): CellTableData {
     ? `${cell.host.firstName} ${cell.host.lastName}`
     : "Sin anfitrión";
 
+  const zoneName = cell.sector?.zone?.name;
+  const sectorName = cell.sector?.name;
+  const subSectorName = cell.subSector?.name;
+
+  const hierarchyParts = [zoneName, sectorName, subSectorName].filter(Boolean);
+  const hierarchyString =
+    hierarchyParts.length > 0 ? hierarchyParts.join(" > ") : "Sin ubicación";
+
   return {
     id: cell.id,
     name: cell.name,
-    sectorName: cell.sector?.name ?? "Sin sector",
+    sectorName: hierarchyString,
+    sectorId: cell.subSector?.id,
     leaderName,
     leaderId: cell.leader?.id,
     hostName,

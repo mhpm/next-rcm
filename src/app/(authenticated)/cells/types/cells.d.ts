@@ -12,6 +12,7 @@ export interface CellTableData {
   id: string;
   name: string;
   sectorName?: string;
+  sectorId?: string;
   leaderName: string;
   hostName: string;
   memberCount: number;
@@ -27,14 +28,22 @@ export interface CellsListResult<T = unknown> {
 }
 
 export type CellWithRelations = Prisma.CellsGetPayload<{
-  include: { leader: true; host: true; subSector: { include: { sector: true } }; members: true };
+  include: {
+    leader: true;
+    host: true;
+    subSector: { include: { sector: { include: { zone: true } } } };
+    members: true;
+  };
 }>;
 
 export type CellListItem = Prisma.CellsGetPayload<{
   include: {
     leader: true;
     host: true;
-    subSector: { include: { sector: true } };
+    subSector: { include: { sector: { include: { zone: true } } } };
     _count: { select: { members: true } };
   };
-}> & { memberCount: number; sector?: Prisma.SectorsGetPayload<{}> | null };
+}> & {
+  memberCount: number;
+  sector?: Prisma.SectorsGetPayload<{ include: { zone: true } }> | null;
+};

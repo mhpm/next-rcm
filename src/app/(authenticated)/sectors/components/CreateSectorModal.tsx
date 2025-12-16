@@ -81,7 +81,7 @@ export default function CreateSectorModal({
         onClose();
         reset({ name: "", supervisorId: undefined, parentId: undefined });
       }}
-      title="Nuevo Sector"
+      title={watch("parentId") ? "Nuevo Subsector" : "Nuevo Sector"}
     >
       <form
         suppressHydrationWarning
@@ -116,7 +116,9 @@ export default function CreateSectorModal({
         <div className="grid grid-cols-1 gap-4">
           <InputField<FormValues>
             name="name"
-            label="Nombre del Sector"
+            label={
+              watch("parentId") ? "Nombre del Subsector" : "Nombre del Sector"
+            }
             register={register}
             rules={{ required: "El nombre es requerido" }}
             error={errors.name?.message}
@@ -132,7 +134,7 @@ export default function CreateSectorModal({
               const res = await getAllMembers({
                 search: term,
                 limit: 10,
-                role: MemberRole.SUPERVISOR,
+                // Removed role filter to allow searching all members
               });
               return res.members;
             }}
