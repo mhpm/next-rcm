@@ -286,7 +286,13 @@ export async function getAllSectors() {
     const sectors = await prisma.sectors.findMany({
       where: { church_id: churchId },
       orderBy: { name: "asc" },
-      include: { subSectors: true },
+      include: {
+        subSectors: {
+          include: {
+            supervisor: true,
+          },
+        },
+      },
     });
     return sectors;
   } catch (error) {

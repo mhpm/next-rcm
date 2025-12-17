@@ -13,6 +13,8 @@ export interface CellTableData {
   name: string;
   sectorName?: string;
   sectorId?: string;
+  parentSectorId?: string;
+  subSectorId?: string;
   leaderName: string;
   hostName: string;
   memberCount: number;

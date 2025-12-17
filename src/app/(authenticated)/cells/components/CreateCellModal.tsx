@@ -81,7 +81,9 @@ export default function CreateCellModal({
   ].concat(
     subSectors.map((s: any) => ({
       value: s.id,
-      label: s.name,
+      label: s.supervisor
+        ? `${s.name} (${s.supervisor.firstName} ${s.supervisor.lastName})`
+        : s.name,
     }))
   );
 

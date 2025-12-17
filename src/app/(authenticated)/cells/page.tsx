@@ -1,15 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { RiAddLine } from "react-icons/ri";
+import { RiAddLine, RiFilter3Line } from "react-icons/ri";
 import { BackLink, Breadcrumbs, DataTable } from "@/components";
 import { TableColumn, AddButtonConfig, TableAction } from "@/types";
 import { useCells } from "./hooks/useCells";
 import { transformCellsToTableData } from "./utils/cellsUtils";
 import { CellTableData } from "./types/cells";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import CreateCellModal from "./components/CreateCellModal";
+import CellsFilterModal from "./components/CellsFilterModal";
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { useDeleteCell } from "./hooks/useCells";
 import { useNotificationStore } from "@/store/NotificationStore";
@@ -18,6 +19,9 @@ export default function CellsPage() {
   const router = useRouter();
   const deleteCellMutation = useDeleteCell();
   const { showSuccess, showError } = useNotificationStore();
+
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<Record<string, any>>({});
 
   const {
     data,
@@ -30,7 +34,74 @@ export default function CellsPage() {
     orderDirection: "asc",
   });
 
-  const cells = data?.cells ? transformCellsToTableData(data.cells) : [];
+  const cells = useMemo(
+    () => (data?.cells ? transformCellsToTableData(data.cells) : []),
+    [data?.cells]
+  );
+
+  const filteredCells = useMemo(() => {
+    let result = cells;
+
+    if (Object.keys(activeFilters).length > 0) {
+      result = result.filter((cell) => {
+        // Sector
+        if (
+          activeFilters.sectorId &&
+          cell.parentSectorId !== activeFilters.sectorId
+        ) {
+          return false;
+        }
+
+        // SubSector
+        if (
+          activeFilters.subSectorId &&
+          cell.subSectorId !== activeFilters.subSectorId
+        ) {
+          return false;
+        }
+
+        // Leader Name
+        if (
+          activeFilters.leaderName &&
+          !cell.leaderName
+            .toLowerCase()
+            .includes(activeFilters.leaderName.toLowerCase())
+        ) {
+          return false;
+        }
+
+        // Host Name
+        if (
+          activeFilters.hostName &&
+          !cell.hostName
+            .toLowerCase()
+            .includes(activeFilters.hostName.toLowerCase())
+        ) {
+          return false;
+        }
+
+        // Min Members
+        if (
+          activeFilters.minMembers &&
+          cell.memberCount < Number(activeFilters.minMembers)
+        ) {
+          return false;
+        }
+
+        // Max Members
+        if (
+          activeFilters.maxMembers &&
+          cell.memberCount > Number(activeFilters.maxMembers)
+        ) {
+          return false;
+        }
+
+        return true;
+      });
+    }
+
+    return result;
+  }, [cells, activeFilters]);
 
   const columns: TableColumn<CellTableData>[] = [
     {
@@ -152,9 +223,9 @@ export default function CellsPage() {
         <Breadcrumbs />
       </div>
       <DataTable<CellTableData>
-        data={cells}
+        data={filteredCells}
         title="Células"
-        subTitle={`Total de células en la iglesia: ${cells.length}`}
+        subTitle={`Total de células en la iglesia: ${filteredCells.length}`}
         columns={columns}
         actions={actions}
         searchable={true}
@@ -165,12 +236,39 @@ export default function CellsPage() {
         loading={loading}
         emptyMessage="No se encontraron células"
         addButton={addButton}
+        searchEndContent={
+          <div className="tooltip" data-tip="Filtros avanzados">
+            <button
+              className={`btn btn-square ${
+                Object.keys(activeFilters).length > 0
+                  ? "btn-primary"
+                  : "btn-ghost bg-base-200"
+              }`}
+              onClick={() => setIsFilterModalOpen(true)}
+            >
+              <RiFilter3Line className="w-5 h-5" />
+            </button>
+            {Object.keys(activeFilters).length > 0 && (
+              <div className="absolute -top-1 -right-1 badge badge-xs badge-secondary w-4 h-4 p-0 flex items-center justify-center animate-pulse">
+                !
+              </div>
+            )}
+          </div>
+        }
       />
 
       <CreateCellModal
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onCreated={() => refetch()}
+      />
+
+      <CellsFilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        onApply={setActiveFilters}
+        onClear={() => setActiveFilters({})}
+        activeFilters={activeFilters}
       />
 
       <DeleteConfirmationModal

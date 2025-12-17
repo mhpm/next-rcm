@@ -21,6 +21,8 @@ export function transformCellToTableData(cell: any): CellTableData {
     name: cell.name,
     sectorName: hierarchyString,
     sectorId: cell.subSector?.id,
+    parentSectorId: cell.sector?.id,
+    subSectorId: cell.subSector?.id,
     leaderName,
     leaderId: cell.leader?.id,
     hostName,
