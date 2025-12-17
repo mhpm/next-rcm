@@ -44,7 +44,13 @@ export function EmailField<T extends FieldValues>({
         <span className="label-text">{label}</span>
       </label>
       <div className="relative">
-        <input type="email" placeholder={label} className={inputClass} {...register(name, rules)} />
+        <input
+          type="email"
+          placeholder={label}
+          className={inputClass}
+          autoComplete="off"
+          {...register(name, rules)}
+        />
         <div className="absolute inset-y-0 right-0 flex items-center pr-3">
           {validationStatus === 'checking' && (
             <RiLoader4Line className="w-5 h-5 text-gray-400 animate-spin" />

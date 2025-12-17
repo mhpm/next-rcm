@@ -242,8 +242,9 @@ function ParentCollapse({
           <div className="flex flex-wrap items-center gap-2 pointer-events-auto">
             {node.supervisorName &&
               node.supervisorName !== "Sin supervisor" && (
-                <div className="badge badge-outline text-xs">
-                  Supervisor: {node.supervisorName}
+                <div className="flex flex-wrap text-xs p-2">
+                  Supervisor:{" "}
+                  <span className="md:ml-2">{node.supervisorName}</span>
                 </div>
               )}
             {node.type === "SECTOR" && (
@@ -260,8 +261,7 @@ function ParentCollapse({
 
             <div className="flex items-center gap-1 ml-auto sm:ml-2">
               <button
-                className="btn btn-ghost btn-xs sm:btn-sm btn-square tooltip tooltip-left"
-                data-tip="Editar"
+                className="btn btn-ghost btn-xs sm:btn-sm btn-square"
                 onClick={(e) => {
                   e.stopPropagation();
                   onEdit(node);
@@ -270,8 +270,7 @@ function ParentCollapse({
                 <RiEdit2Fill className="w-4 h-4" />
               </button>
               <button
-                className="btn btn-ghost btn-xs sm:btn-sm btn-square tooltip tooltip-left text-error"
-                data-tip="Eliminar"
+                className="btn btn-ghost btn-xs sm:btn-sm btn-square text-error"
                 onClick={(e) => {
                   e.stopPropagation();
                   onDelete(node);
@@ -281,8 +280,7 @@ function ParentCollapse({
               </button>
               {node.type === "SECTOR" && (
                 <button
-                  className="btn btn-ghost btn-xs sm:btn-sm btn-square tooltip tooltip-left text-primary"
-                  data-tip="Agregar Subsector"
+                  className="btn btn-ghost btn-xs sm:btn-sm btn-square text-primary"
                   onClick={(e) => {
                     e.stopPropagation();
                     onAddChild(node.id);
@@ -292,8 +290,7 @@ function ParentCollapse({
                 </button>
               )}
               <button
-                className="btn btn-ghost btn-xs sm:btn-sm btn-square tooltip tooltip-left"
-                data-tip="Expandir/Colapsar"
+                className="btn btn-ghost btn-xs sm:btn-sm btn-square"
                 onClick={(e) => {
                   e.stopPropagation();
                   setOpen(!open);

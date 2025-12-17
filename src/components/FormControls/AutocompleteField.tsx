@@ -105,6 +105,7 @@ export function AutocompleteField<TForm extends FieldValues, TItem>({
             className="input input-bordered w-full pr-10"
             placeholder={placeholder || label}
             value={searchText}
+            autoComplete="off"
             onChange={(e) => {
               setSearchText(e.target.value);
               setHasTyped(true);

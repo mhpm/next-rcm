@@ -36,6 +36,7 @@ export function PasswordField<T extends FieldValues>({
           type={show ? 'text' : 'password'}
           placeholder={placeholder || label}
           className="input input-bordered w-full pl-10 pr-10"
+          autoComplete="new-password"
           {...register(name, rules)}
         />
         <button

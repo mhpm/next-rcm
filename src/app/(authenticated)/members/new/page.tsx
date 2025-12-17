@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { Breadcrumbs, MemberForm, Alert, BackLink } from '@/components';
-import { useCallback, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { SubmitHandler } from 'react-hook-form';
-import { MemberFormData } from '@/app/(authenticated)/members/types/member';
-import { MemberRole, Gender } from '@/generated/prisma/enums';
-import { useCreateMember } from '@/app/(authenticated)/members/hooks/useMembers';
-import { useNotificationStore } from '@/store/NotificationStore';
-import { MemberFormInput } from '@/app/(authenticated)/members/schema/members.schema';
+import { Breadcrumbs, MemberForm, Alert, BackLink } from "@/components";
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { SubmitHandler } from "react-hook-form";
+import { MemberFormData } from "@/app/(authenticated)/members/types/member";
+import { MemberRole, Gender } from "@/generated/prisma/enums";
+import { useCreateMember } from "@/app/(authenticated)/members/hooks/useMembers";
+import { useNotificationStore } from "@/store/NotificationStore";
+import { MemberFormInput } from "@/app/(authenticated)/members/schema/members.schema";
 
 // FormValues type to match MemberForm component exactly
 type FormValues = MemberFormInput;
@@ -27,7 +27,7 @@ export default function NewMemberPage() {
     email: formData.email || undefined,
     phone: formData.phone || undefined,
     age:
-      typeof formData.age === 'string'
+      typeof formData.age === "string"
         ? parseInt(formData.age, 10) || undefined
         : formData.age || undefined,
     street: formData.street || undefined,
@@ -45,6 +45,16 @@ export default function NewMemberPage() {
     notes: formData.notes || undefined,
     picture: formData.picture || undefined,
   });
+
+  // Auto-dismiss success alert after 3 seconds
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setSuccess(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
 
   const handleSubmit: SubmitHandler<FormValues> = useCallback(
     async (data) => {
@@ -65,11 +75,11 @@ export default function NewMemberPage() {
 
         // Redirect after successful creation with enough time for toast to show
         setTimeout(() => {
-          router.push('/members');
+          router.push("/members");
         }, 2500);
       } catch (error: unknown) {
         const errorMessage =
-          error instanceof Error ? error.message : 'Error al crear el miembro';
+          error instanceof Error ? error.message : "Error al crear el miembro";
 
         // Mostrar toast de error
         showError(errorMessage);
@@ -96,7 +106,7 @@ export default function NewMemberPage() {
       />
       {/* Alertas de error y éxito */}
       {error && (
-        <div className="mb-6">
+        <div className="my-6">
           <Alert
             type="error"
             title="Error al crear miembro"
@@ -107,7 +117,7 @@ export default function NewMemberPage() {
       )}
 
       {success && (
-        <div className="mb-6">
+        <div className="my-6">
           <Alert
             type="success"
             title="Miembro creado exitosamente"

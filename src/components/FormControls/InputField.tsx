@@ -61,6 +61,7 @@ export function InputField<T extends FieldValues>({
           disabled={disabled}
           tabIndex={tabIndex}
           step={step}
+          autoComplete="off"
           {...register(name, rules)}
         />
       </div>

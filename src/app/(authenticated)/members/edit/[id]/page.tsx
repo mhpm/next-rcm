@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SubmitHandler } from "react-hook-form";
 import {
@@ -10,7 +10,10 @@ import {
   MinimalLoader,
   MemberForm,
 } from "@/components";
-import { useMember, useUpdateMember } from "@/app/(authenticated)/members/hooks/useMembers";
+import {
+  useMember,
+  useUpdateMember,
+} from "@/app/(authenticated)/members/hooks/useMembers";
 import { MemberFormInput } from "@/app/(authenticated)/members/schema/members.schema";
 import { MemberFormData } from "@/app/(authenticated)/members/types/member";
 import { MemberRole, Gender } from "@/generated/prisma/enums";
@@ -29,6 +32,16 @@ export default function EditMemberPage({
   const router = useRouter();
   const { showSuccess, showError } = useNotificationStore();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Auto-dismiss error alert after 5 seconds
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
 
   // Fetch member data
   const { data: member, isLoading, error, isError } = useMember(memberId);
@@ -142,6 +155,7 @@ export default function EditMemberPage({
         isEditMode={true}
         isSubmitting={updateMemberMutation.isPending}
       />
+      <br />
       {errorMessage && (
         <Alert
           type="error"

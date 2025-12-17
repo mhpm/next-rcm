@@ -71,6 +71,24 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   useEffect(() => {
     if (initialData) {
       reset({ gender: "MASCULINO", ...initialData });
+    } else {
+      reset({
+        gender: "MASCULINO",
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        street: "",
+        city: "",
+        state: "",
+        zip: "",
+        country: "",
+        birthDate: "",
+        baptismDate: "",
+        role: "MIEMBRO",
+        ministries: [],
+        notes: "",
+      });
     }
   }, [initialData, reset]);
 
