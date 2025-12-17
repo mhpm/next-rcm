@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { RiAddLine } from "react-icons/ri";
+import { RiAddLine, RiFilter3Line } from "react-icons/ri";
 import { Breadcrumbs, DataTable, BackLink } from "@/components";
 import {
   TableColumn,
@@ -16,10 +16,14 @@ import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { useDeleteMember } from "@/app/(authenticated)/members/hooks/useMembers";
 import { useNotificationStore } from "@/store/NotificationStore";
 import { transformMemberToTableData } from "./utils/membersUtils";
+import MembersFilterModal from "./components/MembersFilterModal";
 
 export default function MembersPage() {
   const router = useRouter();
   const { showSuccess, showError } = useNotificationStore();
+
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<Record<string, any>>({});
 
   // Usar Zustand store para manejar la visibilidad de columnas
   const {
@@ -53,9 +57,90 @@ export default function MembersPage() {
   } = useMembers();
 
   // Transformar los datos de Member a formato de tabla
-  const members = membersData
-    ? membersData.map(transformMemberToTableData)
-    : [];
+  const members = useMemo(
+    () => (membersData ? membersData.map(transformMemberToTableData) : []),
+    [membersData]
+  );
+
+  const filteredMembers = useMemo(() => {
+    let result = members;
+
+    // Apply filters
+    if (Object.keys(activeFilters).length > 0) {
+      result = result.filter((member) => {
+        // Role
+        if (activeFilters.role && member.role !== activeFilters.role)
+          return false;
+
+        // Ministry
+        if (
+          activeFilters.ministries &&
+          !member.ministries
+            .toLowerCase()
+            .includes(activeFilters.ministries.toLowerCase())
+        )
+          return false;
+
+        // Address
+        if (
+          activeFilters.address &&
+          !member.address
+            .toLowerCase()
+            .includes(activeFilters.address.toLowerCase())
+        )
+          return false;
+
+        // Email
+        if (
+          activeFilters.email &&
+          !(member.email || "")
+            .toLowerCase()
+            .includes(activeFilters.email.toLowerCase())
+        )
+          return false;
+
+        // Birth Date
+        if (activeFilters.birthDate_from || activeFilters.birthDate_to) {
+          if (!member.raw_birthDate) return false;
+          const dateVal = new Date(member.raw_birthDate);
+          dateVal.setHours(0, 0, 0, 0);
+
+          if (activeFilters.birthDate_from) {
+            const fromDate = new Date(activeFilters.birthDate_from);
+            fromDate.setHours(0, 0, 0, 0);
+            if (dateVal < fromDate) return false;
+          }
+          if (activeFilters.birthDate_to) {
+            const toDate = new Date(activeFilters.birthDate_to);
+            toDate.setHours(0, 0, 0, 0);
+            if (dateVal > toDate) return false;
+          }
+        }
+
+        // Baptism Date
+        if (activeFilters.baptismDate_from || activeFilters.baptismDate_to) {
+          if (!member.raw_baptismDate) return false;
+          const dateVal = new Date(member.raw_baptismDate);
+          dateVal.setHours(0, 0, 0, 0);
+
+          if (activeFilters.baptismDate_from) {
+            const fromDate = new Date(activeFilters.baptismDate_from);
+            fromDate.setHours(0, 0, 0, 0);
+            if (dateVal < fromDate) return false;
+          }
+          if (activeFilters.baptismDate_to) {
+            const toDate = new Date(activeFilters.baptismDate_to);
+            toDate.setHours(0, 0, 0, 0);
+            if (dateVal > toDate) return false;
+          }
+        }
+
+        return true;
+      });
+    }
+
+    return result;
+  }, [members, activeFilters]);
 
   // Configuración de todas las columnas disponibles
   const allColumns: TableColumn<MemberTableData>[] = [
@@ -219,8 +304,8 @@ export default function MembersPage() {
       </div>
       <DataTable<MemberTableData>
         title="Miembros"
-        subTitle={`Total de miembros en la iglesia: ${members.length}`}
-        data={members}
+        subTitle={`Total de miembros en la iglesia: ${filteredMembers.length}`}
+        data={filteredMembers}
         columns={visibleColumnsArray}
         actions={actions}
         searchable
@@ -235,11 +320,42 @@ export default function MembersPage() {
         onHideAllColumns={hideAllColumns}
         showColumnVisibility={true}
         loading={loading}
+        searchEndContent={
+          <div className="tooltip" data-tip="Filtros avanzados">
+            <button
+              className={`btn btn-square ${
+                Object.keys(activeFilters).length > 0
+                  ? "btn-primary"
+                  : "btn-ghost bg-base-200"
+              }`}
+              onClick={() => setIsFilterModalOpen(true)}
+            >
+              <RiFilter3Line className="w-5 h-5" />
+            </button>
+            {Object.keys(activeFilters).length > 0 && (
+              <div className="absolute -top-1 -right-1 badge badge-xs badge-secondary w-4 h-4 p-0 flex items-center justify-center animate-pulse">
+                !
+              </div>
+            )}
+          </div>
+        }
+      />
+
+      <MembersFilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        onApply={setActiveFilters}
+        onClear={() => setActiveFilters({})}
+        activeFilters={activeFilters}
       />
 
       <DeleteConfirmationModal
         open={isDeleteModalOpen}
-        entityName={selectedMember ? `${selectedMember.firstName} ${selectedMember.lastName}` : undefined}
+        entityName={
+          selectedMember
+            ? `${selectedMember.firstName} ${selectedMember.lastName}`
+            : undefined
+        }
         onCancel={closeDeleteModal}
         onConfirm={handleConfirmDelete}
         isPending={deleteMemberMutation.isPending}

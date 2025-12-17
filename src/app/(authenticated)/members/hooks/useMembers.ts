@@ -1,7 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { Member, MemberWithMinistries, MemberFormData } from '@/app/(authenticated)/members/types/member';
-import { MemberRole } from '@/generated/prisma/enums';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import {
+  Member,
+  MemberWithMinistries,
+  MemberFormData,
+} from "@/app/(authenticated)/members/types/member";
+import { MemberRole } from "@/generated/prisma/enums";
 import {
   getAllMembers,
   getMemberById,
@@ -11,7 +15,7 @@ import {
   deactivateMember,
   isEmailTaken,
   getMemberStats,
-} from '../actions/members.actions';
+} from "../actions/members.actions";
 
 // ============ TYPES ============
 
@@ -35,8 +39,8 @@ interface MembersQueryOptions {
   offset?: number;
   search?: string;
   role?: MemberRole;
-  orderBy?: 'firstName' | 'lastName' | 'createdAt';
-  orderDirection?: 'asc' | 'desc';
+  orderBy?: "firstName" | "lastName" | "createdAt";
+  orderDirection?: "asc" | "desc";
 }
 
 interface MemberStats {
@@ -51,7 +55,7 @@ const withTimeout = <T>(promise: Promise<T>, ms = 15000): Promise<T> => {
     const timer = setTimeout(() => {
       reject(
         new Error(
-          'Tiempo de espera agotado al obtener datos. Intenta nuevamente.'
+          "Tiempo de espera agotado al obtener datos. Intenta nuevamente."
         )
       );
     }, ms);
@@ -78,7 +82,7 @@ const fetchAllMembers = async (options?: MembersQueryOptions) => {
     throw new Error(
       error instanceof Error
         ? error.message
-        : 'Error desconocido al obtener miembros'
+        : "Error desconocido al obtener miembros"
     );
   }
 };
@@ -86,13 +90,13 @@ const fetchAllMembers = async (options?: MembersQueryOptions) => {
 // Fetch members (legacy - for backward compatibility)
 const fetchMembers = async (): Promise<MemberWithMinistries[]> => {
   try {
-    const result = await withTimeout(getAllMembers({ limit: 50 }));
+    const result = await withTimeout(getAllMembers({ limit: 5000 }));
     return result.members;
   } catch (error) {
     throw new Error(
       error instanceof Error
         ? error.message
-        : 'Error desconocido al obtener miembros'
+        : "Error desconocido al obtener miembros"
     );
   }
 };
@@ -103,7 +107,7 @@ const fetchMember = async (id: string): Promise<MemberWithMinistries> => {
     const member = await getMemberById(id);
     return member;
   } catch (error) {
-    console.error('Error fetching member:', error);
+    console.error("Error fetching member:", error);
     throw error;
   }
 };
@@ -115,7 +119,7 @@ const fetchMemberStats = async (): Promise<MemberStats> => {
     return stats;
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : 'Error al obtener estadísticas'
+      error instanceof Error ? error.message : "Error al obtener estadísticas"
     );
   }
 };
@@ -130,7 +134,7 @@ const checkEmailAvailability = async (
     return !isTaken; // Return true if email is available (not taken)
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : 'Error al verificar email'
+      error instanceof Error ? error.message : "Error al verificar email"
     );
   }
 };
@@ -171,7 +175,7 @@ const deleteExistingMember = async (id: string): Promise<void> => {
     await deleteMemberAction(id);
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : 'Error al eliminar miembro'
+      error instanceof Error ? error.message : "Error al eliminar miembro"
     );
   }
 };
@@ -183,7 +187,7 @@ const deactivateExistingMember = async (id: string): Promise<Member> => {
     return member;
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : 'Error al desactivar miembro'
+      error instanceof Error ? error.message : "Error al desactivar miembro"
     );
   }
 };
@@ -197,10 +201,10 @@ export const useChurchChangeListener = () => {
   useEffect(() => {
     const handleChurchChange = () => {
       // Invalidar todas las queries relacionadas con members
-      queryClient.invalidateQueries({ queryKey: ['members'] });
-      queryClient.invalidateQueries({ queryKey: ['member'] });
-      queryClient.invalidateQueries({ queryKey: ['memberStats'] });
-      queryClient.invalidateQueries({ queryKey: ['emailAvailability'] });
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      queryClient.invalidateQueries({ queryKey: ["member"] });
+      queryClient.invalidateQueries({ queryKey: ["memberStats"] });
+      queryClient.invalidateQueries({ queryKey: ["emailAvailability"] });
     };
 
     const handleChurchClear = () => {
@@ -209,13 +213,13 @@ export const useChurchChangeListener = () => {
     };
 
     // Agregar listeners para eventos de cambio de church
-    window.addEventListener('churchChanged', handleChurchChange);
-    window.addEventListener('churchCleared', handleChurchClear);
+    window.addEventListener("churchChanged", handleChurchChange);
+    window.addEventListener("churchCleared", handleChurchClear);
 
     // Cleanup
     return () => {
-      window.removeEventListener('churchChanged', handleChurchChange);
-      window.removeEventListener('churchCleared', handleChurchClear);
+      window.removeEventListener("churchChanged", handleChurchChange);
+      window.removeEventListener("churchCleared", handleChurchClear);
     };
   }, [queryClient]);
 };
@@ -226,7 +230,7 @@ export const useAllMembers = (options?: MembersQueryOptions) => {
   useChurchChangeListener();
 
   return useQuery({
-    queryKey: ['members', 'all', options],
+    queryKey: ["members", "all", options],
     queryFn: () => fetchAllMembers(options),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -239,7 +243,7 @@ export const useMembers = () => {
   useChurchChangeListener();
 
   return useQuery({
-    queryKey: ['members'],
+    queryKey: ["members"],
     queryFn: fetchMembers,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -252,7 +256,7 @@ export const useMember = (id: string) => {
   useChurchChangeListener();
 
   return useQuery({
-    queryKey: ['member', id],
+    queryKey: ["member", id],
     queryFn: () => fetchMember(id),
     enabled: !!id, // Only run query if id is provided
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -266,7 +270,7 @@ export const useMemberStats = () => {
   useChurchChangeListener();
 
   return useQuery({
-    queryKey: ['members', 'stats'],
+    queryKey: ["members", "stats"],
     queryFn: fetchMemberStats,
     staleTime: 10 * 60 * 1000, // 10 minutes
     gcTime: 15 * 60 * 1000, // 15 minutes
@@ -276,7 +280,7 @@ export const useMemberStats = () => {
 // Hook for checking email availability
 export const useEmailAvailability = (email: string, excludeId?: string) => {
   return useQuery({
-    queryKey: ['email', 'availability', email, excludeId],
+    queryKey: ["email", "availability", email, excludeId],
     queryFn: () => checkEmailAvailability(email, excludeId),
     enabled: !!email && email.length > 0,
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -294,12 +298,12 @@ export const useCreateMember = () => {
     mutationFn: createNewMember,
     onSuccess: (newMember) => {
       // Add to individual member cache
-      queryClient.setQueryData(['member', newMember.id], newMember);
+      queryClient.setQueryData(["member", newMember.id], newMember);
 
       // Invalidate and refetch all member-related queries
-      queryClient.invalidateQueries({ queryKey: ['members'] });
-      queryClient.invalidateQueries({ queryKey: ['members', 'stats'] });
-      queryClient.invalidateQueries({ queryKey: ['ministries'] });
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      queryClient.invalidateQueries({ queryKey: ["members", "stats"] });
+      queryClient.invalidateQueries({ queryKey: ["ministries"] });
     },
     // Removido onError para que los errores se propaguen correctamente
   });
@@ -313,11 +317,11 @@ export const useUpdateMember = () => {
     mutationFn: updateExistingMember,
     onSuccess: (updatedMember) => {
       // Update the individual member cache
-      queryClient.setQueryData(['member', updatedMember.id], updatedMember);
+      queryClient.setQueryData(["member", updatedMember.id], updatedMember);
 
       // Invalidate and refetch member-related queries
-      queryClient.invalidateQueries({ queryKey: ['members'] });
-      queryClient.invalidateQueries({ queryKey: ['members', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      queryClient.invalidateQueries({ queryKey: ["members", "stats"] });
     },
     // Removido onError para que los errores se propaguen correctamente
   });
@@ -331,12 +335,12 @@ export const useDeleteMember = () => {
     mutationFn: deleteExistingMember,
     onSuccess: (_, deletedId) => {
       // Remove from individual member cache
-      queryClient.removeQueries({ queryKey: ['member', deletedId] });
+      queryClient.removeQueries({ queryKey: ["member", deletedId] });
 
       // Invalidate and refetch member-related queries
-      queryClient.invalidateQueries({ queryKey: ['members'] });
-      queryClient.invalidateQueries({ queryKey: ['members', 'stats'] });
-      queryClient.invalidateQueries({ queryKey: ['ministries'] });
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      queryClient.invalidateQueries({ queryKey: ["members", "stats"] });
+      queryClient.invalidateQueries({ queryKey: ["ministries"] });
     },
     // Removido onError para que los errores se propaguen correctamente
   });
@@ -351,13 +355,13 @@ export const useDeactivateMember = () => {
     onSuccess: (deactivatedMember) => {
       // Update the individual member cache
       queryClient.setQueryData(
-        ['member', deactivatedMember.id],
+        ["member", deactivatedMember.id],
         deactivatedMember
       );
 
       // Invalidate and refetch member-related queries
-      queryClient.invalidateQueries({ queryKey: ['members'] });
-      queryClient.invalidateQueries({ queryKey: ['members', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      queryClient.invalidateQueries({ queryKey: ["members", "stats"] });
     },
     // Removido onError para que los errores se propaguen correctamente
   });
@@ -370,7 +374,7 @@ export const useRefreshMembers = () => {
   const queryClient = useQueryClient();
 
   return () => {
-    queryClient.invalidateQueries({ queryKey: ['members'] });
+    queryClient.invalidateQueries({ queryKey: ["members"] });
   };
 };
 
@@ -380,7 +384,7 @@ export const usePrefetchMember = () => {
 
   return (id: string) => {
     queryClient.prefetchQuery({
-      queryKey: ['member', id],
+      queryKey: ["member", id],
       queryFn: () => fetchMember(id),
       staleTime: 5 * 60 * 1000,
     });

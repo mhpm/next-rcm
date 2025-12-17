@@ -11,6 +11,8 @@ import {
   RiAddLine,
   RiArrowUpSLine,
   RiArrowDownSLine,
+  RiSkipBackLine,
+  RiSkipForwardLine,
 } from "react-icons/ri";
 import { DataTableProps, PaginationInfo } from "@/types";
 import { ColumnVisibilityDropdown } from "../ColumnVisibilityDropdown";
@@ -144,6 +146,11 @@ function DataTable<T extends Record<string, unknown>>({
       });
     });
   }, [sortedData, searchTerm, columns]);
+
+  // Reset page when search term changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   // Get sort icon for column
   const getSortIcon = (columnKey: keyof T) => {
@@ -601,35 +608,55 @@ function DataTable<T extends Record<string, unknown>>({
 
               {/* Navigation buttons */}
               <div className="flex items-center justify-between">
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                  disabled={currentPage === 1}
-                  className="btn btn-ghost btn-sm"
-                >
-                  <RiArrowLeftSLine className="w-4 h-4" />
-                  Anterior
-                </button>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    className="btn btn-ghost btn-sm px-2"
+                    title="Primera página"
+                  >
+                    <RiSkipBackLine className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    disabled={currentPage === 1}
+                    className="btn btn-ghost btn-sm px-2"
+                    title="Anterior"
+                  >
+                    <RiArrowLeftSLine className="w-4 h-4" />
+                  </button>
+                </div>
 
                 <div className="flex items-center gap-1">
                   <span className="text-sm text-base-content/70">
-                    Página {currentPage} de {paginationInfo.totalPages}
+                    {currentPage} / {paginationInfo.totalPages}
                   </span>
                 </div>
 
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) =>
-                      Math.min(prev + 1, paginationInfo.totalPages)
-                    )
-                  }
-                  disabled={currentPage === paginationInfo.totalPages}
-                  className="btn btn-ghost btn-sm"
-                >
-                  Siguiente
-                  <RiArrowRightSLine className="w-4 h-4" />
-                </button>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) =>
+                        Math.min(prev + 1, paginationInfo.totalPages)
+                      )
+                    }
+                    disabled={currentPage === paginationInfo.totalPages}
+                    className="btn btn-ghost btn-sm px-2"
+                    title="Siguiente"
+                  >
+                    <RiArrowRightSLine className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage(paginationInfo.totalPages)}
+                    disabled={currentPage === paginationInfo.totalPages}
+                    className="btn btn-ghost btn-sm px-2"
+                    title="Última página"
+                  >
+                    <RiSkipForwardLine className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -663,6 +690,15 @@ function DataTable<T extends Record<string, unknown>>({
             </div>
 
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="btn btn-ghost btn-sm px-2"
+                title="First Page"
+              >
+                <RiSkipBackLine className="w-4 h-4" />
+              </button>
+
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
@@ -713,6 +749,15 @@ function DataTable<T extends Record<string, unknown>>({
               >
                 Next
                 <RiArrowRightSLine className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => setCurrentPage(paginationInfo.totalPages)}
+                disabled={currentPage === paginationInfo.totalPages}
+                className="btn btn-ghost btn-sm px-2"
+                title="Last Page"
+              >
+                <RiSkipForwardLine className="w-4 h-4" />
               </button>
             </div>
           </div>

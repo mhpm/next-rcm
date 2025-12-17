@@ -21,7 +21,7 @@ import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
 // Get all members with optional filtering and pagination
 // Zod validation for list options
 const getAllMembersOptionsSchema = z.object({
-  limit: z.number().int().min(1).max(200).optional(),
+  limit: z.number().int().min(1).max(10000).optional(),
   offset: z.number().int().min(0).optional(),
   search: z.string().optional(),
   role: z.nativeEnum(MemberRole).optional(),

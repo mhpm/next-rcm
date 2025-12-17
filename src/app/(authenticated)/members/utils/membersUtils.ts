@@ -32,4 +32,6 @@ export const transformMemberToTableData = (
     : "N/A",
   birthDate: member.birthDate ? formatDate(member.birthDate) : "N/A",
   baptismDate: member.baptismDate ? formatDate(member.baptismDate) : "N/A",
+  raw_birthDate: member.birthDate,
+  raw_baptismDate: member.baptismDate,
 });

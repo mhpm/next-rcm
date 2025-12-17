@@ -87,4 +87,6 @@ export type MemberTableData = Omit<
   address: string;
   phone: string;
   ministries: string;
+  raw_birthDate?: Date | null;
+  raw_baptismDate?: Date | null;
 };
