@@ -42,8 +42,14 @@ export default function ReportEntriesTable({
   const [entryToDelete, setEntryToDelete] = useState<Row | null>(null);
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const { filters: activeFilters, setFilters: setActiveFilters } =
-    usePersistentFilters(`report-filters-${reportId}`);
+  const {
+    filters: activeFilters,
+    setFilters: setActiveFilters,
+    clearFilters,
+  } = usePersistentFilters<Record<string, any>>(
+    `report-filters-${reportId}`,
+    {}
+  );
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
@@ -227,7 +233,7 @@ export default function ReportEntriesTable({
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
         onApply={setActiveFilters}
-        onClear={() => setActiveFilters({})}
+        onClear={clearFilters}
         fields={fields}
         activeFilters={activeFilters}
       />

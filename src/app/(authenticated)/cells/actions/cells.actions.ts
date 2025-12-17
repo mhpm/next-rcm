@@ -40,6 +40,7 @@ export async function getAllCells(options?: {
       include: {
         leader: true,
         host: true,
+        assistant: true,
         subSector: {
           include: {
             sector: {
@@ -99,6 +100,7 @@ export async function getCellById(id: string): Promise<CellWithRelations> {
       include: {
         leader: true,
         host: true,
+        assistant: true,
         subSector: {
           include: { sector: true },
         },
@@ -125,6 +127,7 @@ export async function createCell(data: {
   subSectorId?: string | null;
   leaderId?: string | null;
   hostId?: string | null;
+  assistantId?: string | null;
 }) {
   try {
     const prisma = await getChurchPrisma();
@@ -142,14 +145,19 @@ export async function createCell(data: {
       ...(data.hostId && data.hostId !== ""
         ? { host: { connect: { id: data.hostId } } }
         : {}),
+      ...(data.assistantId && data.assistantId !== ""
+        ? { assistant: { connect: { id: data.assistantId } } }
+        : {}),
     };
 
     const cell = await prisma.cells.create({ data: prismaData });
 
-    // Asegurar que líder/anfitrión figuren como miembros de la célula
-    const ensureMemberIds = [data.leaderId, data.hostId].filter(
-      (v): v is string => !!v && v !== ""
-    );
+    // Asegurar que líder/anfitrión/asistente figuren como miembros de la célula
+    const ensureMemberIds = [
+      data.leaderId,
+      data.hostId,
+      data.assistantId,
+    ].filter((v): v is string => !!v && v !== "");
     if (ensureMemberIds.length) {
       await prisma.members.updateMany({
         where: { id: { in: ensureMemberIds }, church_id: churchId },
@@ -180,6 +188,7 @@ export async function updateCell(
     subSectorId?: string | null;
     leaderId?: string | null;
     hostId?: string | null;
+    assistantId?: string | null;
   }
 ) {
   let churchId: string | undefined;
@@ -218,10 +227,16 @@ export async function updateCell(
           ? { connect: { id: data.hostId } }
           : { disconnect: true };
     }
+    if (Object.prototype.hasOwnProperty.call(data, "assistantId")) {
+      updateData.assistant =
+        data.assistantId && data.assistantId !== ""
+          ? { connect: { id: data.assistantId } }
+          : { disconnect: true };
+    }
 
     const cell = await prisma.cells.update({ where: { id }, data: updateData });
 
-    // Si se asignó líder/anfitrión, asegurar su membresía en la célula
+    // Si se asignó líder/anfitrión/asistente, asegurar su membresía en la célula
     const setIds: string[] = [];
     if (
       Object.prototype.hasOwnProperty.call(data, "leaderId") &&
@@ -236,6 +251,13 @@ export async function updateCell(
       data.hostId !== ""
     ) {
       setIds.push(data.hostId);
+    }
+    if (
+      Object.prototype.hasOwnProperty.call(data, "assistantId") &&
+      data.assistantId &&
+      data.assistantId !== ""
+    ) {
+      setIds.push(data.assistantId);
     }
     if (setIds.length) {
       await prisma.members.updateMany({

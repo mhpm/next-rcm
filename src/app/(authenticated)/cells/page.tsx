@@ -22,8 +22,11 @@ export default function CellsPage() {
   const { showSuccess, showError } = useNotificationStore();
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const { filters: activeFilters, setFilters: setActiveFilters } =
-    usePersistentFilters("cells-filters");
+  const {
+    filters: activeFilters,
+    setFilters: setActiveFilters,
+    clearFilters,
+  } = usePersistentFilters<Record<string, any>>("cells-filters", {});
 
   const {
     data,
@@ -78,6 +81,16 @@ export default function CellsPage() {
           !cell.hostName
             .toLowerCase()
             .includes(activeFilters.hostName.toLowerCase())
+        ) {
+          return false;
+        }
+
+        // Assistant Name
+        if (
+          activeFilters.assistantName &&
+          !cell.assistantName
+            .toLowerCase()
+            .includes(activeFilters.assistantName.toLowerCase())
         ) {
           return false;
         }
@@ -163,6 +176,26 @@ export default function CellsPage() {
           return (
             <Link
               href={`/members/edit/${row.hostId}`}
+              className="hover:underline text-primary"
+            >
+              {name}
+            </Link>
+          );
+        }
+        return <span className="text-base-content/40">{name}</span>;
+      },
+    },
+    {
+      key: "assistantName",
+      label: "Asistente",
+      sortable: true,
+      className: "font-semibold",
+      render: (value, row) => {
+        const name = value as string;
+        if (row.assistantName && row.assistantId) {
+          return (
+            <Link
+              href={`/members/edit/${row.assistantId}`}
               className="hover:underline text-primary"
             >
               {name}
@@ -269,7 +302,7 @@ export default function CellsPage() {
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
         onApply={setActiveFilters}
-        onClear={() => setActiveFilters({})}
+        onClear={clearFilters}
         activeFilters={activeFilters}
       />
 

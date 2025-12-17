@@ -151,6 +151,16 @@ export default function CellsFilterModal({
               />
             </div>
 
+            {/* Asistente */}
+            <div className="form-control">
+              <label className="label font-medium">Asistente</label>
+              <input
+                {...register("assistantName")}
+                className="input input-bordered w-full"
+                placeholder="Nombre del asistente..."
+              />
+            </div>
+
             {/* Cantidad de Miembros (Mínimo) */}
             <div className="form-control">
               <label className="label font-medium">Miembros (Mínimo)</label>

@@ -44,6 +44,7 @@ const CellForm: React.FC<CellFormProps> = ({
       subSectorId: initialData?.subSectorId ?? "",
       leaderId: initialData?.leaderId ?? "",
       hostId: initialData?.hostId ?? "",
+      assistantId: initialData?.assistantId ?? "",
       id: initialData?.id,
     },
     mode: "onChange",
@@ -61,6 +62,7 @@ const CellForm: React.FC<CellFormProps> = ({
         subSectorId: initialData.subSectorId ?? "",
         leaderId: initialData.leaderId ?? "",
         hostId: initialData.hostId ?? "",
+        assistantId: initialData.assistantId ?? "",
         id: initialData.id,
       });
     }
@@ -141,8 +143,17 @@ const CellForm: React.FC<CellFormProps> = ({
     if (cellId && members) {
       if (initialData?.leaderId) setValue("leaderId", initialData.leaderId);
       if (initialData?.hostId) setValue("hostId", initialData.hostId);
+      if (initialData?.assistantId)
+        setValue("assistantId", initialData.assistantId);
     }
-  }, [cellId, members, initialData?.leaderId, initialData?.hostId, setValue]);
+  }, [
+    cellId,
+    members,
+    initialData?.leaderId,
+    initialData?.hostId,
+    initialData?.assistantId,
+    setValue,
+  ]);
 
   // Removed useEffect for subsector reset as it's now handled by the component
 
@@ -184,6 +195,16 @@ const CellForm: React.FC<CellFormProps> = ({
                 options={memberSelectOptions}
                 className="select select-bordered w-full"
                 defaultValue={initialData?.hostId || ""}
+              />
+              <SelectField<CellFormInput>
+                name="assistantId"
+                label="Asistente de la Célula"
+                register={register}
+                rules={{}}
+                error={errors.assistantId?.message}
+                options={memberSelectOptions}
+                className="select select-bordered w-full"
+                defaultValue={initialData?.assistantId || ""}
               />
               {!cellId && (
                 <p className="text-sm text-base-content/60 md:col-span-2">

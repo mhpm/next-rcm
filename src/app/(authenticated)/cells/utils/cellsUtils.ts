@@ -7,6 +7,9 @@ export function transformCellToTableData(cell: any): CellTableData {
   const hostName = cell.host
     ? `${cell.host.firstName} ${cell.host.lastName}`
     : "Sin anfitrión";
+  const assistantName = cell.assistant
+    ? `${cell.assistant.firstName} ${cell.assistant.lastName}`
+    : "Sin asistente";
 
   const zoneName = cell.sector?.zone?.name;
   const sectorName = cell.sector?.name;
@@ -27,6 +30,8 @@ export function transformCellToTableData(cell: any): CellTableData {
     leaderId: cell.leader?.id,
     hostName,
     hostId: cell.host?.id,
+    assistantName,
+    assistantId: cell.assistant?.id,
     memberCount: cell.memberCount ?? cell._count?.members ?? 0,
     createdAt: new Date(cell.createdAt).toLocaleDateString("es-ES", {
       year: "numeric",

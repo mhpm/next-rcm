@@ -58,6 +58,7 @@ model Members {
   ledMinistries Ministries[] @relation("MinistryLeader")
   cells         Cells[]      @relation("CellLeader")
   hostedCells   Cells[]      @relation("CellHost")
+  assistedCells Cells[]      @relation("CellAssistant")
   cell          Cells?       @relation("MemberCell", fields: [cell_id], references: [id], onDelete: SetNull)
   zone          Zones?       @relation("MemberZone", fields: [zone_id], references: [id], onDelete: SetNull)
   sector        Sectors?     @relation("MemberSector", fields: [sector_id], references: [id], onDelete: SetNull)
@@ -106,11 +107,13 @@ model Cells {
   sub_sector_id String?
   leader_id String?
   host_id   String?
+  assistant_id String?
 
   church    Churches    @relation(fields: [church_id], references: [id], onDelete: Cascade)
   subSector SubSectors? @relation(fields: [sub_sector_id], references: [id], onDelete: SetNull)
   leader    Members?    @relation("CellLeader", fields: [leader_id], references: [id])
   host      Members?    @relation("CellHost", fields: [host_id], references: [id])
+  assistant Members?    @relation("CellAssistant", fields: [assistant_id], references: [id])
   members   Members[]   @relation("MemberCell")
   reports   Reports[]
   reportEntries ReportEntries[]

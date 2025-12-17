@@ -16,7 +16,11 @@ export interface CellTableData {
   parentSectorId?: string;
   subSectorId?: string;
   leaderName: string;
+  leaderId?: string;
   hostName: string;
+  hostId?: string;
+  assistantName: string;
+  assistantId?: string;
   memberCount: number;
   createdAt: string;
   updatedAt: string;
@@ -33,6 +37,7 @@ export type CellWithRelations = Prisma.CellsGetPayload<{
   include: {
     leader: true;
     host: true;
+    assistant: true;
     subSector: { include: { sector: { include: { zone: true } } } };
     members: true;
   };
@@ -42,6 +47,7 @@ export type CellListItem = Prisma.CellsGetPayload<{
   include: {
     leader: true;
     host: true;
+    assistant: true;
     subSector: { include: { sector: { include: { zone: true } } } };
     _count: { select: { members: true } };
   };

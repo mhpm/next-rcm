@@ -146,7 +146,8 @@ export const CellsScalarFieldEnum = {
   church_id: 'church_id',
   sub_sector_id: 'sub_sector_id',
   leader_id: 'leader_id',
-  host_id: 'host_id'
+  host_id: 'host_id',
+  assistant_id: 'assistant_id'
 } as const
 
 export type CellsScalarFieldEnum = (typeof CellsScalarFieldEnum)[keyof typeof CellsScalarFieldEnum]

@@ -84,6 +84,7 @@ export default function EditCellPage({
                 subSectorId: cellData?.subSector?.id || "",
                 leaderId: cellData?.leader?.id || cellData?.leader_id || "",
                 hostId: cellData?.host?.id || cellData?.host_id || "",
+                assistantId: cellData?.assistant?.id || cellData?.assistant_id || "",
                 id: cellData?.id,
               }}
               onSubmit={handleSubmit}

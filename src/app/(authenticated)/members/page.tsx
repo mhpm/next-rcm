@@ -24,8 +24,11 @@ export default function MembersPage() {
   const { showSuccess, showError } = useNotificationStore();
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const { filters: activeFilters, setFilters: setActiveFilters } =
-    usePersistentFilters("members-filters");
+  const {
+    filters: activeFilters,
+    setFilters: setActiveFilters,
+    clearFilters,
+  } = usePersistentFilters<Record<string, any>>("members-filters", {});
 
   // Usar Zustand store para manejar la visibilidad de columnas
   const {
@@ -347,7 +350,7 @@ export default function MembersPage() {
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
         onApply={setActiveFilters}
-        onClear={() => setActiveFilters({})}
+        onClear={clearFilters}
         activeFilters={activeFilters}
       />
 
