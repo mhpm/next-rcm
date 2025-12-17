@@ -81,6 +81,7 @@ export default function EditCellPage({
                   cellData?.subSector?.sector?.id ||
                   cellData?.subSector?.sector_id ||
                   "",
+                subSectorId: cellData?.subSector?.id || "",
                 leaderId: cellData?.leader?.id || cellData?.leader_id || "",
                 hostId: cellData?.host?.id || cellData?.host_id || "",
                 id: cellData?.id,

@@ -10,7 +10,7 @@ import {
 
 type SelectFieldProps<T extends FieldValues> = {
   name: Path<T>;
-  label: string;
+  label?: string;
   options: { value: string; label: string }[];
   register: UseFormRegister<T>;
   rules?: RegisterOptions<T, Path<T>>;
@@ -32,10 +32,12 @@ export function SelectField<T extends FieldValues>({
   disabled,
 }: SelectFieldProps<T>) {
   return (
-    <fieldset>
-      <label className="label">
-        <span className="label-text mb-2">{label}</span>
-      </label>
+    <div className="form-control w-full">
+      {label && (
+        <label className="label mb-2">
+          <span className="label-text">{label}</span>
+        </label>
+      )}
       <select
         className={className}
         {...register(name, rules)}
@@ -49,7 +51,7 @@ export function SelectField<T extends FieldValues>({
         ))}
       </select>
       {error && <p className="text-error text-sm mt-1">{error}</p>}
-    </fieldset>
+    </div>
   );
 }
 

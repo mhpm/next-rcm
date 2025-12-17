@@ -10,12 +10,13 @@ export const cellFormSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "El nombre es requerido"),
   sectorId: z.string(),
+  subSectorId: z.string().optional(),
   leaderId: z.string(),
   hostId: z.string(),
 });
 
 export const cellCreateSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, "El nombre es requerido"),
   sectorId: z.string(),
   subSectorId: z.string().optional(),
 });
@@ -32,6 +33,7 @@ export type CellFormInput = {
   id?: string;
   name: string;
   sectorId: string;
+  subSectorId?: string;
   leaderId: string;
   hostId: string;
 };
