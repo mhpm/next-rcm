@@ -122,7 +122,9 @@ const CellForm: React.FC<CellFormProps> = ({
   ].concat(
     subSectorsList.map((s: any) => ({
       value: s.id,
-      label: s.name,
+      label: s.supervisor
+        ? `${s.name} (${s.supervisor.firstName} ${s.supervisor.lastName})`
+        : s.name,
     }))
   );
 

@@ -17,13 +17,15 @@ import { useDeleteMember } from "@/app/(authenticated)/members/hooks/useMembers"
 import { useNotificationStore } from "@/store/NotificationStore";
 import { transformMemberToTableData } from "./utils/membersUtils";
 import MembersFilterModal from "./components/MembersFilterModal";
+import { usePersistentFilters } from "@/hooks/usePersistentFilters";
 
 export default function MembersPage() {
   const router = useRouter();
   const { showSuccess, showError } = useNotificationStore();
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<Record<string, any>>({});
+  const { filters: activeFilters, setFilters: setActiveFilters } =
+    usePersistentFilters("members-filters");
 
   // Usar Zustand store para manejar la visibilidad de columnas
   const {

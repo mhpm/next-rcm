@@ -14,6 +14,7 @@ import CellsFilterModal from "./components/CellsFilterModal";
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { useDeleteCell } from "./hooks/useCells";
 import { useNotificationStore } from "@/store/NotificationStore";
+import { usePersistentFilters } from "@/hooks/usePersistentFilters";
 
 export default function CellsPage() {
   const router = useRouter();
@@ -21,7 +22,8 @@ export default function CellsPage() {
   const { showSuccess, showError } = useNotificationStore();
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<Record<string, any>>({});
+  const { filters: activeFilters, setFilters: setActiveFilters } =
+    usePersistentFilters("cells-filters");
 
   const {
     data,

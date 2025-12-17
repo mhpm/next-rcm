@@ -35,12 +35,12 @@ export default function CellsFilterModal({
   });
 
   const sectors = sectorsData || [];
-  
+
   // Filter subsectors based on selected sector
   const selectedSector = Array.isArray(sectors)
     ? sectors.find((s: any) => s.id === selectedSectorId)
     : null;
-    
+
   const subSectors = selectedSector?.subSectors || [];
 
   // Update form when activeFilters change
@@ -96,11 +96,13 @@ export default function CellsFilterModal({
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2">
-            
             {/* Sector */}
             <div className="form-control">
               <label className="label font-medium">Sector</label>
-              <select {...register("sectorId")} className="select select-bordered w-full">
+              <select
+                {...register("sectorId")}
+                className="select select-bordered w-full"
+              >
                 <option value="">Todos</option>
                 {sectors.map((s: any) => (
                   <option key={s.id} value={s.id}>
@@ -113,15 +115,17 @@ export default function CellsFilterModal({
             {/* SubSector */}
             <div className="form-control">
               <label className="label font-medium">Sub-Sector</label>
-              <select 
-                {...register("subSectorId")} 
+              <select
+                {...register("subSectorId")}
                 className="select select-bordered w-full"
                 disabled={!selectedSectorId || subSectors.length === 0}
               >
                 <option value="">Todos</option>
                 {subSectors.map((s: any) => (
                   <option key={s.id} value={s.id}>
-                    {s.name}
+                    {s.supervisor
+                      ? `${s.name} (${s.supervisor.firstName} ${s.supervisor.lastName})`
+                      : s.name}
                   </option>
                 ))}
               </select>
@@ -170,7 +174,6 @@ export default function CellsFilterModal({
                 min="0"
               />
             </div>
-
           </div>
 
           <div className="modal-action">
@@ -187,7 +190,7 @@ export default function CellsFilterModal({
           </div>
         </form>
       </div>
-       <div className="modal-backdrop" onClick={onClose}></div>
+      <div className="modal-backdrop" onClick={onClose}></div>
     </div>
   );
 }

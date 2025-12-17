@@ -9,6 +9,7 @@ import { useNotificationStore } from "@/store/NotificationStore";
 import { deleteReportEntryAction } from "@/app/(authenticated)/reports/actions/reports.actions";
 import { RiFilter3Line } from "react-icons/ri";
 import AdvancedFilterModal, { FilterField } from "./AdvancedFilterModal";
+import { usePersistentFilters } from "@/hooks/usePersistentFilters";
 
 type Row = Record<string, unknown> & {
   id: string;
@@ -41,7 +42,8 @@ export default function ReportEntriesTable({
   const [entryToDelete, setEntryToDelete] = useState<Row | null>(null);
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<Record<string, any>>({});
+  const { filters: activeFilters, setFilters: setActiveFilters } =
+    usePersistentFilters(`report-filters-${reportId}`);
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
