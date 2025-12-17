@@ -356,7 +356,7 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
     if (parsed.lastName !== undefined)
       updateData.lastName = parsed.lastName.trim();
     if (parsed.email !== undefined)
-      updateData.email = parsed.email.trim().toLowerCase();
+      updateData.email = parsed.email ? parsed.email.trim().toLowerCase() : null;
 
     // Optional strings
     if (parsed.phone !== undefined) updateData.phone = parsed.phone || null;

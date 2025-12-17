@@ -8,6 +8,7 @@ import {
 } from "react-icons/ri";
 import { useMemo } from "react";
 import { SectorNode } from "../types/sectors";
+import { FaPeopleRoof } from "react-icons/fa6";
 
 // Helper to transform raw data to nodes if needed,
 // but we can also just traverse the raw data directly since the structure is similar
@@ -78,33 +79,35 @@ export default function SectorStats() {
       </div>
 
       <div className="stat">
-        <div className="stat-figure text-secondary">
+        <div className="stat-figure text-primary">
           <RiGitMergeLine className="w-8 h-8" />
         </div>
         <div className="stat-title">Total Sub-sectores</div>
-        <div className="stat-value text-secondary">{stats.totalSubSectors}</div>
+        <div className="stat-value text-primary">{stats.totalSubSectors}</div>
         <div className="stat-desc">Divisiones internas</div>
       </div>
 
       <div className="stat">
-        <div className="stat-figure text-accent">
+        <div className="stat-figure text-primary">
           <RiUserAddLine className="w-8 h-8" />
         </div>
         <div className="stat-title">Total Células</div>
-        <div className="stat-value text-accent">{stats.totalCells}</div>
+        <div className="stat-value text-primary">{stats.totalCells}</div>
         <div className="stat-desc">Grupos activos</div>
       </div>
 
       <div className="stat">
-        <div className="stat-figure text-neutral">
+        <div className="stat-figure text-primary">
           <div className="avatar placeholder">
-            <div className="bg-neutral-focus text-neutral-content rounded-full w-8">
-              <span className="text-xs">M</span>
+            <div className="bg-primary-focus text-primary-content rounded-full w-8">
+              <span className="text-xs text-primary">
+                <FaPeopleRoof className="w-8 h-8" />
+              </span>
             </div>
           </div>
         </div>
         <div className="stat-title">Total Miembros</div>
-        <div className="stat-value">{stats.totalMembers}</div>
+        <div className="stat-value text-primary">{stats.totalMembers}</div>
         <div className="stat-desc">En toda la red</div>
       </div>
     </div>

@@ -73,6 +73,8 @@ export function AutocompleteField<TForm extends FieldValues, TItem>({
     if (selectedId && selectedItem) {
       setSearchText(getItemLabel(selectedItem));
       setHasTyped(false);
+    } else if (!selectedId) {
+      setSearchText("");
     }
   }, [selectedId, selectedItem, getItemLabel]);
 

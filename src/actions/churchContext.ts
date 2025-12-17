@@ -1,5 +1,5 @@
-import prisma from '@/lib/prisma';
-import { Prisma } from '@/generated/prisma/client';
+import prisma from "@/lib/prisma";
+import { Prisma } from "@/generated/prisma/client";
 
 // Tipos para operaciones de creación
 type MemberCreateManyData = Prisma.MembersCreateManyInput;
@@ -300,35 +300,53 @@ export function createChurchPrisma(churchId: string) {
       },
       reports: {
         async findMany({ args, query }) {
-          args.where = { ...args.where, church_id: churchId } as Prisma.ReportsWhereInput;
+          args.where = {
+            ...args.where,
+            church_id: churchId,
+          } as Prisma.ReportsWhereInput;
           return query(args);
         },
         async findFirst({ args, query }) {
-          args.where = { ...args.where, church_id: churchId } as Prisma.ReportsWhereInput;
+          args.where = {
+            ...args.where,
+            church_id: churchId,
+          } as Prisma.ReportsWhereInput;
           return query(args);
         },
         async findUnique({ args, query }) {
           return query(args);
         },
         async count({ args, query }) {
-          args.where = { ...args.where, church_id: churchId } as Prisma.ReportsWhereInput;
+          args.where = {
+            ...args.where,
+            church_id: churchId,
+          } as Prisma.ReportsWhereInput;
           return query(args);
         },
         async create({ args, query }) {
           const data = args.data as Prisma.ReportsCreateInput;
           if (!data.church) {
-            (args.data as Prisma.ReportsCreateInput).church = { connect: { id: churchId } };
+            (args.data as Prisma.ReportsCreateInput).church = {
+              connect: { id: churchId },
+            };
           }
           return query(args);
         },
         async createMany({ args, query }) {
           if (Array.isArray(args.data)) {
-            args.data = args.data.map((item: Prisma.ReportsCreateManyInput) => ({
-              ...item,
-              church_id: item.church_id || churchId,
-            }));
+            args.data = args.data.map(
+              (item: Prisma.ReportsCreateManyInput) => ({
+                ...item,
+                church_id: item.church_id || churchId,
+              })
+            );
           } else {
-            args.data = { ...args.data, church_id: (args.data as Prisma.ReportsCreateManyInput).church_id || churchId };
+            args.data = {
+              ...args.data,
+              church_id:
+                (args.data as Prisma.ReportsCreateManyInput).church_id ||
+                churchId,
+            };
           }
           return query(args);
         },
@@ -336,31 +354,46 @@ export function createChurchPrisma(churchId: string) {
           return query(args);
         },
         async updateMany({ args, query }) {
-          args.where = { ...args.where, church_id: churchId } as Prisma.ReportsWhereInput;
+          args.where = {
+            ...args.where,
+            church_id: churchId,
+          } as Prisma.ReportsWhereInput;
           return query(args);
         },
         async delete({ args, query }) {
           return query(args);
         },
         async deleteMany({ args, query }) {
-          args.where = { ...args.where, church_id: churchId } as Prisma.ReportsWhereInput;
+          args.where = {
+            ...args.where,
+            church_id: churchId,
+          } as Prisma.ReportsWhereInput;
           return query(args);
         },
       },
       reportFields: {
         async findMany({ args, query }) {
-          args.where = { ...args.where, report: { church_id: churchId } } as Prisma.ReportFieldsWhereInput;
+          args.where = {
+            ...args.where,
+            report: { church_id: churchId },
+          } as Prisma.ReportFieldsWhereInput;
           return query(args);
         },
         async findFirst({ args, query }) {
-          args.where = { ...args.where, report: { church_id: churchId } } as Prisma.ReportFieldsWhereInput;
+          args.where = {
+            ...args.where,
+            report: { church_id: churchId },
+          } as Prisma.ReportFieldsWhereInput;
           return query(args);
         },
         async findUnique({ args, query }) {
           return query(args);
         },
         async count({ args, query }) {
-          args.where = { ...args.where, report: { church_id: churchId } } as Prisma.ReportFieldsWhereInput;
+          args.where = {
+            ...args.where,
+            report: { church_id: churchId },
+          } as Prisma.ReportFieldsWhereInput;
           return query(args);
         },
         async create({ args, query }) {
@@ -374,31 +407,46 @@ export function createChurchPrisma(churchId: string) {
           return query(args);
         },
         async updateMany({ args, query }) {
-          args.where = { ...args.where, report: { church_id: churchId } } as Prisma.ReportFieldsWhereInput;
+          args.where = {
+            ...args.where,
+            report: { church_id: churchId },
+          } as Prisma.ReportFieldsWhereInput;
           return query(args);
         },
         async delete({ args, query }) {
           return query(args);
         },
         async deleteMany({ args, query }) {
-          args.where = { ...args.where, report: { church_id: churchId } } as Prisma.ReportFieldsWhereInput;
+          args.where = {
+            ...args.where,
+            report: { church_id: churchId },
+          } as Prisma.ReportFieldsWhereInput;
           return query(args);
         },
       },
       reportEntries: {
         async findMany({ args, query }) {
-          args.where = { ...args.where, church_id: churchId } as Prisma.ReportEntriesWhereInput;
+          args.where = {
+            ...args.where,
+            church_id: churchId,
+          } as Prisma.ReportEntriesWhereInput;
           return query(args);
         },
         async findFirst({ args, query }) {
-          args.where = { ...args.where, church_id: churchId } as Prisma.ReportEntriesWhereInput;
+          args.where = {
+            ...args.where,
+            church_id: churchId,
+          } as Prisma.ReportEntriesWhereInput;
           return query(args);
         },
         async findUnique({ args, query }) {
           return query(args);
         },
         async count({ args, query }) {
-          args.where = { ...args.where, church_id: churchId } as Prisma.ReportEntriesWhereInput;
+          args.where = {
+            ...args.where,
+            church_id: churchId,
+          } as Prisma.ReportEntriesWhereInput;
           return query(args);
         },
         async create({ args, query }) {
@@ -432,14 +480,20 @@ export function createChurchPrisma(churchId: string) {
           return query(args);
         },
         async updateMany({ args, query }) {
-          args.where = { ...args.where, church_id: churchId } as Prisma.ReportEntriesWhereInput;
+          args.where = {
+            ...args.where,
+            church_id: churchId,
+          } as Prisma.ReportEntriesWhereInput;
           return query(args);
         },
         async delete({ args, query }) {
           return query(args);
         },
         async deleteMany({ args, query }) {
-          args.where = { ...args.where, church_id: churchId } as Prisma.ReportEntriesWhereInput;
+          args.where = {
+            ...args.where,
+            church_id: churchId,
+          } as Prisma.ReportEntriesWhereInput;
           return query(args);
         },
       },
@@ -530,7 +584,7 @@ export async function getChurchSlugFromAuth(): Promise<string | null> {
   // Ejemplo a futuro:
   // const session = await auth();
   // return session?.user?.churchSlug ?? null;
-  return 'demo';
+  return "iafcj-tecolutilla";
 }
 
 /**
@@ -551,9 +605,9 @@ export async function getChurchSlugFromAuth(): Promise<string | null> {
  * Por ahora, siempre retorna "demo" hasta que exista login.
  */
 export async function getChurchSlugFromSources(): Promise<string> {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     throw new Error(
-      'getChurchSlugFromSources should only be called on the server'
+      "getChurchSlugFromSources should only be called on the server"
     );
   }
 
@@ -566,11 +620,11 @@ export async function getChurchSlugFromSources(): Promise<string> {
 
     // 3. Default final solo si todo lo demás falla
     console.log("[getChurchSlug] No slug found, using default 'demo'");
-    return 'demo';
+    return "demo";
   } catch (error) {
-    console.error('Error getting church slug from sources', error);
+    console.error("Error getting church slug from sources", error);
     // Default de seguridad
-    return 'demo';
+    return "demo";
   }
 }
 
@@ -584,7 +638,7 @@ export async function getChurchId(): Promise<string> {
     try {
       await prisma.$connect();
     } catch (e) {
-      console.warn('Prisma connect warning:', e);
+      console.warn("Prisma connect warning:", e);
     }
 
     const churchSlug = await getChurchSlugFromSources();
@@ -605,8 +659,8 @@ export async function getChurchId(): Promise<string> {
 
     return church.id;
   } catch (error) {
-    console.error('Error getting church ID:', error);
-    throw new Error('Failed to get church context');
+    console.error("Error getting church ID:", error);
+    throw new Error("Failed to get church context");
   }
 }
 

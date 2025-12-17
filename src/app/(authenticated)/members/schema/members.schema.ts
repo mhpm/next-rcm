@@ -32,11 +32,17 @@ export const memberSchema = z
       ),
 
     email: z
-      .string()
-      .email({ message: "Formato de email inválido" })
-      .max(100, "El email no puede exceder 100 caracteres")
+      .union([
+        z.string().email({ message: "Formato de email inválido" }),
+        z.literal(""),
+        z.null(),
+      ])
       .optional()
-      .transform((v) => (typeof v === "string" ? v.toLowerCase() : v)),
+      .transform((v) => {
+        if (v === undefined) return undefined;
+        if (v === "" || v === null) return null;
+        return v.toLowerCase();
+      }),
 
     role: MemberRoleSchema,
 
@@ -199,19 +205,23 @@ const memberFormBase = z
       ),
 
     email: z
-      .string()
+      .union([z.string(), z.null()])
       .optional()
       .transform((val) => {
         if (val === undefined) return undefined;
+        if (val === null) return null;
         const trimmed = val.trim();
-        if (trimmed.length === 0) return undefined;
+        if (trimmed.length === 0) return null;
         return trimmed.toLowerCase();
       })
       .refine(
-        (val) => val === undefined || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+        (val) =>
+          val === undefined ||
+          val === null ||
+          /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
         { message: "Formato de email inválido" }
       )
-      .refine((val) => val === undefined || val.length <= 100, {
+      .refine((val) => val === undefined || val === null || val.length <= 100, {
         message: "El email no puede exceder 100 caracteres",
       }),
 

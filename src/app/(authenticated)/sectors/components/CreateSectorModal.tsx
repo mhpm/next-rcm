@@ -51,12 +51,16 @@ export default function CreateSectorModal({
     mode: "onChange",
   });
 
-  // Update parentId when initialParentId changes
+  // Reset form when modal opens with new initialParentId
   useEffect(() => {
     if (open) {
-      setValue("parentId", initialParentId || undefined);
+      reset({
+        name: "",
+        supervisorId: undefined,
+        parentId: initialParentId || undefined,
+      });
     }
-  }, [initialParentId, open, setValue]);
+  }, [initialParentId, open, reset]);
 
   // Fetch all sectors for the parent selector
   const { data: sectorsData } = useQuery({
@@ -83,94 +87,100 @@ export default function CreateSectorModal({
       }}
       title={watch("parentId") ? "Nuevo Subsector" : "Nuevo Sector"}
     >
-      <form
-        suppressHydrationWarning
-        onSubmit={handleSubmit(async (form) => {
-          try {
-            if (form.parentId) {
-              await createSubSectorMutation.mutateAsync({
-                name: form.name,
-                sectorId: form.parentId,
-                supervisorId: form.supervisorId || undefined,
-              });
-              showSuccess("Subsector creado exitosamente");
-            } else {
-              await createSectorMutation.mutateAsync({
-                name: form.name,
-                supervisorId: form.supervisorId || undefined,
-                // zoneId logic here if needed
-              });
-              showSuccess("Sector creado exitosamente");
-            }
-            onClose();
-            reset({ name: "", supervisorId: undefined, parentId: undefined });
-            onCreated?.();
-          } catch (e) {
-            const message =
-              e instanceof Error ? e.message : "Error al crear el sector";
-            showError(message);
-          }
-        })}
-        className="space-y-4"
-      >
-        <div className="grid grid-cols-1 gap-4">
-          <InputField<FormValues>
-            name="name"
-            label={
-              watch("parentId") ? "Nombre del Subsector" : "Nombre del Sector"
-            }
-            register={register}
-            rules={{ required: "El nombre es requerido" }}
-            error={errors.name?.message}
-          />
-          <MemberSearchField<FormValues>
-            name="supervisorId"
-            label="Supervisor (opcional)"
-            register={register}
-            setValue={setValue}
-            watch={watch}
-            error={errors.supervisorId?.message}
-            search={async (term) => {
-              const res = await getAllMembers({
-                search: term,
-                limit: 10,
-                // Removed role filter to allow searching all members
-              });
-              return res.members;
-            }}
-          />
-          <SelectField<FormValues>
-            name="parentId"
-            label="Sector Padre (Opcional)"
-            register={register}
-            options={parentSelectOptions}
-            error={errors.parentId?.message}
-          />
-        </div>
-        <div className="flex justify-end gap-2 mt-8">
-          <button
-            type="button"
-            className="btn btn-ghost"
-            onClick={() => {
+      {open && (
+        <form
+          suppressHydrationWarning
+          onSubmit={handleSubmit(async (form) => {
+            try {
+              if (form.parentId) {
+                await createSubSectorMutation.mutateAsync({
+                  name: form.name,
+                  sectorId: form.parentId,
+                  supervisorId: form.supervisorId || undefined,
+                });
+                showSuccess("Subsector creado exitosamente");
+              } else {
+                await createSectorMutation.mutateAsync({
+                  name: form.name,
+                  supervisorId: form.supervisorId || undefined,
+                  // zoneId logic here if needed
+                });
+                showSuccess("Sector creado exitosamente");
+              }
               onClose();
               reset({ name: "", supervisorId: undefined, parentId: undefined });
-            }}
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            className={`btn btn-primary ${isSubmitting ? "loading" : ""}`}
-            disabled={
-              isSubmitting ||
-              createSectorMutation.isPending ||
-              createSubSectorMutation.isPending
+              onCreated?.();
+            } catch (e) {
+              const message =
+                e instanceof Error ? e.message : "Error al crear el sector";
+              showError(message);
             }
-          >
-            {watch("parentId") ? "Crear Subsector" : "Crear Sector"}
-          </button>
-        </div>
-      </form>
+          })}
+          className="space-y-4"
+        >
+          <div className="grid grid-cols-1 gap-4">
+            <InputField<FormValues>
+              name="name"
+              label={
+                watch("parentId") ? "Nombre del Subsector" : "Nombre del Sector"
+              }
+              register={register}
+              rules={{ required: "El nombre es requerido" }}
+              error={errors.name?.message}
+            />
+            <MemberSearchField<FormValues>
+              name="supervisorId"
+              label="Supervisor (opcional)"
+              register={register}
+              setValue={setValue}
+              watch={watch}
+              error={errors.supervisorId?.message}
+              search={async (term) => {
+                const res = await getAllMembers({
+                  search: term,
+                  limit: 10,
+                  // Removed role filter to allow searching all members
+                });
+                return res.members;
+              }}
+            />
+            <SelectField<FormValues>
+              name="parentId"
+              label="Sector Padre (Opcional)"
+              register={register}
+              options={parentSelectOptions}
+              error={errors.parentId?.message}
+            />
+          </div>
+          <div className="flex justify-end gap-2 mt-8">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => {
+                onClose();
+                reset({
+                  name: "",
+                  supervisorId: undefined,
+                  parentId: undefined,
+                });
+              }}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className={`btn btn-primary ${isSubmitting ? "loading" : ""}`}
+              disabled={
+                isSubmitting ||
+                createSectorMutation.isPending ||
+                createSubSectorMutation.isPending
+              }
+            >
+              {watch("parentId") ? "Crear Subsector" : "Crear Sector"}
+            </button>
+          </div>
+        </form>
+      )}
     </Modal>
   );
 }
