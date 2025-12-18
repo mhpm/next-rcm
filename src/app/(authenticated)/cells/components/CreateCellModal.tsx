@@ -18,12 +18,17 @@ type CreateCellModalProps = {
   open: boolean;
   onClose: () => void;
   onCreated?: () => void;
+  initialData?: {
+    sectorId?: string;
+    subSectorId?: string;
+  };
 };
 
 export default function CreateCellModal({
   open,
   onClose,
   onCreated,
+  initialData,
 }: CreateCellModalProps) {
   const createCellMutation = useCreateCell();
   const { showSuccess, showError } = useNotificationStore();
@@ -37,25 +42,51 @@ export default function CreateCellModal({
     formState: { errors },
   } = useForm<FormValues & { subSectorId?: string }>({
     resolver: zodResolver(cellCreateSchema),
-    defaultValues: { name: "", sectorId: "", subSectorId: "" },
+    defaultValues: {
+      name: "",
+      sectorId: initialData?.sectorId || "",
+      subSectorId: initialData?.subSectorId || "",
+    },
     mode: "onChange",
   });
 
+  // Effect to update values if initialData changes or modal opens
+  useEffect(() => {
+    if (open && initialData) {
+      if (initialData.sectorId) setValue("sectorId", initialData.sectorId);
+      // We need to wait for sectors to load/update before setting subSectorId
+      // But react-hook-form might handle it if we set it after a small delay or if options exist.
+      // However, the `useEffect` below resets subSectorId when sectorId changes.
+      // We need to handle that carefully.
+    }
+  }, [open, initialData, setValue]);
+
   const { data: sectorsData, isLoading: loadingSectors } = useQuery({
-    queryKey: ["sectors", "all"],
+    queryKey: ["cells", "sectors"],
     queryFn: () => getAllSectors(),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 
-  const sectors = sectorsData || [];
+  const sectors = Array.isArray(sectorsData) ? sectorsData : [];
 
   const selectedSectorId = watch("sectorId");
 
   // Reset sub-sector when parent sector changes
   useEffect(() => {
-    setValue("subSectorId", "");
-  }, [selectedSectorId, setValue]);
+    // Only reset if it's a manual change, not initial setup
+    // But detecting manual vs initial is hard.
+    // Let's just reset if the current value doesn't match initialData (if provided)
+    // OR simply: if sectorId changes, reset subSectorId UNLESS it matches initialData's target
+
+    const isInitialSetup =
+      initialData?.sectorId === selectedSectorId && initialData?.subSectorId;
+    if (isInitialSetup) {
+      setValue("subSectorId", initialData.subSectorId!);
+    } else {
+      setValue("subSectorId", "");
+    }
+  }, [selectedSectorId, setValue, initialData]);
 
   // Filter for parent sectors (those with no parent_id - actually all are sectors now)
   const parentSectors = Array.isArray(sectors) ? sectors : [];

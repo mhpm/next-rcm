@@ -160,6 +160,7 @@ export async function getSectorHierarchy() {
             include: {
               leader: true,
               host: true,
+              assistant: true,
               _count: { select: { members: true } },
             },
           },
@@ -407,7 +408,7 @@ export async function getSectorStats() {
   // Members have sector_id and sub_sector_id
   const totalMembersInHierarchy = await prisma.members.count({
     where: {
-      OR: [{ sub_sector_id: { not: null } }, { sector_id: { not: null } }],
+      cell_id: { not: null },
       church_id: churchId,
     },
   });

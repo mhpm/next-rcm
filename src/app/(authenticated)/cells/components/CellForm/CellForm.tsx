@@ -88,23 +88,23 @@ const CellForm: React.FC<CellFormProps> = ({
   });
 
   const { data: sectorsData, isLoading: loadingSectors } = useQuery({
-    queryKey: ["sectors", "all"],
+    queryKey: ["cells", "sectors"],
     queryFn: () => getAllSectors(),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 
-  const sectors = sectorsData || [];
+  const sectors = Array.isArray(sectorsData) ? sectorsData : [];
   const selectedSectorId = watch("sectorId");
 
   // Reset sub-sector when parent sector changes
-  useEffect(() => {
-    if (initialData?.sectorId && selectedSectorId !== initialData.sectorId) {
-      setValue("subSectorId", "");
-    } else if (!initialData?.sectorId) {
-      setValue("subSectorId", "");
-    }
-  }, [selectedSectorId, initialData?.sectorId, setValue]);
+  // useEffect(() => {
+  //   if (initialData?.sectorId && selectedSectorId !== initialData.sectorId) {
+  //     setValue("subSectorId", "");
+  //   } else if (!initialData?.sectorId) {
+  //     setValue("subSectorId", "");
+  //   }
+  // }, [selectedSectorId, initialData?.sectorId, setValue]);
 
   const parentSectors = Array.isArray(sectors) ? sectors : [];
   const parentSectorOptions = parentSectors.map((s: any) => ({

@@ -29,12 +29,12 @@ export default function CellsFilterModal({
 
   // Fetch sectors for the dropdown
   const { data: sectorsData } = useQuery({
-    queryKey: ["sectors", "all"],
+    queryKey: ["cells", "sectors"],
     queryFn: () => getAllSectors(),
     staleTime: 5 * 60 * 1000,
   });
 
-  const sectors = sectorsData || [];
+  const sectors = Array.isArray(sectorsData) ? sectorsData : [];
 
   // Filter subsectors based on selected sector
   const selectedSector = Array.isArray(sectors)

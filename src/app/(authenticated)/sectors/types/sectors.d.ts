@@ -59,6 +59,7 @@ export interface CellNode {
   name: string;
   leaderName: string;
   hostName: string;
+  assistantName: string;
   membersCount: number;
 }
 

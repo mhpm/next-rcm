@@ -34,7 +34,15 @@ export default function SectorStats() {
         // Note: The raw data from Prisma (via action) has _count property
         if (item._count) {
           totalCells += item._count.cells || 0;
-          totalMembers += item._count.members || 0;
+          // For sectors, membersCount includes direct members + members in subsectors (which includes members in cells)
+          // But to be precise for "members in cells", we should sum members from cells.
+        }
+        
+        // Sum members specifically from cells in this level (if any)
+        if (item.cells && Array.isArray(item.cells)) {
+           item.cells.forEach((c: any) => {
+             totalMembers += c._count?.members || 0;
+           });
         }
 
         // Check for subsectors

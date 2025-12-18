@@ -8,14 +8,16 @@ import {
 } from "../hooks/useSectors";
 import type { SectorNode, CellNode } from "../types/sectors";
 import CreateSectorModal from "./CreateSectorModal";
+import CreateCellModal from "@/app/(authenticated)/cells/components/CreateCellModal";
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { useNotificationStore } from "@/store/NotificationStore";
+import Link from "next/link";
 import {
   RiAddLine,
   RiEdit2Fill,
   RiDeleteBinLine,
-  RiUserAddLine,
   RiArrowDownSLine,
+  RiExternalLinkLine,
 } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 
@@ -60,6 +62,9 @@ function toNodes(
             hostName: c.host
               ? `${c.host.firstName} ${c.host.lastName}`
               : "Sin anfitrión",
+            assistantName: c.assistant
+              ? `${c.assistant.firstName} ${c.assistant.lastName}`
+              : "Sin asistente",
             membersCount: c._count?.members ?? 0,
           }))
         : undefined;
@@ -91,6 +96,11 @@ export default function SectorHierarchy() {
   const [createParentId, setCreateParentId] = React.useState<
     string | undefined
   >(undefined);
+  const [createCellOpen, setCreateCellOpen] = React.useState(false);
+  const [targetSubSector, setTargetSubSector] = React.useState<{
+    id: string;
+    sectorId: string;
+  } | null>(null);
 
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [deleteTarget, setDeleteTarget] = React.useState<{
@@ -112,7 +122,7 @@ export default function SectorHierarchy() {
   }
 
   return (
-    <div className="bg-base-300 rounded-lg shadow-md">
+    <div className="bg-base-100 rounded-lg shadow-md">
       <div className="p-4 sm:p-6 border-b border-base-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h3 className="text-lg font-semibold">Sectores</h3>
@@ -159,6 +169,10 @@ export default function SectorHierarchy() {
               onAddMembers={(sectorId) =>
                 router.push(`/members?sector=${sectorId}`)
               }
+              onAddCell={(subSectorId, sectorId) => {
+                setTargetSubSector({ id: subSectorId, sectorId });
+                setCreateCellOpen(true);
+              }}
             />
           ))}
         </div>
@@ -169,6 +183,23 @@ export default function SectorHierarchy() {
         onClose={() => setCreateOpen(false)}
         onCreated={() => refetch()}
         initialParentId={createParentId}
+      />
+
+      <CreateCellModal
+        open={createCellOpen}
+        onClose={() => {
+          setCreateCellOpen(false);
+          setTargetSubSector(null);
+        }}
+        onCreated={() => refetch()}
+        initialData={
+          targetSubSector
+            ? {
+                subSectorId: targetSubSector.id,
+                sectorId: targetSubSector.sectorId,
+              }
+            : undefined
+        }
       />
 
       <DeleteConfirmationModal
@@ -220,21 +251,31 @@ function ParentCollapse({
   onEdit,
   onDelete,
   onAddMembers,
+  onAddCell,
+  parentSectorId,
 }: {
   node: SectorNode;
   onAddChild: (parentId: string) => void;
   onEdit: (s: { id: string; name: string }) => void;
   onDelete: (s: { id: string; name: string }) => void;
   onAddMembers: (sectorId: string) => void;
+  onAddCell: (subSectorId: string, sectorId: string) => void;
+  parentSectorId?: string;
 }) {
   const [open, setOpen] = React.useState(false);
   return (
     <div
-      className={`collapse ${
+      className={`collapse border-b-2 border-base-300 ${
         open ? "collapse-open" : "collapse-close"
-      } bg-base-200`}
+      } bg-base-100`}
     >
-      <div className="collapse-title p-3 sm:px-4 text-base font-semibold h-auto min-h-12">
+      <div
+        className="collapse-title p-3 sm:px-4 text-base font-semibold h-auto min-h-12 bg-base-300 hover:cursor-pointer hover:bg-base-300/70"
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(!open);
+        }}
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pointer-events-none">
           <span className="pointer-events-auto text-sm sm:text-base wrap-break-word pr-2">
             {node.name}
@@ -270,7 +311,7 @@ function ParentCollapse({
                 <RiEdit2Fill className="w-4 h-4" />
               </button>
               <button
-                className="btn btn-ghost btn-xs sm:btn-sm btn-square text-error"
+                className="btn btn-ghost btn-xs sm:btn-sm btn-square"
                 onClick={(e) => {
                   e.stopPropagation();
                   onDelete(node);
@@ -280,11 +321,24 @@ function ParentCollapse({
               </button>
               {node.type === "SECTOR" && (
                 <button
-                  className="btn btn-ghost btn-xs sm:btn-sm btn-square text-primary"
+                  className="btn btn-ghost btn-xs sm:btn-sm btn-square"
                   onClick={(e) => {
                     e.stopPropagation();
                     onAddChild(node.id);
                   }}
+                  title="Agregar subsector"
+                >
+                  <RiAddLine className="w-4 h-4" />
+                </button>
+              )}
+              {node.type === "SUB_SECTOR" && parentSectorId && (
+                <button
+                  className="btn btn-ghost btn-xs sm:btn-sm btn-square"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddCell(node.id, parentSectorId);
+                  }}
+                  title="Agregar célula"
                 >
                   <RiAddLine className="w-4 h-4" />
                 </button>
@@ -317,6 +371,8 @@ function ParentCollapse({
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onAddMembers={onAddMembers}
+                onAddCell={onAddCell}
+                parentSectorId={node.type === "SECTOR" ? node.id : undefined}
               />
             ))
           ) : node.cells && node.cells.length > 0 ? (
@@ -324,12 +380,19 @@ function ParentCollapse({
               {node.cells.map((cell) => (
                 <div
                   key={cell.id}
-                  className="bg-base-100 p-3 rounded-lg border border-base-200 flex justify-between items-center"
+                  className="bg-base-200 p-3 rounded-lg border border-base-300 flex justify-between items-center"
                 >
                   <div>
-                    <div className="font-medium">{cell.name}</div>
+                    <Link
+                      href={`/cells/edit/${cell.id}`}
+                      className="font-medium hover:text-primary hover:underline flex items-center gap-1 group"
+                    >
+                      {cell.name}
+                      <RiExternalLinkLine className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                    </Link>
                     <div className="text-xs text-base-content/70 mt-1">
-                      Líder: {cell.leaderName} | Anfitrión: {cell.hostName}
+                      Líder: {cell.leaderName} | Anfitrión: {cell.hostName} |{" "}
+                      Asistente: {cell.assistantName}
                     </div>
                   </div>
                   <div className="badge badge-sm badge-ghost">
