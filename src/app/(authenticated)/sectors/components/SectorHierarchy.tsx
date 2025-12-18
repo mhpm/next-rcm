@@ -380,7 +380,7 @@ function ParentCollapse({
               {node.cells.map((cell) => (
                 <div
                   key={cell.id}
-                  className="bg-base-200 p-3 rounded-lg border border-base-300 flex justify-between items-center"
+                  className="bg-base-200 p-3 px-4 rounded-lg border border-base-300 flex flex-wrap justify-between items-center"
                 >
                   <div>
                     <Link
@@ -390,12 +390,22 @@ function ParentCollapse({
                       {cell.name}
                       <RiExternalLinkLine className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
                     </Link>
-                    <div className="text-xs text-base-content/70 mt-1">
-                      Líder: {cell.leaderName} | Anfitrión: {cell.hostName} |{" "}
-                      Asistente: {cell.assistantName}
+                    <div className="text-sm mt-1">
+                      <div className="mt-2">
+                        <span className="font-medium">Líder:</span>{" "}
+                        {cell.leaderName}
+                      </div>
+                      <div className="mt-2">
+                        <span className="font-medium">Asistente:</span>{" "}
+                        {cell.assistantName}
+                      </div>
+                      <div className="mt-2">
+                        <span className="font-medium">Anfitrión:</span>{" "}
+                        {cell.hostName}
+                      </div>
                     </div>
                   </div>
-                  <div className="badge badge-sm badge-ghost">
+                  <div className="mt-4 md:mt-0 font-semibold">
                     {cell.membersCount} miembros
                   </div>
                 </div>
