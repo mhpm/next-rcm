@@ -7,6 +7,7 @@ import type { ReportFieldType, ReportScope } from "@/generated/prisma/client";
 import {
   createReportEntry,
   updateReportEntry,
+  getReportEntityMembers,
 } from "@/app/(authenticated)/reports/actions/reports.actions";
 import { useRouter } from "next/navigation";
 import { useNotificationStore } from "@/store/NotificationStore";
@@ -64,6 +65,36 @@ export default function SubmitReportForm({
   } = useForm<FormValues>({
     defaultValues: initialValues || { scope },
   });
+
+  const [members, setMembers] = React.useState<
+    { id: string; firstName: string; lastName: string }[]
+  >([]);
+
+  const watchedCellId = watch("cellId");
+  const watchedGroupId = watch("groupId");
+  const watchedSectorId = watch("sectorId");
+
+  React.useEffect(() => {
+    const fetchMembers = async () => {
+      let entityId: string | undefined;
+      if (scope === "CELL") entityId = watchedCellId;
+      if (scope === "GROUP") entityId = watchedGroupId;
+      if (scope === "SECTOR") entityId = watchedSectorId;
+
+      if (entityId) {
+        try {
+          const data = await getReportEntityMembers(scope, entityId);
+          setMembers(data);
+        } catch (e) {
+          console.error(e);
+          setMembers([]);
+        }
+      } else {
+        setMembers([]);
+      }
+    };
+    fetchMembers();
+  }, [watchedCellId, watchedGroupId, watchedSectorId, scope]);
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -225,6 +256,34 @@ export default function SubmitReportForm({
                     ]}
                     rules={f.required ? { required: "Requerido" } : undefined}
                   />
+                );
+              }
+              if (f.type === "MEMBER_SELECT") {
+                return (
+                  <SelectField<FormValues>
+                    key={f.id}
+                    name={baseName}
+                    label={f.label || f.key}
+                    register={register}
+                    options={[
+                      { value: "", label: "Selecciona un miembro" },
+                      ...members.map((m) => ({
+                        value: m.id,
+                        label: `${m.firstName} ${m.lastName}`,
+                      })),
+                    ]}
+                    rules={f.required ? { required: "Requerido" } : undefined}
+                  />
+                );
+              }
+              if (f.type === "SECTION") {
+                return (
+                  <div
+                    key={f.id}
+                    className="divider font-bold text-lg mt-6 mb-2"
+                  >
+                    {f.label || "Nueva Sección"}
+                  </div>
                 );
               }
               return (

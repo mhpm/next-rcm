@@ -23,22 +23,43 @@ export async function getPublicEntities(token: string) {
 
   if (!report) return null;
 
-  const [cells, groups, sectors] = await Promise.all([
+  const [cells, groups, sectors, members] = await Promise.all([
     prisma.cells.findMany({
       where: { church_id: report.church_id },
-      select: { id: true, name: true },
+      select: {
+        id: true,
+        name: true,
+        leader: { select: { firstName: true, lastName: true } },
+      },
     }),
     prisma.groups.findMany({
       where: { church_id: report.church_id },
-      select: { id: true, name: true },
+      select: {
+        id: true,
+        name: true,
+        leader: { select: { firstName: true, lastName: true } },
+      },
     }),
     prisma.sectors.findMany({
       where: { church_id: report.church_id },
-      select: { id: true, name: true },
+      select: {
+        id: true,
+        name: true,
+        supervisor: { select: { firstName: true, lastName: true } },
+      },
+    }),
+    prisma.members.findMany({
+      where: { church_id: report.church_id },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+      },
+      orderBy: { firstName: "asc" },
     }),
   ]);
 
-  return { cells, groups, sectors };
+  return { cells, groups, sectors, members };
 }
 
 export type SubmitPublicReportEntryInput = {
@@ -103,4 +124,63 @@ export async function submitPublicReportEntry(
   });
 
   revalidatePath(`/reports/${report.id}/entries`);
+}
+
+export async function getPublicReportEntityMembers(
+  token: string,
+  scope: ReportScope,
+  entityId: string
+) {
+  const report = await prisma.reports.findUnique({
+    where: { publicToken: token },
+    select: { church_id: true },
+  });
+
+  if (!report) throw new Error("Reporte no encontrado");
+
+  // Verify entity belongs to church
+  let valid = false;
+  if (scope === "CELL") {
+    const cell = await prisma.cells.findFirst({
+      where: { id: entityId, church_id: report.church_id },
+      select: { id: true },
+    });
+    valid = !!cell;
+  } else if (scope === "GROUP") {
+    const group = await prisma.groups.findFirst({
+      where: { id: entityId, church_id: report.church_id },
+      select: { id: true },
+    });
+    valid = !!group;
+  } else if (scope === "SECTOR") {
+    const sector = await prisma.sectors.findFirst({
+      where: { id: entityId, church_id: report.church_id },
+      select: { id: true },
+    });
+    valid = !!sector;
+  }
+
+  if (!valid) throw new Error("Entidad no válida");
+
+  if (scope === "CELL") {
+    return prisma.members.findMany({
+      where: { cell_id: entityId },
+      select: { id: true, firstName: true, lastName: true },
+      orderBy: { lastName: "asc" },
+    });
+  } else if (scope === "GROUP") {
+    return prisma.members.findMany({
+      where: { groups: { some: { id: entityId } } },
+      select: { id: true, firstName: true, lastName: true },
+      orderBy: { lastName: "asc" },
+    });
+  } else if (scope === "SECTOR") {
+    return prisma.members.findMany({
+      where: { sector_id: entityId },
+      select: { id: true, firstName: true, lastName: true },
+      orderBy: { lastName: "asc" },
+    });
+  }
+
+  return [];
 }

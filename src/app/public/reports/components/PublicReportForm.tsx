@@ -35,6 +35,7 @@ export default function PublicReportForm({
   cells,
   groups,
   sectors,
+  members,
   churchName,
 }: {
   token: string;
@@ -45,6 +46,7 @@ export default function PublicReportForm({
   cells: Option[];
   groups: Option[];
   sectors: Option[];
+  members: Option[];
   churchName: string;
 }) {
   const { showSuccess, showError } = useNotificationStore();
@@ -168,7 +170,11 @@ export default function PublicReportForm({
                       ...(f.required ? { required: "Requerido" } : {}),
                       valueAsNumber: true,
                     }}
-                    startIcon={f.type === "CURRENCY" ? <span className="text-gray-500 font-bold">$</span> : undefined}
+                    startIcon={
+                      f.type === "CURRENCY" ? (
+                        <span className="text-gray-500 font-bold">$</span>
+                      ) : undefined
+                    }
                   />
                 );
               }
@@ -217,6 +223,31 @@ export default function PublicReportForm({
                         value: opt,
                         label: opt,
                       })),
+                    ]}
+                    rules={f.required ? { required: "Requerido" } : undefined}
+                  />
+                );
+              }
+              if (f.type === "SECTION") {
+                return (
+                  <div
+                    key={f.id}
+                    className="divider font-bold text-lg mt-6 mb-2"
+                  >
+                    {f.label || "Nueva Sección"}
+                  </div>
+                );
+              }
+              if (f.type === "MEMBER_SELECT") {
+                return (
+                  <SelectField<FormValues>
+                    key={f.id}
+                    name={baseName}
+                    label={f.label || f.key}
+                    register={register}
+                    options={[
+                      { value: "", label: "Selecciona un miembro" },
+                      ...members,
                     ]}
                     rules={f.required ? { required: "Requerido" } : undefined}
                   />

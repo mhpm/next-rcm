@@ -9,7 +9,7 @@ export default async function PublicReportPage({
 }) {
   const { token } = await params;
   const report = await getPublicReport(token);
-  
+
   if (!report) notFound();
 
   const entities = await getPublicEntities(token);
@@ -20,9 +20,11 @@ export default async function PublicReportPage({
     <div className="min-h-screen bg-base-200 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary">{report.church.name}</h1>
+          <h1 className="text-3xl font-bold text-primary">
+            {report.church.name}
+          </h1>
         </div>
-        
+
         <PublicReportForm
           token={token}
           title={report.title}
@@ -38,9 +40,30 @@ export default async function PublicReportPage({
               ? (f.options as string[])
               : undefined,
           }))}
-          cells={entities.cells.map(c => ({ value: c.id, label: c.name }))}
-          groups={entities.groups.map(g => ({ value: g.id, label: g.name }))}
-          sectors={entities.sectors.map(s => ({ value: s.id, label: s.name }))}
+          cells={entities.cells.map((c) => ({
+            value: c.id,
+            label: `${c.name}${
+              c.leader ? ` - ${c.leader.firstName} ${c.leader.lastName}` : ""
+            }`,
+          }))}
+          groups={entities.groups.map((g) => ({
+            value: g.id,
+            label: `${g.name}${
+              g.leader ? ` - ${g.leader.firstName} ${g.leader.lastName}` : ""
+            }`,
+          }))}
+          sectors={entities.sectors.map((s) => ({
+            value: s.id,
+            label: `${s.name}${
+              s.supervisor
+                ? ` - ${s.supervisor.firstName} ${s.supervisor.lastName}`
+                : ""
+            }`,
+          }))}
+          members={entities.members.map((m) => ({
+            value: m.id,
+            label: `${m.firstName} ${m.lastName}`,
+          }))}
           churchName={report.church.name}
         />
       </div>

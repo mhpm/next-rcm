@@ -280,6 +280,8 @@ enum ReportFieldType {
   DATE
   JSON
   SELECT
+  SECTION
+  MEMBER_SELECT
 }
 
 enum ReportScope {

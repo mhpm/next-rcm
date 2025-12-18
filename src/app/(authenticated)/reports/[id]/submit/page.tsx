@@ -23,22 +23,51 @@ export default async function SubmitReportPage({
 
   const [cells, groups, sectors] = await Promise.all([
     prisma.cells.findMany({
-      select: { id: true, name: true },
+      select: {
+        id: true,
+        name: true,
+        leader: { select: { firstName: true, lastName: true } },
+      },
       orderBy: { name: "asc" },
     }),
     prisma.groups.findMany({
-      select: { id: true, name: true },
+      select: {
+        id: true,
+        name: true,
+        leader: { select: { firstName: true, lastName: true } },
+      },
       orderBy: { name: "asc" },
     }),
     prisma.sectors.findMany({
-      select: { id: true, name: true },
+      select: {
+        id: true,
+        name: true,
+        supervisor: { select: { firstName: true, lastName: true } },
+      },
       orderBy: { name: "asc" },
     }),
   ]);
 
-  const cellOptions = cells.map((c) => ({ value: c.id, label: c.name }));
-  const groupOptions = groups.map((g) => ({ value: g.id, label: g.name }));
-  const sectorOptions = sectors.map((s) => ({ value: s.id, label: s.name }));
+  const cellOptions = cells.map((c) => ({
+    value: c.id,
+    label: `${c.name}${
+      c.leader ? ` - ${c.leader.firstName} ${c.leader.lastName}` : ""
+    }`,
+  }));
+  const groupOptions = groups.map((g) => ({
+    value: g.id,
+    label: `${g.name}${
+      g.leader ? ` - ${g.leader.firstName} ${g.leader.lastName}` : ""
+    }`,
+  }));
+  const sectorOptions = sectors.map((s) => ({
+    value: s.id,
+    label: `${s.name}${
+      s.supervisor
+        ? ` - ${s.supervisor.firstName} ${s.supervisor.lastName}`
+        : ""
+    }`,
+  }));
 
   return (
     <div className="p-6 space-y-6">

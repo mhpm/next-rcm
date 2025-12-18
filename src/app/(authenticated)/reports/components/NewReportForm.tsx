@@ -1,309 +1,10 @@
 "use client";
 
 import React from "react";
-import { useForm, useFieldArray, useWatch, Control } from "react-hook-form";
-import { InputField, SelectField } from "@/components/FormControls";
-import type { ReportFieldType, ReportScope } from "@/generated/prisma/client";
+import { useForm } from "react-hook-form";
 import { createReport } from "../actions/reports.actions";
 import { useRouter } from "next/navigation";
-import {
-  DndContext,
-  DragEndEvent,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-
-const slugify = (text: string) => {
-  return text
-    .toString()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, "_")
-    .replace(/[^\w\-]+/g, "")
-    .replace(/\-\-+/g, "_")
-    .replace(/^-+/, "")
-    .replace(/-+$/, "");
-};
-
-type FormValues = {
-  title: string;
-  description?: string;
-  scope: ReportScope;
-  fields: {
-    key: string;
-    label?: string;
-    type: ReportFieldType;
-    value?: unknown;
-    options?: { value: string }[]; // Changed to object array for useFieldArray
-    required?: boolean;
-    id?: string;
-  }[];
-  color?: string;
-};
-
-function OptionsEditor({
-  nestIndex,
-  control,
-  register,
-}: {
-  nestIndex: number;
-  control: Control<FormValues>;
-  register: any;
-}) {
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: `fields.${nestIndex}.options`,
-  });
-
-  return (
-    <div className="pl-4 border-l-2 border-base-200 ml-1 space-y-2">
-      <label className="label text-xs font-semibold uppercase text-base-content/50">
-        Opciones
-      </label>
-      {fields.map((item, k) => (
-        <div key={item.id} className="flex gap-2">
-          <input
-            {...register(`fields.${nestIndex}.options.${k}.value`, {
-              required: true,
-            })}
-            className="input input-bordered input-sm flex-1"
-            placeholder={`Opción ${k + 1}`}
-          />
-          <button
-            type="button"
-            className="btn btn-ghost btn-xs text-error"
-            onClick={() => remove(k)}
-            disabled={fields.length <= 1}
-          >
-            ✕
-          </button>
-        </div>
-      ))}
-      <button
-        type="button"
-        className="btn btn-ghost btn-xs gap-1"
-        onClick={() => append({ value: "" })}
-      >
-        <span>+ Añadir opción</span>
-      </button>
-    </div>
-  );
-}
-
-function SortableField({
-  id,
-  children,
-}: {
-  id: string;
-  children: React.ReactNode;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
-
-  const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    zIndex: isDragging ? 50 : undefined,
-    position: "relative",
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {children}
-    </div>
-  );
-}
-
-const COLORS = [
-  "#3b82f6", // blue
-  "#ef4444", // red
-  "#10b981", // green
-  "#f59e0b", // orange
-  "#8b5cf6", // purple
-  "#ec4899", // pink
-  "#06b6d4", // cyan
-  "#6366f1", // violet
-];
-
-function ColorPicker({
-  selected,
-  onChange,
-}: {
-  selected: string;
-  onChange: (color: string) => void;
-}) {
-  return (
-    <div className="space-y-2">
-      <label className="label-text font-medium">Color del formulario</label>
-      <div className="flex flex-wrap gap-2">
-        {COLORS.map((color) => (
-          <button
-            key={color}
-            type="button"
-            className={`w-8 h-8 rounded-full border-2 transition-all ${
-              selected === color
-                ? "border-base-content scale-110"
-                : "border-transparent hover:scale-105"
-            }`}
-            style={{ backgroundColor: color }}
-            onClick={() => onChange(color)}
-            aria-label={`Select color ${color}`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function LivePreview({ values }: { values: Partial<FormValues> }) {
-  return (
-    <div className="mockup-window border border-base-300 bg-base-200 shadow-xl h-full">
-      <div className="flex justify-center px-4 py-8 bg-base-100 h-full overflow-y-auto max-h-[calc(100vh-200px)]">
-        <div className="w-full max-w-lg space-y-6">
-          <div
-            className="text-center mb-8 border-b border-base-200 pb-6 rounded-t-lg border-t-8"
-            style={{ borderTopColor: values.color || "#3b82f6" }}
-          >
-            <h2 className="text-2xl font-bold text-base-content mt-4">
-              {values.title || "Título del Reporte"}
-            </h2>
-            {values.description ? (
-              <p className="text-base-content/70 mt-2">{values.description}</p>
-            ) : (
-              <p className="text-base-content/30 italic mt-2">
-                Sin descripción
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-4">
-            {/* Scope Selection Preview */}
-            {values.scope === "CELL" && (
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text font-medium">Célula</span>
-                  <span className="label-text-alt text-error">*</span>
-                </label>
-                <select className="select select-bordered w-full" disabled>
-                  <option>Selecciona una célula</option>
-                </select>
-              </div>
-            )}
-            {values.scope === "GROUP" && (
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text font-medium">Grupo</span>
-                  <span className="label-text-alt text-error">*</span>
-                </label>
-                <select className="select select-bordered w-full" disabled>
-                  <option>Selecciona un grupo</option>
-                </select>
-              </div>
-            )}
-            {values.scope === "SECTOR" && (
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text font-medium">Sector</span>
-                  <span className="label-text-alt text-error">*</span>
-                </label>
-                <select className="select select-bordered w-full" disabled>
-                  <option>Selecciona un sector</option>
-                </select>
-              </div>
-            )}
-
-            {/* Dynamic Fields Preview */}
-            {values.fields?.map((field, i) => (
-              <div
-                key={i}
-                className="form-control w-full p-4 bg-base-50 rounded-lg border border-base-200"
-              >
-                <label className="label">
-                  <span className="label-text font-medium">
-                    {field.label || `Pregunta ${i + 1}`}
-                  </span>
-                  {field.required && (
-                    <span className="label-text-alt text-error">*</span>
-                  )}
-                </label>
-
-                {field.type === "TEXT" && (
-                  <input
-                    type="text"
-                    className="input input-bordered w-full"
-                    placeholder="Tu respuesta"
-                    disabled
-                  />
-                )}
-
-                {field.type === "NUMBER" && (
-                  <input
-                    type="number"
-                    className="input input-bordered w-full"
-                    placeholder="0"
-                    disabled
-                  />
-                )}
-
-                {field.type === "DATE" && (
-                  <input
-                    type="date"
-                    className="input input-bordered w-full"
-                    disabled
-                  />
-                )}
-
-                {field.type === "BOOLEAN" && (
-                  <select className="select select-bordered w-full" disabled>
-                    <option>Selecciona una opción</option>
-                    <option>Sí</option>
-                    <option>No</option>
-                  </select>
-                )}
-
-                {field.type === "SELECT" && (
-                  <select className="select select-bordered w-full" disabled>
-                    <option>Selecciona una opción</option>
-                    {field.options?.map((opt, idx) => (
-                      <option key={idx}>{opt.value}</option>
-                    ))}
-                  </select>
-                )}
-              </div>
-            ))}
-
-            {(!values.fields || values.fields.length === 0) && (
-              <div className="text-center py-8 text-base-content/40 border-2 border-dashed border-base-200 rounded-lg">
-                No hay preguntas añadidas
-              </div>
-            )}
-          </div>
-
-          <div className="flex justify-end pt-6 border-t border-base-200 mt-8">
-            <button className="btn btn-primary w-full sm:w-auto" disabled>
-              Enviar Reporte
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+import { ReportFormValues, ReportBuilder } from "./form-builder";
 
 export default function NewReportForm() {
   const router = useRouter();
@@ -314,34 +15,29 @@ export default function NewReportForm() {
     setValue,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<FormValues>({
+  } = useForm<ReportFormValues>({
     defaultValues: { scope: "CELL", fields: [], color: "#3b82f6" },
   });
-  const { fields, append, remove, move } = useFieldArray({
-    control,
-    name: "fields",
-  });
 
-  const watchedValues = watch();
-
-  const sensors = useSensors(
-    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: 150, tolerance: 5 },
-    })
-  );
-
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: ReportFormValues) => {
     try {
       await createReport({
         title: data.title,
         description: data.description,
         scope: data.scope,
-        color: data.color,
-        fields: data.fields.map((f) => ({
-          ...f,
-          options: f.options?.map((o) => o.value),
-        })),
+        color: data.color || "#3b82f6",
+        fields: data.fields.map((f, index) => {
+          let key = f.key;
+          // Ensure SECTION fields have a key even if label is empty
+          if (f.type === "SECTION" && !key) {
+            key = `section_${index}_${Math.random().toString(36).substr(2, 9)}`;
+          }
+          return {
+            ...f,
+            key,
+            options: f.options?.map((o) => o.value),
+          };
+        }),
       });
       router.push(`/reports`);
     } catch (error) {
@@ -352,303 +48,48 @@ export default function NewReportForm() {
     }
   };
 
-  const addField = (type: ReportFieldType) => {
-    append({
-      key: "",
-      label: "",
-      type,
-      value: type === "NUMBER" ? 0 : type === "BOOLEAN" ? "false" : "",
-      options:
-        type === "SELECT"
-          ? [{ value: "Opción 1" }, { value: "Opción 2" }]
-          : undefined,
-    });
-  };
-
-  const duplicateField = (index: number) => {
-    const f = fields[index];
-    append({
-      key: "",
-      label: (f as any).label || "",
-      type: (f as any).type,
-      value: (f as any).value,
-      options: (f as any).options ? [...(f as any).options] : undefined,
-      required: (f as any).required || false,
-    });
-  };
-
-  const handleReorderEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const oldIndex = fields.findIndex((f) => f.id === active.id);
-    const newIndex = fields.findIndex((f) => f.id === over.id);
-    if (oldIndex !== -1 && newIndex !== -1) move(oldIndex, newIndex);
-  };
-
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-      {/* Left Column: Form Builder */}
-      <div className="space-y-6">
-        <div className="prose max-w-none">
-          <h1 className="text-2xl font-bold">Crear Nuevo Reporte</h1>
-          <p className="text-base-content/70">
-            Diseña la estructura de tu reporte.
-          </p>
-        </div>
-
-        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          {/* General Settings */}
-          <div className="card bg-base-100 border border-base-300 shadow-sm">
-            <div className="card-body p-5">
-              <h3 className="font-semibold text-lg mb-4">
-                Configuración General
-              </h3>
-              <div className="space-y-4">
-                <InputField
-                  name="title"
-                  label="Título del Reporte"
-                  register={register}
-                  rules={{ required: "Requerido" }}
-                  placeholder="ej. Reporte Semanal de Célula"
-                />
-                <InputField
-                  name="description"
-                  label="Descripción (Opcional)"
-                  register={register}
-                  placeholder="Instrucciones para llenar el reporte..."
-                />
-                <SelectField
-                  name="scope"
-                  label="Tipo de Entidad"
-                  register={register}
-                  options={[
-                    { value: "CELL", label: "Célula" },
-                    { value: "GROUP", label: "Grupo" },
-                    { value: "SECTOR", label: "Sector" },
-                    { value: "CHURCH", label: "Iglesia" },
-                  ]}
-                />
-                <ColorPicker
-                  selected={watchedValues.color || "#3b82f6"}
-                  onChange={(color) => setValue("color", color)}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Fields Builder */}
-          <div className="card bg-base-100 border border-base-300 shadow-sm">
-            <div className="card-body p-5">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="font-semibold text-lg">Preguntas del Reporte</h3>
-                <div className="dropdown dropdown-end">
-                  <div
-                    tabIndex={0}
-                    role="button"
-                    className="btn btn-primary btn-sm gap-2"
-                  >
-                    <span>+ Añadir</span>
-                    <span className="text-xs">▼</span>
-                  </div>
-                  <ul
-                    tabIndex={0}
-                    className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-                  >
-                    <li>
-                      <button type="button" onClick={() => addField("TEXT")}>
-                        Texto
-                      </button>
-                    </li>
-                    <li>
-                      <button type="button" onClick={() => addField("NUMBER")}>
-                        Número
-                      </button>
-                    </li>
-                    <li>
-                      <button type="button" onClick={() => addField("BOOLEAN")}>
-                        Sí/No
-                      </button>
-                    </li>
-                    <li>
-                      <button type="button" onClick={() => addField("DATE")}>
-                        Fecha
-                      </button>
-                    </li>
-                    <li>
-                      <button type="button" onClick={() => addField("SELECT")}>
-                        Opción Múltiple
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <DndContext sensors={sensors} onDragEnd={handleReorderEnd}>
-                <SortableContext
-                  items={fields.map((f) => f.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-4">
-                    {fields.map((field, index) => (
-                      <SortableField key={field.id} id={field.id}>
-                        <div className="p-4 border border-base-300 rounded-lg bg-base-50 hover:shadow-sm transition-all group">
-                          {/* Field Header / Actions */}
-                          <div className="flex items-center justify-between mb-3 pb-2 border-b border-base-200">
-                            <div className="badge badge-ghost gap-1 cursor-grab active:cursor-grabbing">
-                              <span className="opacity-50">☰</span>
-                              <span className="text-xs font-medium opacity-70">
-                                {field.type === "TEXT" && "Texto"}
-                                {field.type === "NUMBER" && "Número"}
-                                {field.type === "BOOLEAN" && "Sí/No"}
-                                {field.type === "DATE" && "Fecha"}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <button
-                                type="button"
-                                className="btn btn-ghost btn-xs"
-                                onClick={() => duplicateField(index)}
-                                title="Duplicar"
-                              >
-                                ⎘
-                              </button>
-                              <button
-                                type="button"
-                                className="btn btn-ghost btn-xs text-error"
-                                onClick={() => remove(index)}
-                                title="Eliminar"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* Field Inputs */}
-                          <div className="space-y-3">
-                            <div className="flex gap-4">
-                              <div className="flex-1">
-                                <input
-                                  {...register(
-                                    `fields.${index}.label` as const,
-                                    {
-                                      required: true,
-                                      onChange: (e) => {
-                                        setValue(
-                                          `fields.${index}.key`,
-                                          slugify(e.target.value)
-                                        );
-                                      },
-                                    }
-                                  )}
-                                  className="input input-bordered input-sm w-full font-medium"
-                                  placeholder="Escribe tu pregunta aquí..."
-                                />
-                              </div>
-                              <div className="flex items-center">
-                                <label className="label cursor-pointer gap-2">
-                                  <span className="label-text text-xs">
-                                    Obligatorio
-                                  </span>
-                                  <input
-                                    type="checkbox"
-                                    className="toggle toggle-xs toggle-primary"
-                                    {...register(
-                                      `fields.${index}.required` as const
-                                    )}
-                                  />
-                                </label>
-                              </div>
-                            </div>
-
-                            {field.type === "SELECT" && (
-                              <OptionsEditor
-                                nestIndex={index}
-                                control={control}
-                                register={register}
-                              />
-                            )}
-
-                            <div className="collapse collapse-arrow border border-base-200 bg-base-100 rounded-md">
-                              <input type="checkbox" />
-                              <div className="collapse-title text-xs font-medium text-base-content/60 py-2 min-h-0">
-                                Opciones avanzadas
-                              </div>
-                              <div className="collapse-content text-sm">
-                                <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                  <InputField
-                                    name={`fields.${index}.key`}
-                                    label="ID de base de datos (slug)"
-                                    register={register}
-                                    rules={{
-                                      required: "Requerido",
-                                    }}
-                                    placeholder="Autogenerado..."
-                                    className="input input-bordered input-sm w-full bg-base-200 text-base-content/60 cursor-not-allowed"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </SortableField>
-                    ))}
-                  </div>
-                </SortableContext>
-
-                {fields.length === 0 && (
-                  <div className="text-center py-12 border-2 border-dashed border-base-200 rounded-lg bg-base-50">
-                    <p className="text-base-content/50">
-                      No hay preguntas todavía.
-                    </p>
-                    <p className="text-sm text-base-content/40 mt-1">
-                      Haz clic en "+ Añadir" para comenzar.
-                    </p>
-                  </div>
-                )}
-              </DndContext>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-base-200">
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={() => router.push("/reports")}
-              disabled={isSubmitting}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary px-8"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="loading loading-spinner loading-xs"></span>
-                  Guardando...
-                </>
-              ) : (
-                "Guardar Formulario"
-              )}
-            </button>
-          </div>
-        </form>
+    <div className="space-y-6">
+      <div className="prose max-w-none">
+        <h1 className="text-2xl font-bold">Crear Nuevo Reporte</h1>
+        <p className="text-base-content/70">
+          Diseña la estructura de tu reporte.
+        </p>
       </div>
 
-      {/* Right Column: Live Preview */}
-      <div className="hidden lg:block relative h-full">
-        <div className="sticky top-6">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-semibold text-lg flex items-center gap-2">
-              <span className="text-primary">👁</span> Vista Previa
-            </h2>
-            <span className="badge badge-neutral text-xs">En vivo</span>
-          </div>
-          <LivePreview values={watchedValues} />
+      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <ReportBuilder
+          control={control}
+          register={register}
+          watch={watch}
+          setValue={setValue}
+        />
+
+        <div className="flex justify-end gap-4">
+          <button
+            type="button"
+            className="btn"
+            onClick={() => router.back()}
+            disabled={isSubmitting}
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <span className="loading loading-spinner"></span>
+                Guardando...
+              </>
+            ) : (
+              "Guardar Reporte"
+            )}
+          </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

@@ -87,15 +87,17 @@ export default async function ReportEntriesPage({
         title="Entradas del reporte"
         subTitle={`Total: ${entries.length}`}
         reportId={id}
-        fields={report.fields.map((f) => ({
-          id: f.id,
-          key: f.key,
-          label: f.label,
-          type: f.type,
-          options: Array.isArray(f.options)
-            ? (f.options as string[])
-            : undefined,
-        }))}
+        fields={report.fields
+          .filter((f) => f.type !== "SECTION")
+          .map((f) => ({
+            id: f.id,
+            key: f.key,
+            label: f.label,
+            type: f.type,
+            options: Array.isArray(f.options)
+              ? (f.options as string[])
+              : undefined,
+          }))}
       />
     </div>
   );

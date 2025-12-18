@@ -27,7 +27,9 @@ export const ReportFieldType = {
   BOOLEAN: 'BOOLEAN',
   DATE: 'DATE',
   JSON: 'JSON',
-  SELECT: 'SELECT'
+  SELECT: 'SELECT',
+  SECTION: 'SECTION',
+  MEMBER_SELECT: 'MEMBER_SELECT'
 } as const
 
 export type ReportFieldType = (typeof ReportFieldType)[keyof typeof ReportFieldType]
