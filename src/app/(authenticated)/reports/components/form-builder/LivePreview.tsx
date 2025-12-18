@@ -64,14 +64,16 @@ export function LivePreview({ values }: { values: Partial<ReportFormValues> }) {
                 key={i}
                 className="form-control w-full p-4 bg-base-50 rounded-lg border border-base-200"
               >
-                <label className="label">
-                  <span className="label-text font-medium">
-                    {field.label || `Pregunta ${i + 1}`}
-                  </span>
-                  {field.required && (
-                    <span className="label-text-alt text-error">*</span>
-                  )}
-                </label>
+                {field.type !== "SECTION" && (
+                  <label className="label">
+                    <span className="label-text font-medium">
+                      {field.label || `Pregunta ${i + 1}`}
+                    </span>
+                    {field.required && (
+                      <span className="label-text-alt text-error">*</span>
+                    )}
+                  </label>
+                )}
 
                 {field.type === "TEXT" && (
                   <input
@@ -151,7 +153,7 @@ export function LivePreview({ values }: { values: Partial<ReportFormValues> }) {
             )}
           </div>
 
-          <div className="flex justify-end pt-6 border-t border-base-200 mt-8">
+          <div className="flex justify-end py-6 border-t border-base-200 mt-8">
             <button className="btn btn-primary w-full sm:w-auto" disabled>
               Enviar Reporte
             </button>

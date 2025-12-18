@@ -158,74 +158,82 @@ export default function PublicReportForm({
               const baseName = `values.${f.id}` as const;
               if (f.type === "NUMBER" || f.type === "CURRENCY") {
                 return (
-                  <InputField<FormValues>
-                    key={f.id}
-                    name={baseName}
-                    label={f.label || f.key}
-                    register={register}
-                    type="number"
-                    step={f.type === "CURRENCY" ? "0.01" : "1"}
-                    placeholder={f.type === "CURRENCY" ? "0.00" : "0"}
-                    rules={{
-                      ...(f.required ? { required: "Requerido" } : {}),
-                      valueAsNumber: true,
-                    }}
-                    startIcon={
-                      f.type === "CURRENCY" ? (
-                        <span className="text-gray-500 font-bold">$</span>
-                      ) : undefined
-                    }
-                  />
+                  <div key={f.id} className="w-[80%] mx-auto">
+                    <InputField<FormValues>
+                      name={baseName}
+                      label={f.label || f.key}
+                      register={register}
+                      type="number"
+                      step={f.type === "CURRENCY" ? "0.01" : "1"}
+                      placeholder={f.type === "CURRENCY" ? "0.00" : "0"}
+                      rules={{
+                        ...(f.required ? { required: "Requerido" } : {}),
+                        valueAsNumber: true,
+                      }}
+                      startIcon={
+                        f.type === "CURRENCY" ? (
+                          <span className="text-gray-500 font-bold">$</span>
+                        ) : undefined
+                      }
+                    />
+                  </div>
                 );
               }
               if (f.type === "BOOLEAN") {
                 return (
-                  <SelectField<FormValues>
-                    key={f.id}
-                    name={baseName}
-                    label={f.label || f.key}
-                    register={register}
-                    options={[
-                      { value: "", label: "Selecciona" },
-                      { value: "true", label: "Sí" },
-                      { value: "false", label: "No" },
-                    ]}
-                    rules={{
-                      ...(f.required ? { required: "Requerido" } : {}),
-                      setValueAs: (v) =>
-                        v === "true" ? true : v === "false" ? false : undefined,
-                    }}
-                  />
+                  <div key={f.id} className="w-[80%] mx-auto">
+                    <SelectField<FormValues>
+                      name={baseName}
+                      label={f.label || f.key}
+                      register={register}
+                      options={[
+                        { value: "", label: "Selecciona" },
+                        { value: "true", label: "Sí" },
+                        { value: "false", label: "No" },
+                      ]}
+                      rules={{
+                        ...(f.required ? { required: "Requerido" } : {}),
+                        setValueAs: (v) =>
+                          v === "true"
+                            ? true
+                            : v === "false"
+                            ? false
+                            : undefined,
+                      }}
+                    />
+                  </div>
                 );
               }
               if (f.type === "DATE") {
                 return (
-                  <InputField<FormValues>
-                    key={f.id}
-                    name={baseName}
-                    label={f.label || f.key}
-                    register={register}
-                    type="date"
-                    rules={f.required ? { required: "Requerido" } : undefined}
-                  />
+                  <div key={f.id} className="w-[80%] mx-auto">
+                    <InputField<FormValues>
+                      name={baseName}
+                      label={f.label || f.key}
+                      register={register}
+                      type="date"
+                      rules={f.required ? { required: "Requerido" } : undefined}
+                    />
+                  </div>
                 );
               }
               if (f.type === "SELECT") {
                 return (
-                  <SelectField<FormValues>
-                    key={f.id}
-                    name={baseName}
-                    label={f.label || f.key}
-                    register={register}
-                    options={[
-                      { value: "", label: "Selecciona una opción" },
-                      ...(f.options || []).map((opt) => ({
-                        value: opt,
-                        label: opt,
-                      })),
-                    ]}
-                    rules={f.required ? { required: "Requerido" } : undefined}
-                  />
+                  <div key={f.id} className="w-[80%] mx-auto">
+                    <SelectField<FormValues>
+                      name={baseName}
+                      label={f.label || f.key}
+                      register={register}
+                      options={[
+                        { value: "", label: "Selecciona una opción" },
+                        ...(f.options || []).map((opt) => ({
+                          value: opt,
+                          label: opt,
+                        })),
+                      ]}
+                      rules={f.required ? { required: "Requerido" } : undefined}
+                    />
+                  </div>
                 );
               }
               if (f.type === "SECTION") {
@@ -240,17 +248,18 @@ export default function PublicReportForm({
               }
               if (f.type === "MEMBER_SELECT") {
                 return (
-                  <SelectField<FormValues>
-                    key={f.id}
-                    name={baseName}
-                    label={f.label || f.key}
-                    register={register}
-                    options={[
-                      { value: "", label: "Selecciona un miembro" },
-                      ...members,
-                    ]}
-                    rules={f.required ? { required: "Requerido" } : undefined}
-                  />
+                  <div key={f.id} className="w-[80%] mx-auto">
+                    <SelectField<FormValues>
+                      name={baseName}
+                      label={f.label || f.key}
+                      register={register}
+                      options={[
+                        { value: "", label: "Selecciona un miembro" },
+                        ...members,
+                      ]}
+                      rules={f.required ? { required: "Requerido" } : undefined}
+                    />
+                  </div>
                 );
               }
               return (

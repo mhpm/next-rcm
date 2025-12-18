@@ -68,11 +68,13 @@ export default async function ReportEntriesPage({
   const columns: TableColumn<Row>[] = [
     { key: "entidad", label: "Entidad", sortable: true },
     { key: "createdAt", label: "Fecha", sortable: true },
-    ...report.fields.map((f) => ({
-      key: f.id as keyof Row,
-      label: f.label ?? f.key,
-      sortable: false,
-    })),
+    ...report.fields
+      .filter((f) => f.type !== "SECTION")
+      .map((f) => ({
+        key: f.id as keyof Row,
+        label: f.label ?? f.key,
+        sortable: false,
+      })),
   ];
 
   return (
