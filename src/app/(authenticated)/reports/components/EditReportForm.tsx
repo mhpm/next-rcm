@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import type { ReportScope } from "@/generated/prisma/client";
 import { updateReportWithFields } from "../actions/reports.actions";
@@ -26,6 +26,7 @@ export default function EditReportForm({
     watch,
     setValue,
     handleSubmit,
+    reset,
     formState: { isSubmitting },
   } = useForm<ReportFormValues>({
     defaultValues: {
@@ -36,6 +37,17 @@ export default function EditReportForm({
       color: initial.color || "#3b82f6",
     },
   });
+
+  // Force reset when initial data changes (e.g., navigating back/forward)
+  useEffect(() => {
+    reset({
+      title: initial.title,
+      description: initial.description ?? undefined,
+      scope: initial.scope,
+      fields: initial.fields,
+      color: initial.color || "#3b82f6",
+    });
+  }, [initial, reset]);
 
   const onSubmit = async (data: ReportFormValues) => {
     try {
@@ -102,7 +114,7 @@ export default function EditReportForm({
           setValue={setValue}
         />
 
-        <div className="flex justify-end gap-4 border-t pt-6">
+        <div className="flex justify-end gap-4 pt-6">
           <button
             type="button"
             className="btn"

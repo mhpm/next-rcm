@@ -1,7 +1,11 @@
 "use client";
 
 import React from "react";
-import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
+import {
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
 import { InputField, SelectField } from "@/components/FormControls";
 import { ColorPicker } from "./ColorPicker";
 import { ReportFormValues } from "./types";
@@ -17,6 +21,7 @@ export function GeneralSettingsForm({
   watch,
   setValue,
 }: GeneralSettingsFormProps) {
+  const color = watch("color");
   const watchedValues = watch();
 
   return (
@@ -49,7 +54,7 @@ export function GeneralSettingsForm({
             ]}
           />
           <ColorPicker
-            selected={watchedValues.color || "#3b82f6"}
+            selected={color || watchedValues.color || "#3b82f6"}
             onChange={(color) => setValue("color", color)}
           />
         </div>

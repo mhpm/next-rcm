@@ -97,17 +97,45 @@ export function ReportBuilder({
 
   const watchedValues = watch();
 
+  const [activeTab, setActiveTab] = React.useState<"general" | "fields">(
+    "general"
+  );
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Left Column: Form Builder */}
       <div className="space-y-6">
-        <GeneralSettingsForm
-          register={register}
-          watch={watch}
-          setValue={setValue}
-        />
+        {/* Tabs */}
+        <div role="tablist" className="tabs tabs-border bg-base-200 p-1">
+          <a
+            role="tab"
+            className={`tab ${activeTab === "general" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("general")}
+          >
+            Configuración General
+          </a>
+          <a
+            role="tab"
+            className={`tab ${activeTab === "fields" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("fields")}
+          >
+            Campos del Reporte
+          </a>
+        </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className={activeTab === "general" ? "block" : "hidden"}>
+          <GeneralSettingsForm
+            register={register}
+            watch={watch}
+            setValue={setValue}
+          />
+        </div>
+
+        <div
+          className={`bg-white p-6 rounded-lg shadow-sm border border-gray-200 ${
+            activeTab === "fields" ? "block" : "hidden"
+          }`}
+        >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-800">
               Campos del Reporte
