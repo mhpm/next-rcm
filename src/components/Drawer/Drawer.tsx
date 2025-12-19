@@ -11,6 +11,7 @@ import {
   FaUsersGear,
   FaUsers,
   FaPersonChalkboard,
+  FaFileLines,
 } from "react-icons/fa6";
 import { RiDashboard3Fill } from "react-icons/ri";
 import { ROUTES } from "@/routes";
@@ -48,23 +49,14 @@ const Items: DrawerItem[] = [
     href: ROUTES.SECTORS,
   },
   {
-    label: "Subsectores",
-    icon: <FaUsers size={24} className="text-primary" />,
-    href: ROUTES.SUBSECTORS,
+    label: "Reportes",
+    icon: <FaFileLines size={24} className="text-primary" />,
+    href: ROUTES.REPORTS,
   },
   {
-    label: "Ministries",
+    label: "Ministerios",
     icon: <FaPersonChalkboard size={24} className="text-primary" />,
     href: ROUTES.MINISTRIES,
-  },
-  {
-    label: "Reportes",
-    children: [
-      { label: "Semanal", href: ROUTES.REPORTS.WEEKLY },
-      { label: "Metas", href: ROUTES.REPORTS.GOALS },
-      { label: "Cuatrimestral", href: ROUTES.REPORTS.QUARTERLY },
-      { label: "Anual", href: ROUTES.REPORTS.ANNUAL },
-    ],
   },
 ];
 

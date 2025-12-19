@@ -8,7 +8,7 @@ import {
 } from "react-icons/ri";
 import { useMemo } from "react";
 import { SectorNode } from "../types/sectors";
-import { FaPeopleRoof } from "react-icons/fa6";
+import { FaPeopleRoof, FaUsers } from "react-icons/fa6";
 
 // Helper to transform raw data to nodes if needed,
 // but we can also just traverse the raw data directly since the structure is similar
@@ -37,12 +37,12 @@ export default function SectorStats() {
           // For sectors, membersCount includes direct members + members in subsectors (which includes members in cells)
           // But to be precise for "members in cells", we should sum members from cells.
         }
-        
+
         // Sum members specifically from cells in this level (if any)
         if (item.cells && Array.isArray(item.cells)) {
-           item.cells.forEach((c: any) => {
-             totalMembers += c._count?.members || 0;
-           });
+          item.cells.forEach((c: any) => {
+            totalMembers += c._count?.members || 0;
+          });
         }
 
         // Check for subsectors
@@ -97,7 +97,7 @@ export default function SectorStats() {
 
       <div className="stat">
         <div className="stat-figure text-primary">
-          <RiUserAddLine className="w-8 h-8" />
+          <FaPeopleRoof className="w-8 h-8" />
         </div>
         <div className="stat-title">Total Células</div>
         <div className="stat-value text-primary">{stats.totalCells}</div>
@@ -109,7 +109,7 @@ export default function SectorStats() {
           <div className="avatar placeholder">
             <div className="bg-primary-focus text-primary-content rounded-full w-8">
               <span className="text-xs text-primary">
-                <FaPeopleRoof className="w-8 h-8" />
+                <FaUsers className="w-8 h-8" />
               </span>
             </div>
           </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useDashboardStore } from "../store/dashboardStore";
 
 interface DashboardGridProps {
   ministriesCard: React.ReactNode;
@@ -46,22 +45,22 @@ export function DashboardGrid({
   const centerColumnId = "chart";
 
   // Right Column (3/12): 3 medium items (Groups moved here)
-  const rightColumnIds = ["groups", "ministries", "cells"];
+  const rightColumnIds = ["cells", "ministries", "groups"];
 
   if (!mounted) {
     // Render static layout immediately for SSR match
     return (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column - 2/12 */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
+        <div className="lg:col-span-3 flex flex-col gap-6">
           {leftColumnIds.map((id) => (
             <div key={id}>{cardsMap[id]}</div>
           ))}
         </div>
 
         {/* Center Column - 7/12 */}
-        <div className="lg:col-span-7">
-          <div className="h-full">{cardsMap[centerColumnId]}</div>
+        <div className="lg:col-span-6">
+          <div className="">{cardsMap[centerColumnId]}</div>
         </div>
 
         {/* Right Column - 3/12 */}
@@ -77,7 +76,7 @@ export function DashboardGrid({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       {/* Left Column - 2/12 */}
-      <div className="lg:col-span-2 flex flex-col gap-6">
+      <div className="lg:col-span-3 flex flex-col gap-6">
         {leftColumnIds.map((id) => (
           <div key={id} className="w-full">
             {cardsMap[id]}
@@ -86,8 +85,10 @@ export function DashboardGrid({
       </div>
 
       {/* Center Column - 7/12 */}
-      <div className="lg:col-span-7">
-        <div className="h-full w-full">{cardsMap[centerColumnId]}</div>
+      <div className="lg:col-span-6">
+        <div className="h-[calc(100vh-200px)] w-full">
+          {cardsMap[centerColumnId]}
+        </div>
       </div>
 
       {/* Right Column - 3/12 */}
