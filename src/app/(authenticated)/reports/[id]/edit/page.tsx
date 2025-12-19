@@ -11,7 +11,7 @@ export default async function EditReportPage({
   const prisma = await getChurchPrisma();
   const report = await prisma.reports.findUnique({
     where: { id },
-    include: { fields: { orderBy: { createdAt: "asc" } } },
+    include: { fields: { orderBy: [{ order: "asc" }, { createdAt: "asc" }] } },
   });
   if (!report) notFound();
 

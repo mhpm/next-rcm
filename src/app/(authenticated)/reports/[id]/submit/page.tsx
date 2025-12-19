@@ -14,7 +14,7 @@ export default async function SubmitReportPage({
 
   const report = await prisma.reports.findUnique({
     where: { id },
-    include: { fields: { orderBy: { createdAt: "asc" } } },
+    include: { fields: { orderBy: [{ order: "asc" }, { createdAt: "asc" }] } },
   });
 
   if (!report) {

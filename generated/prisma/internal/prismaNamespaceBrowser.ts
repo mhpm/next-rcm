@@ -247,6 +247,7 @@ export const ReportFieldsScalarFieldEnum = {
   value: 'value',
   options: 'options',
   required: 'required',
+  order: 'order',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

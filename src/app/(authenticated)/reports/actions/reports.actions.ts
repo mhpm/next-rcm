@@ -149,7 +149,7 @@ export async function updateReportWithFields(input: UpdateReportInput) {
     }
 
     // Upsert/update/create remaining fields
-    for (const f of input.fields || []) {
+    for (const [index, f] of (input.fields || []).entries()) {
       // Validate key
       if (!f.key) {
         f.key = slugify(
@@ -162,6 +162,7 @@ export async function updateReportWithFields(input: UpdateReportInput) {
         label: f.label ?? null,
         type: f.type,
         required: !!f.required,
+        order: index,
       } as Prisma.ReportFieldsUncheckedUpdateInput;
       if (typeof f.value !== "undefined") {
         (base as any).value = f.value as Prisma.InputJsonValue;
@@ -181,6 +182,7 @@ export async function updateReportWithFields(input: UpdateReportInput) {
           label: f.label ?? null,
           type: f.type,
           required: !!f.required,
+          order: index,
           report: { connect: { id: input.id } },
         };
         if (typeof f.value !== "undefined") {

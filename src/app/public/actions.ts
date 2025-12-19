@@ -8,7 +8,7 @@ export async function getPublicReport(token: string) {
   const report = await prisma.reports.findUnique({
     where: { publicToken: token },
     include: {
-      fields: { orderBy: { createdAt: "asc" } },
+      fields: { orderBy: [{ order: "asc" }, { createdAt: "asc" }] },
       church: { select: { name: true } },
     },
   });
