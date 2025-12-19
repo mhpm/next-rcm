@@ -26,7 +26,7 @@ export function GeneralSettingsForm({
 
   return (
     <div className="card bg-base-100 border border-base-300 shadow-sm">
-      <div className="card-body p-5">
+      <div className="card-body p-6">
         <h3 className="font-semibold text-lg mb-4">Configuración General</h3>
         <div className="space-y-4">
           <InputField

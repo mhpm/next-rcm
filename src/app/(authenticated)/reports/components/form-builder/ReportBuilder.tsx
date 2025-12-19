@@ -132,12 +132,12 @@ export function ReportBuilder({
         </div>
 
         <div
-          className={`bg-white p-6 rounded-lg shadow-sm border border-gray-200 ${
+          className={`bg-base-100 p-6 rounded-sm shadow-sm border border-base-300 ${
             activeTab === "fields" ? "block" : "hidden"
           }`}
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">
+            <h2 className="text-lg font-semibold text-base-content">
               Campos del Reporte
             </h2>
             <AddFieldMenu onAdd={addField} />

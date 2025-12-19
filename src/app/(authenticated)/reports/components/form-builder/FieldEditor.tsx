@@ -26,7 +26,7 @@ export function FieldEditor({
   onRemove,
 }: FieldEditorProps) {
   return (
-    <div className="p-4 border border-base-300 rounded-lg bg-base-50 hover:shadow-sm transition-all group">
+    <div className="p-4 border border-base-300 bg-base-200 rounded-lg hover:shadow-sm transition-all group">
       {/* Field Header / Actions */}
       <div className="flex items-center justify-between mb-3 pb-2 border-b border-base-200">
         <div className="badge badge-ghost gap-1 cursor-grab active:cursor-grabbing">
@@ -45,7 +45,7 @@ export function FieldEditor({
         <div className="flex items-center gap-1">
           <button
             type="button"
-            className="btn btn-ghost btn-xs"
+            className="btn btn-ghost btn-xs text-neutral"
             onClick={() => onDuplicate(index)}
             title="Duplicar"
           >
@@ -53,7 +53,7 @@ export function FieldEditor({
           </button>
           <button
             type="button"
-            className="btn btn-ghost btn-xs text-error"
+            className="btn btn-ghost btn-xs text-neutral"
             onClick={() => onRemove(index)}
             title="Eliminar"
           >
@@ -119,9 +119,7 @@ export function FieldEditor({
                   register={register}
                   rules={{ required: "Requerido" }}
                   // defaultValue handled by react-hook-form's register or defaultValues in parent
-                  placeholder={
-                    field.fieldId ? "Bloqueado" : "Autogenerado..."
-                  }
+                  placeholder={field.fieldId ? "Bloqueado" : "Autogenerado..."}
                   className={`input input-bordered input-sm w-full ${
                     field.fieldId
                       ? "bg-base-200 text-base-content/60 cursor-not-allowed"
