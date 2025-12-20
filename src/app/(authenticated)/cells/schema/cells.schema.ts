@@ -14,12 +14,14 @@ export const cellFormSchema = z.object({
   leaderId: z.string(),
   hostId: z.string(),
   assistantId: z.string().optional(),
+  accessCode: z.string().optional(),
 });
 
 export const cellCreateSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
   sectorId: z.string(),
   subSectorId: z.string().optional(),
+  accessCode: z.string().optional(),
 });
 
 export const cellUpdateSchema = z.object({
@@ -29,6 +31,7 @@ export const cellUpdateSchema = z.object({
   leaderId: optionalString,
   hostId: optionalString,
   assistantId: optionalString,
+  accessCode: optionalString,
 });
 
 export type CellFormInput = {
@@ -39,12 +42,14 @@ export type CellFormInput = {
   leaderId: string;
   hostId: string;
   assistantId?: string;
+  accessCode?: string;
 };
 
 export type CellCreateInput = {
   name: string;
   sectorId: string;
   subSectorId?: string;
+  accessCode?: string;
 };
 
 export type CellUpdateInput = {
@@ -54,4 +59,5 @@ export type CellUpdateInput = {
   leaderId?: string | undefined;
   hostId?: string | undefined;
   assistantId?: string | undefined;
+  accessCode?: string | undefined;
 };

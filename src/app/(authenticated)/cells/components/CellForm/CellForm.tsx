@@ -176,6 +176,16 @@ const CellForm: React.FC<CellFormProps> = ({
                 error={errors.name?.message}
               />
 
+              <InputField<z.infer<typeof cellFormSchema>>
+                name="accessCode"
+                label="Clave de Acceso"
+                register={register}
+                rules={{}}
+                defaultValue={initialData?.accessCode}
+                error={errors.accessCode?.message}
+                placeholder="Código único para reportes"
+              />
+
               <SelectField<z.infer<typeof cellFormSchema>>
                 name="leaderId"
                 label="Líder de la Célula"

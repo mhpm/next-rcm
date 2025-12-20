@@ -1556,7 +1556,8 @@ export const CellsScalarFieldEnum = {
   sub_sector_id: 'sub_sector_id',
   leader_id: 'leader_id',
   host_id: 'host_id',
-  assistant_id: 'assistant_id'
+  assistant_id: 'assistant_id',
+  accessCode: 'accessCode'
 } as const
 
 export type CellsScalarFieldEnum = (typeof CellsScalarFieldEnum)[keyof typeof CellsScalarFieldEnum]
@@ -1674,6 +1675,7 @@ export const ReportEntriesScalarFieldEnum = {
   zone_id: 'zone_id',
   sector_id: 'sector_id',
   sub_sector_id: 'sub_sector_id',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1882,6 +1884,20 @@ export type EnumReportFieldTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$
  * Reference to a field of type 'ReportFieldType[]'
  */
 export type ListEnumReportFieldTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportFieldType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ReportEntryStatus'
+ */
+export type EnumReportEntryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportEntryStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ReportEntryStatus[]'
+ */
+export type ListEnumReportEntryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportEntryStatus[]'>
     
 
 

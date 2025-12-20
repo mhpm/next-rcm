@@ -62,6 +62,50 @@ export async function getPublicEntities(token: string) {
   return { cells, groups, sectors, members };
 }
 
+export async function verifyCellAccess(cellId: string, code: string) {
+  const cell = await prisma.cells.findFirst({
+    where: { id: cellId, accessCode: code },
+    select: { id: true, name: true },
+  });
+  return cell;
+}
+
+export async function getDraftReportEntry(
+  token: string,
+  scope: ReportScope,
+  entityId: string
+) {
+  const report = await prisma.reports.findUnique({
+    where: { publicToken: token },
+    select: { id: true },
+  });
+
+  if (!report) return null;
+
+  const whereClause: Prisma.ReportEntriesWhereInput = {
+    report_id: report.id,
+    status: "DRAFT",
+  };
+
+  if (scope === "CELL") whereClause.cell_id = entityId;
+  else if (scope === "GROUP") whereClause.group_id = entityId;
+  else if (scope === "SECTOR") whereClause.sector_id = entityId;
+
+  const entry = await prisma.reportEntries.findFirst({
+    where: whereClause,
+    include: {
+      values: {
+        include: {
+          field: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return entry;
+}
+
 export type SubmitPublicReportEntryInput = {
   token: string;
   scope: ReportScope;
@@ -69,27 +113,19 @@ export type SubmitPublicReportEntryInput = {
   groupId?: string | null;
   sectorId?: string | null;
   values: { fieldId: string; value?: unknown }[];
+  isDraft?: boolean;
 };
 
-export async function submitPublicReportEntry(
-  input: SubmitPublicReportEntryInput
+export async function saveDraftReportEntry(
+  input: SubmitPublicReportEntryInput & { entryId?: string }
 ) {
   const report = await prisma.reports.findUnique({
     where: { publicToken: input.token },
   });
 
-  if (!report) {
-    throw new Error("Reporte no encontrado");
-  }
+  if (!report) throw new Error("Reporte no encontrado");
 
   const { scope, cellId, groupId, sectorId } = input;
-  if (scope === "CELL" && !cellId)
-    throw new Error("Debes seleccionar una célula");
-  if (scope === "GROUP" && !groupId)
-    throw new Error("Debes seleccionar un grupo");
-  if (scope === "SECTOR" && !sectorId)
-    throw new Error("Debes seleccionar un sector");
-
   const connectByScope =
     scope === "CELL"
       ? { cell: { connect: { id: cellId! } } }
@@ -99,31 +135,119 @@ export async function submitPublicReportEntry(
       ? { sector: { connect: { id: sectorId! } } }
       : {};
 
-  const valuesCreate: Prisma.ReportEntryValuesCreateWithoutEntryInput[] = (
-    input.values || []
-  )
-    .filter((v) => v.fieldId)
-    .map((v) => {
-      const base: Prisma.ReportEntryValuesCreateWithoutEntryInput = {
-        field: { connect: { id: v.fieldId } },
-      } as Prisma.ReportEntryValuesCreateWithoutEntryInput;
-      if (typeof v.value !== "undefined") {
-        (base as any).value = v.value as Prisma.InputJsonValue;
-      }
-      return base;
+  if (input.entryId) {
+    // Update existing draft
+    await prisma.reportEntries.update({
+      where: { id: input.entryId },
+      data: {
+        updatedAt: new Date(),
+      },
     });
 
-  await prisma.reportEntries.create({
-    data: {
-      scope,
-      church: { connect: { id: report.church_id } },
-      report: { connect: { id: report.id } },
-      ...connectByScope,
-      ...(valuesCreate.length > 0 ? { values: { create: valuesCreate } } : {}),
-    },
+    for (const v of input.values) {
+      if (!v.fieldId) continue;
+
+      const val =
+        typeof v.value === "undefined"
+          ? Prisma.JsonNull
+          : (v.value as Prisma.InputJsonValue);
+
+      // Check if value exists
+      const existingValue = await prisma.reportEntryValues.findFirst({
+        where: {
+          entry_id: input.entryId,
+          report_field_id: v.fieldId,
+        },
+      });
+
+      if (existingValue) {
+        await prisma.reportEntryValues.update({
+          where: { id: existingValue.id },
+          data: { value: val },
+        });
+      } else {
+        await prisma.reportEntryValues.create({
+          data: {
+            entry: { connect: { id: input.entryId } },
+            field: { connect: { id: v.fieldId } },
+            value: val,
+          },
+        });
+      }
+    }
+    return { id: input.entryId };
+  } else {
+    // Create new draft
+    const valuesCreate = (input.values || [])
+      .filter((v) => v.fieldId)
+      .map((v) => ({
+        field: { connect: { id: v.fieldId } },
+        value:
+          typeof v.value !== "undefined"
+            ? (v.value as Prisma.InputJsonValue)
+            : Prisma.JsonNull,
+      }));
+
+    const newEntry = await prisma.reportEntries.create({
+      data: {
+        scope,
+        status: "DRAFT",
+        church: { connect: { id: report.church_id } },
+        report: { connect: { id: report.id } },
+        ...connectByScope,
+        values: {
+          create: valuesCreate,
+        },
+      },
+    });
+    return { id: newEntry.id };
+  }
+}
+
+export async function submitPublicReportEntry(
+  input: SubmitPublicReportEntryInput & { entryId?: string }
+) {
+  const report = await prisma.reports.findUnique({
+    where: { publicToken: input.token },
   });
 
-  revalidatePath(`/reports/${report.id}/entries`);
+  if (!report) {
+    throw new Error("Reporte no encontrado");
+  }
+
+  // If entryId provided, update existing
+  if (input.entryId) {
+    await saveDraftReportEntry(input);
+
+    // Only update status to SUBMITTED if it's not a draft save
+    if (!input.isDraft) {
+      await prisma.reportEntries.update({
+        where: { id: input.entryId },
+        data: {
+          status: "SUBMITTED",
+        },
+      });
+      revalidatePath(`/reports/${report.id}/entries`);
+    }
+    return { id: input.entryId };
+  }
+
+  // Create new (DRAFT or SUBMITTED)
+  // Reuse saveDraftReportEntry which creates a DRAFT by default
+  const result = await saveDraftReportEntry(input);
+
+  // If not draft, update to SUBMITTED immediately
+  if (!input.isDraft) {
+    await prisma.reportEntries.update({
+      where: { id: result.id },
+      data: {
+        status: "SUBMITTED",
+      },
+    });
+    revalidatePath(`/reports/${report.id}/entries`);
+  }
+
+  return result;
 }
 
 export async function getPublicReportEntityMembers(

@@ -47,6 +47,14 @@ export const ReportScope = {
 export type ReportScope = (typeof ReportScope)[keyof typeof ReportScope]
 
 
+export const ReportEntryStatus = {
+  DRAFT: 'DRAFT',
+  SUBMITTED: 'SUBMITTED'
+} as const
+
+export type ReportEntryStatus = (typeof ReportEntryStatus)[keyof typeof ReportEntryStatus]
+
+
 export const MemberRole = {
   MIEMBRO: 'MIEMBRO',
   SUPERVISOR: 'SUPERVISOR',

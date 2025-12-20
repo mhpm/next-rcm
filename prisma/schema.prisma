@@ -108,6 +108,7 @@ model Cells {
   leader_id String?
   host_id   String?
   assistant_id String?
+  accessCode String?  @unique // Unique code for public access (drafts/submit)
 
   church    Churches    @relation(fields: [church_id], references: [id], onDelete: Cascade)
   subSector SubSectors? @relation(fields: [sub_sector_id], references: [id], onDelete: SetNull)
@@ -314,6 +315,11 @@ model ReportFields {
   @@map("report_fields")
 }
 
+enum ReportEntryStatus {
+  DRAFT
+  SUBMITTED
+}
+
 // Entradas/respuestas de un reporte (como Google Forms)
 model ReportEntries {
   id         String       @id @default(cuid())
@@ -325,6 +331,7 @@ model ReportEntries {
   zone_id    String?
   sector_id  String?
   sub_sector_id String?
+  status     ReportEntryStatus @default(SUBMITTED)
   createdAt  DateTime     @default(now()) @map("created_at")
   updatedAt  DateTime     @updatedAt @map("updated_at")
 

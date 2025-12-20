@@ -128,6 +128,7 @@ export async function createCell(data: {
   leaderId?: string | null;
   hostId?: string | null;
   assistantId?: string | null;
+  accessCode?: string | null;
 }) {
   try {
     const prisma = await getChurchPrisma();
@@ -136,6 +137,9 @@ export async function createCell(data: {
     const prismaData: Prisma.CellsCreateInput = {
       name: data.name,
       church: { connect: { id: churchId } },
+      ...(data.accessCode && data.accessCode !== ""
+        ? { accessCode: data.accessCode }
+        : {}),
       ...(data.subSectorId && data.subSectorId !== ""
         ? { subSector: { connect: { id: data.subSectorId } } }
         : {}),
@@ -189,6 +193,7 @@ export async function updateCell(
     leaderId?: string | null;
     hostId?: string | null;
     assistantId?: string | null;
+    accessCode?: string | null;
   }
 ) {
   let churchId: string | undefined;
@@ -208,6 +213,9 @@ export async function updateCell(
 
     const updateData: Prisma.CellsUpdateInput = {};
     if (data.name !== undefined) updateData.name = data.name;
+    if (data.accessCode !== undefined) {
+      updateData.accessCode = data.accessCode || null;
+    }
     if (Object.prototype.hasOwnProperty.call(data, "subSectorId")) {
       updateData.subSector =
         data.subSectorId && data.subSectorId !== ""

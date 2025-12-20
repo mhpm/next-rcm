@@ -13,6 +13,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "prisma:seed": "tsx prisma/seed.ts",
+    "db:backup": "tsx prisma/scripts/backup.ts",
+    "db:restore": "tsx prisma/scripts/restore.ts",
     "next:upgrade": "npm install next@latest react@latest react-dom@latest typescript@latest @types/react@latest @types/react-dom@latest"
   },
   "dependencies": {
