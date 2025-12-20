@@ -24,9 +24,34 @@ export default async function ReportEntriesPage({
     orderBy: { createdAt: "desc" },
     include: {
       values: { include: { field: true } },
-      cell: { select: { name: true } },
-      group: { select: { name: true } },
-      sector: { select: { name: true } },
+      cell: {
+        select: {
+          name: true,
+          leader: { select: { firstName: true, lastName: true } },
+          subSector: {
+            select: {
+              supervisor: { select: { firstName: true, lastName: true } },
+              sector: {
+                select: {
+                  supervisor: { select: { firstName: true, lastName: true } },
+                },
+              },
+            },
+          },
+        },
+      },
+      group: {
+        select: {
+          name: true,
+          leader: { select: { firstName: true, lastName: true } },
+        },
+      },
+      sector: {
+        select: {
+          name: true,
+          supervisor: { select: { firstName: true, lastName: true } },
+        },
+      },
     },
     take: 100,
   });
@@ -35,16 +60,43 @@ export default async function ReportEntriesPage({
     id: string;
     createdAt: string;
     entidad: string;
+    supervisor?: string;
+    lider?: string;
   };
 
   const rows: Row[] = entries.map((e) => {
     const entidad =
       e.cell?.name || e.group?.name || e.sector?.name || "Iglesia";
+
+    let supervisor = "";
+    let lider = "";
+
+    if (e.cell) {
+      if (e.cell.subSector?.supervisor) {
+        supervisor = `${e.cell.subSector.supervisor.firstName} ${e.cell.subSector.supervisor.lastName}`;
+      } else if (e.cell.subSector?.sector?.supervisor) {
+        supervisor = `${e.cell.subSector.sector.supervisor.firstName} ${e.cell.subSector.sector.supervisor.lastName}`;
+      }
+      if (e.cell.leader) {
+        lider = `${e.cell.leader.firstName} ${e.cell.leader.lastName}`;
+      }
+    } else if (e.sector) {
+      if (e.sector.supervisor) {
+        supervisor = `${e.sector.supervisor.firstName} ${e.sector.supervisor.lastName}`;
+      }
+    } else if (e.group) {
+      if (e.group.leader) {
+        supervisor = `${e.group.leader.firstName} ${e.group.leader.lastName}`;
+      }
+    }
+
     const base: Row = {
       id: e.id,
       createdAt: new Date(e.createdAt).toLocaleString(),
       raw_createdAt: e.createdAt.toISOString(),
       entidad,
+      supervisor,
+      lider,
     };
     for (const f of report.fields) {
       const val = e.values.find((v) => v.report_field_id === f.id)
@@ -67,6 +119,8 @@ export default async function ReportEntriesPage({
 
   const columns: TableColumn<Row>[] = [
     { key: "entidad", label: "Entidad", sortable: true },
+    { key: "supervisor", label: "Supervisor", sortable: true },
+    { key: "lider", label: "Líder", sortable: true },
     { key: "createdAt", label: "Fecha", sortable: true },
     ...report.fields
       .filter((f) => f.type !== "SECTION")
@@ -86,7 +140,7 @@ export default async function ReportEntriesPage({
       <ReportEntriesTable
         rows={rows}
         columns={columns}
-        title="Entradas del reporte"
+        title={`Entradas del reporte: ${report.title}`}
         subTitle={`Total: ${entries.length}`}
         reportId={id}
         fields={report.fields

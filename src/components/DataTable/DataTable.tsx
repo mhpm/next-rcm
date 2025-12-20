@@ -288,11 +288,9 @@ function DataTable<T extends Record<string, unknown>>({
   }
 
   return (
-    <div
-      className={`bg-base-100 rounded-lg overflow-hidden shadow-md ${className}`}
-    >
+    <div className={`bg-base-100 rounded-lg shadow-md ${className}`}>
       {/* Header */}
-      <div className="p-4 sm:p-6 border-b border-base-300">
+      <div className="p-4 sm:p-6 border-b border-base-300 rounded-t-lg">
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -577,7 +575,7 @@ function DataTable<T extends Record<string, unknown>>({
 
       {/* Pagination */}
       {pagination && paginationInfo.totalPages > 1 && (
-        <div className="p-4 border-t border-base-300">
+        <div className="p-4 border-t border-base-300 rounded-b-lg">
           {/* Mobile Pagination */}
           <div className="block md:hidden">
             <div className="flex flex-col gap-4">

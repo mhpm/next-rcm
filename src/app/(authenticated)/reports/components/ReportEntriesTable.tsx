@@ -11,6 +11,94 @@ import { RiFilter3Line } from "react-icons/ri";
 import AdvancedFilterModal, { FilterField } from "./AdvancedFilterModal";
 import { usePersistentFilters } from "@/hooks/usePersistentFilters";
 
+// Custom hook for scoped column visibility
+function useReportColumnVisibility(
+  reportId: string,
+  defaultColumns: TableColumn<Row>[]
+) {
+  const key = `report-column-visibility-${reportId}`;
+
+  // Initialize state with all columns visible by default
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
+    // We can try to load from localStorage synchronously here for initial render
+    // to avoid flash, but strict mode might complain.
+    // However, in client components it's often acceptable or we use useEffect.
+    // For simplicity and safety against SSR mismatch, we start with all valid.
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem(key);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            // Filter out keys that are no longer in defaultColumns
+            const validKeys = new Set(defaultColumns.map((c) => String(c.key)));
+            const filtered = parsed.filter((k) => validKeys.has(k));
+            // If stored is empty or invalid, fallback to all?
+            // No, if user hid all, it should be empty.
+            // But if new columns appeared, we might want to show them?
+            // For now, let's just use what's stored if valid keys exist,
+            // or if it was intentionally empty.
+            // Actually, if we want to support "new columns show up by default",
+            // we would need more complex logic.
+            // Let's stick to: if stored exists, use it (filtered by validity).
+            return new Set(filtered);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to parse column visibility", e);
+      }
+    }
+    return new Set(defaultColumns.map((col) => String(col.key)));
+  });
+
+  // Sync with localStorage when visibleColumns changes
+  // We don't need to sync on mount because we read on init (if client).
+  // But we need to ensure we save updates.
+
+  const saveToStorage = (newSet: Set<string>) => {
+    localStorage.setItem(key, JSON.stringify(Array.from(newSet)));
+  };
+
+  const toggleColumn = (columnKey: string) => {
+    setVisibleColumns((prev) => {
+      const next = new Set(prev);
+      if (next.has(columnKey)) {
+        next.delete(columnKey);
+      } else {
+        next.add(columnKey);
+      }
+      saveToStorage(next);
+      return next;
+    });
+  };
+
+  const showAllColumns = (columnKeys: string[]) => {
+    const next = new Set(columnKeys);
+    setVisibleColumns(next);
+    saveToStorage(next);
+  };
+
+  const hideAllColumns = (columnKeys: string[]) => {
+    // Keep at least one or allow empty?
+    // The store implementation kept 'firstName' if present.
+    // Here we can just allow empty or keep 'entidad'.
+    const next = new Set<string>();
+    // Optional: keep 'entidad' visible always?
+    if (columnKeys.includes("entidad")) {
+      next.add("entidad");
+    }
+    setVisibleColumns(next);
+    saveToStorage(next);
+  };
+
+  return {
+    visibleColumns,
+    toggleColumn,
+    showAllColumns,
+    hideAllColumns,
+  };
+}
+
 type Row = Record<string, unknown> & {
   id: string;
   createdAt: string;
@@ -26,6 +114,11 @@ type ReportEntriesTableProps = {
   fields?: FilterField[];
 };
 
+const parseLocalFilterDate = (dateStr: string) => {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day);
+};
+
 export default function ReportEntriesTable({
   rows,
   columns,
@@ -35,6 +128,7 @@ export default function ReportEntriesTable({
   fields = [],
 }: ReportEntriesTableProps) {
   const router = useRouter();
+
   const { showSuccess, showError } = useNotificationStore();
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -51,6 +145,18 @@ export default function ReportEntriesTable({
     {}
   );
 
+  // Column visibility state (scoped to report)
+  const { visibleColumns, toggleColumn, showAllColumns, hideAllColumns } =
+    useReportColumnVisibility(reportId, columns);
+
+  // NOTE: Removed global store usage to prevent state conflicts between tables
+  // and incorrect column counts (e.g. 13/8).
+
+  // Filter columns based on visibility
+  const visibleColumnsArray = useMemo(() => {
+    return columns.filter((column) => visibleColumns.has(String(column.key)));
+  }, [columns, visibleColumns]);
+
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
       // Entidad
@@ -65,18 +171,16 @@ export default function ReportEntriesTable({
       // CreatedAt
       if (activeFilters.createdAt_from) {
         const rowDate = new Date(row.raw_createdAt as string);
-        const filterDate = new Date(activeFilters.createdAt_from);
+        const filterDate = parseLocalFilterDate(activeFilters.createdAt_from);
         // Normalize time for comparison
         rowDate.setHours(0, 0, 0, 0);
-        filterDate.setHours(0, 0, 0, 0);
         if (rowDate < filterDate) return false;
       }
       if (activeFilters.createdAt_to) {
         const rowDate = new Date(row.raw_createdAt as string);
-        const filterDate = new Date(activeFilters.createdAt_to);
+        const filterDate = parseLocalFilterDate(activeFilters.createdAt_to);
         // Normalize time
         rowDate.setHours(0, 0, 0, 0);
-        filterDate.setHours(0, 0, 0, 0);
         if (rowDate > filterDate) return false;
       }
 
@@ -128,13 +232,11 @@ export default function ReportEntriesTable({
             dateVal.setHours(0, 0, 0, 0);
 
             if (from) {
-              const fromDate = new Date(from);
-              fromDate.setHours(0, 0, 0, 0);
+              const fromDate = parseLocalFilterDate(from);
               if (dateVal < fromDate) return false;
             }
             if (to) {
-              const toDate = new Date(to);
-              toDate.setHours(0, 0, 0, 0);
+              const toDate = parseLocalFilterDate(to);
               if (dateVal > toDate) return false;
             }
           }
@@ -202,12 +304,19 @@ export default function ReportEntriesTable({
         data={filteredRows}
         title={title}
         subTitle={subTitle ?? `Total: ${filteredRows.length}`}
-        columns={columns}
+        columns={visibleColumnsArray}
         actions={actions}
         searchable={true}
         pagination={true}
         itemsPerPage={10}
         emptyMessage="Sin entradas que coincidan con los filtros"
+        // Props for column visibility
+        allColumns={columns}
+        visibleColumns={visibleColumns}
+        onToggleColumn={toggleColumn}
+        onShowAllColumns={showAllColumns}
+        onHideAllColumns={hideAllColumns}
+        showColumnVisibility={true}
         searchEndContent={
           <div className="tooltip" data-tip="Filtros avanzados">
             <button

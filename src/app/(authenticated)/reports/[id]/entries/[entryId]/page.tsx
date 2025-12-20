@@ -12,7 +12,7 @@ export default async function ViewReportEntryPage({
 
   const report = await prisma.reports.findUnique({
     where: { id },
-    include: { fields: { orderBy: { createdAt: "asc" } } },
+    include: { fields: { orderBy: [{ order: "asc" }, { createdAt: "asc" }] } },
   });
 
   if (!report) notFound();
@@ -21,9 +21,35 @@ export default async function ViewReportEntryPage({
     where: { id: entryId },
     include: {
       values: true,
-      cell: { select: { name: true } },
-      group: { select: { name: true } },
-      sector: { select: { name: true } },
+      cell: {
+        select: {
+          name: true,
+          leader: { select: { firstName: true, lastName: true } },
+          assistant: { select: { firstName: true, lastName: true } },
+          subSector: {
+            select: {
+              supervisor: { select: { firstName: true, lastName: true } },
+              sector: {
+                select: {
+                  supervisor: { select: { firstName: true, lastName: true } },
+                },
+              },
+            },
+          },
+        },
+      },
+      group: {
+        select: {
+          name: true,
+          leader: { select: { firstName: true, lastName: true } },
+        },
+      },
+      sector: {
+        select: {
+          name: true,
+          supervisor: { select: { firstName: true, lastName: true } },
+        },
+      },
     },
   });
 
@@ -31,6 +57,38 @@ export default async function ViewReportEntryPage({
 
   const entidad =
     entry.cell?.name || entry.group?.name || entry.sector?.name || "Iglesia";
+
+  let supervisorName: string | null = null;
+  let supervisorLabel = "Supervisor";
+  let cellLeaderName: string | null = null;
+  let cellAssistantName: string | null = null;
+
+  if (entry.cell) {
+    const subSectorSupervisor = entry.cell.subSector?.supervisor;
+    const sectorSupervisor = entry.cell.subSector?.sector?.supervisor;
+
+    if (subSectorSupervisor) {
+      supervisorName = `${subSectorSupervisor.firstName} ${subSectorSupervisor.lastName}`;
+    } else if (sectorSupervisor) {
+      supervisorName = `${sectorSupervisor.firstName} ${sectorSupervisor.lastName}`;
+    }
+
+    if (entry.cell.leader) {
+      cellLeaderName = `${entry.cell.leader.firstName} ${entry.cell.leader.lastName}`;
+    }
+    if (entry.cell.assistant) {
+      cellAssistantName = `${entry.cell.assistant.firstName} ${entry.cell.assistant.lastName}`;
+    }
+  } else if (entry.sector) {
+    if (entry.sector.supervisor) {
+      supervisorName = `${entry.sector.supervisor.firstName} ${entry.sector.supervisor.lastName}`;
+    }
+  } else if (entry.group) {
+    if (entry.group.leader) {
+      supervisorName = `${entry.group.leader.firstName} ${entry.group.leader.lastName}`;
+      supervisorLabel = "Líder";
+    }
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -52,6 +110,24 @@ export default async function ViewReportEntryPage({
             <p>
               Entidad: <span className="font-semibold">{entidad}</span>
             </p>
+            {supervisorName && (
+              <p>
+                {supervisorLabel}:{" "}
+                <span className="font-semibold">{supervisorName}</span>
+              </p>
+            )}
+            {cellLeaderName && (
+              <p>
+                Líder de Célula:{" "}
+                <span className="font-semibold">{cellLeaderName}</span>
+              </p>
+            )}
+            {cellAssistantName && (
+              <p>
+                Asistente:{" "}
+                <span className="font-semibold">{cellAssistantName}</span>
+              </p>
+            )}
             <p>
               Fecha:{" "}
               <span className="font-semibold">
