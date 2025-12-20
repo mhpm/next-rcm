@@ -298,6 +298,167 @@ export default function ReportEntriesTable({
     }
   };
 
+  // Period Filter Logic
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [filterType, setFilterType] = useState<
+    "year" | "cuatrimestre" | "trimestre" | "month"
+  >("cuatrimestre");
+  const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null);
+
+  // Sync state with activeFilters on mount
+  React.useEffect(() => {
+    if (activeFilters.createdAt_from && activeFilters.createdAt_to) {
+      const fromDate = parseLocalFilterDate(activeFilters.createdAt_from);
+      const toDate = parseLocalFilterDate(activeFilters.createdAt_to);
+      const fromYear = fromDate.getFullYear();
+
+      if (fromYear === toDate.getFullYear()) {
+        setSelectedYear(fromYear);
+
+        const fromMonth = fromDate.getMonth();
+        const toMonth = toDate.getMonth();
+
+        // Try to detect type
+        if (fromMonth === 0 && toMonth === 11) {
+          setFilterType("year");
+          setSelectedPeriod(null);
+        } else if (toMonth - fromMonth + 1 === 4) {
+          setFilterType("cuatrimestre");
+          // 0-3 (1), 4-7 (2), 8-11 (3)
+          if (fromMonth === 0) setSelectedPeriod(1);
+          else if (fromMonth === 4) setSelectedPeriod(2);
+          else if (fromMonth === 8) setSelectedPeriod(3);
+        } else if (toMonth - fromMonth + 1 === 3) {
+          setFilterType("trimestre");
+          // 0-2 (1), 3-5 (2), 6-8 (3), 9-11 (4)
+          if (fromMonth === 0) setSelectedPeriod(1);
+          else if (fromMonth === 3) setSelectedPeriod(2);
+          else if (fromMonth === 6) setSelectedPeriod(3);
+          else if (fromMonth === 9) setSelectedPeriod(4);
+        } else if (fromMonth === toMonth) {
+          setFilterType("month");
+          setSelectedPeriod(fromMonth);
+        }
+      }
+    }
+  }, []);
+
+  const handleYearChange = (year: number) => {
+    setSelectedYear(year);
+    // Re-apply current filter with new year
+    applyFilter(year, filterType, selectedPeriod);
+  };
+
+  const handleTypeChange = (
+    type: "year" | "cuatrimestre" | "trimestre" | "month"
+  ) => {
+    setFilterType(type);
+    setSelectedPeriod(null); // Reset period selection
+    if (type === "year") {
+      applyFilter(selectedYear, "year", null);
+    }
+  };
+
+  const applyFilter = (year: number, type: string, period: number | null) => {
+    let fromMonth = 0,
+      toMonth = 11,
+      lastDay = 31;
+
+    if (type === "year") {
+      fromMonth = 0;
+      toMonth = 11;
+      lastDay = 31;
+    } else if (type === "cuatrimestre" && period !== null) {
+      if (period === 1) {
+        fromMonth = 0;
+        toMonth = 3;
+        lastDay = 30;
+      } // Apr
+      else if (period === 2) {
+        fromMonth = 4;
+        toMonth = 7;
+        lastDay = 31;
+      } // Aug
+      else if (period === 3) {
+        fromMonth = 8;
+        toMonth = 11;
+        lastDay = 31;
+      } // Dec
+    } else if (type === "trimestre" && period !== null) {
+      if (period === 1) {
+        fromMonth = 0;
+        toMonth = 2;
+        lastDay = 31;
+      } // Mar
+      else if (period === 2) {
+        fromMonth = 3;
+        toMonth = 5;
+        lastDay = 30;
+      } // Jun
+      else if (period === 3) {
+        fromMonth = 6;
+        toMonth = 8;
+        lastDay = 30;
+      } // Sep
+      else if (period === 4) {
+        fromMonth = 9;
+        toMonth = 11;
+        lastDay = 31;
+      } // Dec
+    } else if (type === "month" && period !== null) {
+      fromMonth = period;
+      toMonth = period;
+      // Get last day of month
+      lastDay = new Date(year, fromMonth + 1, 0).getDate();
+    } else {
+      // No period selected for non-year type? Do nothing or clear?
+      // For now, assume we wait for selection.
+      return;
+    }
+
+    const fromDate = new Date(year, fromMonth, 1);
+    const toDate = new Date(year, toMonth, lastDay);
+
+    const formatDate = (d: Date) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    };
+
+    setActiveFilters({
+      ...activeFilters,
+      createdAt_from: formatDate(fromDate),
+      createdAt_to: formatDate(toDate),
+    });
+    setSelectedPeriod(period);
+  };
+
+  const handlePeriodClick = (period: number) => {
+    if (selectedPeriod === period) {
+      // Optional: Toggle off logic could go here
+      applyFilter(selectedYear, filterType, period);
+    } else {
+      applyFilter(selectedYear, filterType, period);
+    }
+  };
+
+  const months = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
+
   return (
     <div>
       <DataTable<Row>
@@ -318,21 +479,98 @@ export default function ReportEntriesTable({
         onHideAllColumns={hideAllColumns}
         showColumnVisibility={true}
         searchEndContent={
-          <div className="tooltip" data-tip="Filtros avanzados">
-            <button
-              className={`btn btn-square ${
-                Object.keys(activeFilters).length > 0
-                  ? "btn-primary"
-                  : "btn-ghost bg-base-200"
-              }`}
-              onClick={() => setIsFilterModalOpen(true)}
+          <div className="flex items-start gap-4">
+            <div className="tooltip" data-tip="Filtros avanzados">
+              <button
+                className={`btn btn-square h-10 min-h-10 w-12 ${
+                  Object.keys(activeFilters).length > 0
+                    ? "btn-primary"
+                    : "btn-ghost bg-base-200 border border-base-300"
+                }`}
+                onClick={() => setIsFilterModalOpen(true)}
+              >
+                <RiFilter3Line className="w-5 h-5" />
+              </button>
+            </div>
+            {/* Year Selector */}
+            <select
+              className="select select-bordered w-64 h-10 min-h-10"
+              value={selectedYear}
+              onChange={(e) => handleYearChange(Number(e.target.value))}
             >
-              <RiFilter3Line className="w-5 h-5" />
-            </button>
-            {Object.keys(activeFilters).length > 0 && (
-              <div className="absolute -top-1 -right-1 badge badge-xs badge-secondary w-4 h-4 p-0 flex items-center justify-center animate-pulse">
-                !
+              {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map(
+                (year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                )
+              )}
+            </select>
+
+            {/* Type Selector */}
+            <select
+              className="select select-bordered h-10 min-h-10"
+              value={filterType}
+              onChange={(e) => handleTypeChange(e.target.value as any)}
+            >
+              <option value="year">Todo el año</option>
+              <option value="cuatrimestre">Por Cuatrimestre</option>
+              <option value="trimestre">Por Trimestre</option>
+              <option value="month">Por Mes</option>
+            </select>
+
+            {/* Dynamic Controls */}
+            {filterType === "cuatrimestre" && (
+              <div className="join mr-8">
+                {[1, 2, 3].map((q) => (
+                  <button
+                    key={q}
+                    className={`btn join-item h-10 min-h-10 ${
+                      selectedPeriod === q
+                        ? "btn-active btn-primary"
+                        : "bg-base-100 border-base-300 hover:bg-base-200"
+                    }`}
+                    onClick={() => handlePeriodClick(q)}
+                  >
+                    {q}º C
+                  </button>
+                ))}
               </div>
+            )}
+
+            {filterType === "trimestre" && (
+              <div className="join mr-10">
+                {[1, 2, 3, 4].map((t) => (
+                  <button
+                    key={t}
+                    className={`btn join-item h-10 min-h-10 ${
+                      selectedPeriod === t
+                        ? "btn-active btn-primary"
+                        : "bg-base-100 border-base-300 hover:bg-base-200"
+                    }`}
+                    onClick={() => handlePeriodClick(t)}
+                  >
+                    {t}º T
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {filterType === "month" && (
+              <select
+                className="select select-bordered w-32 h-10 min-h-10"
+                value={selectedPeriod ?? ""}
+                onChange={(e) => handlePeriodClick(Number(e.target.value))}
+              >
+                <option value="" disabled>
+                  Seleccionar mes
+                </option>
+                {months.map((m, i) => (
+                  <option key={i} value={i}>
+                    {m}
+                  </option>
+                ))}
+              </select>
             )}
           </div>
         }

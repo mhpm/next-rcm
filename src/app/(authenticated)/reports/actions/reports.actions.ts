@@ -69,7 +69,7 @@ export async function createReport(input: CreateReportInput) {
 
   await prisma.reports.create({
     data: {
-      church_id: churchId,
+      church: { connect: { id: churchId } },
       title: input.title,
       description: input.description,
       scope,
