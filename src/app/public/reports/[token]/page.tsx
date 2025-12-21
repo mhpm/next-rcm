@@ -40,12 +40,6 @@ export default async function PublicReportPage({
               ? (f.options as string[])
               : undefined,
           }))}
-          cells={entities.cells.map((c) => ({
-            value: c.id,
-            label: `${c.name}${
-              c.leader ? ` - ${c.leader.firstName} ${c.leader.lastName}` : ""
-            }`,
-          }))}
           groups={entities.groups.map((g) => ({
             value: g.id,
             label: `${g.name}${

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { InputField, SelectField } from "@/components/FormControls";
 import type { ReportFieldType, ReportScope } from "@/generated/prisma/client";
@@ -10,7 +10,13 @@ import {
   getDraftReportEntry,
 } from "../../actions";
 import { useNotificationStore } from "@/store/NotificationStore";
-import { FaLock, FaFloppyDisk, FaPaperPlane, FaSpinner } from "react-icons/fa6";
+import {
+  FaLock,
+  FaFloppyDisk,
+  FaPaperPlane,
+  FaSpinner,
+  FaKey,
+} from "react-icons/fa6";
 
 type Option = { value: string; label: string };
 
@@ -38,7 +44,6 @@ export default function PublicReportForm({
   description,
   scope,
   fields,
-  cells,
   groups,
   sectors,
   members,
@@ -49,7 +54,6 @@ export default function PublicReportForm({
   description?: string | null;
   scope: ReportScope;
   fields: FieldDef[];
-  cells: Option[];
   groups: Option[];
   sectors: Option[];
   members: Option[];
@@ -58,9 +62,20 @@ export default function PublicReportForm({
   const { showSuccess, showError, showWarning } = useNotificationStore();
   const [submitted, setSubmitted] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [cellInfo, setCellInfo] = useState<{
+    name: string;
+    leader?: string;
+    sector?: string;
+    subSector?: string;
+  } | null>(null);
   const [draftId, setDraftId] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [formDataToSubmit, setFormDataToSubmit] = useState<FormValues | null>(
+    null
+  );
 
   const {
     register,
@@ -68,29 +83,42 @@ export default function PublicReportForm({
     reset,
     watch,
     setValue,
-    formState: { isSubmitting },
+    trigger,
+    formState: { isSubmitting, errors },
   } = useForm<FormValues>({
     defaultValues: { scope },
   });
 
-  const selectedCellId = watch("cellId");
   const accessCode = watch("accessCode");
 
   const verifyAccess = async () => {
-    if (!selectedCellId || !accessCode) {
-      showError("Selecciona una célula e ingresa la clave");
+    const isValid = await trigger("accessCode");
+    if (!isValid) return;
+
+    if (!accessCode) {
+      showError("Ingresa la clave de acceso");
       return;
     }
 
     setIsVerifying(true);
     try {
-      const cell = await verifyCellAccess(selectedCellId, accessCode);
+      const cell = await verifyCellAccess(accessCode);
       if (cell) {
         setIsAuthenticated(true);
+        setCellInfo({
+          name: cell.name,
+          leader: cell.leader
+            ? `${cell.leader.firstName} ${cell.leader.lastName}`
+            : undefined,
+          sector: cell.subSector?.sector?.name,
+          subSector: cell.subSector?.name,
+        });
+        setValue("cellId", cell.id);
+
         showSuccess("Acceso correcto. Buscando borradores...");
 
         // Load draft if exists
-        const draft = await getDraftReportEntry(token, scope, selectedCellId);
+        const draft = await getDraftReportEntry(token, scope, cell.id);
         if (draft) {
           setDraftId(draft.id);
           showSuccess("Borrador recuperado");
@@ -113,15 +141,18 @@ export default function PublicReportForm({
     }
   };
 
-  const handleFormSubmit = async (data: FormValues, isDraft: boolean) => {
+  const handleFormSubmit = async (
+    data: FormValues,
+    isDraft: boolean
+  ): Promise<boolean> => {
     if (scope === "CELL" && !isAuthenticated && isDraft) {
       showError("Debes autenticarte primero para guardar borrador");
-      return;
+      return false;
     }
 
     if (scope === "CELL" && !isAuthenticated) {
       showError("Debes autenticarte primero");
-      return;
+      return false;
     }
 
     if (isDraft) setIsSavingDraft(true);
@@ -155,16 +186,36 @@ export default function PublicReportForm({
         setDraftId(null);
         setIsAuthenticated(false);
       }
+      return true;
     } catch (error) {
       console.error("Error al enviar reporte:", error);
       showError("Error al enviar el reporte");
+      return false;
     } finally {
       if (isDraft) setIsSavingDraft(false);
     }
   };
 
   const onSaveDraft = (data: FormValues) => handleFormSubmit(data, true);
-  const onSubmit = (data: FormValues) => handleFormSubmit(data, false);
+
+  const onPreSubmit = (data: FormValues) => {
+    setFormDataToSubmit(data);
+    setIsConfirmOpen(true);
+  };
+
+  const confirmSubmit = async () => {
+    if (formDataToSubmit) {
+      setIsConfirming(true);
+      const success = await handleFormSubmit(formDataToSubmit, false);
+      setIsConfirming(false);
+
+      // Only close modal if submission FAILED.
+      // If success, the component will re-render to success view automatically.
+      if (!success) {
+        setIsConfirmOpen(false);
+      }
+    }
+  };
 
   if (submitted) {
     return (
@@ -185,270 +236,368 @@ export default function PublicReportForm({
   }
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <h2 className="text-xl font-semibold">{title}</h2>
-          {description && (
-            <p className="text-base-content/70 mt-2">{description}</p>
-          )}
-        </div>
-        <div className="md:col-span-1 space-y-4">
-          {scope === "CELL" && (
-            <div className="card bg-base-100 border border-base-300 shadow-sm">
-              <div className="card-body p-4 space-y-4">
-                <h3 className="font-semibold text-sm uppercase text-base-content/60">
-                  Autenticación
-                </h3>
-                <SelectField
-                  name="cellId"
-                  label="Célula"
-                  register={register}
-                  options={[
-                    { value: "", label: "Selecciona una célula" },
-                    ...cells,
-                  ]}
-                  rules={{ required: "Requerido" }}
-                  disabled={isAuthenticated}
-                />
-
-                {!isAuthenticated && (
+    <>
+      {isConfirmOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-base-100 rounded-xl shadow-2xl border border-base-200 p-6 max-w-md w-full relative">
+            <h3 className="font-bold text-lg text-warning flex items-center gap-2">
+              <FaLock /> Confirmar Envío
+            </h3>
+            <p className="py-4 text-base-content/80">
+              ¿Estás seguro de que deseas enviar el reporte?
+              <br />
+              <span className="font-semibold text-error block mt-2">
+                Una vez enviado, no podrás volver a modificarlo.
+              </span>
+            </p>
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setIsConfirmOpen(false)}
+                disabled={isConfirming}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={confirmSubmit}
+                disabled={isConfirming}
+              >
+                {isConfirming ? (
                   <>
-                    <InputField
-                      name="accessCode"
-                      label="Clave de Acceso"
-                      register={register}
-                      type="password"
-                      placeholder="Ingresa la clave"
-                      startIcon={<FaLock className="text-base-content/40" />}
-                    />
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-sm w-full"
-                      onClick={verifyAccess}
-                      disabled={isVerifying}
-                    >
-                      {isVerifying ? (
-                        <span className="loading loading-spinner loading-xs"></span>
-                      ) : (
-                        "Verificar Acceso"
-                      )}
-                    </button>
+                    <span className="loading loading-spinner loading-xs"></span>
+                    Enviando...
+                  </>
+                ) : (
+                  "Confirmar y Enviar"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <form className="space-y-6" onSubmit={handleSubmit(onPreSubmit)}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2">
+            <h2 className="text-xl font-semibold">{title}</h2>
+            {description && (
+              <p className="text-base-content/70 mt-2">{description}</p>
+            )}
+          </div>
+          <div className="md:col-span-1 space-y-4">
+            {scope === "CELL" && (
+              <div className="card bg-base-100 border border-base-300 shadow-sm">
+                <div className="card-body p-4 space-y-4">
+                  <h3 className="font-semibold text-lg uppercase text-base-content/60">
+                    Autenticación
+                  </h3>
+
+                  {!isAuthenticated && (
+                    <>
+                      <InputField
+                        name="accessCode"
+                        label="Clave de Acceso"
+                        register={register}
+                        rules={{ required: "La clave de acceso es requerida" }}
+                        error={errors.accessCode?.message}
+                        type="password"
+                        placeholder="Clave de Acceso"
+                        startIcon={<FaKey className="text-base-content/40" />}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            verifyAccess();
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-lg w-full"
+                        onClick={verifyAccess}
+                        disabled={isVerifying}
+                      >
+                        {isVerifying ? (
+                          <span className="loading loading-spinner loading-xs"></span>
+                        ) : (
+                          "Verificar Acceso"
+                        )}
+                      </button>
+                    </>
+                  )}
+
+                  {isAuthenticated && cellInfo && (
+                    <div className="space-y-3">
+                      <div className="alert alert-success py-2 text-sm flex justify-between items-center">
+                        <span className="font-medium">✓ Acceso verificado</span>
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-xs text-base-content/70 hover:text-base-content"
+                          onClick={() => {
+                            setIsAuthenticated(false);
+                            setCellInfo(null);
+                            setDraftId(null);
+                            reset({ scope, cellId: "" });
+                          }}
+                        >
+                          Cambiar
+                        </button>
+                      </div>
+
+                      <div className="bg-base-200/50 p-3 rounded-lg space-y-2 text-sm">
+                        <div>
+                          <span className="block text-xs text-base-content/60 uppercase">
+                            Célula
+                          </span>
+                          <span className="font-semibold text-base-content">
+                            {cellInfo.name}
+                          </span>
+                        </div>
+
+                        {cellInfo.leader && (
+                          <div>
+                            <span className="block text-xs text-base-content/60 uppercase">
+                              Líder
+                            </span>
+                            <span className="text-base-content">
+                              {cellInfo.leader}
+                            </span>
+                          </div>
+                        )}
+
+                        {(cellInfo.sector || cellInfo.subSector) && (
+                          <div className="grid grid-cols-2 gap-2">
+                            {cellInfo.sector && (
+                              <div>
+                                <span className="block text-xs text-base-content/60 uppercase">
+                                  Sector
+                                </span>
+                                <span className="text-base-content">
+                                  {cellInfo.sector}
+                                </span>
+                              </div>
+                            )}
+                            {cellInfo.subSector && (
+                              <div>
+                                <span className="block text-xs text-base-content/60 uppercase">
+                                  Subsector
+                                </span>
+                                <span className="text-base-content">
+                                  {cellInfo.subSector}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {scope === "GROUP" && (
+              <SelectField
+                name="groupId"
+                label="Grupo"
+                register={register}
+                options={[
+                  { value: "", label: "Selecciona un grupo" },
+                  ...groups,
+                ]}
+                rules={{ required: "Requerido" }}
+              />
+            )}
+            {scope === "SECTOR" && (
+              <SelectField
+                name="sectorId"
+                label="Sector"
+                register={register}
+                options={[
+                  { value: "", label: "Selecciona un sector" },
+                  ...sectors,
+                ]}
+                rules={{ required: "Requerido" }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Form Fields - Only show if authenticated (for CELL scope) or if other scope */}
+        {(scope !== "CELL" || isAuthenticated) && (
+          <>
+            <div className="card bg-base-100 border border-base-300">
+              <div className="card-body">
+                <div className="grid grid-cols-1 gap-4 mt-4">
+                  {fields.map((f) => {
+                    const baseName = `values.${f.id}` as const;
+                    if (f.type === "NUMBER" || f.type === "CURRENCY") {
+                      return (
+                        <div key={f.id} className="w-[80%] mx-auto">
+                          <InputField<FormValues>
+                            name={baseName}
+                            label={f.label || f.key}
+                            register={register}
+                            type="number"
+                            step={f.type === "CURRENCY" ? "0.01" : "1"}
+                            placeholder={f.type === "CURRENCY" ? "0.00" : "0"}
+                            rules={{
+                              ...(f.required ? { required: "Requerido" } : {}),
+                              valueAsNumber: true,
+                            }}
+                            startIcon={
+                              f.type === "CURRENCY" ? (
+                                <span className="text-gray-500 font-bold">
+                                  $
+                                </span>
+                              ) : undefined
+                            }
+                          />
+                        </div>
+                      );
+                    }
+                    if (f.type === "BOOLEAN") {
+                      return (
+                        <div key={f.id} className="w-[80%] mx-auto">
+                          <SelectField<FormValues>
+                            name={baseName}
+                            label={f.label || f.key}
+                            register={register}
+                            options={[
+                              { value: "", label: "Selecciona" },
+                              { value: "true", label: "Sí" },
+                              { value: "false", label: "No" },
+                            ]}
+                            rules={{
+                              ...(f.required ? { required: "Requerido" } : {}),
+                              setValueAs: (v) =>
+                                v === "true"
+                                  ? true
+                                  : v === "false"
+                                  ? false
+                                  : undefined,
+                            }}
+                          />
+                        </div>
+                      );
+                    }
+                    if (f.type === "DATE") {
+                      return (
+                        <div key={f.id} className="w-[80%] mx-auto">
+                          <InputField<FormValues>
+                            name={baseName}
+                            label={f.label || f.key}
+                            register={register}
+                            type="date"
+                            rules={
+                              f.required ? { required: "Requerido" } : undefined
+                            }
+                          />
+                        </div>
+                      );
+                    }
+                    if (f.type === "SELECT") {
+                      return (
+                        <div key={f.id} className="w-[80%] mx-auto">
+                          <SelectField<FormValues>
+                            name={baseName}
+                            label={f.label || f.key}
+                            register={register}
+                            options={[
+                              { value: "", label: "Selecciona una opción" },
+                              ...(f.options || []).map((opt) => ({
+                                value: opt,
+                                label: opt,
+                              })),
+                            ]}
+                            rules={
+                              f.required ? { required: "Requerido" } : undefined
+                            }
+                          />
+                        </div>
+                      );
+                    }
+                    if (f.type === "SECTION") {
+                      return (
+                        <div
+                          key={f.id}
+                          className="divider font-bold text-lg mt-6 mb-2"
+                        >
+                          {f.label || "Nueva Sección"}
+                        </div>
+                      );
+                    }
+                    if (f.type === "MEMBER_SELECT") {
+                      return (
+                        <div key={f.id} className="w-[80%] mx-auto">
+                          <SelectField<FormValues>
+                            name={baseName}
+                            label={f.label || f.key}
+                            register={register}
+                            options={[
+                              { value: "", label: "Selecciona un miembro" },
+                              ...members,
+                            ]}
+                            rules={
+                              f.required ? { required: "Requerido" } : undefined
+                            }
+                          />
+                        </div>
+                      );
+                    }
+                    return (
+                      <InputField<FormValues>
+                        key={f.id}
+                        name={baseName}
+                        label={f.label || f.key}
+                        register={register}
+                        rules={
+                          f.required ? { required: "Requerido" } : undefined
+                        }
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row justify-end gap-3 sticky bottom-4 bg-base-100/80 backdrop-blur-md p-4 rounded-xl border border-base-200 shadow-lg z-20">
+              <button
+                type="button"
+                className="btn btn-ghost w-full md:w-auto gap-2"
+                onClick={handleSubmit(onSaveDraft)}
+                disabled={isSavingDraft || isSubmitting}
+              >
+                {isSavingDraft ? (
+                  <span className="loading loading-spinner loading-xs"></span>
+                ) : (
+                  <FaFloppyDisk />
+                )}
+                Guardar Borrador
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary w-full md:w-auto gap-2"
+                disabled={isSubmitting || isSavingDraft}
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="loading loading-spinner loading-xs"></span>
+                    Enviando...
+                  </>
+                ) : (
+                  <>
+                    <FaPaperPlane />
+                    Enviar Reporte
                   </>
                 )}
-
-                {isAuthenticated && (
-                  <div className="alert alert-success py-2 text-sm">
-                    <span>✓ Acceso verificado</span>
-                    <button
-                      type="button"
-                      className="btn btn-ghost btn-xs"
-                      onClick={() => {
-                        setIsAuthenticated(false);
-                        setDraftId(null);
-                        reset({ scope, cellId: "" });
-                      }}
-                    >
-                      Cambiar
-                    </button>
-                  </div>
-                )}
-              </div>
+              </button>
             </div>
-          )}
-
-          {scope === "GROUP" && (
-            <SelectField
-              name="groupId"
-              label="Grupo"
-              register={register}
-              options={[{ value: "", label: "Selecciona un grupo" }, ...groups]}
-              rules={{ required: "Requerido" }}
-            />
-          )}
-          {scope === "SECTOR" && (
-            <SelectField
-              name="sectorId"
-              label="Sector"
-              register={register}
-              options={[
-                { value: "", label: "Selecciona un sector" },
-                ...sectors,
-              ]}
-              rules={{ required: "Requerido" }}
-            />
-          )}
-        </div>
-      </div>
-
-      {/* Form Fields - Only show if authenticated (for CELL scope) or if other scope */}
-      {(scope !== "CELL" || isAuthenticated) && (
-        <>
-          <div className="card bg-base-100 border border-base-300">
-            <div className="card-body">
-              <div className="grid grid-cols-1 gap-4 mt-4">
-                {fields.map((f) => {
-                  const baseName = `values.${f.id}` as const;
-                  if (f.type === "NUMBER" || f.type === "CURRENCY") {
-                    return (
-                      <div key={f.id} className="w-[80%] mx-auto">
-                        <InputField<FormValues>
-                          name={baseName}
-                          label={f.label || f.key}
-                          register={register}
-                          type="number"
-                          step={f.type === "CURRENCY" ? "0.01" : "1"}
-                          placeholder={f.type === "CURRENCY" ? "0.00" : "0"}
-                          rules={{
-                            ...(f.required ? { required: "Requerido" } : {}),
-                            valueAsNumber: true,
-                          }}
-                          startIcon={
-                            f.type === "CURRENCY" ? (
-                              <span className="text-gray-500 font-bold">$</span>
-                            ) : undefined
-                          }
-                        />
-                      </div>
-                    );
-                  }
-                  if (f.type === "BOOLEAN") {
-                    return (
-                      <div key={f.id} className="w-[80%] mx-auto">
-                        <SelectField<FormValues>
-                          name={baseName}
-                          label={f.label || f.key}
-                          register={register}
-                          options={[
-                            { value: "", label: "Selecciona" },
-                            { value: "true", label: "Sí" },
-                            { value: "false", label: "No" },
-                          ]}
-                          rules={{
-                            ...(f.required ? { required: "Requerido" } : {}),
-                            setValueAs: (v) =>
-                              v === "true"
-                                ? true
-                                : v === "false"
-                                ? false
-                                : undefined,
-                          }}
-                        />
-                      </div>
-                    );
-                  }
-                  if (f.type === "DATE") {
-                    return (
-                      <div key={f.id} className="w-[80%] mx-auto">
-                        <InputField<FormValues>
-                          name={baseName}
-                          label={f.label || f.key}
-                          register={register}
-                          type="date"
-                          rules={
-                            f.required ? { required: "Requerido" } : undefined
-                          }
-                        />
-                      </div>
-                    );
-                  }
-                  if (f.type === "SELECT") {
-                    return (
-                      <div key={f.id} className="w-[80%] mx-auto">
-                        <SelectField<FormValues>
-                          name={baseName}
-                          label={f.label || f.key}
-                          register={register}
-                          options={[
-                            { value: "", label: "Selecciona una opción" },
-                            ...(f.options || []).map((opt) => ({
-                              value: opt,
-                              label: opt,
-                            })),
-                          ]}
-                          rules={
-                            f.required ? { required: "Requerido" } : undefined
-                          }
-                        />
-                      </div>
-                    );
-                  }
-                  if (f.type === "SECTION") {
-                    return (
-                      <div
-                        key={f.id}
-                        className="divider font-bold text-lg mt-6 mb-2"
-                      >
-                        {f.label || "Nueva Sección"}
-                      </div>
-                    );
-                  }
-                  if (f.type === "MEMBER_SELECT") {
-                    return (
-                      <div key={f.id} className="w-[80%] mx-auto">
-                        <SelectField<FormValues>
-                          name={baseName}
-                          label={f.label || f.key}
-                          register={register}
-                          options={[
-                            { value: "", label: "Selecciona un miembro" },
-                            ...members,
-                          ]}
-                          rules={
-                            f.required ? { required: "Requerido" } : undefined
-                          }
-                        />
-                      </div>
-                    );
-                  }
-                  return (
-                    <InputField<FormValues>
-                      key={f.id}
-                      name={baseName}
-                      label={f.label || f.key}
-                      register={register}
-                      rules={f.required ? { required: "Requerido" } : undefined}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-3 sticky bottom-4 bg-base-100/80 backdrop-blur-md p-4 rounded-xl border border-base-200 shadow-lg z-20">
-            <button
-              type="button"
-              className="btn btn-ghost gap-2"
-              onClick={handleSubmit(onSaveDraft)}
-              disabled={isSavingDraft || isSubmitting}
-            >
-              {isSavingDraft ? (
-                <span className="loading loading-spinner loading-xs"></span>
-              ) : (
-                <FaFloppyDisk />
-              )}
-              Guardar Borrador
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary w-full md:w-auto gap-2"
-              disabled={isSubmitting || isSavingDraft}
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="loading loading-spinner loading-xs"></span>
-                  Enviando...
-                </>
-              ) : (
-                <>
-                  <FaPaperPlane />
-                  Enviar Reporte
-                </>
-              )}
-            </button>
-          </div>
-        </>
-      )}
-    </form>
+          </>
+        )}
+      </form>
+    </>
   );
 }

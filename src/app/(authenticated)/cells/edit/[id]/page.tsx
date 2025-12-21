@@ -28,6 +28,7 @@ export default function EditCellPage({
       const message =
         err instanceof Error ? err.message : "Error al actualizar la célula";
       showError(message);
+      throw err;
     }
   };
 

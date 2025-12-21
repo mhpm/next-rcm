@@ -35,6 +35,7 @@ const CellForm: React.FC<CellFormProps> = ({
     reset,
     setValue,
     watch,
+    setError,
     formState: { errors },
   } = useForm<z.infer<typeof cellFormSchema>>({
     resolver: zodResolver(cellFormSchema),
@@ -75,6 +76,15 @@ const CellForm: React.FC<CellFormProps> = ({
       prevInitialDataRef.current = JSON.stringify(data ?? {});
     } catch (error) {
       console.error("Error al enviar el formulario", error);
+      if (
+        error instanceof Error &&
+        error.message === "La clave de acceso ya existe. Por favor, elige otra."
+      ) {
+        setError("accessCode", {
+          type: "manual",
+          message: error.message,
+        });
+      }
     }
   };
 

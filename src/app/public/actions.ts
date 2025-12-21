@@ -23,15 +23,7 @@ export async function getPublicEntities(token: string) {
 
   if (!report) return null;
 
-  const [cells, groups, sectors, members] = await Promise.all([
-    prisma.cells.findMany({
-      where: { church_id: report.church_id },
-      select: {
-        id: true,
-        name: true,
-        leader: { select: { firstName: true, lastName: true } },
-      },
-    }),
+  const [groups, sectors, members] = await Promise.all([
     prisma.groups.findMany({
       where: { church_id: report.church_id },
       select: {
@@ -59,13 +51,32 @@ export async function getPublicEntities(token: string) {
     }),
   ]);
 
-  return { cells, groups, sectors, members };
+  return { groups, sectors, members };
 }
 
-export async function verifyCellAccess(cellId: string, code: string) {
+export async function verifyCellAccess(code: string) {
   const cell = await prisma.cells.findFirst({
-    where: { id: cellId, accessCode: code },
-    select: { id: true, name: true },
+    where: { accessCode: code },
+    select: {
+      id: true,
+      name: true,
+      leader: {
+        select: {
+          firstName: true,
+          lastName: true,
+        },
+      },
+      subSector: {
+        select: {
+          name: true,
+          sector: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
   });
   return cell;
 }

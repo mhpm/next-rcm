@@ -175,6 +175,14 @@ export async function createCell(data: {
   } catch (error) {
     console.error("Error creating cell:", error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const target = error.meta?.target;
+      if (
+        error.code === "P2002" &&
+        ((Array.isArray(target) && target.includes("accessCode")) ||
+          error.message.includes("accessCode"))
+      ) {
+        throw new Error("La clave de acceso ya existe. Por favor, elige otra.");
+      }
       throw new Error(
         `Error de base de datos al crear la célula: ${error.message}`
       );
@@ -280,6 +288,14 @@ export async function updateCell(
   } catch (error) {
     console.error("Error updating cell:", { error, id, data, churchId });
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const target = error.meta?.target;
+      if (
+        error.code === "P2002" &&
+        ((Array.isArray(target) && target.includes("accessCode")) ||
+          error.message.includes("accessCode"))
+      ) {
+        throw new Error("La clave de acceso ya existe. Por favor, elige otra.");
+      }
       throw new Error(
         `Error de base de datos al actualizar la célula: ${error.message}`
       );

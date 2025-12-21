@@ -23,7 +23,7 @@ type InputFieldProps<T extends FieldValues> = {
   tabIndex?: number;
   startIcon?: React.ReactNode;
   step?: string;
-};
+} & React.InputHTMLAttributes<HTMLInputElement>;
 
 export function InputField<T extends FieldValues>({
   name,
@@ -40,15 +40,16 @@ export function InputField<T extends FieldValues>({
   tabIndex,
   startIcon,
   step,
+  ...rest
 }: InputFieldProps<T>) {
   return (
     <fieldset>
       <label className="label mb-2">
         <span className="label-text">{label}</span>
       </label>
-      <div className={`relative flex items-center ${startIcon ? "gap-2" : ""}`}>
+      <div className="relative flex items-center">
         {startIcon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
             {startIcon}
           </div>
         )}
@@ -63,6 +64,7 @@ export function InputField<T extends FieldValues>({
           step={step}
           autoComplete="off"
           {...register(name, rules)}
+          {...rest}
         />
       </div>
       {error && <p className="text-error text-sm mt-1">{error}</p>}
