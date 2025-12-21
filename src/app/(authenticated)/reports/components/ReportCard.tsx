@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRef, useState, useTransition } from "react";
-import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
+import Link from 'next/link';
+import { useRef, useState, useTransition } from 'react';
+import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import {
   FaFileLines,
   FaPenToSquare,
@@ -11,9 +11,9 @@ import {
   FaShareNodes,
   FaArrowUpRightFromSquare,
   FaFileSignature,
-} from "react-icons/fa6";
-import { deleteReportAction } from "../actions/reports.actions";
-import { useNotificationStore } from "@/store/NotificationStore";
+} from 'react-icons/fa6';
+import { deleteReportAction } from '../actions/reports.actions';
+import { useNotificationStore } from '@/store/NotificationStore';
 
 type ReportCardProps = {
   report: {
@@ -43,14 +43,14 @@ export default function ReportCard({ report }: ReportCardProps) {
     if (!report.publicToken) return;
     const url = `${window.location.origin}/public/reports/${report.publicToken}`;
     navigator.clipboard.writeText(url);
-    showSuccess("Enlace copiado al portapapeles");
+    showSuccess('Enlace copiado al portapapeles');
   };
 
   return (
     <div
       className="card relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] border-none text-white"
       style={{
-        backgroundColor: report.color || "#3b82f6",
+        backgroundColor: report.color || '#3b82f6',
       }}
     >
       {/* Background Icon */}
@@ -59,13 +59,13 @@ export default function ReportCard({ report }: ReportCardProps) {
       </div>
 
       <div className="card-body relative z-10 p-6">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <Link href={`/reports/${report.id}/submit`} className="flex-1">
             <h2 className="card-title text-2xl font-bold text-white mb-2 line-clamp-2">
               {report.title}
             </h2>
           </Link>
-          <div className="flex items-center gap-1 bg-white/20 backdrop-blur-md rounded-lg p-1 shadow-sm">
+          <div className="flex w-full lg:w-auto justify-around sm:items-center gap-1 bg-white/20 backdrop-blur-md rounded-lg p-1 shadow-sm">
             {report.publicToken && (
               <>
                 <Link
@@ -111,7 +111,7 @@ export default function ReportCard({ report }: ReportCardProps) {
             <form
               ref={formRef}
               action={deleteReportAction}
-              style={{ display: "none" }}
+              style={{ display: 'none' }}
             >
               <input type="hidden" name="id" value={report.id} />
             </form>
