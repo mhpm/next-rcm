@@ -559,7 +559,7 @@ export default function PublicReportForm({
         {/* Form Fields - Only show if authenticated (for CELL scope) or if other scope */}
         {(scope !== 'CELL' || isAuthenticated) && (
           <>
-            <div className="card bg-base-100 border border-base-300 shadow-sm rounded-sm">
+            <div className="card bg-base-100 border border-base-300 shadow-sm">
               <div className="card-body">
                 <div className="space-y-4 mt-4">
                   {groupedFields.map((group, i) => {
@@ -567,7 +567,7 @@ export default function PublicReportForm({
                       return (
                         <div
                           key={group.section.id}
-                          className="collapse collapse-arrow bg-base-300 px-4 py-2 border border-base-300 rounded-xl"
+                          className="collapse collapse-arrow bg-base-300/30 px-4 py-2 border border-base-300 rounded-sm"
                         >
                           <input type="checkbox" defaultChecked />
                           <div className="collapse-title text-lg font-bold p-2 rounded-md">

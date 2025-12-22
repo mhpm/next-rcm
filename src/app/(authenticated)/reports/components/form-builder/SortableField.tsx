@@ -1,33 +1,33 @@
 import React from "react";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { Draggable } from "@hello-pangea/dnd";
 
 export function SortableField({
   id,
+  index,
   children,
+  isDragDisabled = false,
 }: {
   id: string;
+  index: number;
   children: React.ReactNode;
+  isDragDisabled?: boolean;
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
-
-  const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    zIndex: isDragging ? 50 : undefined,
-    position: "relative",
-  };
-
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {children}
-    </div>
+    <Draggable draggableId={id} index={index} isDragDisabled={isDragDisabled}>
+      {(provided, snapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          style={{
+            ...provided.draggableProps.style,
+            opacity: snapshot.isDragging ? 0.8 : 1,
+            marginBottom: "8px",
+          }}
+        >
+          {children}
+        </div>
+      )}
+    </Draggable>
   );
 }

@@ -1,13 +1,13 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @plugin "daisyui" {
   themes: shine --default, darkness --prefersdark;
 }
 
 @plugin "daisyui/theme" {
-  name: "shine";
+  name: 'shine';
   default: true;
   prefersdark: false;
-  color-scheme: "light";
+  color-scheme: 'light';
   --color-base-100: oklch(98% 0.001 106.423);
   --color-base-200: oklch(97% 0.001 106.424);
   --color-base-300: oklch(92% 0.003 48.717);
@@ -35,14 +35,14 @@
   --size-field: 0.25rem;
   --border: 2px;
   --depth: 0;
-  --noise: 1;
+  --noise: 0;
 }
 
 @plugin "daisyui/theme" {
-  name: "darkness";
+  name: 'darkness';
   default: false;
   prefersdark: true;
-  color-scheme: "dark";
+  color-scheme: 'dark';
 
   --color-base-100: oklch(13% 0.028 261.692);
   --color-base-200: oklch(21% 0.034 264.665);

@@ -6,17 +6,24 @@ import type { ReportFieldType } from '@/generated/prisma/client';
 interface AddFieldMenuProps {
   onAdd: (type: ReportFieldType) => void;
   className?: string;
+  trigger?: React.ReactNode;
 }
 
-export function AddFieldMenu({ onAdd, className = '' }: AddFieldMenuProps) {
+export function AddFieldMenu({ onAdd, className = '', trigger }: AddFieldMenuProps) {
   const isTop = className.includes('dropdown-top');
 
   return (
     <div className={`dropdown dropdown-end ${className}`}>
-      <div tabIndex={0} role="button" className="btn btn-primary btn-sm gap-2">
-        <span>+ Añadir</span>
-        <span className="text-xs">{isTop ? '▲' : '▼'}</span>
-      </div>
+      {trigger ? (
+        <div tabIndex={0} role="button" className="w-full">
+          {trigger}
+        </div>
+      ) : (
+        <div tabIndex={0} role="button" className="btn btn-primary btn-sm gap-2">
+          <span>+ Añadir</span>
+          <span className="text-xs">{isTop ? '▲' : '▼'}</span>
+        </div>
+      )}
       <ul
         tabIndex={0}
         className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"

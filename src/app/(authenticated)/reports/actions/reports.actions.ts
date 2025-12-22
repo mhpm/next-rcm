@@ -223,6 +223,9 @@ export async function updateReportWithFields(input: UpdateReportInput) {
       }
       await tx.reportFields.create({ data: createData });
     }
+  }, {
+    maxWait: 5000,
+    timeout: 20000,
   });
 
   revalidatePath('/reports');
