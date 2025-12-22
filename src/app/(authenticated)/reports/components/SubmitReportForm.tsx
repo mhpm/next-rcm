@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useForm } from "react-hook-form";
-import { InputField, SelectField } from "@/components/FormControls";
-import type { ReportFieldType, ReportScope } from "@/generated/prisma/client";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { InputField, SelectField } from '@/components/FormControls';
+import type { ReportFieldType, ReportScope } from '@/generated/prisma/client';
 import {
   createReportEntry,
   updateReportEntry,
   getReportEntityMembers,
-} from "@/app/(authenticated)/reports/actions/reports.actions";
-import { useRouter } from "next/navigation";
-import { useNotificationStore } from "@/store/NotificationStore";
+} from '@/app/(authenticated)/reports/actions/reports.actions';
+import { useRouter } from 'next/navigation';
+import { useNotificationStore } from '@/store/NotificationStore';
 
 type Option = { value: string; label: string };
 
@@ -70,16 +70,16 @@ export default function SubmitReportForm({
     { id: string; firstName: string; lastName: string }[]
   >([]);
 
-  const watchedCellId = watch("cellId");
-  const watchedGroupId = watch("groupId");
-  const watchedSectorId = watch("sectorId");
+  const watchedCellId = watch('cellId');
+  const watchedGroupId = watch('groupId');
+  const watchedSectorId = watch('sectorId');
 
   React.useEffect(() => {
     const fetchMembers = async () => {
       let entityId: string | undefined;
-      if (scope === "CELL") entityId = watchedCellId;
-      if (scope === "GROUP") entityId = watchedGroupId;
-      if (scope === "SECTOR") entityId = watchedSectorId;
+      if (scope === 'CELL') entityId = watchedCellId;
+      if (scope === 'GROUP') entityId = watchedGroupId;
+      if (scope === 'SECTOR') entityId = watchedSectorId;
 
       if (entityId) {
         try {
@@ -96,6 +96,139 @@ export default function SubmitReportForm({
     fetchMembers();
   }, [watchedCellId, watchedGroupId, watchedSectorId, scope]);
 
+  // Helper to group fields by section
+  const groupedFields = React.useMemo(() => {
+    const groups: { section: FieldDef | null; fields: FieldDef[] }[] = [];
+    let currentGroup: { section: FieldDef | null; fields: FieldDef[] } = {
+      section: null,
+      fields: [],
+    };
+
+    fields.forEach((f) => {
+      if (f.type === 'SECTION') {
+        if (currentGroup.section || currentGroup.fields.length > 0) {
+          groups.push(currentGroup);
+        }
+        currentGroup = { section: f, fields: [] };
+      } else {
+        currentGroup.fields.push(f);
+      }
+    });
+
+    if (currentGroup.section || currentGroup.fields.length > 0) {
+      groups.push(currentGroup);
+    }
+
+    return groups;
+  }, [fields]);
+
+  const renderField = (f: FieldDef) => {
+    const baseName = `values.${f.id}` as const;
+    if (f.type === 'NUMBER' || f.type === 'CURRENCY') {
+      return (
+        <InputField<FormValues>
+          key={f.id}
+          name={baseName}
+          label={f.label || f.key}
+          register={register}
+          type="number"
+          step={f.type === 'CURRENCY' ? '0.01' : '1'}
+          placeholder={f.type === 'CURRENCY' ? '0.00' : '0'}
+          rules={{
+            ...(f.required ? { required: 'Requerido' } : {}),
+            valueAsNumber: true,
+          }}
+          startIcon={
+            f.type === 'CURRENCY' ? (
+              <span className="text-gray-500 font-bold">$</span>
+            ) : undefined
+          }
+        />
+      );
+    }
+    if (f.type === 'BOOLEAN') {
+      return (
+        <SelectField<FormValues>
+          key={f.id}
+          name={baseName}
+          label={f.label || f.key}
+          register={register}
+          options={[
+            { value: '', label: 'Selecciona' },
+            { value: 'true', label: 'Sí' },
+            { value: 'false', label: 'No' },
+          ]}
+          rules={{
+            ...(f.required ? { required: 'Requerido' } : {}),
+            setValueAs: (v) =>
+              v === 'true' ? true : v === 'false' ? false : undefined,
+          }}
+        />
+      );
+    }
+    if (f.type === 'DATE') {
+      return (
+        <InputField<FormValues>
+          key={f.id}
+          name={baseName}
+          label={f.label || f.key}
+          register={register}
+          type="date"
+          rules={f.required ? { required: 'Requerido' } : undefined}
+        />
+      );
+    }
+    if (f.type === 'SELECT') {
+      return (
+        <SelectField<FormValues>
+          key={f.id}
+          name={baseName}
+          label={f.label || f.key}
+          register={register}
+          options={[
+            { value: '', label: 'Selecciona una opción' },
+            ...(f.options || []).map((opt) => ({
+              value: opt,
+              label: opt,
+            })),
+          ]}
+          rules={f.required ? { required: 'Requerido' } : undefined}
+        />
+      );
+    }
+    if (f.type === 'MEMBER_SELECT') {
+      return (
+        <SelectField<FormValues>
+          key={f.id}
+          name={baseName}
+          label={f.label || f.key}
+          register={register}
+          options={[
+            { value: '', label: 'Selecciona un miembro' },
+            ...members.map((m) => ({
+              value: m.id,
+              label: `${m.firstName} ${m.lastName}`,
+            })),
+          ]}
+          rules={f.required ? { required: 'Requerido' } : undefined}
+        />
+      );
+    }
+    if (f.type === 'SECTION') {
+      // Should not happen inside renderField as we handle it in groups, but fallback just in case
+      return null;
+    }
+    return (
+      <InputField<FormValues>
+        key={f.id}
+        name={baseName}
+        label={f.label || f.key}
+        register={register}
+        rules={f.required ? { required: 'Requerido' } : undefined}
+      />
+    );
+  };
+
   const onSubmit = async (data: FormValues) => {
     try {
       const values = Object.entries(data.values || {}).map(
@@ -109,29 +242,29 @@ export default function SubmitReportForm({
         await updateReportEntry({
           id: entryId,
           scope,
-          cellId: scope === "CELL" ? data.cellId : undefined,
-          groupId: scope === "GROUP" ? data.groupId : undefined,
-          sectorId: scope === "SECTOR" ? data.sectorId : undefined,
+          cellId: scope === 'CELL' ? data.cellId : undefined,
+          groupId: scope === 'GROUP' ? data.groupId : undefined,
+          sectorId: scope === 'SECTOR' ? data.sectorId : undefined,
           values,
         });
-        showSuccess("Entrada actualizada exitosamente");
+        showSuccess('Entrada actualizada exitosamente');
         router.push(`/reports/${reportId}/entries`);
       } else {
         await createReportEntry({
           reportId,
           scope,
-          cellId: scope === "CELL" ? data.cellId : undefined,
-          groupId: scope === "GROUP" ? data.groupId : undefined,
-          sectorId: scope === "SECTOR" ? data.sectorId : undefined,
+          cellId: scope === 'CELL' ? data.cellId : undefined,
+          groupId: scope === 'GROUP' ? data.groupId : undefined,
+          sectorId: scope === 'SECTOR' ? data.sectorId : undefined,
           values,
         });
-        showSuccess("Reporte enviado exitosamente");
+        showSuccess('Reporte enviado exitosamente');
         reset(); // Limpiar el formulario para una nueva entrada
         router.refresh();
       }
     } catch (error) {
-      console.error("Error al enviar reporte:", error);
-      showError("Error al enviar el reporte");
+      console.error('Error al enviar reporte:', error);
+      showError('Error al enviar el reporte');
     }
   };
 
@@ -145,37 +278,37 @@ export default function SubmitReportForm({
           )}
         </div>
         <div className="md:col-span-1">
-          {scope === "CELL" && (
+          {scope === 'CELL' && (
             <SelectField
               name="cellId"
               label="Célula"
               register={register}
               options={[
-                { value: "", label: "Selecciona una célula" },
+                { value: '', label: 'Selecciona una célula' },
                 ...cells,
               ]}
-              rules={{ required: "Requerido" }}
+              rules={{ required: 'Requerido' }}
             />
           )}
-          {scope === "GROUP" && (
+          {scope === 'GROUP' && (
             <SelectField
               name="groupId"
               label="Grupo"
               register={register}
-              options={[{ value: "", label: "Selecciona un grupo" }, ...groups]}
-              rules={{ required: "Requerido" }}
+              options={[{ value: '', label: 'Selecciona un grupo' }, ...groups]}
+              rules={{ required: 'Requerido' }}
             />
           )}
-          {scope === "SECTOR" && (
+          {scope === 'SECTOR' && (
             <SelectField
               name="sectorId"
               label="Sector"
               register={register}
               options={[
-                { value: "", label: "Selecciona un sector" },
+                { value: '', label: 'Selecciona un sector' },
                 ...sectors,
               ]}
-              rules={{ required: "Requerido" }}
+              rules={{ required: 'Requerido' }}
             />
           )}
         </div>
@@ -183,117 +316,31 @@ export default function SubmitReportForm({
 
       <div className="card bg-base-100 border border-base-300">
         <div className="card-body">
-          <div className="grid grid-cols-1 gap-4 mt-4">
-            {fields.map((f) => {
-              const baseName = `values.${f.id}` as const;
-              if (f.type === "NUMBER" || f.type === "CURRENCY") {
-                return (
-                  <InputField<FormValues>
-                    key={f.id}
-                    name={baseName}
-                    label={f.label || f.key}
-                    register={register}
-                    type="number"
-                    step={f.type === "CURRENCY" ? "0.01" : "1"}
-                    placeholder={f.type === "CURRENCY" ? "0.00" : "0"}
-                    rules={{
-                      ...(f.required ? { required: "Requerido" } : {}),
-                      valueAsNumber: true,
-                    }}
-                    startIcon={
-                      f.type === "CURRENCY" ? (
-                        <span className="text-gray-500 font-bold">$</span>
-                      ) : undefined
-                    }
-                  />
-                );
-              }
-              if (f.type === "BOOLEAN") {
-                return (
-                  <SelectField<FormValues>
-                    key={f.id}
-                    name={baseName}
-                    label={f.label || f.key}
-                    register={register}
-                    options={[
-                      { value: "", label: "Selecciona" },
-                      { value: "true", label: "Sí" },
-                      { value: "false", label: "No" },
-                    ]}
-                    rules={{
-                      ...(f.required ? { required: "Requerido" } : {}),
-                      setValueAs: (v) =>
-                        v === "true" ? true : v === "false" ? false : undefined,
-                    }}
-                  />
-                );
-              }
-              if (f.type === "DATE") {
-                return (
-                  <InputField<FormValues>
-                    key={f.id}
-                    name={baseName}
-                    label={f.label || f.key}
-                    register={register}
-                    type="date"
-                    rules={f.required ? { required: "Requerido" } : undefined}
-                  />
-                );
-              }
-              if (f.type === "SELECT") {
-                return (
-                  <SelectField<FormValues>
-                    key={f.id}
-                    name={baseName}
-                    label={f.label || f.key}
-                    register={register}
-                    options={[
-                      { value: "", label: "Selecciona una opción" },
-                      ...(f.options || []).map((opt) => ({
-                        value: opt,
-                        label: opt,
-                      })),
-                    ]}
-                    rules={f.required ? { required: "Requerido" } : undefined}
-                  />
-                );
-              }
-              if (f.type === "MEMBER_SELECT") {
-                return (
-                  <SelectField<FormValues>
-                    key={f.id}
-                    name={baseName}
-                    label={f.label || f.key}
-                    register={register}
-                    options={[
-                      { value: "", label: "Selecciona un miembro" },
-                      ...members.map((m) => ({
-                        value: m.id,
-                        label: `${m.firstName} ${m.lastName}`,
-                      })),
-                    ]}
-                    rules={f.required ? { required: "Requerido" } : undefined}
-                  />
-                );
-              }
-              if (f.type === "SECTION") {
+          <div className="space-y-4 mt-4">
+            {groupedFields.map((group, i) => {
+              if (group.section) {
                 return (
                   <div
-                    key={f.id}
-                    className="divider font-bold text-lg mt-6 mb-2"
+                    key={group.section.id}
+                    className="collapse collapse-arrow bg-base-50 border border-base-200"
                   >
-                    {f.label || "Nueva Sección"}
+                    <input type="checkbox" defaultChecked />
+                    <div className="collapse-title text-lg font-bold">
+                      {group.section.label || 'Sección'}
+                    </div>
+                    <div className="collapse-content">
+                      <div className="grid grid-cols-1 gap-4 pt-4">
+                        {group.fields.map((f) => renderField(f))}
+                      </div>
+                    </div>
                   </div>
                 );
               }
+              // Default fields (no section)
               return (
-                <InputField<FormValues>
-                  key={f.id}
-                  name={baseName}
-                  label={f.label || f.key}
-                  register={register}
-                  rules={f.required ? { required: "Requerido" } : undefined}
-                />
+                <div key={`group-${i}`} className="grid grid-cols-1 gap-4">
+                  {group.fields.map((f) => renderField(f))}
+                </div>
               );
             })}
           </div>
@@ -304,7 +351,7 @@ export default function SubmitReportForm({
         <button
           type="button"
           className="btn"
-          onClick={() => router.push("/reports")}
+          onClick={() => router.push('/reports')}
           disabled={isSubmitting}
         >
           Cancelar
@@ -320,7 +367,7 @@ export default function SubmitReportForm({
               Enviando...
             </>
           ) : (
-            "Enviar"
+            'Enviar'
           )}
         </button>
       </div>

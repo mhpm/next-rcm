@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { InputField, SelectField } from "@/components/FormControls";
-import type { ReportFieldType, ReportScope } from "@/generated/prisma/client";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { InputField, SelectField } from '@/components/FormControls';
+import type { ReportFieldType, ReportScope } from '@/generated/prisma/client';
 import {
   submitPublicReportEntry,
   verifyCellAccess,
   getDraftReportEntry,
-} from "../../actions";
-import { useNotificationStore } from "@/store/NotificationStore";
+} from '../../actions';
+import { useNotificationStore } from '@/store/NotificationStore';
 import {
   FaLock,
   FaFloppyDisk,
   FaPaperPlane,
   FaSpinner,
   FaKey,
-} from "react-icons/fa6";
+} from 'react-icons/fa6';
 
 type Option = { value: string; label: string };
 
@@ -89,14 +89,136 @@ export default function PublicReportForm({
     defaultValues: { scope },
   });
 
-  const accessCode = watch("accessCode");
+  // Helper to group fields by section
+  const groupedFields = (fields || []).reduce((groups, f) => {
+    const lastGroup = groups[groups.length - 1];
+    if (f.type === 'SECTION') {
+      groups.push({ section: f, fields: [] });
+    } else {
+      if (!lastGroup) {
+        groups.push({ section: null, fields: [f] });
+      } else {
+        lastGroup.fields.push(f);
+      }
+    }
+    return groups;
+  }, [] as { section: FieldDef | null; fields: FieldDef[] }[]);
+
+  const renderField = (f: FieldDef) => {
+    const baseName = `values.${f.id}` as const;
+
+    const content = (() => {
+      if (f.type === 'NUMBER' || f.type === 'CURRENCY') {
+        return (
+          <InputField<FormValues>
+            name={baseName}
+            label={f.label || f.key}
+            register={register}
+            type="number"
+            step={f.type === 'CURRENCY' ? '0.01' : '1'}
+            placeholder={f.type === 'CURRENCY' ? '0.00' : '0'}
+            rules={{
+              ...(f.required ? { required: 'Requerido' } : {}),
+              valueAsNumber: true,
+            }}
+            startIcon={
+              f.type === 'CURRENCY' ? (
+                <span className="text-gray-500 font-bold">$</span>
+              ) : undefined
+            }
+          />
+        );
+      }
+      if (f.type === 'BOOLEAN') {
+        return (
+          <SelectField<FormValues>
+            name={baseName}
+            label={f.label || f.key}
+            register={register}
+            options={[
+              { value: '', label: 'Selecciona' },
+              { value: 'true', label: 'Sí' },
+              { value: 'false', label: 'No' },
+            ]}
+            rules={{
+              ...(f.required ? { required: 'Requerido' } : {}),
+              setValueAs: (v) =>
+                v === 'true' ? true : v === 'false' ? false : undefined,
+            }}
+          />
+        );
+      }
+      if (f.type === 'DATE') {
+        return (
+          <InputField<FormValues>
+            name={baseName}
+            label={f.label || f.key}
+            register={register}
+            type="date"
+            rules={f.required ? { required: 'Requerido' } : undefined}
+          />
+        );
+      }
+      if (f.type === 'SELECT') {
+        return (
+          <SelectField<FormValues>
+            name={baseName}
+            label={f.label || f.key}
+            register={register}
+            options={[
+              { value: '', label: 'Selecciona una opción' },
+              ...(f.options || []).map((opt) => ({
+                value: opt,
+                label: opt,
+              })),
+            ]}
+            rules={f.required ? { required: 'Requerido' } : undefined}
+          />
+        );
+      }
+      if (f.type === 'MEMBER_SELECT') {
+        return (
+          <SelectField<FormValues>
+            name={baseName}
+            label={f.label || f.key}
+            register={register}
+            options={[
+              { value: '', label: 'Selecciona un miembro' },
+              ...members,
+            ]}
+            rules={f.required ? { required: 'Requerido' } : undefined}
+          />
+        );
+      }
+      if (f.type === 'SECTION') return null;
+
+      return (
+        <InputField<FormValues>
+          name={baseName}
+          label={f.label || f.key}
+          register={register}
+          rules={f.required ? { required: 'Requerido' } : undefined}
+        />
+      );
+    })();
+
+    if (!content) return null;
+
+    return (
+      <div key={f.id} className="w-[80%] mx-auto">
+        {content}
+      </div>
+    );
+  };
+
+  const accessCode = watch('accessCode');
 
   const verifyAccess = async () => {
-    const isValid = await trigger("accessCode");
+    const isValid = await trigger('accessCode');
     if (!isValid) return;
 
     if (!accessCode) {
-      showError("Ingresa la clave de acceso");
+      showError('Ingresa la clave de acceso');
       return;
     }
 
@@ -113,15 +235,15 @@ export default function PublicReportForm({
           sector: cell.subSector?.sector?.name,
           subSector: cell.subSector?.name,
         });
-        setValue("cellId", cell.id);
+        setValue('cellId', cell.id);
 
-        showSuccess("Acceso correcto. Buscando borradores...");
+        showSuccess('Acceso correcto. Buscando borradores...');
 
         // Load draft if exists
         const draft = await getDraftReportEntry(token, scope, cell.id);
         if (draft) {
           setDraftId(draft.id);
-          showSuccess("Borrador recuperado");
+          showSuccess('Borrador recuperado');
           // Populate form
           draft.values.forEach((v: any) => {
             // Handle different value types if necessary
@@ -131,11 +253,11 @@ export default function PublicReportForm({
           });
         }
       } else {
-        showError("Clave incorrecta o célula no encontrada");
+        showError('Clave incorrecta o célula no encontrada');
       }
     } catch (error) {
       console.error(error);
-      showError("Error al verificar acceso");
+      showError('Error al verificar acceso');
     } finally {
       setIsVerifying(false);
     }
@@ -145,13 +267,13 @@ export default function PublicReportForm({
     data: FormValues,
     isDraft: boolean
   ): Promise<boolean> => {
-    if (scope === "CELL" && !isAuthenticated && isDraft) {
-      showError("Debes autenticarte primero para guardar borrador");
+    if (scope === 'CELL' && !isAuthenticated && isDraft) {
+      showError('Debes autenticarte primero para guardar borrador');
       return false;
     }
 
-    if (scope === "CELL" && !isAuthenticated) {
-      showError("Debes autenticarte primero");
+    if (scope === 'CELL' && !isAuthenticated) {
+      showError('Debes autenticarte primero');
       return false;
     }
 
@@ -168,19 +290,19 @@ export default function PublicReportForm({
       const result = await submitPublicReportEntry({
         token,
         scope,
-        cellId: scope === "CELL" ? data.cellId : undefined,
-        groupId: scope === "GROUP" ? data.groupId : undefined,
-        sectorId: scope === "SECTOR" ? data.sectorId : undefined,
+        cellId: scope === 'CELL' ? data.cellId : undefined,
+        groupId: scope === 'GROUP' ? data.groupId : undefined,
+        sectorId: scope === 'SECTOR' ? data.sectorId : undefined,
         values,
         entryId: draftId || undefined,
         isDraft,
       });
 
       if (isDraft) {
-        showSuccess("Borrador guardado exitosamente");
+        showSuccess('Borrador guardado exitosamente');
         if (result?.id) setDraftId(result.id);
       } else {
-        showSuccess("Reporte enviado exitosamente");
+        showSuccess('Reporte enviado exitosamente');
         setSubmitted(true);
         reset();
         setDraftId(null);
@@ -188,8 +310,8 @@ export default function PublicReportForm({
       }
       return true;
     } catch (error) {
-      console.error("Error al enviar reporte:", error);
-      showError("Error al enviar el reporte");
+      console.error('Error al enviar reporte:', error);
+      showError('Error al enviar el reporte');
       return false;
     } finally {
       if (isDraft) setIsSavingDraft(false);
@@ -271,7 +393,7 @@ export default function PublicReportForm({
                     Enviando...
                   </>
                 ) : (
-                  "Confirmar y Enviar"
+                  'Confirmar y Enviar'
                 )}
               </button>
             </div>
@@ -288,7 +410,7 @@ export default function PublicReportForm({
             )}
           </div>
           <div className="md:col-span-1 space-y-4">
-            {scope === "CELL" && (
+            {scope === 'CELL' && (
               <div className="card bg-base-100 border border-base-300 shadow-sm">
                 <div className="card-body p-4 space-y-4">
                   <h3 className="font-semibold text-lg uppercase text-base-content/60">
@@ -301,13 +423,13 @@ export default function PublicReportForm({
                         name="accessCode"
                         label="Clave de Acceso"
                         register={register}
-                        rules={{ required: "La clave de acceso es requerida" }}
+                        rules={{ required: 'La clave de acceso es requerida' }}
                         error={errors.accessCode?.message}
                         type="password"
                         placeholder="Clave de Acceso"
                         startIcon={<FaKey className="text-base-content/40" />}
                         onKeyDown={(e) => {
-                          if (e.key === "Enter") {
+                          if (e.key === 'Enter') {
                             e.preventDefault();
                             verifyAccess();
                           }
@@ -322,7 +444,7 @@ export default function PublicReportForm({
                         {isVerifying ? (
                           <span className="loading loading-spinner loading-xs"></span>
                         ) : (
-                          "Verificar Acceso"
+                          'Verificar Acceso'
                         )}
                       </button>
                     </>
@@ -339,7 +461,7 @@ export default function PublicReportForm({
                             setIsAuthenticated(false);
                             setCellInfo(null);
                             setDraftId(null);
-                            reset({ scope, cellId: "" });
+                            reset({ scope, cellId: '' });
                           }}
                         >
                           Cambiar
@@ -398,165 +520,66 @@ export default function PublicReportForm({
               </div>
             )}
 
-            {scope === "GROUP" && (
+            {scope === 'GROUP' && (
               <SelectField
                 name="groupId"
                 label="Grupo"
                 register={register}
                 options={[
-                  { value: "", label: "Selecciona un grupo" },
+                  { value: '', label: 'Selecciona un grupo' },
                   ...groups,
                 ]}
-                rules={{ required: "Requerido" }}
+                rules={{ required: 'Requerido' }}
               />
             )}
-            {scope === "SECTOR" && (
+            {scope === 'SECTOR' && (
               <SelectField
                 name="sectorId"
                 label="Sector"
                 register={register}
                 options={[
-                  { value: "", label: "Selecciona un sector" },
+                  { value: '', label: 'Selecciona un sector' },
                   ...sectors,
                 ]}
-                rules={{ required: "Requerido" }}
+                rules={{ required: 'Requerido' }}
               />
             )}
           </div>
         </div>
 
         {/* Form Fields - Only show if authenticated (for CELL scope) or if other scope */}
-        {(scope !== "CELL" || isAuthenticated) && (
+        {(scope !== 'CELL' || isAuthenticated) && (
           <>
             <div className="card bg-base-100 border border-base-300">
               <div className="card-body">
-                <div className="grid grid-cols-1 gap-4 mt-4">
-                  {fields.map((f) => {
-                    const baseName = `values.${f.id}` as const;
-                    if (f.type === "NUMBER" || f.type === "CURRENCY") {
-                      return (
-                        <div key={f.id} className="w-[80%] mx-auto">
-                          <InputField<FormValues>
-                            name={baseName}
-                            label={f.label || f.key}
-                            register={register}
-                            type="number"
-                            step={f.type === "CURRENCY" ? "0.01" : "1"}
-                            placeholder={f.type === "CURRENCY" ? "0.00" : "0"}
-                            rules={{
-                              ...(f.required ? { required: "Requerido" } : {}),
-                              valueAsNumber: true,
-                            }}
-                            startIcon={
-                              f.type === "CURRENCY" ? (
-                                <span className="text-gray-500 font-bold">
-                                  $
-                                </span>
-                              ) : undefined
-                            }
-                          />
-                        </div>
-                      );
-                    }
-                    if (f.type === "BOOLEAN") {
-                      return (
-                        <div key={f.id} className="w-[80%] mx-auto">
-                          <SelectField<FormValues>
-                            name={baseName}
-                            label={f.label || f.key}
-                            register={register}
-                            options={[
-                              { value: "", label: "Selecciona" },
-                              { value: "true", label: "Sí" },
-                              { value: "false", label: "No" },
-                            ]}
-                            rules={{
-                              ...(f.required ? { required: "Requerido" } : {}),
-                              setValueAs: (v) =>
-                                v === "true"
-                                  ? true
-                                  : v === "false"
-                                  ? false
-                                  : undefined,
-                            }}
-                          />
-                        </div>
-                      );
-                    }
-                    if (f.type === "DATE") {
-                      return (
-                        <div key={f.id} className="w-[80%] mx-auto">
-                          <InputField<FormValues>
-                            name={baseName}
-                            label={f.label || f.key}
-                            register={register}
-                            type="date"
-                            rules={
-                              f.required ? { required: "Requerido" } : undefined
-                            }
-                          />
-                        </div>
-                      );
-                    }
-                    if (f.type === "SELECT") {
-                      return (
-                        <div key={f.id} className="w-[80%] mx-auto">
-                          <SelectField<FormValues>
-                            name={baseName}
-                            label={f.label || f.key}
-                            register={register}
-                            options={[
-                              { value: "", label: "Selecciona una opción" },
-                              ...(f.options || []).map((opt) => ({
-                                value: opt,
-                                label: opt,
-                              })),
-                            ]}
-                            rules={
-                              f.required ? { required: "Requerido" } : undefined
-                            }
-                          />
-                        </div>
-                      );
-                    }
-                    if (f.type === "SECTION") {
+                <div className="space-y-4 mt-4">
+                  {groupedFields.map((group, i) => {
+                    if (group.section) {
                       return (
                         <div
-                          key={f.id}
-                          className="divider font-bold text-lg mt-6 mb-2"
+                          key={group.section.id}
+                          className="collapse collapse-arrow bg-base-50 border border-base-200"
                         >
-                          {f.label || "Nueva Sección"}
+                          <input type="checkbox" defaultChecked />
+                          <div className="collapse-title text-lg font-bold">
+                            {group.section.label || 'Sección'}
+                          </div>
+                          <div className="collapse-content">
+                            <div className="grid grid-cols-1 gap-4 pt-4">
+                              {group.fields.map((f) => renderField(f))}
+                            </div>
+                          </div>
                         </div>
                       );
                     }
-                    if (f.type === "MEMBER_SELECT") {
-                      return (
-                        <div key={f.id} className="w-[80%] mx-auto">
-                          <SelectField<FormValues>
-                            name={baseName}
-                            label={f.label || f.key}
-                            register={register}
-                            options={[
-                              { value: "", label: "Selecciona un miembro" },
-                              ...members,
-                            ]}
-                            rules={
-                              f.required ? { required: "Requerido" } : undefined
-                            }
-                          />
-                        </div>
-                      );
-                    }
+                    // Default fields (no section)
                     return (
-                      <InputField<FormValues>
-                        key={f.id}
-                        name={baseName}
-                        label={f.label || f.key}
-                        register={register}
-                        rules={
-                          f.required ? { required: "Requerido" } : undefined
-                        }
-                      />
+                      <div
+                        key={`group-${i}`}
+                        className="grid grid-cols-1 gap-4"
+                      >
+                        {group.fields.map((f) => renderField(f))}
+                      </div>
                     );
                   })}
                 </div>

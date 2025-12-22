@@ -140,6 +140,19 @@ export async function updateReportWithFields(input: UpdateReportInput) {
 
   const toDelete = currentIds.filter((id) => !inputIds.includes(id));
 
+  // Helper to generate unique key
+  const usedKeys = new Set<string>();
+  const ensureUniqueKey = (key: string) => {
+    let finalKey = key;
+    let counter = 1;
+    while (usedKeys.has(finalKey)) {
+      finalKey = `${key}_${counter}`;
+      counter++;
+    }
+    usedKeys.add(finalKey);
+    return finalKey;
+  };
+
   // Transaction for atomicity if possible, or sequential
   await prisma.$transaction(async (tx) => {
     if (toDelete.length > 0) {
@@ -148,22 +161,37 @@ export async function updateReportWithFields(input: UpdateReportInput) {
       });
     }
 
-    // Upsert/update/create remaining fields
-    for (const [index, f] of (input.fields || []).entries()) {
-      // Validate key
-      if (!f.key) {
-        f.key = slugify(
+    // Prepare fields with unique keys and correct order
+    const preparedFields = (input.fields || []).map((f, index) => {
+      let key = f.key;
+      if (!key) {
+        key = slugify(
           f.label ||
             `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
         );
       }
+      
+      // Normalize key (slugify again just in case, or trust input?)
+      // Best to trust input if present, but ensure uniqueness
+      key = ensureUniqueKey(key);
 
+      return { ...f, key, order: index };
+    });
+
+    // Separate updates and creates
+    const updates = preparedFields.filter((f) => f.id);
+    const creates = preparedFields.filter((f) => !f.id);
+
+    // 1. Perform Updates
+    for (const f of updates) {
       const base: Prisma.ReportFieldsUncheckedUpdateInput = {
+        key: f.key,
         label: f.label ?? null,
         type: f.type,
         required: !!f.required,
-        order: index,
+        order: f.order,
       } as Prisma.ReportFieldsUncheckedUpdateInput;
+
       if (typeof f.value !== "undefined") {
         (base as any).value = f.value as Prisma.InputJsonValue;
       }
@@ -171,28 +199,29 @@ export async function updateReportWithFields(input: UpdateReportInput) {
         (base as any).options = f.options as Prisma.InputJsonValue;
       }
 
-      if (f.id) {
-        await tx.reportFields.update({
-          where: { id: f.id },
-          data: base,
-        });
-      } else {
-        const createData: Prisma.ReportFieldsCreateInput = {
-          key: f.key,
-          label: f.label ?? null,
-          type: f.type,
-          required: !!f.required,
-          order: index,
-          report: { connect: { id: input.id } },
-        };
-        if (typeof f.value !== "undefined") {
-          (createData as any).value = f.value as Prisma.InputJsonValue;
-        }
-        if (f.options && Array.isArray(f.options)) {
-          (createData as any).options = f.options as Prisma.InputJsonValue;
-        }
-        await tx.reportFields.create({ data: createData });
+      await tx.reportFields.update({
+        where: { id: f.id! },
+        data: base,
+      });
+    }
+
+    // 2. Perform Creates
+    for (const f of creates) {
+      const createData: Prisma.ReportFieldsCreateInput = {
+        key: f.key,
+        label: f.label ?? null,
+        type: f.type,
+        required: !!f.required,
+        order: f.order,
+        report: { connect: { id: input.id } },
+      };
+      if (typeof f.value !== "undefined") {
+        (createData as any).value = f.value as Prisma.InputJsonValue;
       }
+      if (f.options && Array.isArray(f.options)) {
+        (createData as any).options = f.options as Prisma.InputJsonValue;
+      }
+      await tx.reportFields.create({ data: createData });
     }
   });
 

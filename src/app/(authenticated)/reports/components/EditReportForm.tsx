@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import type { ReportScope } from "@/generated/prisma/client";
-import { updateReportWithFields } from "../actions/reports.actions";
-import { useRouter } from "next/navigation";
-import { ReportFormValues, FieldItem, ReportBuilder } from "./form-builder";
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import type { ReportScope } from '@/generated/prisma/client';
+import { updateReportWithFields } from '../actions/reports.actions';
+import { useRouter } from 'next/navigation';
+import { ReportFormValues, FieldItem, ReportBuilder } from './form-builder';
+import { useNotificationStore } from '@/store/NotificationStore';
 
 export default function EditReportForm({
   initial,
@@ -20,6 +21,7 @@ export default function EditReportForm({
   };
 }) {
   const router = useRouter();
+  const { showSuccess, showError } = useNotificationStore();
   const {
     control,
     register,
@@ -34,7 +36,7 @@ export default function EditReportForm({
       description: initial.description ?? undefined,
       scope: initial.scope,
       fields: initial.fields,
-      color: initial.color || "#3b82f6",
+      color: initial.color || '#3b82f6',
     },
   });
 
@@ -45,7 +47,7 @@ export default function EditReportForm({
       description: initial.description ?? undefined,
       scope: initial.scope,
       fields: initial.fields,
-      color: initial.color || "#3b82f6",
+      color: initial.color || '#3b82f6',
     });
   }, [initial, reset]);
 
@@ -56,10 +58,10 @@ export default function EditReportForm({
         title: data.title,
         description: data.description,
         scope: data.scope,
-        color: data.color || "#3b82f6",
+        color: data.color || '#3b82f6',
         fields: (data.fields || []).map((f, index) => {
           let key = f.key;
-          if (f.type === "SECTION" && !key) {
+          if (f.type === 'SECTION' && !key) {
             key = `section_${index}_${Math.random().toString(36).substr(2, 9)}`;
           }
           return {
@@ -76,10 +78,10 @@ export default function EditReportForm({
           };
         }),
       });
-      router.push(`/reports`);
+      showSuccess('Reporte actualizado correctamente');
     } catch (error) {
       console.error(error);
-      alert("Error al actualizar el reporte");
+      showError('Error al actualizar el reporte');
     }
   };
 
@@ -95,9 +97,9 @@ export default function EditReportForm({
         <button
           onClick={() => {
             if (
-              confirm("¿Estás seguro? Se perderán los cambios no guardados.")
+              confirm('¿Estás seguro? Se perderán los cambios no guardados.')
             ) {
-              router.push("/reports");
+              router.push('/reports');
             }
           }}
           className="btn btn-ghost"
@@ -121,7 +123,7 @@ export default function EditReportForm({
             onClick={() => router.back()}
             disabled={isSubmitting}
           >
-            Cancelar
+            Volver
           </button>
           <button
             type="submit"
@@ -134,7 +136,7 @@ export default function EditReportForm({
                 Guardando...
               </>
             ) : (
-              "Guardar Cambios"
+              'Guardar Cambios'
             )}
           </button>
         </div>

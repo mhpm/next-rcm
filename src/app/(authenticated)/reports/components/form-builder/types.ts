@@ -2,6 +2,7 @@ import type { ReportFieldType, ReportScope } from "@/generated/prisma/client";
 
 export type FieldItem = {
   id?: string;
+  tempId?: string; // Stable ID for UI state (persistence across moves)
   fieldId?: string; // Only for edit mode (existing DB id)
   key: string;
   label?: string | null;

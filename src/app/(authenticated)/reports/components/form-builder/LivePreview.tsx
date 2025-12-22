@@ -1,17 +1,111 @@
-import React from "react";
-import { ReportFormValues } from "./types";
+import React from 'react';
+import { ReportFormValues } from './types';
 
 export function LivePreview({ values }: { values: Partial<ReportFormValues> }) {
+  const groupedFields = React.useMemo(() => {
+    const fields = values.fields || [];
+    return fields.reduce((groups, f) => {
+      const lastGroup = groups[groups.length - 1];
+      if (f.type === 'SECTION') {
+        groups.push({ section: f, fields: [] });
+      } else {
+        if (!lastGroup) {
+          groups.push({ section: null, fields: [f] });
+        } else {
+          lastGroup.fields.push(f);
+        }
+      }
+      return groups;
+    }, [] as { section: any | null; fields: any[] }[]);
+  }, [values.fields]);
+
+  const renderField = (field: any, i: number) => {
+    return (
+      <div
+        key={i}
+        className="form-control w-full p-4 bg-base-50 rounded-lg border border-base-200"
+      >
+        <label className="label">
+          <span className="label-text font-medium">
+            {field.label || `Pregunta ${i + 1}`}
+          </span>
+          {field.required && (
+            <span className="label-text-alt text-error">*</span>
+          )}
+        </label>
+
+        {field.type === 'TEXT' && (
+          <input
+            type="text"
+            className="input input-bordered w-full"
+            placeholder="Tu respuesta"
+            disabled
+          />
+        )}
+
+        {field.type === 'NUMBER' && (
+          <input
+            type="number"
+            className="input input-bordered w-full"
+            placeholder="0"
+            disabled
+          />
+        )}
+
+        {field.type === 'CURRENCY' && (
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">
+              $
+            </span>
+            <input
+              type="number"
+              className="input input-bordered w-full pl-8"
+              placeholder="0.00"
+              disabled
+            />
+          </div>
+        )}
+
+        {field.type === 'DATE' && (
+          <input type="date" className="input input-bordered w-full" disabled />
+        )}
+
+        {field.type === 'BOOLEAN' && (
+          <select className="select select-bordered w-full" disabled>
+            <option>Selecciona una opción</option>
+            <option>Sí</option>
+            <option>No</option>
+          </select>
+        )}
+
+        {field.type === 'SELECT' && (
+          <select className="select select-bordered w-full" disabled>
+            <option>Selecciona una opción</option>
+            {field.options?.map((opt: any, idx: number) => (
+              <option key={idx}>{opt.value || opt}</option>
+            ))}
+          </select>
+        )}
+
+        {field.type === 'MEMBER_SELECT' && (
+          <select className="select select-bordered w-full" disabled>
+            <option>Selecciona un miembro</option>
+          </select>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="mockup-window border border-base-300 bg-base-200 shadow-xl h-full">
       <div className="flex justify-center px-4 py-8 bg-base-100 h-full overflow-y-auto max-h-[calc(100vh-200px)]">
         <div className="w-full max-w-lg space-y-6">
           <div
             className="text-center mb-8 border-b border-base-200 pb-6 rounded-t-lg border-t-8"
-            style={{ borderTopColor: values.color || "#3b82f6" }}
+            style={{ borderTopColor: values.color || '#3b82f6' }}
           >
             <h2 className="text-2xl font-bold text-base-content mt-4">
-              {values.title || "Título del Reporte"}
+              {values.title || 'Título del Reporte'}
             </h2>
             {values.description ? (
               <p className="text-base-content/70 mt-2">{values.description}</p>
@@ -24,7 +118,7 @@ export function LivePreview({ values }: { values: Partial<ReportFormValues> }) {
 
           <div className="space-y-4">
             {/* Scope Selection Preview */}
-            {values.scope === "CELL" && (
+            {values.scope === 'CELL' && (
               <div className="form-control w-full">
                 <label className="label">
                   <span className="label-text font-medium">Célula</span>
@@ -35,7 +129,7 @@ export function LivePreview({ values }: { values: Partial<ReportFormValues> }) {
                 </select>
               </div>
             )}
-            {values.scope === "GROUP" && (
+            {values.scope === 'GROUP' && (
               <div className="form-control w-full">
                 <label className="label">
                   <span className="label-text font-medium">Grupo</span>
@@ -46,7 +140,7 @@ export function LivePreview({ values }: { values: Partial<ReportFormValues> }) {
                 </select>
               </div>
             )}
-            {values.scope === "SECTOR" && (
+            {values.scope === 'SECTOR' && (
               <div className="form-control w-full">
                 <label className="label">
                   <span className="label-text font-medium">Sector</span>
@@ -59,92 +153,31 @@ export function LivePreview({ values }: { values: Partial<ReportFormValues> }) {
             )}
 
             {/* Dynamic Fields Preview */}
-            {values.fields?.map((field, i) => (
-              <div
-                key={i}
-                className="form-control w-full p-4 bg-base-50 rounded-lg border border-base-200"
-              >
-                {field.type !== "SECTION" && (
-                  <label className="label">
-                    <span className="label-text font-medium">
-                      {field.label || `Pregunta ${i + 1}`}
-                    </span>
-                    {field.required && (
-                      <span className="label-text-alt text-error">*</span>
-                    )}
-                  </label>
-                )}
-
-                {field.type === "TEXT" && (
-                  <input
-                    type="text"
-                    className="input input-bordered w-full"
-                    placeholder="Tu respuesta"
-                    disabled
-                  />
-                )}
-
-                {field.type === "NUMBER" && (
-                  <input
-                    type="number"
-                    className="input input-bordered w-full"
-                    placeholder="0"
-                    disabled
-                  />
-                )}
-
-                {field.type === "CURRENCY" && (
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">
-                      $
-                    </span>
-                    <input
-                      type="number"
-                      className="input input-bordered w-full pl-8"
-                      placeholder="0.00"
-                      disabled
-                    />
+            {groupedFields.map((group, i) => {
+              if (group.section) {
+                return (
+                  <div
+                    key={i}
+                    className="collapse collapse-arrow bg-base-100 border border-base-200"
+                  >
+                    <input type="checkbox" defaultChecked />
+                    <div className="collapse-title text-lg font-bold">
+                      {group.section.label || 'Sección'}
+                    </div>
+                    <div className="collapse-content">
+                      <div className="grid grid-cols-1 gap-4 pt-4">
+                        {group.fields.map((f, idx) => renderField(f, idx))}
+                      </div>
+                    </div>
                   </div>
-                )}
-
-                {field.type === "DATE" && (
-                  <input
-                    type="date"
-                    className="input input-bordered w-full"
-                    disabled
-                  />
-                )}
-
-                {field.type === "BOOLEAN" && (
-                  <select className="select select-bordered w-full" disabled>
-                    <option>Selecciona una opción</option>
-                    <option>Sí</option>
-                    <option>No</option>
-                  </select>
-                )}
-
-                {field.type === "SELECT" && (
-                  <select className="select select-bordered w-full" disabled>
-                    <option>Selecciona una opción</option>
-                    {field.options?.map((opt, idx) => (
-                      <option key={idx}>{opt.value}</option>
-                    ))}
-                  </select>
-                )}
-
-                {field.type === "SECTION" && (
-                  <div className="divider font-bold text-lg">
-                    {field.label || "Nueva Sección"}
-                  </div>
-                )}
-
-                {field.type === "MEMBER_SELECT" && (
-                  <select className="select select-bordered w-full" disabled>
-                    <option>Selecciona un miembro</option>
-                  </select>
-                )}
-              </div>
-            ))}
+                );
+              }
+              return (
+                <div key={i} className="grid grid-cols-1 gap-4">
+                  {group.fields.map((f, idx) => renderField(f, idx))}
+                </div>
+              );
+            })}
 
             {(!values.fields || values.fields.length === 0) && (
               <div className="text-center py-8 text-base-content/40 border-2 border-dashed border-base-200 rounded-lg">

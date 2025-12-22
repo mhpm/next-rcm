@@ -7,12 +7,15 @@ export function OptionsEditor({
   nestIndex,
   control,
   register,
+  isExpanded,
+  onToggle,
 }: {
   nestIndex: number;
   control: Control<ReportFormValues>;
   register: UseFormRegister<ReportFormValues>;
+  isExpanded: boolean;
+  onToggle: () => void;
 }) {
-  const [isExpanded, setIsExpanded] = useState(true);
   const { fields, append, remove } = useFieldArray({
     control,
     name: `fields.${nestIndex}.options`,
@@ -22,7 +25,7 @@ export function OptionsEditor({
     <div className="pl-4 border-l-2 border-base-200 ml-1 space-y-2">
       <div
         className="flex items-center justify-between cursor-pointer hover:bg-base-200/50 p-1 rounded transition-colors"
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={onToggle}
       >
         <label className="label text-xs font-semibold uppercase text-base-content/50 cursor-pointer">
           Opciones ({fields.length})
@@ -32,7 +35,7 @@ export function OptionsEditor({
           className="btn btn-ghost btn-xs btn-square"
           onClick={(e) => {
             e.stopPropagation();
-            setIsExpanded(!isExpanded);
+            onToggle();
           }}
         >
           {isExpanded ? <FaChevronUp /> : <FaChevronDown />}

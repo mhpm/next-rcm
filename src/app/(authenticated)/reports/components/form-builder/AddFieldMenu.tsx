@@ -1,64 +1,63 @@
-"use client";
+'use client';
 
-import React from "react";
-import type { ReportFieldType } from "@/generated/prisma/client";
+import React from 'react';
+import type { ReportFieldType } from '@/generated/prisma/client';
 
 interface AddFieldMenuProps {
   onAdd: (type: ReportFieldType) => void;
+  className?: string;
 }
 
-export function AddFieldMenu({ onAdd }: AddFieldMenuProps) {
+export function AddFieldMenu({ onAdd, className = '' }: AddFieldMenuProps) {
+  const isTop = className.includes('dropdown-top');
+
   return (
-    <div className="dropdown dropdown-end">
-      <div
-        tabIndex={0}
-        role="button"
-        className="btn btn-primary btn-sm gap-2"
-      >
+    <div className={`dropdown dropdown-end ${className}`}>
+      <div tabIndex={0} role="button" className="btn btn-primary btn-sm gap-2">
         <span>+ Añadir</span>
-        <span className="text-xs">▼</span>
+        <span className="text-xs">{isTop ? '▲' : '▼'}</span>
       </div>
       <ul
         tabIndex={0}
         className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
       >
         <li>
-          <button type="button" onClick={() => onAdd("TEXT")}>
+          <button type="button" onClick={() => onAdd('TEXT')}>
             Texto
           </button>
         </li>
         <li>
-          <button type="button" onClick={() => onAdd("NUMBER")}>
+          <button type="button" onClick={() => onAdd('NUMBER')}>
             Número
           </button>
         </li>
         <li>
-          <button type="button" onClick={() => onAdd("CURRENCY")}>
+          <button type="button" onClick={() => onAdd('CURRENCY')}>
             Moneda
           </button>
         </li>
         <li>
-          <button type="button" onClick={() => onAdd("BOOLEAN")}>
+          <button type="button" onClick={() => onAdd('BOOLEAN')}>
             Sí/No
           </button>
         </li>
         <li>
-          <button type="button" onClick={() => onAdd("DATE")}>
+          <button type="button" onClick={() => onAdd('DATE')}>
             Fecha
           </button>
         </li>
         <li>
-          <button type="button" onClick={() => onAdd("SELECT")}>
+          <button type="button" onClick={() => onAdd('SELECT')}>
             Opción Múltiple
           </button>
         </li>
         <li>
-          <button type="button" onClick={() => onAdd("SECTION")}>
+          <button type="button" onClick={() => onAdd('SECTION')}>
             Sección
           </button>
         </li>
         <li>
-          <button type="button" onClick={() => onAdd("MEMBER_SELECT")}>
+          <button type="button" onClick={() => onAdd('MEMBER_SELECT')}>
             Selección de Miembro
           </button>
         </li>
