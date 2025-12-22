@@ -21,6 +21,7 @@ type FieldDef = {
   type: ReportFieldType;
   required?: boolean;
   options?: string[]; // Add options
+  value?: any;
 };
 
 type FormValues = {
@@ -106,6 +107,17 @@ export default function SubmitReportForm({
 
     fields.forEach((f) => {
       if (f.type === 'SECTION') {
+        // Check for Section Break
+        if (f.value === 'SECTION_BREAK') {
+          // If we have a current group with content or a section header, push it
+          if (currentGroup.section || currentGroup.fields.length > 0) {
+            groups.push(currentGroup);
+          }
+          // Start a new group for root fields (section: null)
+          currentGroup = { section: null, fields: [] };
+          return;
+        }
+
         if (currentGroup.section || currentGroup.fields.length > 0) {
           groups.push(currentGroup);
         }

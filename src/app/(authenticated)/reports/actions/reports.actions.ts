@@ -1,9 +1,9 @@
-"use server";
+'use server';
 
-import { revalidatePath } from "next/cache";
-import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
-import { Prisma } from "@/generated/prisma/client";
-import type { ReportFieldType, ReportScope } from "@/generated/prisma/client";
+import { revalidatePath } from 'next/cache';
+import { getChurchPrisma, getChurchId } from '@/actions/churchContext';
+import { Prisma } from '@/generated/prisma/client';
+import type { ReportFieldType, ReportScope } from '@/generated/prisma/client';
 
 export type ReportFieldInput = {
   id?: string;
@@ -31,7 +31,7 @@ export async function createReport(input: CreateReportInput) {
   const churchId = await getChurchId();
 
   if (!input.title || input.title.trim().length === 0) {
-    throw new Error("El título es requerido");
+    throw new Error('El título es requerido');
   }
 
   // Solo tipo (scope) en plantillas; no se vincula a una entidad aquí
@@ -57,7 +57,7 @@ export async function createReport(input: CreateReportInput) {
       required: !!f.required,
     };
 
-    if (typeof f.value !== "undefined") {
+    if (typeof f.value !== 'undefined') {
       (base as any).value = f.value as Prisma.InputJsonValue;
     }
     if (f.options && Array.isArray(f.options)) {
@@ -73,25 +73,25 @@ export async function createReport(input: CreateReportInput) {
       title: input.title,
       description: input.description,
       scope,
-      color: input.color || "#4F46E5",
+      color: input.color || '#4F46E5',
       fields: {
         create: fieldsCreate,
       },
     },
   });
 
-  revalidatePath("/reports");
+  revalidatePath('/reports');
 }
 
 export async function deleteReport(id: string) {
   const prisma = await getChurchPrisma();
   await prisma.reports.delete({ where: { id } });
-  revalidatePath("/reports");
+  revalidatePath('/reports');
 }
 
 export async function deleteReportAction(formData: FormData) {
-  const id = formData.get("id") as string;
-  if (!id) throw new Error("id requerido");
+  const id = formData.get('id') as string;
+  if (!id) throw new Error('id requerido');
   await deleteReport(id);
 }
 
@@ -108,7 +108,7 @@ export async function updateReportWithFields(input: UpdateReportInput) {
   const prisma = await getChurchPrisma();
 
   // 1. Update basic fields
-  await prisma.reports.update({
+  const report = await prisma.reports.update({
     where: { id: input.id },
     data: {
       title: input.title,
@@ -170,7 +170,7 @@ export async function updateReportWithFields(input: UpdateReportInput) {
             `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
         );
       }
-      
+
       // Normalize key (slugify again just in case, or trust input?)
       // Best to trust input if present, but ensure uniqueness
       key = ensureUniqueKey(key);
@@ -192,7 +192,7 @@ export async function updateReportWithFields(input: UpdateReportInput) {
         order: f.order,
       } as Prisma.ReportFieldsUncheckedUpdateInput;
 
-      if (typeof f.value !== "undefined") {
+      if (typeof f.value !== 'undefined') {
         (base as any).value = f.value as Prisma.InputJsonValue;
       }
       if (f.options && Array.isArray(f.options)) {
@@ -215,7 +215,7 @@ export async function updateReportWithFields(input: UpdateReportInput) {
         order: f.order,
         report: { connect: { id: input.id } },
       };
-      if (typeof f.value !== "undefined") {
+      if (typeof f.value !== 'undefined') {
         (createData as any).value = f.value as Prisma.InputJsonValue;
       }
       if (f.options && Array.isArray(f.options)) {
@@ -225,7 +225,13 @@ export async function updateReportWithFields(input: UpdateReportInput) {
     }
   });
 
-  revalidatePath("/reports");
+  revalidatePath('/reports');
+  revalidatePath(`/reports/${input.id}`);
+  revalidatePath(`/reports/${input.id}/edit`);
+  revalidatePath(`/reports/${input.id}/submit`);
+  if (report.publicToken) {
+    revalidatePath(`/public/reports/${report.publicToken}`);
+  }
 }
 
 export async function deleteReportEntry(id: string) {
@@ -234,8 +240,8 @@ export async function deleteReportEntry(id: string) {
 }
 
 export async function deleteReportEntryAction(formData: FormData) {
-  const id = formData.get("id") as string;
-  if (!id) throw new Error("id requerido");
+  const id = formData.get('id') as string;
+  if (!id) throw new Error('id requerido');
 
   const prisma = await getChurchPrisma();
   const existing = await prisma.reportEntries.findUnique({
@@ -263,19 +269,19 @@ export async function updateReportEntry(input: UpdateReportEntryInput) {
   const prisma = await getChurchPrisma();
 
   const { scope, cellId, groupId, sectorId } = input;
-  if (scope === "CELL" && !cellId)
-    throw new Error("Debes seleccionar una célula");
-  if (scope === "GROUP" && !groupId)
-    throw new Error("Debes seleccionar un grupo");
-  if (scope === "SECTOR" && !sectorId)
-    throw new Error("Debes seleccionar un sector");
+  if (scope === 'CELL' && !cellId)
+    throw new Error('Debes seleccionar una célula');
+  if (scope === 'GROUP' && !groupId)
+    throw new Error('Debes seleccionar un grupo');
+  if (scope === 'SECTOR' && !sectorId)
+    throw new Error('Debes seleccionar un sector');
 
   const connectByScope =
-    scope === "CELL"
+    scope === 'CELL'
       ? { cell: { connect: { id: cellId! } } }
-      : scope === "GROUP"
+      : scope === 'GROUP'
       ? { group: { connect: { id: groupId! } } }
-      : scope === "SECTOR"
+      : scope === 'SECTOR'
       ? { sector: { connect: { id: sectorId! } } }
       : {};
 
@@ -303,7 +309,7 @@ export async function updateReportEntry(input: UpdateReportEntryInput) {
     });
 
     const val =
-      typeof v.value === "undefined"
+      typeof v.value === 'undefined'
         ? Prisma.JsonNull
         : (v.value as Prisma.InputJsonValue);
 
@@ -346,19 +352,19 @@ export async function createReportEntry(input: CreateReportEntryInput) {
   const churchId = await getChurchId();
 
   const { scope, cellId, groupId, sectorId } = input;
-  if (scope === "CELL" && !cellId)
-    throw new Error("Debes seleccionar una célula");
-  if (scope === "GROUP" && !groupId)
-    throw new Error("Debes seleccionar un grupo");
-  if (scope === "SECTOR" && !sectorId)
-    throw new Error("Debes seleccionar un sector");
+  if (scope === 'CELL' && !cellId)
+    throw new Error('Debes seleccionar una célula');
+  if (scope === 'GROUP' && !groupId)
+    throw new Error('Debes seleccionar un grupo');
+  if (scope === 'SECTOR' && !sectorId)
+    throw new Error('Debes seleccionar un sector');
 
   const connectByScope =
-    scope === "CELL"
+    scope === 'CELL'
       ? { cell: { connect: { id: cellId! } } }
-      : scope === "GROUP"
+      : scope === 'GROUP'
       ? { group: { connect: { id: groupId! } } }
-      : scope === "SECTOR"
+      : scope === 'SECTOR'
       ? { sector: { connect: { id: sectorId! } } }
       : {};
 
@@ -371,7 +377,7 @@ export async function createReportEntry(input: CreateReportEntryInput) {
         field: { connect: { id: v.fieldId } },
       } as Prisma.ReportEntryValuesCreateWithoutEntryInput;
 
-      if (typeof v.value !== "undefined") {
+      if (typeof v.value !== 'undefined') {
         (base as any).value = v.value as Prisma.InputJsonValue;
       } else {
         (base as any).value = Prisma.JsonNull;
@@ -399,11 +405,11 @@ export async function getReportEntityMembers(
 ) {
   const prisma = await getChurchPrisma();
 
-  if (scope === "CELL") {
+  if (scope === 'CELL') {
     return prisma.members.findMany({
       where: { cell_id: entityId },
       select: { id: true, firstName: true, lastName: true },
-      orderBy: { firstName: "asc" },
+      orderBy: { firstName: 'asc' },
     });
   }
   // Expand for other scopes if needed (requires recursive relation checks)
@@ -414,11 +420,11 @@ function slugify(text: string) {
   return text
     .toString()
     .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, "_")
-    .replace(/[^\w\-]+/g, "")
-    .replace(/\-\-+/g, "_")
-    .replace(/^-+/, "")
-    .replace(/-+$/, "");
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '_')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '_')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
 }

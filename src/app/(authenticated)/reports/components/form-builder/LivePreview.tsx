@@ -6,8 +6,16 @@ export function LivePreview({ values }: { values: Partial<ReportFormValues> }) {
     const fields = values.fields || [];
     return fields.reduce((groups, f) => {
       const lastGroup = groups[groups.length - 1];
+
       if (f.type === 'SECTION') {
-        groups.push({ section: f, fields: [] });
+        if (f.value === 'SECTION_BREAK') {
+          // Break section: start a new root group if not already there
+          if (!lastGroup || lastGroup.section) {
+            groups.push({ section: null, fields: [] });
+          }
+        } else {
+          groups.push({ section: f, fields: [] });
+        }
       } else {
         if (!lastGroup) {
           groups.push({ section: null, fields: [f] });

@@ -27,6 +27,7 @@ type FieldDef = {
   type: ReportFieldType;
   required?: boolean;
   options?: string[];
+  value?: any;
 };
 
 type FormValues = {
@@ -93,6 +94,14 @@ export default function PublicReportForm({
   const groupedFields = (fields || []).reduce((groups, f) => {
     const lastGroup = groups[groups.length - 1];
     if (f.type === 'SECTION') {
+      if (f.value === 'SECTION_BREAK') {
+        // Break section: start a new root group if not already there
+        // Or if the last group is a section, we just ensure next items go to a root group
+        if (!lastGroup || lastGroup.section) {
+          groups.push({ section: null, fields: [] });
+        }
+        return groups;
+      }
       groups.push({ section: f, fields: [] });
     } else {
       if (!lastGroup) {
@@ -360,7 +369,7 @@ export default function PublicReportForm({
   return (
     <>
       {isConfirmOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-base-100 rounded-xl shadow-2xl border border-base-200 p-6 max-w-md w-full relative">
             <h3 className="font-bold text-lg text-warning flex items-center gap-2">
               <FaLock /> Confirmar Envío
@@ -550,7 +559,7 @@ export default function PublicReportForm({
         {/* Form Fields - Only show if authenticated (for CELL scope) or if other scope */}
         {(scope !== 'CELL' || isAuthenticated) && (
           <>
-            <div className="card bg-base-100 border border-base-300">
+            <div className="card bg-base-100 border border-base-300 shadow-sm rounded-sm">
               <div className="card-body">
                 <div className="space-y-4 mt-4">
                   {groupedFields.map((group, i) => {
@@ -558,10 +567,10 @@ export default function PublicReportForm({
                       return (
                         <div
                           key={group.section.id}
-                          className="collapse collapse-arrow bg-base-50 border border-base-200"
+                          className="collapse collapse-arrow bg-base-300 px-4 py-2 border border-base-300 rounded-xl"
                         >
                           <input type="checkbox" defaultChecked />
-                          <div className="collapse-title text-lg font-bold">
+                          <div className="collapse-title text-lg font-bold p-2 rounded-md">
                             {group.section.label || 'Sección'}
                           </div>
                           <div className="collapse-content">
@@ -586,7 +595,7 @@ export default function PublicReportForm({
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row justify-end gap-3 sticky bottom-4 bg-base-100/80 backdrop-blur-md p-4 rounded-xl border border-base-200 shadow-lg z-20">
+            <div className="flex flex-col md:flex-row justify-end gap-3 sticky bottom-4 bg-base-100/80 backdrop-blur-md p-4 rounded-sm border border-base-200 shadow-sm z-20">
               <button
                 type="button"
                 className="btn btn-ghost w-full md:w-auto gap-2"

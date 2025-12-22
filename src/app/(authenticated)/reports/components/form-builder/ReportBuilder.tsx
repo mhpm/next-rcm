@@ -56,7 +56,7 @@ export function ReportBuilder({
   });
 
   const getStableId = React.useCallback((field: any) => {
-    return field.fieldId || field.tempId || field.id;
+    return field.key || field.fieldId || field.tempId || field.id;
   }, []);
 
   // UI State for expanded/collapsed items
@@ -151,6 +151,8 @@ export function ReportBuilder({
     }
   }, [fields, replace]); // Depend on fields to catch updates, but condition prevents loop
 
+  const SECTION_BREAK_VALUE = 'SECTION_BREAK';
+
   // Group fields by section for rendering
   const groupedFields = React.useMemo(() => {
     const groups: {
@@ -159,6 +161,7 @@ export function ReportBuilder({
       field: any;
       index: number;
       children: { field: any; index: number }[];
+      endIndex: number; // Track the last index covered by this group
     }[] = [];
 
     let currentSection: (typeof groups)[0] | null = null;
@@ -168,17 +171,26 @@ export function ReportBuilder({
       const stableId = getStableId(field) || `fallback_${index}`;
 
       if (field.type === 'SECTION') {
+        if (field.value === SECTION_BREAK_VALUE) {
+          // This is a break, close the current section
+          currentSection = null;
+          // We do not render this field
+          return;
+        }
+
         currentSection = {
           id: stableId,
           type: 'SECTION',
           field,
           index,
           children: [],
+          endIndex: index,
         };
         groups.push(currentSection);
       } else {
         if (currentSection) {
           currentSection.children.push({ field, index });
+          currentSection.endIndex = index;
         } else {
           groups.push({
             id: stableId,
@@ -186,6 +198,7 @@ export function ReportBuilder({
             field,
             index,
             children: [],
+            endIndex: index,
           });
         }
       }
@@ -216,21 +229,40 @@ export function ReportBuilder({
     setActiveId(null);
     if (!over || active.id === over.id) return;
 
+    // Helper to check if an index is "inside" a section
+    const isInsideSection = (list: any[], index: number) => {
+      for (let i = index; i >= 0; i--) {
+        const f = list[i];
+        if (f.type === 'SECTION') {
+          return f.value !== SECTION_BREAK_VALUE;
+        }
+      }
+      return false;
+    };
+
     // Handle DropZone drops
     let targetIndex = -1;
     let isBottomDropZone = false;
+    let isRootDropZone = false;
 
     if (over.id === 'bottom-drop-zone') {
       targetIndex = fields.length;
       isBottomDropZone = true;
-    } else if (
-      typeof over.id === 'string' &&
-      over.id.startsWith('drop-zone-')
-    ) {
-      // Format: drop-zone-INDEX or drop-zone-inside-INDEX
-      const parts = over.id.split('-');
-      // last part is index
-      targetIndex = parseInt(parts[parts.length - 1], 10);
+    } else if (typeof over.id === 'string') {
+      if (over.id.startsWith('drop-zone-inside-')) {
+        const parts = over.id.split('-');
+        targetIndex = parseInt(parts[parts.length - 1], 10);
+      } else if (over.id.startsWith('drop-zone-root-')) {
+        const parts = over.id.split('-');
+        targetIndex = parseInt(parts[parts.length - 1], 10);
+        isRootDropZone = true;
+      } else if (over.id.startsWith('drop-zone-')) {
+        // Fallback for initial/legacy IDs (like drop-zone-0)
+        const parts = over.id.split('-');
+        targetIndex = parseInt(parts[parts.length - 1], 10);
+        // drop-zone-0 is always root
+        if (targetIndex === 0) isRootDropZone = true;
+      }
     }
 
     if (targetIndex !== -1) {
@@ -238,11 +270,47 @@ export function ReportBuilder({
       const activeField = fields[oldIndex];
 
       // Handle Section Block Move
-      if (activeField.type === 'SECTION') {
+      if (
+        activeField.type === 'SECTION' &&
+        activeField.value !== SECTION_BREAK_VALUE
+      ) {
         // Calculate block size
         let blockSize = 1;
         for (let i = oldIndex + 1; i < fields.length; i++) {
-          if (fields[i].type === 'SECTION') break;
+          const f = fields[i];
+          if (f.type === 'SECTION' && f.value !== SECTION_BREAK_VALUE) break;
+          // Note: If we hit a BREAK, we should include it?
+          // If we move a section, we move everything until the next SECTION starts.
+          // A BREAK ends the section. So we should include the BREAK in the block?
+          // If we include the BREAK, then the section "closes" itself wherever it goes.
+          // Yes, include BREAK.
+          // But wait, if we hit a proper SECTION, stop.
+          blockSize++;
+          // If it was a BREAK, we stop AFTER it?
+          // Actually, if we hit a BREAK, that's the end of this section's scope.
+          // So the next item is Root.
+          // So we should include the BREAK.
+          if (f.type === 'SECTION' && f.value === SECTION_BREAK_VALUE) {
+            break; // Loop increments blockSize then breaks?
+            // No, simple logic:
+            // A section block ends when:
+            // 1. Another real SECTION starts.
+            // 2. End of list.
+            // 3. A BREAK? A break belongs to the section?
+            // Yes, a break belongs to the section it closes.
+          }
+        }
+
+        // Refined block size logic:
+        // Iterate and count until we find a real SECTION.
+        // BREAKs are part of the content flow (they end the section).
+        blockSize = 1;
+        for (let i = oldIndex + 1; i < fields.length; i++) {
+          if (
+            fields[i].type === 'SECTION' &&
+            fields[i].value !== SECTION_BREAK_VALUE
+          )
+            break;
           blockSize++;
         }
 
@@ -262,157 +330,73 @@ export function ReportBuilder({
       }
 
       // Single Field Move
+      const newFields = [...fields];
+      const [movedField] = newFields.splice(oldIndex, 1);
 
-      // Special logic for Bottom Drop Zone: Break out of section
-      if (isBottomDropZone) {
-        // Remove the field first to see the state of the list "without it"
-        const newFields = [...fields];
-        const [movedField] = newFields.splice(oldIndex, 1);
+      // Adjust insertion point after removal
+      let insertAt = targetIndex;
+      if (oldIndex < targetIndex) {
+        insertAt = targetIndex - 1;
+      }
 
-        // Now check if the last item in the remaining list is inside a section
-        let lastItemIsInSection = false;
-        // Iterate backwards to find the first section
-        for (let i = newFields.length - 1; i >= 0; i--) {
-          if (newFields[i].type === 'SECTION') {
-            lastItemIsInSection = true;
-            break;
-          }
-        }
-
-        if (lastItemIsInSection) {
-          // Insert a new Section Break
-          newFields.push({
+      // Check if we need to insert a break
+      // Only if moving a non-section field to a Root/Bottom zone
+      // AND the insertion point is currently "inside" a section
+      if (
+        (isBottomDropZone || isRootDropZone) &&
+        activeField.type !== 'SECTION'
+      ) {
+        // Check item at insertAt - 1
+        const prevIndex = insertAt - 1;
+        if (prevIndex >= 0 && isInsideSection(newFields, prevIndex)) {
+          // Insert BREAK
+          newFields.splice(insertAt, 0, {
             id: generateTempId(),
-            key: '',
-            label: 'Nueva Sección',
+            key: `break_${generateTempId()}`,
+            label: 'Section Break',
             type: 'SECTION',
             tempId: generateTempId(),
-            value: '',
+            value: SECTION_BREAK_VALUE,
             required: false,
           });
+          insertAt++; // Shift insert point for the field
         }
-
-        // Append the field
-        newFields.push(movedField);
-        replace(newFields);
-        return;
       }
 
-      // Standard Move (Drop Zones)
-      let finalIndex = targetIndex;
-      if (oldIndex < targetIndex) {
-        finalIndex = targetIndex - 1;
-      }
-
-      move(oldIndex, finalIndex);
+      newFields.splice(insertAt, 0, movedField);
+      replace(newFields);
       return;
     }
 
+    // Sortable Move (dragging over another item)
+    // We should treat this as a move to the index of 'over'.
+    // But dnd-kit gives us IDs.
     const oldIndex = fields.findIndex((f) => f.id === active.id);
     const newIndex = fields.findIndex((f) => f.id === over.id);
 
-    const activeField = fields[oldIndex];
-    const overField = fields[newIndex];
-
-    if (activeField.type === 'SECTION') {
-      // Move SECTION BLOCK (Header + Children)
-      // ... (existing section move logic)
-
-      // If dropping over Bottom Drop Zone
-      if (over.id === 'bottom-drop-zone') {
-        // Move section block to end
-        // ... implementation for section block move to end
-        // Actually, let's keep it simple: just move the header index to end?
-        // No, we need to move the whole block.
-
-        const newFields = [...fields];
-        let blockSize = 1;
-        for (let i = oldIndex + 1; i < fields.length; i++) {
-          if (fields[i].type === 'SECTION') break;
-          blockSize++;
-        }
-        const chunk = newFields.splice(oldIndex, blockSize);
-        newFields.push(...chunk);
-        replace(newFields);
-        return;
-      }
-
-      // 1. Calculate block size
-      let blockSize = 1;
-      for (let i = oldIndex + 1; i < fields.length; i++) {
-        if (fields[i].type === 'SECTION') break;
-        blockSize++;
-      }
-
-      // 2. Identify target insertion point
-      // If dropping over a Section, we want to swap positions with that section block?
-      // Or insert before/after?
-      // dnd-kit gives us the index in the SORTABLE context.
-      // But we are working with flat indices here.
-
-      // We need to move the chunk [oldIndex, oldIndex + blockSize] to newIndex.
-      // But newIndex might be inside another block or shifted.
-
-      // Let's use a simpler logic:
-      // Remove the block.
-      // Insert it at the new index (adjusted for removal).
-
-      const newFields = [...fields];
-      const chunk = newFields.splice(oldIndex, blockSize);
-
-      // Adjust newIndex if we removed from before it
-      let insertAt = newIndex;
-      if (oldIndex < newIndex) {
-        // If we move down, the target index shifts up by blockSize?
-        // No, 'newIndex' is the index of the item we dropped OVER.
-        // If we dropped over an item that was at index 10, and we removed 3 items from index 0.
-        // That item is now at index 7.
-        // So we want to insert at 7? Or after it?
-
-        // Let's rely on the ID map.
-        // Find index of 'over.id' in the *modified* array (after removal).
-        const overIndexAfterRemove = newFields.findIndex(
-          (f) => f.id === over.id
-        );
-
-        // If moving down, we usually want to place AFTER the target?
-        // dnd-kit standard behavior: replace target.
-        insertAt = overIndexAfterRemove;
-
-        // Special case: if we drop over a section header that is 'below', we probably want to swap.
-        // If we drop over a child, we insert into that section?
-        // Let's just insert AT the target index.
-      } else {
-        // Moving up.
-        const overIndexAfterRemove = newFields.findIndex(
-          (f) => f.id === over.id
-        );
-        insertAt = overIndexAfterRemove;
-      }
-
-      newFields.splice(insertAt, 0, ...chunk);
-      replace(newFields);
-    } else {
-      // Move Single Field
-      if (over.id === 'bottom-drop-zone') {
-        move(oldIndex, fields.length - 1);
-        return;
-      }
-
-      // If moving into a section, or out of a section, simple move works because
-      // sections are defined by order.
-      // move(oldIndex, newIndex); // This relies on internal IDs which might be regen'd.
-      // Better to use replace to be consistent?
-      // No, move is fine if we are not replacing whole array manually.
-      // But we are using 'replace' for sections.
-      // Let's stick to move for single fields.
-      move(oldIndex, newIndex);
-    }
+    // If simply sorting within the list, we assume the user knows what they are doing.
+    // But if we drag "out" of a section visually (which is handled by DropZones usually),
+    // this fallback is for when we drag DIRECTLY over an item.
+    // If we drag over an item, we replace it / swap.
+    // Standard move() is fine here.
+    move(oldIndex, newIndex);
   };
 
   const addField = (type: ReportFieldType) => {
-    append({
-      key: '',
+    // Check if the last item is in a section
+    let inSection = false;
+    for (let i = fields.length - 1; i >= 0; i--) {
+      const f = fields[i];
+      if (f.type === 'SECTION') {
+        if (f.value !== SECTION_BREAK_VALUE) {
+          inSection = true;
+        }
+        break;
+      }
+    }
+
+    const newField = {
+      key: `field_${generateTempId()}`,
       label: '',
       type,
       tempId: generateTempId(),
@@ -427,7 +411,24 @@ export function ReportBuilder({
           ? [{ value: 'Opción 1' }, { value: 'Opción 2' }]
           : undefined,
       required: false,
-    });
+    };
+
+    if (inSection) {
+      // Append BREAK first
+      append([
+        {
+          key: `break_${generateTempId()}`,
+          label: 'Section Break',
+          type: 'SECTION',
+          tempId: generateTempId(),
+          value: SECTION_BREAK_VALUE,
+          required: false,
+        },
+        newField,
+      ]);
+    } else {
+      append(newField);
+    }
   };
 
   const duplicateField = (index: number) => {
@@ -508,110 +509,117 @@ export function ReportBuilder({
                 strategy={verticalListSortingStrategy}
               >
                 <div className="space-y-4">
-                  <DropZone id="drop-zone-0" isDragging={!!activeId} />
+                  <DropZone id="drop-zone-root-0" isDragging={!!activeId} />
                   {groupedFields.map((group) => {
                     if (group.type === 'SECTION') {
                       return (
-                        <SortableSection
-                          key={group.id}
-                          id={group.field.id}
-                          isExpanded={getUiState(
-                            getStableId(group.field),
-                            'section'
-                          )}
-                          onToggle={() =>
-                            toggleUiState(
-                              getStableId(group.field) || '',
+                        <React.Fragment key={group.id}>
+                          <SortableSection
+                            id={group.field.id}
+                            isExpanded={getUiState(
+                              getStableId(group.field),
                               'section'
-                            )
-                          }
-                          header={
-                            <FieldEditor
-                              field={group.field}
-                              index={group.index}
-                              register={register}
-                              control={control}
-                              setValue={setValue}
-                              onRemove={remove}
-                              onDuplicate={duplicateField}
-                              advancedExpanded={getUiState(
-                                getStableId(group.field),
-                                'advanced'
-                              )}
-                              onToggleAdvanced={() =>
-                                toggleUiState(
-                                  getStableId(group.field) || '',
-                                  'advanced'
-                                )
-                              }
-                              optionsExpanded={getUiState(
-                                getStableId(group.field),
-                                'options'
-                              )}
-                              onToggleOptions={() =>
-                                toggleUiState(
-                                  getStableId(group.field) || '',
-                                  'options'
-                                )
-                              }
-                            />
-                          }
-                        >
-                          <div className="space-y-4">
-                            <DropZone
-                              id={`drop-zone-${group.index + 1}`}
-                              isDragging={!!activeId}
-                            />
-                            {group.children.map((child) => (
-                              <React.Fragment
-                                key={child.field.tempId || child.field.id}
-                              >
-                                <SortableField id={child.field.id}>
-                                  <FieldEditor
-                                    field={child.field}
-                                    index={child.index}
-                                    register={register}
-                                    control={control}
-                                    setValue={setValue}
-                                    onRemove={remove}
-                                    onDuplicate={duplicateField}
-                                    advancedExpanded={getUiState(
-                                      getStableId(child.field),
-                                      'advanced'
-                                    )}
-                                    onToggleAdvanced={() =>
-                                      toggleUiState(
-                                        getStableId(child.field) || '',
-                                        'advanced'
-                                      )
-                                    }
-                                    optionsExpanded={getUiState(
-                                      getStableId(child.field),
-                                      'options'
-                                    )}
-                                    onToggleOptions={() =>
-                                      toggleUiState(
-                                        getStableId(child.field) || '',
-                                        'options'
-                                      )
-                                    }
-                                  />
-                                </SortableField>
-                                <DropZone
-                                  id={`drop-zone-${child.index + 1}`}
-                                  isDragging={!!activeId}
-                                />
-                              </React.Fragment>
-                            ))}
-                            {group.children.length === 0 && (
-                              <div className="text-center p-4 border-2 border-dashed border-base-200 rounded text-base-content/30 text-sm">
-                                Arrastra campos aquí
-                              </div>
                             )}
-                          </div>
-                        </SortableSection>
+                            onToggle={() =>
+                              toggleUiState(
+                                getStableId(group.field) || '',
+                                'section'
+                              )
+                            }
+                            header={
+                              <FieldEditor
+                                field={group.field}
+                                index={group.index}
+                                register={register}
+                                control={control}
+                                setValue={setValue}
+                                onRemove={remove}
+                                onDuplicate={duplicateField}
+                                advancedExpanded={getUiState(
+                                  getStableId(group.field),
+                                  'advanced'
+                                )}
+                                onToggleAdvanced={() =>
+                                  toggleUiState(
+                                    getStableId(group.field) || '',
+                                    'advanced'
+                                  )
+                                }
+                                optionsExpanded={getUiState(
+                                  getStableId(group.field),
+                                  'options'
+                                )}
+                                onToggleOptions={() =>
+                                  toggleUiState(
+                                    getStableId(group.field) || '',
+                                    'options'
+                                  )
+                                }
+                              />
+                            }
+                          >
+                            <div className="space-y-4">
+                              <DropZone
+                                id={`drop-zone-inside-${group.index + 1}`}
+                                isDragging={!!activeId}
+                              />
+                              {group.children.map((child) => (
+                                <React.Fragment
+                                  key={child.field.tempId || child.field.id}
+                                >
+                                  <SortableField id={child.field.id}>
+                                    <FieldEditor
+                                      field={child.field}
+                                      index={child.index}
+                                      register={register}
+                                      control={control}
+                                      setValue={setValue}
+                                      onRemove={remove}
+                                      onDuplicate={duplicateField}
+                                      advancedExpanded={getUiState(
+                                        getStableId(child.field),
+                                        'advanced'
+                                      )}
+                                      onToggleAdvanced={() =>
+                                        toggleUiState(
+                                          getStableId(child.field) || '',
+                                          'advanced'
+                                        )
+                                      }
+                                      optionsExpanded={getUiState(
+                                        getStableId(child.field),
+                                        'options'
+                                      )}
+                                      onToggleOptions={() =>
+                                        toggleUiState(
+                                          getStableId(child.field) || '',
+                                          'options'
+                                        )
+                                      }
+                                    />
+                                  </SortableField>
+                                  <DropZone
+                                    id={`drop-zone-inside-${child.index + 1}`}
+                                    isDragging={!!activeId}
+                                  />
+                                </React.Fragment>
+                              ))}
+                              {group.children.length === 0 && (
+                                <div className="text-center p-4 border-2 border-dashed border-base-200 rounded text-base-content/30 text-sm">
+                                  Arrastra campos aquí
+                                </div>
+                              )}
+                            </div>
+                          </SortableSection>
+                          <DropZone
+                            id={`drop-zone-root-${group.endIndex + 1}`}
+                            isDragging={!!activeId}
+                          />
+                        </React.Fragment>
                       );
                     }
+
+                    // Root Field
                     return (
                       <React.Fragment key={group.id}>
                         <SortableField id={group.field.id}>
@@ -646,16 +654,18 @@ export function ReportBuilder({
                           />
                         </SortableField>
                         <DropZone
-                          id={`drop-zone-${group.index + 1}`}
+                          id={`drop-zone-root-${group.endIndex + 1}`}
                           isDragging={!!activeId}
                         />
                       </React.Fragment>
                     );
                   })}
+                  <BottomDropZone
+                    id="bottom-drop-zone"
+                    isDragging={!!activeId}
+                  />
                 </div>
               </SortableContext>
-
-              <BottomDropZone id="bottom-drop-zone" />
 
               <DragOverlay>
                 {activeField ? (

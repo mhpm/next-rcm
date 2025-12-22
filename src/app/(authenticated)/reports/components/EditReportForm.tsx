@@ -65,7 +65,7 @@ export default function EditReportForm({
             key = `section_${index}_${Math.random().toString(36).substr(2, 9)}`;
           }
           return {
-            id: f.fieldId, // This is the ID of existing field in DB
+            fieldId: f.fieldId, // This is the ID of existing field in DB
             key: key,
             label: f.label ?? null,
             type: f.type,
@@ -79,6 +79,7 @@ export default function EditReportForm({
         }),
       });
       showSuccess('Reporte actualizado correctamente');
+      router.refresh();
     } catch (error) {
       console.error(error);
       showError('Error al actualizar el reporte');

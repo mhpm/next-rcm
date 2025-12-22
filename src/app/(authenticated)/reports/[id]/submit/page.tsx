@@ -91,6 +91,7 @@ export default async function SubmitReportPage({
             label: f.label,
             type: f.type,
             required: f.required,
+            value: f.value,
             options: Array.isArray(f.options)
               ? (f.options as string[])
               : undefined,
