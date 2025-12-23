@@ -1,4 +1,14 @@
-import { Modal } from "@/components/Modal/Modal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
 
 type DeleteConfirmationModalProps = {
   open: boolean;
@@ -24,38 +34,46 @@ export default function DeleteConfirmationModal({
   confirmText = "Eliminar",
 }: DeleteConfirmationModalProps) {
   return (
-    <Modal open={open} onClose={onCancel} title={title}>
-      <div className="space-y-4">
-        <p className="text-base-content">
-          ¿Estás seguro de que deseas eliminar{" "}
-          {entityName ? "" : "este elemento"}
-          {entityName ? (
-            <>
-              {" "}
-              <span className="font-semibold">{entityName}</span> ?
-            </>
-          ) : (
-            "?"
-          )}
-        </p>
-        <p className="text-sm text-warning">{description}</p>
-        <div className="flex justify-end gap-2">
-          <button className="btn btn-ghost" onClick={onCancel}>
+    <AlertDialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription className="flex flex-col gap-2">
+            <span>
+              ¿Estás seguro de que deseas eliminar{" "}
+              {entityName ? "" : "este elemento"}
+              {entityName ? (
+                <>
+                  {" "}
+                  <span className="font-semibold text-foreground">
+                    {entityName}
+                  </span>{" "}
+                  ?
+                </>
+              ) : (
+                "?"
+              )}
+            </span>
+            <span className="text-destructive">{description}</span>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isPending} onClick={onCancel}>
             {cancelText}
-          </button>
-          <button
-            className="btn btn-error"
-            onClick={onConfirm}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={(e) => {
+              e.preventDefault();
+              onConfirm();
+            }}
             disabled={isPending}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isPending ? (
-              <span className="loading loading-spinner loading-sm"></span>
-            ) : (
-              confirmText
-            )}
-          </button>
-        </div>
-      </div>
-    </Modal>
+            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {confirmText}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

@@ -5,53 +5,83 @@ import {
   FieldValues,
   Path,
   RegisterOptions,
-  UseFormRegister,
+  Control,
+  Controller,
 } from "react-hook-form";
+import { cn } from "@/lib/utils";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type SelectFieldProps<T extends FieldValues> = {
   name: Path<T>;
   label?: string;
   options: { value: string; label: string }[];
-  register: UseFormRegister<T>;
+  control: Control<T>;
   rules?: RegisterOptions<T, Path<T>>;
   error?: string;
   className?: string;
   defaultValue?: string;
   disabled?: boolean;
+  placeholder?: string;
 };
 
 export function SelectField<T extends FieldValues>({
   name,
   label,
   options,
-  register,
+  control,
   rules,
   error,
-  className = "select select-bordered w-full",
+  className,
   defaultValue,
   disabled,
+  placeholder = "Seleccionar...",
 }: SelectFieldProps<T>) {
   return (
-    <div className="form-control w-full">
-      {label && (
-        <label className="label mb-2">
-          <span className="label-text">{label}</span>
-        </label>
-      )}
-      <select
-        className={className}
-        {...register(name, rules)}
-        defaultValue={defaultValue}
-        disabled={disabled}
-      >
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
-      {error && <p className="text-error text-sm mt-1">{error}</p>}
-    </div>
+    <Field className={cn("w-full", className)} data-invalid={!!error}>
+      {label && <FieldLabel htmlFor={String(name)}>{label}</FieldLabel>}
+      <Controller
+        control={control}
+        name={name}
+        rules={rules}
+        defaultValue={defaultValue as any}
+        render={({ field }) => (
+          <Select
+            onValueChange={(val) => {
+              const v = val === "__EMPTY__" ? "" : val;
+              field.onChange(v);
+            }}
+            value={field.value === "" ? "__EMPTY__" : (field.value as any)}
+            disabled={disabled}
+          >
+            <SelectTrigger
+              id={String(name)}
+              className="w-full"
+              aria-invalid={!!error}
+            >
+              <SelectValue placeholder={placeholder} />
+            </SelectTrigger>
+            <SelectContent>
+              {options.map((opt) => {
+                const val = opt.value === "" ? "__EMPTY__" : opt.value;
+                return (
+                  <SelectItem key={val} value={val}>
+                    {opt.label}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        )}
+      />
+      {error && <FieldError>{error}</FieldError>}
+    </Field>
   );
 }
 

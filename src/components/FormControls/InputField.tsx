@@ -6,14 +6,20 @@ import {
   Path,
   RegisterOptions,
   UseFormRegister,
+  Control,
+  Controller,
 } from "react-hook-form";
+import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 
 type InputFieldProps<T extends FieldValues> = {
   name: Path<T>;
   label: string;
   type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
   placeholder?: string;
-  register: UseFormRegister<T>;
+  register?: UseFormRegister<T>;
+  control?: Control<T>;
   rules?: RegisterOptions<T, Path<T>>;
   error?: string;
   className?: string;
@@ -31,9 +37,10 @@ export function InputField<T extends FieldValues>({
   type = "text",
   placeholder,
   register,
+  control,
   rules,
   error,
-  className = "input input-bordered w-full",
+  className,
   defaultValue,
   readOnly,
   disabled,
@@ -42,33 +49,72 @@ export function InputField<T extends FieldValues>({
   step,
   ...rest
 }: InputFieldProps<T>) {
+  if (control) {
+    return (
+      <Field className={className} data-invalid={!!error}>
+        <FieldLabel htmlFor={String(name)}>{label}</FieldLabel>
+        <div className="relative flex items-center">
+          {startIcon && (
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-muted-foreground">
+              {startIcon}
+            </div>
+          )}
+          <Controller
+            control={control}
+            name={name}
+            rules={rules}
+            defaultValue={defaultValue as any}
+            render={({ field }) => (
+              <Input
+                id={String(name)}
+                type={type}
+                placeholder={placeholder || label}
+                className={cn(startIcon ? "pl-9" : "")}
+                readOnly={readOnly}
+                disabled={disabled}
+                tabIndex={tabIndex}
+                step={step}
+                autoComplete="off"
+                aria-invalid={!!error}
+                {...field}
+                {...rest}
+                value={field.value ?? ""}
+              />
+            )}
+          />
+        </div>
+        {error && <FieldError>{error}</FieldError>}
+      </Field>
+    );
+  }
+
   return (
-    <fieldset>
-      <label className="label mb-2">
-        <span className="label-text">{label}</span>
-      </label>
+    <Field className={className} data-invalid={!!error}>
+      <FieldLabel htmlFor={String(name)}>{label}</FieldLabel>
       <div className="relative flex items-center">
         {startIcon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-muted-foreground">
             {startIcon}
           </div>
         )}
-        <input
+        <Input
+          id={String(name)}
           type={type}
           placeholder={placeholder || label}
-          className={`${className} ${startIcon ? "pl-8" : ""}`}
+          className={cn(startIcon ? "pl-9" : "")}
           defaultValue={defaultValue}
           readOnly={readOnly}
           disabled={disabled}
           tabIndex={tabIndex}
           step={step}
           autoComplete="off"
-          {...register(name, rules)}
+          aria-invalid={!!error}
+          {...(register ? register(name, rules) : {})}
           {...rest}
         />
       </div>
-      {error && <p className="text-error text-sm mt-1">{error}</p>}
-    </fieldset>
+      {error && <FieldError>{error}</FieldError>}
+    </Field>
   );
 }
 

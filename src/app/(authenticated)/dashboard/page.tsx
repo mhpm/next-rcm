@@ -6,19 +6,17 @@ import {
   FaUsersGear,
   FaUsers,
   FaPersonChalkboard,
-  FaFileLines,
 } from "react-icons/fa6";
 import Link from "next/link";
 import { cacheLife, cacheTag } from "next/cache";
 import { getMemberStats } from "@/app/(authenticated)/members/actions/members.actions";
 import { getMinistryStats } from "@/app/(authenticated)/ministries/actions/ministries.actions";
 import { getCellStats } from "@/app/(authenticated)/cells/actions/cells.actions";
-import { getGroupStats } from "@/app/(authenticated)/groups/actions/groups.actions";
 import { getSectorStats } from "@/app/(authenticated)/sectors/actions/sectors.actions";
-import { getChurchPrisma } from "@/actions/churchContext";
 
 import { getMemberGrowthStats } from "./actions/dashboard.actions";
 import GrowthChart from "./components/GrowthChart";
+import { buttonVariants } from "@/components/ui/button";
 
 export default async function Dashboard() {
   async function ChartCard() {
@@ -63,7 +61,11 @@ export default async function Dashboard() {
         action={
           <Link
             href="/ministries"
-            className="btn btn-sm btn-primary btn-soft w-full"
+            className={buttonVariants({
+              variant: "secondary",
+              size: "sm",
+              className: "w-full",
+            })}
           >
             Ver más detalles
           </Link>
@@ -98,7 +100,11 @@ export default async function Dashboard() {
         action={
           <Link
             href="/cells"
-            className="btn btn-sm btn-primary btn-soft w-full"
+            className={buttonVariants({
+              variant: "secondary",
+              size: "sm",
+              className: "w-full",
+            })}
           >
             Ver más detalles
           </Link>
@@ -126,77 +132,11 @@ export default async function Dashboard() {
         action={
           <Link
             href="/members"
-            className="btn btn-sm btn-primary btn-soft w-full"
-          >
-            Ver más detalles
-          </Link>
-        }
-      />
-    );
-  }
-
-  async function GroupsCard() {
-    "use cache";
-
-    cacheLife({ stale: 600, revalidate: 1800, expire: 86400 });
-    cacheTag("groups");
-    const stats = await getGroupStats();
-    const totalGroups = String(stats?.total ?? 0);
-    const extraGroupStats = [
-      { label: "Grupos padres:", value: String(stats?.parents ?? 0) },
-      { label: "Subgrupos:", value: String(stats?.subgroups ?? 0) },
-      {
-        label: "Miembros en grupos:",
-        value: String(stats?.membersInGroups ?? 0),
-      },
-      {
-        label: "Miembros sin grupo:",
-        value: String(stats?.membersWithoutGroup ?? 0),
-      },
-    ];
-    return (
-      <StatCard
-        title="Grupos"
-        value={totalGroups}
-        change="12.1%"
-        changeType="increase"
-        period="vs. último cuatrimestre"
-        icon={<FaUsers size={24} />}
-        extraStats={extraGroupStats}
-        isLoading={false}
-        action={
-          <Link
-            href="/groups"
-            className="btn btn-sm btn-primary btn-soft w-full"
-          >
-            Ver más detalles
-          </Link>
-        }
-      />
-    );
-  }
-
-  async function ReportsCard() {
-    "use cache";
-
-    cacheLife({ stale: 600, revalidate: 1800, expire: 86400 });
-    cacheTag("reports");
-    const prisma = await getChurchPrisma();
-    const [total] = await Promise.all([prisma.reports.count()]);
-
-    return (
-      <StatCard
-        title="Reportes"
-        value={String(total)}
-        change="2.3%"
-        changeType="increase"
-        period="vs. último cuatrimestre"
-        icon={<FaFileLines size={24} />}
-        isLoading={false}
-        action={
-          <Link
-            href="/reports"
-            className="btn btn-sm btn-primary btn-soft w-full"
+            className={buttonVariants({
+              variant: "secondary",
+              size: "sm",
+              className: "w-full",
+            })}
           >
             Ver más detalles
           </Link>
@@ -230,7 +170,11 @@ export default async function Dashboard() {
         action={
           <Link
             href="/sectors"
-            className="btn btn-sm btn-primary btn-soft w-full"
+            className={buttonVariants({
+              variant: "secondary",
+              size: "sm",
+              className: "w-full",
+            })}
           >
             Ver más detalles
           </Link>
@@ -249,8 +193,6 @@ export default async function Dashboard() {
         ministriesCard={<MinistriesCard />}
         cellsCard={<CellsCard />}
         membersCard={<MembersCard />}
-        groupsCard={<GroupsCard />}
-        reportsCard={<ReportsCard />}
         sectorsCard={<SectorsCard />}
         chartCard={<ChartCard />}
       />

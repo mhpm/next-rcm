@@ -16,6 +16,32 @@ import {
 } from "react-icons/ri";
 import { DataTableProps, PaginationInfo } from "@/types";
 import { ColumnVisibilityDropdown } from "../ColumnVisibilityDropdown";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2, MoreHorizontal } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 function DataTable<T extends Record<string, unknown>>({
   data,
@@ -280,24 +306,27 @@ function DataTable<T extends Record<string, unknown>>({
 
   if (loading) {
     return (
-      <div className="flex flex-col justify-center items-center gap-6 h-64">
-        <p className="text-base-content/70">Cargando datos</p>
-        <span className="loading loading-spinner loading-xl"></span>
+      <div className="flex flex-col justify-center items-center gap-3 h-64 text-muted-foreground">
+        <Loader2 className="h-6 w-6 animate-spin" />
+        <p>Cargando datos</p>
       </div>
     );
   }
 
   return (
-    <div className={`bg-base-100 rounded-lg shadow-md ${className}`}>
+    <div
+      className={cn(
+        "rounded-lg border bg-card text-card-foreground shadow-sm",
+        className
+      )}
+    >
       {/* Header */}
-      <div className="p-4 sm:p-6 border-b border-base-300 rounded-t-lg">
+      <div className="p-4 sm:p-6 border-b rounded-t-lg">
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-base-content">
-                {title}
-              </h3>
-              <p className="text-sm text-base-content/70 mt-1">{subTitle}</p>
+              <h3 className="text-lg font-semibold">{title}</h3>
+              <p className="text-sm text-muted-foreground mt-1">{subTitle}</p>
             </div>
 
             <div className="flex items-center gap-2">
@@ -305,29 +334,28 @@ function DataTable<T extends Record<string, unknown>>({
                 (typeof addButton === "function" ? (
                   addButton()
                 ) : (
-                  <button
-                    onClick={addButton.onClick}
-                    className={`btn ${
-                      addButton.variant === "primary"
-                        ? "btn-primary"
-                        : addButton.variant === "secondary"
-                        ? "btn-secondary"
-                        : addButton.variant === "success"
-                        ? "btn-success"
-                        : addButton.variant === "warning"
-                        ? "btn-warning"
-                        : addButton.variant === "info"
-                        ? "btn-info"
-                        : addButton.variant === "error"
-                        ? "btn-error"
+                  <Button
+                    size="sm"
+                    className={addButton.className || ""}
+                    variant={
+                      addButton.variant === "secondary"
+                        ? "secondary"
                         : addButton.variant === "ghost"
-                        ? "btn-ghost"
-                        : "btn-primary"
-                    } btn-sm ${addButton.className || ""}`}
+                        ? "ghost"
+                        : addButton.variant === "error" ||
+                          addButton.variant === "destructive"
+                        ? "destructive"
+                        : addButton.variant === "outline"
+                        ? "outline"
+                        : addButton.variant === "link"
+                        ? "link"
+                        : "default"
+                    }
+                    onClick={addButton.onClick}
                   >
                     {addButton.icon || <RiAddLine className="w-4 h-4" />}
                     <span className="hidden sm:inline">{addButton.text}</span>
-                  </button>
+                  </Button>
                 ))}
 
               {showColumnVisibility &&
@@ -349,13 +377,12 @@ function DataTable<T extends Record<string, unknown>>({
           {searchable && (
             <div className="flex flex-row gap-2 w-full sm:w-auto md:max-w-md">
               <div className="relative w-full md:w-64">
-                <RiSearchLine className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/70 z-10 w-5 h-5 pointer-events-none" />
-                <input
-                  type="text"
+                <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 w-5 h-5 pointer-events-none" />
+                <Input
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="input input-bordered pl-10 w-full md:w-64"
+                  className="pl-10 w-full md:w-64"
                 />
               </div>
               {searchEndContent}
@@ -367,7 +394,7 @@ function DataTable<T extends Record<string, unknown>>({
       {/* Mobile Cards View */}
       <div className="block md:hidden">
         {paginatedData.length === 0 ? (
-          <div className="text-center py-8 text-base-content px-4">
+          <div className="text-center py-8 text-muted-foreground px-4">
             {emptyMessage}
           </div>
         ) : (
@@ -379,51 +406,48 @@ function DataTable<T extends Record<string, unknown>>({
               return (
                 <div
                   key={rowId}
-                  className={`card bg-base-200 shadow-sm border ${
-                    isSelected
-                      ? "border-primary bg-primary/5"
-                      : "border-base-300"
-                  }`}
+                  className={cn(
+                    "border rounded-lg bg-muted/20",
+                    isSelected ? "border-primary bg-primary/5" : ""
+                  )}
                 >
-                  <div className="card-body p-4">
+                  <div className="p-4">
                     <div className="flex items-start justify-between mb-3">
                       {selectable && (
-                        <input
-                          type="checkbox"
-                          className="checkbox checkbox-sm mt-1"
+                        <Checkbox
                           checked={isSelected}
-                          onChange={(e) =>
-                            handleSelectRow(rowId, e.target.checked)
+                          onCheckedChange={(checked) =>
+                            handleSelectRow(rowId, checked as boolean)
                           }
                         />
                       )}
                       {actions.length > 0 && (
-                        <div className="flex gap-1">
-                          {actions.map((action, actionIndex) => (
-                            <button
-                              key={actionIndex}
-                              onClick={() => handleAction(action, row)}
-                              className={`btn btn-xs ${
-                                action.variant === "error"
-                                  ? "btn-error"
-                                  : action.variant === "primary"
-                                  ? "btn-primary"
-                                  : action.variant === "secondary"
-                                  ? "btn-secondary"
-                                  : action.variant === "success"
-                                  ? "btn-success"
-                                  : action.variant === "warning"
-                                  ? "btn-warning"
-                                  : action.variant === "info"
-                                  ? "btn-info"
-                                  : "btn-ghost"
-                              } ${action.className || ""}`}
-                              title={action.label}
-                            >
-                              {getActionIcon(action)}
-                            </button>
-                          ))}
-                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {actions.map((action, actionIndex) => (
+                              <DropdownMenuItem
+                                key={actionIndex}
+                                onClick={() => handleAction(action, row)}
+                                className={cn(
+                                  "cursor-pointer",
+                                  action.variant === "error" ||
+                                    action.variant === "destructive"
+                                    ? "text-destructive focus:text-destructive"
+                                    : ""
+                                )}
+                              >
+                                {getActionIcon(action)}
+                                <span className="ml-2">{action.label}</span>
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       )}
                     </div>
 
@@ -433,10 +457,10 @@ function DataTable<T extends Record<string, unknown>>({
                           key={String(column.key)}
                           className="flex flex-col sm:flex-row sm:justify-between"
                         >
-                          <span className="text-sm font-semibold text-base-content mb-1 sm:mb-0">
+                          <span className="text-sm font-semibold mb-1 sm:mb-0">
                             {column.label}:
                           </span>
-                          <span className="text-sm text-base-content/80 break-words">
+                          <span className="text-sm text-muted-foreground break-words">
                             {renderCell(column, row[column.key], row)}
                           </span>
                         </div>
@@ -452,32 +476,28 @@ function DataTable<T extends Record<string, unknown>>({
 
       {/* Desktop Table View */}
       <div className="hidden md:block overflow-x-auto">
-        <table className="table table-zebra w-full">
-          <thead>
-            <tr className="border-b border-base-300 bg-base-200/50">
+        <Table>
+          <TableHeader>
+            <TableRow>
               {selectable && (
-                <th className="w-12 font-semibold text-base-content">
-                  <input
-                    type="checkbox"
-                    className="checkbox checkbox-sm"
+                <TableHead className="w-12">
+                  <Checkbox
                     checked={isAllSelected}
-                    ref={(el) => {
-                      if (el) el.indeterminate = isIndeterminate;
-                    }}
-                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    onCheckedChange={(checked) =>
+                      handleSelectAll(checked as boolean)
+                    }
                   />
-                </th>
+                </TableHead>
               )}
               {visibleColumnsFiltered.map((column) => (
-                <th
+                <TableHead
                   key={String(column.key)}
-                  className={`font-semibold text-base-content ${
-                    column.className || ""
-                  } ${
+                  className={cn(
+                    column.className || "",
                     column.sortable
-                      ? "cursor-pointer select-none group hover:bg-base-300/50 transition-colors"
+                      ? "cursor-pointer select-none group hover:bg-accent transition-colors"
                       : ""
-                  }`}
+                  )}
                   onClick={() => column.sortable && handleSort(column.key)}
                 >
                   <div className="flex items-center justify-between">
@@ -488,172 +508,182 @@ function DataTable<T extends Record<string, unknown>>({
                       </div>
                     )}
                   </div>
-                </th>
+                </TableHead>
               ))}
               {actions.length > 0 && (
-                <th className="text-right font-semibold text-base-content">
-                  Actions
-                </th>
+                <TableHead className="text-right">Actions</TableHead>
               )}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {paginatedData.length === 0 ? (
-              <tr>
-                <td
+              <TableRow>
+                <TableCell
                   colSpan={
                     visibleColumnsFiltered.length +
                     (selectable ? 1 : 0) +
                     (actions.length > 0 ? 1 : 0)
                   }
-                  className="text-center py-8 text-base-content/70"
+                  className="text-center py-8 text-muted-foreground"
                 >
                   {emptyMessage}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : (
               paginatedData.map((row, index) => {
                 const rowId = String(row.id || row.ID || index);
                 const isSelected = selectedRows.has(rowId);
 
                 return (
-                  <tr key={rowId} className={isSelected ? "bg-primary/10" : ""}>
+                  <TableRow
+                    key={rowId}
+                    data-state={isSelected ? "selected" : undefined}
+                  >
                     {selectable && (
-                      <td>
-                        <input
-                          type="checkbox"
-                          className="checkbox checkbox-sm"
+                      <TableCell>
+                        <Checkbox
                           checked={isSelected}
-                          onChange={(e) =>
-                            handleSelectRow(rowId, e.target.checked)
+                          onCheckedChange={(checked) =>
+                            handleSelectRow(rowId, checked as boolean)
                           }
                         />
-                      </td>
+                      </TableCell>
                     )}
                     {visibleColumnsFiltered.map((column) => (
-                      <td key={String(column.key)} className={column.className}>
+                      <TableCell
+                        key={String(column.key)}
+                        className={column.className || ""}
+                      >
                         {renderCell(column, row[column.key], row)}
-                      </td>
+                      </TableCell>
                     ))}
                     {actions.length > 0 && (
-                      <td className="flex justify-end px-4 py-3">
-                        <div className="flex gap-2">
-                          {actions.map((action, actionIndex) => (
-                            <button
-                              key={actionIndex}
-                              onClick={() => handleAction(action, row)}
-                              className={`btn btn-sm ${
-                                action.variant === "error"
-                                  ? "btn-error"
-                                  : action.variant === "primary"
-                                  ? "btn-primary"
-                                  : action.variant === "secondary"
-                                  ? "btn-secondary"
-                                  : action.variant === "success"
-                                  ? "btn-success"
-                                  : action.variant === "warning"
-                                  ? "btn-warning"
-                                  : action.variant === "info"
-                                  ? "btn-info"
-                                  : "btn-ghost"
-                              } ${action.className || ""}`}
-                              title={action.label}
-                            >
-                              {getActionIcon(action)}
-                            </button>
-                          ))}
-                        </div>
-                      </td>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {actions.map((action, actionIndex) => (
+                              <DropdownMenuItem
+                                key={actionIndex}
+                                onClick={() => handleAction(action, row)}
+                                className={cn(
+                                  "cursor-pointer",
+                                  action.variant === "error" ||
+                                    action.variant === "destructive"
+                                    ? "text-destructive focus:text-destructive"
+                                    : ""
+                                )}
+                              >
+                                {getActionIcon(action)}
+                                <span className="ml-2">{action.label}</span>
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
                     )}
-                  </tr>
+                  </TableRow>
                 );
               })
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       {/* Pagination */}
       {pagination && paginationInfo.totalPages > 1 && (
-        <div className="p-4 border-t border-base-300 rounded-b-lg">
+        <div className="p-4 border-t rounded-b-lg">
           {/* Mobile Pagination */}
           <div className="block md:hidden">
             <div className="flex flex-col gap-4">
               {/* Items info and per page selector */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="text-sm text-base-content/70 text-center sm:text-left">
+                <div className="text-sm text-muted-foreground text-center sm:text-left">
                   {paginationInfo.startItem}-{paginationInfo.endItem} de{" "}
                   {paginationInfo.totalItems}
                 </div>
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-sm text-base-content/70">
+                  <span className="text-sm text-muted-foreground">
                     Por página:
                   </span>
-                  <select
-                    value={itemsPerPageState}
-                    onChange={(e) => {
-                      setItemsPerPageState(Number(e.target.value));
+                  <Select
+                    value={String(itemsPerPageState)}
+                    onValueChange={(v) => {
+                      setItemsPerPageState(Number(v));
                       setCurrentPage(1);
                     }}
-                    className="select select-bordered select-sm w-20"
                   >
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                  </select>
+                    <SelectTrigger className="w-24">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="25">25</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
               {/* Navigation buttons */}
               <div className="flex items-center justify-between">
                 <div className="flex gap-1">
-                  <button
+                  <Button
                     onClick={() => setCurrentPage(1)}
                     disabled={currentPage === 1}
-                    className="btn btn-ghost btn-sm px-2"
+                    variant="ghost"
+                    size="sm"
                     title="Primera página"
                   >
                     <RiSkipBackLine className="w-4 h-4" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() =>
                       setCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={currentPage === 1}
-                    className="btn btn-ghost btn-sm px-2"
+                    variant="ghost"
+                    size="sm"
                     title="Anterior"
                   >
                     <RiArrowLeftSLine className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <span className="text-sm text-base-content/70">
+                  <span className="text-sm text-muted-foreground">
                     {currentPage} / {paginationInfo.totalPages}
                   </span>
                 </div>
 
                 <div className="flex gap-1">
-                  <button
+                  <Button
                     onClick={() =>
                       setCurrentPage((prev) =>
                         Math.min(prev + 1, paginationInfo.totalPages)
                       )
                     }
                     disabled={currentPage === paginationInfo.totalPages}
-                    className="btn btn-ghost btn-sm px-2"
+                    variant="ghost"
+                    size="sm"
                     title="Siguiente"
                   >
                     <RiArrowRightSLine className="w-4 h-4" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => setCurrentPage(paginationInfo.totalPages)}
                     disabled={currentPage === paginationInfo.totalPages}
-                    className="btn btn-ghost btn-sm px-2"
+                    variant="ghost"
+                    size="sm"
                     title="Última página"
                   >
                     <RiSkipForwardLine className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -663,48 +693,54 @@ function DataTable<T extends Record<string, unknown>>({
           <div className="hidden md:flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-base-content/70">
+                <span className="text-sm text-muted-foreground">
                   Items per page
                 </span>
-                <select
-                  value={itemsPerPageState}
-                  onChange={(e) => {
-                    setItemsPerPageState(Number(e.target.value));
+                <Select
+                  value={String(itemsPerPageState)}
+                  onValueChange={(v) => {
+                    setItemsPerPageState(Number(v));
                     setCurrentPage(1);
                   }}
-                  className="select select-bordered select-sm"
                 >
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                </select>
+                  <SelectTrigger className="w-28">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="25">25</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
-              <div className="text-sm text-base-content/70">
+              <div className="text-sm text-muted-foreground">
                 Showing {paginationInfo.startItem}-{paginationInfo.endItem} out
                 of {paginationInfo.totalItems}
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <button
+              <Button
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
-                className="btn btn-ghost btn-sm px-2"
+                variant="ghost"
+                size="sm"
                 title="First Page"
               >
                 <RiSkipBackLine className="w-4 h-4" />
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="btn btn-ghost btn-sm"
+                variant="ghost"
+                size="sm"
               >
                 <RiArrowLeftSLine className="w-4 h-4" />
                 Prev
-              </button>
+              </Button>
 
               <div className="flex items-center gap-1">
                 {Array.from(
@@ -722,41 +758,42 @@ function DataTable<T extends Record<string, unknown>>({
                     }
 
                     return (
-                      <button
+                      <Button
                         key={pageNum}
                         onClick={() => setCurrentPage(pageNum)}
-                        className={`btn btn-sm ${
-                          pageNum === currentPage ? "btn-primary" : "btn-ghost"
-                        }`}
+                        size="sm"
+                        variant={pageNum === currentPage ? "default" : "ghost"}
                       >
                         {pageNum}
-                      </button>
+                      </Button>
                     );
                   }
                 )}
               </div>
 
-              <button
+              <Button
                 onClick={() =>
                   setCurrentPage((prev) =>
                     Math.min(prev + 1, paginationInfo.totalPages)
                   )
                 }
                 disabled={currentPage === paginationInfo.totalPages}
-                className="btn btn-ghost btn-sm"
+                variant="ghost"
+                size="sm"
               >
                 Next
                 <RiArrowRightSLine className="w-4 h-4" />
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={() => setCurrentPage(paginationInfo.totalPages)}
                 disabled={currentPage === paginationInfo.totalPages}
-                className="btn btn-ghost btn-sm px-2"
+                variant="ghost"
+                size="sm"
                 title="Last Page"
               >
                 <RiSkipForwardLine className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           </div>
         </div>

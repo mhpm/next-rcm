@@ -429,6 +429,7 @@ export function ReportBuilder({
 
         {activeTab === 'settings' && (
           <GeneralSettingsForm
+            control={control}
             register={register}
             watch={watch}
             setValue={setValue}

@@ -87,7 +87,7 @@ export default function GroupForm({
             <SelectField<GroupCreateSchema>
               name="parentId"
               label="Grupo padre"
-              register={register}
+              control={control}
               defaultValue={initialData?.parentId || ""}
               error={errors.parentId?.message}
               options={[

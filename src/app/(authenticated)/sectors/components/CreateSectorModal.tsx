@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { Modal } from "@/components/Modal/Modal";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { InputField, SelectField } from "@/components/FormControls";
 import { MemberSearchField } from "@/components/FormControls/MemberSearchField";
 import { useForm } from "react-hook-form";
@@ -13,7 +18,8 @@ import { useNotificationStore } from "@/store/NotificationStore";
 import { useQuery } from "@tanstack/react-query";
 import { getAllSectors } from "../actions/sectors.actions";
 import { getAllMembers } from "../../members/actions/members.actions";
-import { MemberRole } from "@/generated/prisma/enums";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 type FormValues = z.infer<typeof sectorCreateSchema>;
 
@@ -40,6 +46,7 @@ export default function CreateSectorModal({
     reset,
     setValue,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(sectorCreateSchema),
@@ -78,16 +85,20 @@ export default function CreateSectorModal({
     ...parentOptions,
   ];
 
+  const handleClose = () => {
+    onClose();
+    reset({ name: "", supervisorId: undefined, parentId: undefined });
+  };
+
   return (
-    <Modal
-      open={open}
-      onClose={() => {
-        onClose();
-        reset({ name: "", supervisorId: undefined, parentId: undefined });
-      }}
-      title={watch("parentId") ? "Nuevo Subsector" : "Nuevo Sector"}
-    >
-      {open && (
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>
+            {watch("parentId") ? "Nuevo Subsector" : "Nuevo Sector"}
+          </DialogTitle>
+        </DialogHeader>
+
         <form
           suppressHydrationWarning
           onSubmit={handleSubmit(async (form) => {
@@ -103,34 +114,44 @@ export default function CreateSectorModal({
                 await createSectorMutation.mutateAsync({
                   name: form.name,
                   supervisorId: form.supervisorId || undefined,
-                  // zoneId logic here if needed
                 });
                 showSuccess("Sector creado exitosamente");
               }
-              onClose();
-              reset({ name: "", supervisorId: undefined, parentId: undefined });
               onCreated?.();
-            } catch (e) {
+              handleClose();
+            } catch (error) {
               const message =
-                e instanceof Error ? e.message : "Error al crear el sector";
+                error instanceof Error
+                  ? error.message
+                  : "Error al crear el sector";
               showError(message);
             }
           })}
           className="space-y-4"
         >
-          <div className="grid grid-cols-1 gap-4">
+          <div className="space-y-4 py-2">
+            <SelectField<FormValues>
+              label="Sector Padre (Opcional)"
+              name="parentId"
+              control={control}
+              error={errors.parentId?.message}
+              options={parentSelectOptions}
+              disabled={!!initialParentId}
+            />
+
             <InputField<FormValues>
-              name="name"
               label={
                 watch("parentId") ? "Nombre del Subsector" : "Nombre del Sector"
               }
-              register={register}
-              rules={{ required: "El nombre es requerido" }}
+              name="name"
+              control={control}
               error={errors.name?.message}
+              placeholder="Ej. Sector Norte"
             />
+
             <MemberSearchField<FormValues>
+              label="Supervisor (Opcional)"
               name="supervisorId"
-              label="Supervisor (opcional)"
               register={register}
               setValue={setValue}
               watch={watch}
@@ -139,48 +160,30 @@ export default function CreateSectorModal({
                 const res = await getAllMembers({
                   search: term,
                   limit: 10,
-                  // Removed role filter to allow searching all members
                 });
                 return res.members;
               }}
             />
-            <SelectField<FormValues>
-              name="parentId"
-              label="Sector Padre (Opcional)"
-              register={register}
-              options={parentSelectOptions}
-              error={errors.parentId?.message}
-            />
           </div>
-          <div className="flex justify-end gap-2 mt-8">
-            <button
+
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button
               type="button"
-              className="btn btn-ghost"
-              onClick={() => {
-                onClose();
-                reset({
-                  name: "",
-                  supervisorId: undefined,
-                  parentId: undefined,
-                });
-              }}
+              variant="outline"
+              onClick={handleClose}
+              disabled={isSubmitting}
             >
               Cancelar
-            </button>
-            <button
-              type="submit"
-              className={`btn btn-primary ${isSubmitting ? "loading" : ""}`}
-              disabled={
-                isSubmitting ||
-                createSectorMutation.isPending ||
-                createSubSectorMutation.isPending
-              }
-            >
-              {watch("parentId") ? "Crear Subsector" : "Crear Sector"}
-            </button>
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {isSubmitting ? "Guardando..." : "Guardar"}
+            </Button>
           </div>
         </form>
-      )}
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }

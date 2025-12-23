@@ -4,6 +4,15 @@ import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { RiAddLine, RiFilter3Line } from "react-icons/ri";
 import { Breadcrumbs, DataTable, BackLink } from "@/components";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 import {
   TableColumn,
   TableAction,
@@ -261,7 +270,7 @@ export default function MembersPage() {
   const addButtonConfig: AddButtonConfig = {
     text: "Agregar Miembro",
     onClick: () => router.push("/members/new"),
-    variant: "primary",
+    variant: "default",
     icon: <RiAddLine className="w-4 h-4" />,
   };
 
@@ -270,32 +279,19 @@ export default function MembersPage() {
     return (
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="alert alert-error max-w-md">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <div>
-                <h3 className="font-bold">Error al cargar los datos</h3>
-                <div className="text-xs">
-                  {error?.message || "Error desconocido"}
-                </div>
+          <Card className="max-w-md w-full">
+            <CardContent className="p-6 text-center">
+              <h3 className="text-lg font-semibold text-destructive mb-2">
+                Error al cargar los datos
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {error?.message || "Error desconocido"}
+              </p>
+              <div className="mt-4">
+                <Button onClick={() => refetch()}>Reintentar</Button>
               </div>
-            </div>
-            <button className="btn btn-primary mt-4" onClick={() => refetch()}>
-              Reintentar
-            </button>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
@@ -308,6 +304,7 @@ export default function MembersPage() {
         <Breadcrumbs />
       </div>
       <DataTable<MemberTableData>
+        selectable={true}
         title="Miembros"
         subTitle={`Total de miembros en la iglesia: ${filteredMembers.length}`}
         data={filteredMembers}
@@ -326,23 +323,32 @@ export default function MembersPage() {
         showColumnVisibility={true}
         loading={loading}
         searchEndContent={
-          <div className="tooltip" data-tip="Filtros avanzados">
-            <button
-              className={`btn btn-square ${
-                Object.keys(activeFilters).length > 0
-                  ? "btn-primary"
-                  : "btn-ghost bg-base-200"
-              }`}
-              onClick={() => setIsFilterModalOpen(true)}
-            >
-              <RiFilter3Line className="w-5 h-5" />
-            </button>
-            {Object.keys(activeFilters).length > 0 && (
-              <div className="absolute -top-1 -right-1 badge badge-xs badge-secondary w-4 h-4 p-0 flex items-center justify-center animate-pulse">
-                !
-              </div>
-            )}
-          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="relative">
+                  <Button
+                    type="button"
+                    variant={
+                      Object.keys(activeFilters).length > 0
+                        ? "default"
+                        : "ghost"
+                    }
+                    size="sm"
+                    onClick={() => setIsFilterModalOpen(true)}
+                  >
+                    <RiFilter3Line className="w-5 h-5" />
+                  </Button>
+                  {Object.keys(activeFilters).length > 0 && (
+                    <Badge className="absolute -top-1 -right-1 px-1 py-0 text-[10px] animate-pulse">
+                      !
+                    </Badge>
+                  )}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>Filtros avanzados</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         }
       />
 

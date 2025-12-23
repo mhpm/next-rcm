@@ -15,6 +15,7 @@ import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { useDeleteCell } from "./hooks/useCells";
 import { useNotificationStore } from "@/store/NotificationStore";
 import { usePersistentFilters } from "@/hooks/usePersistentFilters";
+import { Button } from "@/components/ui/button";
 
 export default function CellsPage() {
   const router = useRouter();
@@ -34,7 +35,7 @@ export default function CellsPage() {
     error,
     refetch,
   } = useCells({
-    limit: 50,
+    limit: 1000,
     orderBy: "name",
     orderDirection: "asc",
   });
@@ -111,6 +112,14 @@ export default function CellsPage() {
           return false;
         }
 
+        // Orphan Only (Sin Sector)
+        if (activeFilters.orphanOnly) {
+          // Si tiene subSectorId, entonces tiene sector asignado, así que lo filtramos fuera
+          if (cell.subSectorId) {
+            return false;
+          }
+        }
+
         return true;
       });
     }
@@ -142,7 +151,11 @@ export default function CellsPage() {
             </Link>
           );
         }
-        return <span className="text-base-content/40">{name}</span>;
+        return (
+          <span className="text-destructive font-bold flex items-center gap-1">
+            ⚠️ {name || "Sin ubicación"}
+          </span>
+        );
       },
     },
     {
@@ -244,9 +257,9 @@ export default function CellsPage() {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4">
         <p className="text-error">Error al cargar las células</p>
-        <button onClick={() => refetch()} className="btn btn-primary btn-sm">
+        <Button onClick={() => refetch()} size="sm">
           Reintentar
-        </button>
+        </Button>
       </div>
     );
   }
@@ -260,7 +273,11 @@ export default function CellsPage() {
       <DataTable<CellTableData>
         data={filteredCells}
         title="Células"
-        subTitle={`Total de células en la iglesia: ${filteredCells.length}`}
+        subTitle={
+          Object.keys(activeFilters).length > 0
+            ? `Mostrando ${filteredCells.length} de ${data?.total || 0} células`
+            : `Total de células en la iglesia: ${data?.total || 0}`
+        }
         columns={columns}
         actions={actions}
         searchable={true}

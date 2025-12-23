@@ -11,6 +11,10 @@ import {
 } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@/hooks/useDebounce";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import { Loader2, X } from "lucide-react";
 
 type AutocompleteFieldProps<TForm extends FieldValues, TItem> = {
   name: Path<TForm>;
@@ -90,22 +94,25 @@ export function AutocompleteField<TForm extends FieldValues, TItem>({
   });
 
   return (
-    <fieldset>
-      <label className="label">
-        <span className="label-text">{label}</span>
-      </label>
+    <Field className="space-y-2" data-invalid={!!error}>
+      <FieldLabel htmlFor={String(name)}>{label}</FieldLabel>
 
       {/* Hidden value bound to RHF */}
       <input type="hidden" {...register(name)} />
 
-      <div className={`dropdown w-full ${dropdownOpen ? "dropdown-open" : ""}`}>
+      <div className="relative w-full">
         <div className="relative">
-          <input
+          <Input
+            ref={inputRef}
             type="text"
-            className="input input-bordered w-full pr-10"
+            className={cn(
+              "pr-10",
+              error && "border-destructive focus-visible:ring-destructive"
+            )}
             placeholder={placeholder || label}
             value={searchText}
             autoComplete="off"
+            aria-invalid={!!error}
             onChange={(e) => {
               setSearchText(e.target.value);
               setHasTyped(true);
@@ -123,14 +130,13 @@ export function AutocompleteField<TForm extends FieldValues, TItem>({
                 setHasTyped(false);
               }, 150)
             }
-            ref={inputRef}
           />
 
           {selectedId && searchText && (
             <button
               type="button"
               aria-label="Limpiar selección"
-              className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs z-10"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 rounded-sm opacity-50 hover:opacity-100 flex items-center justify-center transition-opacity"
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => {
                 setValue(name, null as FieldPathValue<TForm, Path<TForm>>);
@@ -139,51 +145,52 @@ export function AutocompleteField<TForm extends FieldValues, TItem>({
                 inputRef.current?.focus();
               }}
             >
-              ✕
+              <X className="h-4 w-4" />
             </button>
           )}
         </div>
 
         {dropdownOpen && (
-          <ul
-            tabIndex={0}
-            className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full mt-2"
-          >
-            {isLoading ? (
-              <li>
-                <span>Buscando...</span>
-              </li>
-            ) : results && results.length > 0 ? (
-              results.map((item: TItem) => (
-                <li key={getItemId(item)}>
-                  <button
-                    type="button"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => {
-                      setValue(
-                        name,
-                        getItemId(item) as FieldPathValue<TForm, Path<TForm>>
-                      );
-                      setSearchText(getItemLabel(item));
-                      setIsFocused(false);
-                      setHasTyped(false);
-                    }}
-                  >
-                    {renderItem ? renderItem(item) : getItemLabel(item)}
-                  </button>
+          <div className="absolute z-50 w-full mt-1 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95">
+            <ul className="max-h-60 overflow-y-auto p-1">
+              {isLoading ? (
+                <li className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none justify-center text-muted-foreground">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Buscando...
                 </li>
-              ))
-            ) : (
-              <li>
-                <span>Sin resultados</span>
-              </li>
-            )}
-          </ul>
+              ) : results && results.length > 0 ? (
+                results.map((item: TItem) => (
+                  <li key={getItemId(item)}>
+                    <button
+                      type="button"
+                      className="relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 text-left"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        setValue(
+                          name,
+                          getItemId(item) as FieldPathValue<TForm, Path<TForm>>
+                        );
+                        setSearchText(getItemLabel(item));
+                        setIsFocused(false);
+                        setHasTyped(false);
+                      }}
+                    >
+                      {renderItem ? renderItem(item) : getItemLabel(item)}
+                    </button>
+                  </li>
+                ))
+              ) : (
+                <li className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none text-muted-foreground justify-center">
+                  Sin resultados
+                </li>
+              )}
+            </ul>
+          </div>
         )}
       </div>
 
-      {error && <p className="text-error text-sm mt-1">{error}</p>}
-    </fieldset>
+      {error && <FieldError>{error}</FieldError>}
+    </Field>
   );
 }
 

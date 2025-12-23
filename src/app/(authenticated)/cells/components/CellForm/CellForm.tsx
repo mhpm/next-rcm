@@ -6,11 +6,10 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
-import {
-  InputField,
-  SelectField,
-  FormSection,
-} from "@/components/FormControls";
+import { InputField, SelectField } from "@/components/FormControls";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 import { getMembersByCell, getAllSectors } from "../../actions/cells.actions";
 import { cellFormSchema } from "../../schema/cells.schema";
 import type { CellFormInput } from "../../schema/cells.schema";
@@ -30,12 +29,12 @@ const CellForm: React.FC<CellFormProps> = ({
 }) => {
   const router = useRouter();
   const {
-    register,
     handleSubmit,
     reset,
     setValue,
     watch,
     setError,
+    control,
     formState: { errors },
   } = useForm<z.infer<typeof cellFormSchema>>({
     resolver: zodResolver(cellFormSchema),
@@ -173,117 +172,113 @@ const CellForm: React.FC<CellFormProps> = ({
       onSubmit={handleSubmit(handleSubmitInternal)}
       className="space-y-4"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-3 space-y-8">
-          <FormSection>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InputField<z.infer<typeof cellFormSchema>>
-                name="name"
-                label="Nombre de la Célula"
-                register={register}
-                rules={{ required: "El nombre es requerido" }}
-                defaultValue={initialData?.name}
-                error={errors.name?.message}
-              />
+      <Card>
+        <CardHeader>
+          <CardTitle>Información General</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <InputField<z.infer<typeof cellFormSchema>>
+              name="name"
+              label="Nombre de la Célula"
+              control={control}
+              rules={{ required: "El nombre es requerido" }}
+              defaultValue={initialData?.name}
+              error={errors.name?.message}
+            />
 
-              <InputField<z.infer<typeof cellFormSchema>>
-                name="accessCode"
-                label="Clave de Acceso"
-                register={register}
-                rules={{}}
-                defaultValue={initialData?.accessCode}
-                error={errors.accessCode?.message}
-                placeholder="Código único para reportes"
-              />
+            <InputField<z.infer<typeof cellFormSchema>>
+              name="accessCode"
+              label="Clave de Acceso"
+              control={control}
+              rules={{}}
+              defaultValue={initialData?.accessCode}
+              error={errors.accessCode?.message}
+              placeholder="Código único para reportes"
+            />
 
-              <SelectField<z.infer<typeof cellFormSchema>>
-                name="leaderId"
-                label="Líder de la Célula"
-                register={register}
-                rules={{}}
-                error={errors.leaderId?.message}
-                options={memberSelectOptions}
-                className="select select-bordered w-full"
-                defaultValue={initialData?.leaderId || ""}
-              />
-              <SelectField<CellFormInput>
-                name="hostId"
-                label="Anfitrión de la Célula"
-                register={register}
-                rules={{}}
-                error={errors.hostId?.message}
-                options={memberSelectOptions}
-                className="select select-bordered w-full"
-                defaultValue={initialData?.hostId || ""}
-              />
-              <SelectField<CellFormInput>
-                name="assistantId"
-                label="Asistente de la Célula"
-                register={register}
-                rules={{}}
-                error={errors.assistantId?.message}
-                options={memberSelectOptions}
-                className="select select-bordered w-full"
-                defaultValue={initialData?.assistantId || ""}
-              />
-              {!cellId && (
-                <p className="text-sm text-base-content/60 md:col-span-2">
-                  Primero agrega miembros a la célula (pestaña Miembros) para
-                  poder seleccionar líder y anfitrión.
-                </p>
-              )}
-              {cellId && loadingMembers && (
-                <p className="text-sm text-base-content/60 md:col-span-2">
-                  Cargando miembros de la célula...
-                </p>
-              )}
-            </div>
-          </FormSection>
-          <FormSection>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <SelectField<z.infer<typeof cellFormSchema>>
-                name="sectorId"
-                label="Sector"
-                register={register}
-                rules={{}}
-                error={errors.sectorId?.message}
-                options={sectorSelectOptions}
-                className="select select-bordered w-full"
-                defaultValue={initialData?.sectorId || ""}
-              />
-              <SelectField<z.infer<typeof cellFormSchema>>
-                name="subSectorId"
-                label="Subsector"
-                register={register}
-                rules={{}}
-                error={errors.subSectorId?.message}
-                options={subSectorOptions}
-                className="select select-bordered w-full"
-                defaultValue={initialData?.subSectorId || ""}
-                disabled={!selectedSectorId || subSectorsList.length === 0}
-              />
-            </div>
-          </FormSection>
-        </div>
-      </div>
+            <SelectField<z.infer<typeof cellFormSchema>>
+              name="leaderId"
+              label="Líder de la Célula"
+              control={control}
+              rules={{}}
+              error={errors.leaderId?.message}
+              options={memberSelectOptions}
+              className="w-full"
+              defaultValue={initialData?.leaderId || ""}
+            />
+            <SelectField<CellFormInput>
+              name="hostId"
+              label="Anfitrión de la Célula"
+              control={control}
+              rules={{}}
+              error={errors.hostId?.message}
+              options={memberSelectOptions}
+              className="w-full"
+              defaultValue={initialData?.hostId || ""}
+            />
+            <SelectField<CellFormInput>
+              name="assistantId"
+              label="Asistente de la Célula"
+              control={control}
+              rules={{}}
+              error={errors.assistantId?.message}
+              options={memberSelectOptions}
+              className="w-full"
+              defaultValue={initialData?.assistantId || ""}
+            />
+            {!cellId && (
+              <p className="text-sm text-muted-foreground md:col-span-2">
+                Primero agrega miembros a la célula (pestaña Miembros) para
+                poder seleccionar líder y anfitrión.
+              </p>
+            )}
+            {cellId && loadingMembers && (
+              <p className="text-sm text-muted-foreground md:col-span-2">
+                Cargando miembros de la célula...
+              </p>
+            )}
+          </div>
+
+          <div className="border-t pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <SelectField<z.infer<typeof cellFormSchema>>
+              name="sectorId"
+              label="Sector"
+              control={control}
+              rules={{}}
+              error={errors.sectorId?.message}
+              options={sectorSelectOptions}
+              className="w-full"
+              defaultValue={initialData?.sectorId || ""}
+            />
+            <SelectField<z.infer<typeof cellFormSchema>>
+              name="subSectorId"
+              label="Subsector"
+              control={control}
+              rules={{}}
+              error={errors.subSectorId?.message}
+              options={subSectorOptions}
+              className="w-full"
+              defaultValue={initialData?.subSectorId || ""}
+              disabled={!selectedSectorId || subSectorsList.length === 0}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="flex justify-end gap-4 mt-8">
-        <button
+        <Button
           type="button"
-          className="btn btn-ghost"
+          variant="ghost"
           onClick={() => router.push("/cells")}
           disabled={isSubmitting}
         >
           Cancelar
-        </button>
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={isSubmitting}
-        >
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <>
-              <span className="loading loading-spinner loading-sm"></span>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               {isEditMode ? "Actualizando..." : "Guardando..."}
             </>
           ) : isEditMode ? (
@@ -291,7 +286,7 @@ const CellForm: React.FC<CellFormProps> = ({
           ) : (
             "Crear Célula"
           )}
-        </button>
+        </Button>
       </div>
     </form>
   );

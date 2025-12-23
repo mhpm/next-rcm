@@ -2,13 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import {
-  Drawer,
-  Navbar,
-  ThemeProvider,
-  QueryProvider,
-  NavigationLoader,
-} from "@/components";
+import { ThemeProvider, QueryProvider, NavigationLoader } from "@/components";
 import { ToastContainer } from "@/components/Toast";
 import StoreProvider from "@/lib/providers/StoreProvider";
 
@@ -41,12 +35,14 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <StoreProvider>
             <QueryProvider>
-              <ThemeProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
                 <NavigationLoader />
-                <Drawer>
-                  <Navbar />
-                  <main className="">{children}</main>
-                </Drawer>
+                {children}
               </ThemeProvider>
               <ToastContainer position="top-right" />
             </QueryProvider>

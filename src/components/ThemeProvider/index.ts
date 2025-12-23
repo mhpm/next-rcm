@@ -1,1 +1,2 @@
-export { ThemeProvider, useTheme } from './ThemeProvider';
+export { ThemeProvider } from "./ThemeProvider"
+export { useTheme } from "next-themes"

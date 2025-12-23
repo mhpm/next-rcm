@@ -15,6 +15,14 @@ import { FaPeopleRoof, FaUsers } from "react-icons/fa6";
 // for counting purposes.
 // However, the hook returns raw data (array of sectors with subSectors).
 
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+
 export default function SectorStats() {
   const { data, isLoading } = useSectorHierarchy();
 
@@ -61,63 +69,72 @@ export default function SectorStats() {
 
   if (isLoading) {
     return (
-      <div className="stats stats-vertical lg:stats-horizontal shadow bg-base-100 w-full">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="stat">
-            <div className="stat-figure text-secondary">
-              <div className="skeleton w-8 h-8 rounded-full"></div>
-            </div>
-            <div className="skeleton h-4 w-20 mb-2"></div>
-            <div className="skeleton h-8 w-12"></div>
-          </div>
+          <Card key={i}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <Skeleton className="h-4 w-[100px]" />
+              <Skeleton className="h-4 w-4 rounded-full" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-8 w-[60px] mb-1" />
+              <Skeleton className="h-3 w-[120px]" />
+            </CardContent>
+          </Card>
         ))}
       </div>
     );
   }
 
   return (
-    <div className="stats stats-vertical lg:stats-horizontal shadow bg-base-100 w-full">
-      <div className="stat">
-        <div className="stat-figure text-primary">
-          <RiGovernmentLine className="w-8 h-8" />
-        </div>
-        <div className="stat-title">Total Sectors</div>
-        <div className="stat-value text-primary">{stats.totalSectors}</div>
-        <div className="stat-desc">Sectores principales</div>
-      </div>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Total Sectors</CardTitle>
+          <RiGovernmentLine className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{stats.totalSectors}</div>
+          <p className="text-xs text-muted-foreground">Sectores principales</p>
+        </CardContent>
+      </Card>
 
-      <div className="stat">
-        <div className="stat-figure text-primary">
-          <RiGitMergeLine className="w-8 h-8" />
-        </div>
-        <div className="stat-title">Total Sub-sectores</div>
-        <div className="stat-value text-primary">{stats.totalSubSectors}</div>
-        <div className="stat-desc">Divisiones internas</div>
-      </div>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Total Sub-sectores
+          </CardTitle>
+          <RiGitMergeLine className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{stats.totalSubSectors}</div>
+          <p className="text-xs text-muted-foreground">Divisiones internas</p>
+        </CardContent>
+      </Card>
 
-      <div className="stat">
-        <div className="stat-figure text-primary">
-          <FaPeopleRoof className="w-8 h-8" />
-        </div>
-        <div className="stat-title">Total Células</div>
-        <div className="stat-value text-primary">{stats.totalCells}</div>
-        <div className="stat-desc">Grupos activos</div>
-      </div>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Total Células</CardTitle>
+          <FaPeopleRoof className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{stats.totalCells}</div>
+          <p className="text-xs text-muted-foreground">Grupos de hogar</p>
+        </CardContent>
+      </Card>
 
-      <div className="stat">
-        <div className="stat-figure text-primary">
-          <div className="avatar placeholder">
-            <div className="bg-primary-focus text-primary-content rounded-full w-8">
-              <span className="text-xs text-primary">
-                <FaUsers className="w-8 h-8" />
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="stat-title">Total Miembros</div>
-        <div className="stat-value text-primary">{stats.totalMembers}</div>
-        <div className="stat-desc">En toda la red</div>
-      </div>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Miembros en Células
+          </CardTitle>
+          <FaUsers className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{stats.totalMembers}</div>
+          <p className="text-xs text-muted-foreground">Personas activas</p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

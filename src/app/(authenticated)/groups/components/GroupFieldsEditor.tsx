@@ -39,7 +39,7 @@ function FieldValueInput({
       <SelectField
         name={`fields.${index}.value`}
         label="Valor"
-        register={register}
+        control={control}
         options={[
           { value: "true", label: "Verdadero" },
           { value: "false", label: "Falso" },
@@ -118,16 +118,14 @@ function SortableField({
           }}
         >
           <div className="relative">
-             {/* Drag Handle */}
-             <div
-                {...provided.dragHandleProps}
-                className="absolute left-2 top-1/2 -translate-y-1/2 p-2 cursor-grab active:cursor-grabbing text-base-content/40 hover:text-base-content z-10"
-             >
-                <RiDraggable size={20} />
-             </div>
-             <div className="pl-10">
-                {children}
-             </div>
+            {/* Drag Handle */}
+            <div
+              {...provided.dragHandleProps}
+              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 cursor-grab active:cursor-grabbing text-base-content/40 hover:text-base-content z-10"
+            >
+              <RiDraggable size={20} />
+            </div>
+            <div className="pl-10">{children}</div>
           </div>
         </div>
       )}
@@ -189,7 +187,7 @@ export default function GroupFieldsEditor({
                 <h3 className="card-title text-base">Campos Personalizados</h3>
               </div>
             </div>
-            
+
             <DragDropContext onDragEnd={handleDragEnd}>
               {fields.length === 0 ? (
                 <div className="text-center py-8 bg-base-200/50 rounded-lg border border-dashed border-base-300">
@@ -206,12 +204,18 @@ export default function GroupFieldsEditor({
                       className="space-y-4"
                     >
                       {fields.map((field, index) => (
-                        <SortableField key={field.id} id={field.id} index={index}>
+                        <SortableField
+                          key={field.id}
+                          id={field.id}
+                          index={index}
+                        >
                           <div
                             className={`p-4 border border-base-300 rounded-lg relative bg-base-50/50 hover:bg-base-100 transition-all ${
                               justAddedId === field.id ? "animate-pulse" : ""
                             } ${
-                              removingId === field.id ? "opacity-0 scale-95" : ""
+                              removingId === field.id
+                                ? "opacity-0 scale-95"
+                                : ""
                             }`}
                           >
                             <button
@@ -237,7 +241,8 @@ export default function GroupFieldsEditor({
                                   required: "Requerido",
                                   pattern: {
                                     value: /^[a-z0-9_]+$/i,
-                                    message: "Solo letras, números y guion bajo",
+                                    message:
+                                      "Solo letras, números y guion bajo",
                                   },
                                 }}
                                 error={errors.fields?.[index]?.key?.message}
@@ -254,7 +259,7 @@ export default function GroupFieldsEditor({
                               <SelectField
                                 name={`fields.${index}.type`}
                                 label="Tipo de dato"
-                                register={register}
+                                control={control}
                                 options={[
                                   { value: "TEXT", label: "Texto" },
                                   { value: "NUMBER", label: "Número" },

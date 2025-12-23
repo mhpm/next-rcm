@@ -6,6 +6,8 @@ import { TableColumn, TableAction } from "@/types";
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { Modal } from "@/components/Modal/Modal";
 import { MultiSelectField } from "@/components/FormControls/MultiSelectField";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import { useMembers } from "@/app/(authenticated)/members/hooks/useMembers";
 import {
   useAddMemberToMinistry,
@@ -170,21 +172,24 @@ export default function MinistryMembersTable({
             isLoading={isLoadingMembers}
           />
           <div className="flex justify-end gap-2 mt-2">
-            <button
-              className="btn btn-ghost"
-              onClick={() => setIsModalOpen(false)}
-            >
+            <Button variant="ghost" onClick={() => setIsModalOpen(false)}>
               Cancelar
-            </button>
-            <button
-              className="btn btn-primary"
+            </Button>
+            <Button
               onClick={handleAddMembers}
               disabled={
                 !selectedMemberIds.length || addMembersMutation.isPending
               }
             >
-              {addMembersMutation.isPending ? "Agregando..." : "Agregar"}
-            </button>
+              {addMembersMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Agregando...
+                </>
+              ) : (
+                "Agregar"
+              )}
+            </Button>
           </div>
         </div>
       </Modal>

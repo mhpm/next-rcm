@@ -3,6 +3,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FieldValues, Path } from "react-hook-form";
 import { RiArrowDownSLine, RiCloseLine } from "react-icons/ri";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2 } from "lucide-react";
 
 export interface MultiSelectOption {
   value: string;
@@ -93,48 +97,51 @@ export function MultiSelectField<T extends FieldValues>({
   }, [isOpen]);
 
   return (
-    <div className="form-control w-full">
-      <label className="label">
-        <span className="label-text">
-          {label}
-          {required && <span className="text-error ml-1">*</span>}
-        </span>
+    <div className="w-full space-y-2">
+      <label
+        className={cn(
+          "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+          error && "text-destructive"
+        )}
+      >
+        {label}
+        {required && <span className="text-destructive ml-1">*</span>}
       </label>
 
       <div className="relative" ref={dropdownRef}>
         {/* Main input display */}
         <div
-          className={`
-            input input-bordered w-full min-h-12 h-auto cursor-pointer
-            flex flex-wrap items-center gap-1 p-2
-            ${error ? "input-error" : ""}
-            ${disabled ? "input-disabled" : ""}
-          `}
+          className={cn(
+            "flex w-full min-h-10 h-auto cursor-pointer flex-wrap items-center gap-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background transition-colors hover:bg-accent/50",
+            error && "border-destructive focus-visible:ring-destructive",
+            disabled && "cursor-not-allowed opacity-50 bg-muted"
+          )}
           onClick={() => !disabled && setIsOpen(!isOpen)}
         >
           {/* Selected items */}
           {selectedOptions.length > 0 ? (
             <div className="flex flex-wrap gap-1 flex-1">
               {selectedOptions.map((option) => (
-                <span
+                <Badge
                   key={option.value}
-                  className="badge badge-primary rounded-full gap-1 text-xs"
+                  variant="secondary"
+                  className="rounded-full gap-1 hover:bg-secondary/80"
                 >
                   {option.label}
                   {!disabled && (
                     <button
                       type="button"
                       onClick={(e) => handleRemoveOption(option.value, e)}
-                      className="btn btn-ghost btn-xs p-0 min-h-0 h-4 w-4"
+                      className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     >
-                      <RiCloseLine className="w-3 h-3" />
+                      <RiCloseLine className="w-3 h-3 text-muted-foreground hover:text-foreground" />
                     </button>
                   )}
-                </span>
+                </Badge>
               ))}
             </div>
           ) : (
-            <span className="text-base-content/50 flex-1">{placeholder}</span>
+            <span className="text-muted-foreground flex-1">{placeholder}</span>
           )}
 
           {/* Controls */}
@@ -143,41 +150,42 @@ export function MultiSelectField<T extends FieldValues>({
               <button
                 type="button"
                 onClick={handleClearAll}
-                className="btn btn-ghost btn-xs p-0 min-h-0 h-5 w-5"
+                className="text-muted-foreground hover:text-foreground p-0.5 rounded-full hover:bg-muted"
               >
                 <RiCloseLine className="w-4 h-4" />
               </button>
             )}
             <RiArrowDownSLine
-              className={`w-5 h-5 transition-transform ${
-                isOpen ? "rotate-180" : ""
-              }`}
+              className={cn(
+                "w-4 h-4 text-muted-foreground transition-transform duration-200",
+                isOpen && "rotate-180"
+              )}
             />
           </div>
         </div>
 
         {/* Dropdown */}
         {isOpen && !disabled && (
-          <div className="absolute z-50 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-lg max-h-60 overflow-hidden">
+          <div className="absolute z-50 w-full mt-1 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95">
             {/* Search input */}
-            <div className="p-2 border-b border-base-300">
+            <div className="p-2 border-b">
               <input
                 ref={inputRef}
                 type="text"
                 placeholder="Buscar..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input input-sm input-bordered w-full"
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
 
             {/* Options list */}
-            <div className="max-h-48 overflow-y-auto">
+            <div className="max-h-60 overflow-y-auto p-1">
               {isLoading ? (
-                <div className="px-3 py-2 text-base-content/50 text-center">
-                  <span className="loading loading-spinner loading-sm"></span>
-                  <span className="ml-2">Cargando...</span>
+                <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Cargando...
                 </div>
               ) : filteredOptions.length > 0 ? (
                 filteredOptions.map((option) => {
@@ -185,24 +193,25 @@ export function MultiSelectField<T extends FieldValues>({
                   return (
                     <div
                       key={option.value}
-                      className={`
-                        px-3 py-2 cursor-pointer hover:bg-base-200 flex items-center gap-2
-                        ${isSelected ? "bg-primary/10 text-primary" : ""}
-                      `}
+                      className={cn(
+                        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-2 pr-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+                        isSelected && "bg-accent/50"
+                      )}
                       onClick={() => handleOptionToggle(option.value)}
                     >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}} // Controlled by parent click
-                        className="checkbox checkbox-sm checkbox-primary"
-                      />
-                      <span className="flex-1">{option.label}</span>
+                      <div className="flex items-center gap-2 w-full">
+                        <Checkbox
+                          checked={isSelected}
+                          onCheckedChange={() => {}} // Controlled by parent click
+                          className="pointer-events-none" // Let parent div handle click
+                        />
+                        <span className="flex-1 truncate">{option.label}</span>
+                      </div>
                     </div>
                   );
                 })
               ) : (
-                <div className="px-3 py-2 text-base-content/50 text-center">
+                <div className="py-2 text-center text-sm text-muted-foreground">
                   No se encontraron opciones
                 </div>
               )}
@@ -212,11 +221,7 @@ export function MultiSelectField<T extends FieldValues>({
       </div>
 
       {/* Error message */}
-      {error && (
-        <label className="label">
-          <span className="label-text-alt text-error">{error}</span>
-        </label>
-      )}
+      {error && <p className="text-sm font-medium text-destructive">{error}</p>}
     </div>
   );
 }

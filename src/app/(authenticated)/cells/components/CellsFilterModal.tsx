@@ -2,9 +2,21 @@
 
 import React from "react";
 import { useForm } from "react-hook-form";
-import { RiCloseLine, RiFilter3Line } from "react-icons/ri";
+import { RiFilter3Line } from "react-icons/ri";
 import { useQuery } from "@tanstack/react-query";
 import { getAllSectors } from "../actions/cells.actions";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { InputField, SelectField } from "@/components/FormControls";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+// ScrollArea no está disponible; usamos un contenedor con overflow
 
 type CellsFilterModalProps = {
   isOpen: boolean;
@@ -21,7 +33,7 @@ export default function CellsFilterModal({
   onClear,
   activeFilters,
 }: CellsFilterModalProps) {
-  const { register, handleSubmit, reset, watch, setValue } = useForm({
+  const { handleSubmit, reset, watch, control, setValue } = useForm({
     defaultValues: activeFilters,
   });
 
@@ -48,16 +60,6 @@ export default function CellsFilterModal({
     reset(activeFilters);
   }, [activeFilters, reset, isOpen]);
 
-  // Reset subsector if sector changes
-  React.useEffect(() => {
-    // Only reset if the current subSectorId is not valid for the new sector
-    // But for simplicity, if user manually changes sector, we might want to clear subsector.
-    // However, react-hook-form might handle this via user interaction.
-    // If this is triggered by reset(activeFilters), we don't want to clear it.
-    // So maybe skip this effect or be careful.
-    // Let's just let the user handle it.
-  }, [selectedSectorId]);
-
   const onSubmit = (data: Record<string, any>) => {
     // Filter out empty values
     const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
@@ -77,130 +79,118 @@ export default function CellsFilterModal({
     onClose();
   };
 
-  if (!isOpen) return null;
+  const sectorOptions = [
+    { value: "", label: "Todos" },
+    ...sectors.map((s: any) => ({ value: s.id, label: s.name })),
+  ];
+
+  const subSectorOptions = [
+    { value: "", label: "Todos" },
+    ...subSectors.map((s: any) => ({
+      value: s.id,
+      label: s.supervisor
+        ? `${s.name} (${s.supervisor.firstName} ${s.supervisor.lastName})`
+        : s.name,
+    })),
+  ];
 
   return (
-    <div className="modal modal-open z-50">
-      <div className="modal-box w-11/12 max-w-3xl relative">
-        <button
-          onClick={onClose}
-          className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-        >
-          <RiCloseLine className="w-6 h-6" />
-        </button>
-
-        <h3 className="font-bold text-lg flex items-center gap-2 mb-6">
-          <RiFilter3Line className="text-primary" />
-          Filtros Avanzados de Células
-        </h3>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[700px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <RiFilter3Line className="text-primary" />
+            Filtros Avanzados de Células
+          </DialogTitle>
+        </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2">
-            {/* Sector */}
-            <div className="form-control">
-              <label className="label font-medium">Sector</label>
-              <select
-                {...register("sectorId")}
-                className="select select-bordered w-full"
-              >
-                <option value="">Todos</option>
-                {sectors.map((s: any) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="max-h-[60vh] pr-4 overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
+              {/* Sector */}
+              <SelectField
+                name="sectorId"
+                label="Sector"
+                control={control}
+                options={sectorOptions}
+              />
 
-            {/* SubSector */}
-            <div className="form-control">
-              <label className="label font-medium">Sub-Sector</label>
-              <select
-                {...register("subSectorId")}
-                className="select select-bordered w-full"
+              {/* SubSector */}
+              <SelectField
+                name="subSectorId"
+                label="Sub-Sector"
+                control={control}
+                options={subSectorOptions}
                 disabled={!selectedSectorId || subSectors.length === 0}
-              >
-                <option value="">Todos</option>
-                {subSectors.map((s: any) => (
-                  <option key={s.id} value={s.id}>
-                    {s.supervisor
-                      ? `${s.name} (${s.supervisor.firstName} ${s.supervisor.lastName})`
-                      : s.name}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
-            {/* Líder */}
-            <div className="form-control">
-              <label className="label font-medium">Líder</label>
-              <input
-                {...register("leaderName")}
-                className="input input-bordered w-full"
+            <div className="flex items-center space-x-2 py-2 px-1">
+              <Checkbox
+                id="orphanOnly"
+                checked={watch("orphanOnly")}
+                onCheckedChange={(checked) => setValue("orphanOnly", checked)}
+              />
+              <Label htmlFor="orphanOnly">
+                Mostrar solo células sin sector (huérfanas)
+              </Label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
+              {/* Líder */}
+              <InputField
+                name="leaderName"
+                label="Líder"
+                control={control}
                 placeholder="Nombre del líder..."
               />
-            </div>
 
-            {/* Anfitrión */}
-            <div className="form-control">
-              <label className="label font-medium">Anfitrión</label>
-              <input
-                {...register("hostName")}
-                className="input input-bordered w-full"
+              {/* Anfitrión */}
+              <InputField
+                name="hostName"
+                label="Anfitrión"
+                control={control}
                 placeholder="Nombre del anfitrión..."
               />
-            </div>
 
-            {/* Asistente */}
-            <div className="form-control">
-              <label className="label font-medium">Asistente</label>
-              <input
-                {...register("assistantName")}
-                className="input input-bordered w-full"
+              {/* Asistente */}
+              <InputField
+                name="assistantName"
+                label="Asistente"
+                control={control}
                 placeholder="Nombre del asistente..."
               />
-            </div>
 
-            {/* Cantidad de Miembros (Mínimo) */}
-            <div className="form-control">
-              <label className="label font-medium">Miembros (Mínimo)</label>
-              <input
+              {/* Cantidad de Miembros (Mínimo) */}
+              <InputField
+                name="minMembers"
+                label="Miembros (Mínimo)"
                 type="number"
-                {...register("minMembers")}
-                className="input input-bordered w-full"
+                control={control}
                 placeholder="0"
                 min="0"
               />
-            </div>
 
-            {/* Cantidad de Miembros (Máximo) */}
-            <div className="form-control">
-              <label className="label font-medium">Miembros (Máximo)</label>
-              <input
+              {/* Cantidad de Miembros (Máximo) */}
+              <InputField
+                name="maxMembers"
+                label="Miembros (Máximo)"
                 type="number"
-                {...register("maxMembers")}
-                className="input input-bordered w-full"
+                control={control}
                 placeholder="100"
                 min="0"
               />
             </div>
           </div>
 
-          <div className="modal-action">
-            <button
-              type="button"
-              onClick={handleClear}
-              className="btn btn-ghost"
-            >
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={handleClear}>
               Limpiar Filtros
-            </button>
-            <button type="submit" className="btn btn-primary">
-              Aplicar Filtros
-            </button>
-          </div>
+            </Button>
+            <Button type="submit">Aplicar Filtros</Button>
+          </DialogFooter>
         </form>
-      </div>
-      <div className="modal-backdrop" onClick={onClose}></div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

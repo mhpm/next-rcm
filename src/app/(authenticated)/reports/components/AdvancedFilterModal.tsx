@@ -2,9 +2,18 @@
 
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { RiCloseLine, RiFilter3Line, RiDeleteBinLine } from "react-icons/ri";
+import { RiFilter3Line, RiDeleteBinLine } from "react-icons/ri";
 import { InputField, SelectField } from "@/components/FormControls";
 import type { ReportFieldType } from "@/generated/prisma/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+// ScrollArea no está disponible; usamos un contenedor con overflow
 
 export type FilterField = {
   id: string;
@@ -31,7 +40,7 @@ export default function AdvancedFilterModal({
   fields,
   activeFilters,
 }: AdvancedFilterModalProps) {
-  const { register, handleSubmit, reset, setValue, watch } = useForm();
+  const { register, handleSubmit, reset, control } = useForm();
 
   // Reset form when modal opens or activeFilters change
   useEffect(() => {
@@ -59,157 +68,156 @@ export default function AdvancedFilterModal({
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="modal modal-open z-50">
-      <div className="modal-box w-11/12 max-w-3xl relative">
-        <button
-          onClick={onClose}
-          className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-        >
-          <RiCloseLine className="w-6 h-6" />
-        </button>
-
-        <h3 className="font-bold text-lg flex items-center gap-2 mb-6">
-          <RiFilter3Line className="text-primary" />
-          Filtros Avanzados
-        </h3>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[800px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <RiFilter3Line className="text-primary" />
+            Filtros Avanzados
+          </DialogTitle>
+        </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2">
-            {/* Campos fijos */}
-            <div className="form-control">
-              <label className="label font-medium">Entidad</label>
-              <input
-                {...register("entidad")}
-                className="input input-bordered w-full"
+          <div className="max-h-[60vh] pr-4 overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
+              {/* Campos fijos */}
+              <InputField
+                name="entidad"
+                label="Entidad"
+                register={register}
                 placeholder="Buscar por nombre de entidad..."
               />
-            </div>
 
-            <div className="form-control">
-              <label className="label font-medium">Fecha (Desde)</label>
-              <input
+              <InputField
+                name="createdAt_from"
+                label="Fecha (Desde)"
                 type="date"
-                {...register("createdAt_from")}
-                className="input input-bordered w-full"
+                register={register}
               />
-            </div>
 
-            <div className="form-control">
-              <label className="label font-medium">Fecha (Hasta)</label>
-              <input
+              <InputField
+                name="createdAt_to"
+                label="Fecha (Hasta)"
                 type="date"
-                {...register("createdAt_to")}
-                className="input input-bordered w-full"
+                register={register}
               />
+
+              {/* Campos dinámicos del reporte */}
+              {fields.map((field) => (
+                <div key={field.id} className="w-full">
+                  {field.type === "TEXT" && (
+                    <InputField
+                      name={field.id}
+                      label={field.label || field.key}
+                      register={register}
+                      placeholder="Contiene..."
+                    />
+                  )}
+
+                  {(field.type === "NUMBER" || field.type === "CURRENCY") && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        {field.label || field.key}
+                      </label>
+                      <div className="flex gap-2">
+                        <InputField
+                          name={`${field.id}_min`}
+                          label=""
+                          type="number"
+                          step={field.type === "CURRENCY" ? "0.01" : "1"}
+                          register={register}
+                          placeholder="Min"
+                          className="mt-0"
+                        />
+                        <InputField
+                          name={`${field.id}_max`}
+                          label=""
+                          type="number"
+                          step={field.type === "CURRENCY" ? "0.01" : "1"}
+                          register={register}
+                          placeholder="Max"
+                          className="mt-0"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {field.type === "BOOLEAN" && (
+                    <SelectField
+                      name={field.id}
+                      label={field.label || field.key}
+                      control={control}
+                      options={[
+                        { value: "", label: "Todos" },
+                        { value: "true", label: "Sí" },
+                        { value: "false", label: "No" },
+                      ]}
+                    />
+                  )}
+
+                  {field.type === "DATE" && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        {field.label || field.key}
+                      </label>
+                      <div className="flex gap-2">
+                        <InputField
+                          name={`${field.id}_from`}
+                          label=""
+                          type="date"
+                          register={register}
+                          className="mt-0"
+                        />
+                        <InputField
+                          name={`${field.id}_to`}
+                          label=""
+                          type="date"
+                          register={register}
+                          className="mt-0"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {field.type === "SELECT" && (
+                    <SelectField
+                      name={field.id}
+                      label={field.label || field.key}
+                      control={control}
+                      options={[
+                        { value: "", label: "Todos" },
+                        ...(field.options || []).map((opt) => ({
+                          value: opt,
+                          label: opt,
+                        })),
+                      ]}
+                    />
+                  )}
+                </div>
+              ))}
             </div>
-
-            {/* Campos dinámicos del reporte */}
-            {fields.map((field) => (
-              <div key={field.id} className="form-control">
-                <label className="label font-medium">
-                  {field.label || field.key}
-                </label>
-
-                {field.type === "TEXT" && (
-                  <input
-                    {...register(field.id)}
-                    className="input input-bordered w-full"
-                    placeholder={`Contiene...`}
-                  />
-                )}
-
-                {(field.type === "NUMBER" || field.type === "CURRENCY") && (
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      step={field.type === "CURRENCY" ? "0.01" : "1"}
-                      {...register(`${field.id}_min`)}
-                      className="input input-bordered w-full"
-                      placeholder="Min"
-                    />
-                    <input
-                      type="number"
-                      step={field.type === "CURRENCY" ? "0.01" : "1"}
-                      {...register(`${field.id}_max`)}
-                      className="input input-bordered w-full"
-                      placeholder="Max"
-                    />
-                  </div>
-                )}
-
-                {field.type === "BOOLEAN" && (
-                  <select
-                    {...register(field.id)}
-                    className="select select-bordered w-full"
-                    defaultValue=""
-                  >
-                    <option value="">Todos</option>
-                    <option value="true">Sí</option>
-                    <option value="false">No</option>
-                  </select>
-                )}
-
-                {field.type === "DATE" && (
-                  <div className="flex gap-2">
-                    <input
-                      type="date"
-                      {...register(`${field.id}_from`)}
-                      className="input input-bordered w-full"
-                    />
-                    <input
-                      type="date"
-                      {...register(`${field.id}_to`)}
-                      className="input input-bordered w-full"
-                    />
-                  </div>
-                )}
-
-                {field.type === "SELECT" && (
-                  <select
-                    {...register(field.id)}
-                    className="select select-bordered w-full"
-                    defaultValue=""
-                  >
-                    <option value="">Todos</option>
-                    {field.options?.map((opt, i) => (
-                      <option key={i} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
-            ))}
           </div>
 
-          <div className="modal-action flex justify-center sm:justify-between flex-wrap gap-4 border-t border-base-200 pt-4">
-            <button
+          <DialogFooter className="flex justify-between items-center w-full sm:justify-between">
+            <Button
               type="button"
+              variant="ghost"
+              className="text-destructive hover:text-destructive/90"
               onClick={handleClear}
-              className="btn btn-ghost text-error gap-2"
             >
-              <RiDeleteBinLine />
+              <RiDeleteBinLine className="mr-2" />
               Limpiar filtros
-            </button>
-            <div>
-              <button
-                type="button"
-                onClick={onClose}
-                className="btn btn-ghost mr-2"
-              >
+            </Button>
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={onClose}>
                 Cancelar
-              </button>
-              <button type="submit" className="btn btn-primary px-8">
-                Aplicar Filtros
-              </button>
+              </Button>
+              <Button type="submit">Aplicar Filtros</Button>
             </div>
-          </div>
+          </DialogFooter>
         </form>
-      </div>
-      <div className="modal-backdrop" onClick={onClose}></div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

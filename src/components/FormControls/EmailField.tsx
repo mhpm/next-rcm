@@ -7,9 +7,9 @@ import {
   RegisterOptions,
   UseFormRegister,
 } from 'react-hook-form';
-import { RiCheckLine, RiCloseLine, RiLoader4Line } from 'react-icons/ri';
-
-// Email field with right-side validation icon support
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Check, X, Loader2 } from 'lucide-react';
 
 type EmailFieldProps<T extends FieldValues> = {
   name: Path<T>;
@@ -28,49 +28,31 @@ export function EmailField<T extends FieldValues>({
   error,
   validationStatus,
 }: EmailFieldProps<T>) {
-  const baseClass = 'input input-bordered w-full pr-10';
-  const inputClass =
-    validationStatus === 'available'
-      ? `${baseClass} input-success`
-      : validationStatus === 'taken'
-      ? `${baseClass} input-error`
-      : validationStatus === 'error'
-      ? `${baseClass} input-warning`
-      : baseClass;
-
   return (
-    <fieldset>
-      <label className="label">
-        <span className="label-text">{label}</span>
-      </label>
+    <Field data-invalid={!!error}>
+      <FieldLabel htmlFor={String(name)}>{label}</FieldLabel>
       <div className="relative">
-        <input
+        <Input
+          id={String(name)}
           type="email"
           placeholder={label}
-          className={inputClass}
           autoComplete="off"
+          aria-invalid={!!error}
           {...register(name, rules)}
         />
-        <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
           {validationStatus === 'checking' && (
-            <RiLoader4Line className="w-5 h-5 text-gray-400 animate-spin" />
+            <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
           )}
-          {validationStatus === 'available' && <RiCheckLine className="w-5 h-5 text-success" />}
-          {validationStatus === 'taken' && <RiCloseLine className="w-5 h-5 text-error" />}
-          {validationStatus === 'error' && <RiCloseLine className="w-5 h-5 text-warning" />}
+          {validationStatus === 'available' && (
+            <Check className="h-4 w-4 text-green-600" />
+          )}
+          {validationStatus === 'taken' && <X className="h-4 w-4 text-red-600" />}
+          {validationStatus === 'error' && <X className="h-4 w-4 text-amber-600" />}
         </div>
       </div>
-      {error && <p className="text-error text-sm mt-1">{error}</p>}
-      {validationStatus === 'available' && !error && (
-        <p className="text-success text-sm mt-1">✓ Correo disponible</p>
-      )}
-      {validationStatus === 'taken' && (
-        <p className="text-error text-sm mt-1">✗ Este correo ya está en uso</p>
-      )}
-      {validationStatus === 'error' && (
-        <p className="text-warning text-sm mt-1">⚠ Error al verificar disponibilidad</p>
-      )}
-    </fieldset>
+      {error && <FieldError>{error}</FieldError>}
+    </Field>
   );
 }
 

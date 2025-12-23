@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import React from 'react';
 import {
   FieldValues,
   Path,
   RegisterOptions,
   UseFormRegister,
-} from 'react-hook-form';
+} from "react-hook-form";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
 
 type RadioOption = { value: string; label: string };
 
@@ -28,20 +29,23 @@ export function RadioGroupField<T extends FieldValues>({
   error,
 }: RadioGroupFieldProps<T>) {
   return (
-    <fieldset>
-      <label className="label">
-        <span className="label-text">{label}</span>
-      </label>
-      <div className="flex items-center mt-2 gap-4">
+    <Field data-invalid={!!error}>
+      <FieldLabel>{label}</FieldLabel>
+      <div className="flex items-center gap-4 mt-1">
         {options.map((opt) => (
-          <label key={opt.value} className="label cursor-pointer">
-            <input type="radio" value={opt.value} className="radio" {...register(name, rules)} />
-            <span className="label-text ml-2">{opt.label}</span>
-          </label>
+          <div key={opt.value} className="flex items-center gap-2">
+            <input
+              type="radio"
+              value={opt.value}
+              {...register(name, rules)}
+              aria-invalid={!!error}
+            />
+            <Label className="cursor-pointer">{opt.label}</Label>
+          </div>
         ))}
       </div>
-      {error && <p className="text-error text-sm mt-1">{error}</p>}
-    </fieldset>
+      {error && <FieldError>{error}</FieldError>}
+    </Field>
   );
 }
 

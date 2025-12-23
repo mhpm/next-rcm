@@ -1,4 +1,6 @@
 import React from "react";
+import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface MinimalLoaderProps {
   /**
@@ -17,10 +19,11 @@ interface MinimalLoaderProps {
    */
   size?: "sm" | "md" | "lg";
   /**
-   * Color del spinner
+   * Color del spinner (Ignorado si se usa className para color)
    * @default "green"
    */
   color?: "green" | "blue" | "gray" | "red";
+  className?: string;
 }
 
 const MinimalLoader: React.FC<MinimalLoaderProps> = ({
@@ -28,42 +31,39 @@ const MinimalLoader: React.FC<MinimalLoaderProps> = ({
   minHeight = "60vh",
   size = "md",
   color = "green",
+  className,
 }) => {
   // Configuración de tamaños
   const sizeClasses = {
-    sm: "w-6 h-6 border-2",
-    md: "w-8 h-8 border-2",
-    lg: "w-12 h-12 border-[3px]",
+    sm: "w-6 h-6",
+    md: "w-8 h-8",
+    lg: "w-12 h-12",
   };
 
   // Configuración de colores
   const colorClasses = {
-    green: "border-gray-200 border-t-green-600",
-    blue: "border-gray-200 border-t-blue-600",
-    gray: "border-gray-200 border-t-gray-600",
-    red: "border-gray-200 border-t-red-600",
+    green: "text-green-600",
+    blue: "text-blue-600",
+    gray: "text-gray-600",
+    red: "text-red-600",
   };
 
   return (
     <div
-      className="flex flex-col items-center justify-center"
+      className={cn("flex flex-col items-center justify-center", className)}
       style={{ minHeight }}
     >
-      {/* Spinner minimalista */}
-      <div className="relative">
-        <div
-          className={`
-            ${sizeClasses[size]} 
-            ${colorClasses[color]} 
-            loading
-            loading-spinner
-          `}
-        />
-      </div>
+      <Loader2
+        className={cn(
+          "animate-spin",
+          sizeClasses[size],
+          colorClasses[color]
+        )}
+      />
 
       {/* Texto opcional */}
       {text && (
-        <p className="mt-4 text-sm text-base-content/70 animate-pulse">
+        <p className="mt-4 text-sm text-muted-foreground animate-pulse">
           {text}
         </p>
       )}

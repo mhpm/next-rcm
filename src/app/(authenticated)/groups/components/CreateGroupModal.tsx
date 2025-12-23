@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { Modal } from '@/components/Modal/Modal';
-import { InputField, SelectField } from '@/components/FormControls';
-import MemberSearchField from '@/components/FormControls/MemberSearchField';
+import { Modal } from "@/components/Modal/Modal";
+import { InputField, SelectField } from "@/components/FormControls";
+import MemberSearchField from "@/components/FormControls/MemberSearchField";
 // AutocompleteField reemplazado por SelectField para seleccionar un solo grupo
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { groupCreateSchema } from '../schema/groups.schema';
-import type { GroupCreateSchema } from '../schema/groups.schema';
-import { useCreateGroup, useGroupsList } from '../hooks/useGroups';
-import React from 'react';
-import { useNotificationStore } from '@/store/NotificationStore';
-import { searchGroups, getGroupById } from '../actions/groups.actions';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { groupCreateSchema } from "../schema/groups.schema";
+import type { GroupCreateSchema } from "../schema/groups.schema";
+import { useCreateGroup, useGroupsList } from "../hooks/useGroups";
+import React from "react";
+import { useNotificationStore } from "@/store/NotificationStore";
+import { searchGroups, getGroupById } from "../actions/groups.actions";
 
 type CreateGroupModalProps = {
   open: boolean;
@@ -41,11 +41,12 @@ export default function CreateGroupModal({
     reset,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<GroupCreateSchema>({
     resolver: zodResolver(groupCreateSchema),
-    defaultValues: { name: '', leaderId: '', parentId: initialParentId || '' },
-    mode: 'onChange',
+    defaultValues: { name: "", leaderId: "", parentId: initialParentId || "" },
+    mode: "onChange",
   });
 
   const { data: groupsList } = useGroupsList();
@@ -53,13 +54,13 @@ export default function CreateGroupModal({
 
   React.useEffect(() => {
     if (parentReadonly && initialParentId) {
-      setValue('parentId', initialParentId);
+      setValue("parentId", initialParentId);
     }
   }, [parentReadonly, initialParentId, setValue]);
 
   React.useEffect(() => {
     if (open) {
-      reset({ name: '', leaderId: '', parentId: initialParentId || '' });
+      reset({ name: "", leaderId: "", parentId: initialParentId || "" });
       setFieldResetKey((k) => k + 1);
     }
   }, [open, initialParentId, reset]);
@@ -69,7 +70,7 @@ export default function CreateGroupModal({
       open={open}
       onClose={() => {
         onClose();
-        reset({ name: '', leaderId: '', parentId: initialParentId || '' });
+        reset({ name: "", leaderId: "", parentId: initialParentId || "" });
       }}
       title="Nuevo Grupo"
     >
@@ -82,13 +83,13 @@ export default function CreateGroupModal({
               leaderId: form.leaderId || undefined,
               parentId: form.parentId || undefined,
             });
-            showSuccess('Grupo creado exitosamente');
+            showSuccess("Grupo creado exitosamente");
             onClose();
-            reset({ name: '', leaderId: '', parentId: initialParentId || '' });
+            reset({ name: "", leaderId: "", parentId: initialParentId || "" });
             onCreated?.();
           } catch (e) {
             const message =
-              e instanceof Error ? e.message : 'Error al crear el grupo';
+              e instanceof Error ? e.message : "Error al crear el grupo";
             showError(message);
           }
         })}
@@ -99,7 +100,7 @@ export default function CreateGroupModal({
             name="name"
             label="Nombre del Grupo"
             register={register}
-            rules={{ required: 'El nombre es requerido' }}
+            rules={{ required: "El nombre es requerido" }}
             error={errors.name?.message}
           />
 
@@ -117,8 +118,8 @@ export default function CreateGroupModal({
             <SelectField<GroupCreateSchema>
               name="parentId"
               label="Grupo padre"
-              register={register}
-              defaultValue={initialParentId || ''}
+              control={control}
+              defaultValue={initialParentId || ""}
               error={errors.parentId?.message}
               disabled={parentReadonly}
               options={
@@ -126,11 +127,11 @@ export default function CreateGroupModal({
                   ? [
                       {
                         value: initialParentId,
-                        label: initialParentName || 'Grupo padre seleccionado',
+                        label: initialParentName || "Grupo padre seleccionado",
                       },
                     ]
                   : [
-                      { value: '', label: 'Sin grupo padre' },
+                      { value: "", label: "Sin grupo padre" },
                       ...(groupsList || []).map((g) => ({
                         value: g.id,
                         label: g.name,
@@ -148,9 +149,9 @@ export default function CreateGroupModal({
             onClick={() => {
               onClose();
               reset({
-                name: '',
-                leaderId: '',
-                parentId: initialParentId || '',
+                name: "",
+                leaderId: "",
+                parentId: initialParentId || "",
               });
             }}
             disabled={createMutation.isPending}
@@ -165,7 +166,7 @@ export default function CreateGroupModal({
             {createMutation.isPending ? (
               <span className="loading loading-spinner loading-sm"></span>
             ) : (
-              'Crear'
+              "Crear"
             )}
           </button>
         </div>

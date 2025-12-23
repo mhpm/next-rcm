@@ -13,13 +13,39 @@ import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { useNotificationStore } from "@/store/NotificationStore";
 import Link from "next/link";
 import {
-  RiAddLine,
-  RiEdit2Fill,
-  RiDeleteBinLine,
-  RiArrowDownSLine,
-  RiExternalLinkLine,
-} from "react-icons/ri";
+  MoreHorizontal,
+  Edit2,
+  Trash2,
+  Plus,
+  Grid2X2,
+  ChevronsDown,
+  ChevronsUp,
+  ChevronDown,
+  ExternalLink,
+  Loader2,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 function toNodes(
   data: any[],
@@ -110,73 +136,139 @@ export default function SectorHierarchy() {
   } | null>(null);
   const nodes = toNodes(data || []);
 
+  // State for expansion
+  const [expandedIds, setExpandedIds] = React.useState<Set<string>>(new Set());
+
+  const getAllIds = React.useCallback((nodes: SectorNode[]) => {
+    const ids: string[] = [];
+    const traverse = (list: SectorNode[]) => {
+      list.forEach((node) => {
+        ids.push(node.id);
+        if (node.children) traverse(node.children);
+      });
+    };
+    traverse(nodes);
+    return ids;
+  }, []);
+
+  const allNodeIds = React.useMemo(() => getAllIds(nodes), [nodes, getAllIds]);
+  const isAllExpanded =
+    allNodeIds.length > 0 && expandedIds.size === allNodeIds.length;
+
+  const toggleExpandAll = () => {
+    if (isAllExpanded) {
+      setExpandedIds(new Set());
+    } else {
+      setExpandedIds(new Set(allNodeIds));
+    }
+  };
+
+  const toggleNode = (id: string) => {
+    const newSet = new Set(expandedIds);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setExpandedIds(newSet);
+  };
+
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 p-6">
-        <p className="text-error">Error al cargar la jerarquía de sectores</p>
-        <button onClick={() => refetch()} className="btn btn-primary btn-sm">
+        <p className="text-destructive">
+          Error al cargar la jerarquía de sectores
+        </p>
+        <Button onClick={() => refetch()} variant="outline" size="sm">
           Reintentar
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="bg-base-100 rounded-lg shadow-md">
-      <div className="p-4 sm:p-6 border-b border-base-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <Card className="border-none shadow-none sm:border sm:shadow-sm">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-6">
         <div>
-          <h3 className="text-lg font-semibold">Sectores</h3>
-          <p className="text-sm text-base-content/70 mt-1">
-            Explora y gestiona los sectores y subsectores de tu iglesia
-          </p>
+          <CardTitle className="text-xl sm:text-2xl">
+            Jerarquía de Sectores
+          </CardTitle>
+          <CardDescription>
+            Gestiona la estructura de sectores, subsectores y células.
+          </CardDescription>
         </div>
-        <button
-          className="btn btn-primary btn-sm w-full sm:w-auto"
-          onClick={() => {
-            setCreateParentId(undefined);
-            setCreateOpen(true);
-          }}
-        >
-          <RiAddLine className="w-4 h-4" />
-          Nuevo Sector
-        </button>
-      </div>
-
-      {isLoading ? (
-        <div className="flex flex-col justify-center items-center gap-6 h-48">
-          <p className="text-base-content/70">Cargando jerarquía</p>
-          <span className="loading loading-spinner loading-xl"></span>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button
+            variant="outline"
+            onClick={toggleExpandAll}
+            className="w-full sm:w-auto"
+            disabled={nodes.length === 0}
+          >
+            {isAllExpanded ? (
+              <>
+                <ChevronsUp className="mr-2 h-4 w-4" />
+                Colapsar Todo
+              </>
+            ) : (
+              <>
+                <ChevronsDown className="mr-2 h-4 w-4" />
+                Expandir Todo
+              </>
+            )}
+          </Button>
+          <Button
+            onClick={() => {
+              setCreateParentId(undefined);
+              setCreateOpen(true);
+            }}
+            className="w-full sm:w-auto"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Nuevo Sector
+          </Button>
         </div>
-      ) : nodes.length === 0 ? (
-        <div className="p-6 text-base-content/70">No hay sectores</div>
-      ) : (
-        <div className="p-4 sm:p-6 space-y-3">
-          {nodes.map((node) => (
-            <ParentCollapse
-              key={node.id}
-              node={node}
-              onAddChild={(parentId) => {
-                setCreateParentId(parentId);
-                setCreateOpen(true);
-              }}
-              onEdit={(s) => {
-                router.push(`/sectors/edit/${s.id}`);
-              }}
-              onDelete={(s) => {
-                setDeleteTarget({ id: s.id, name: s.name, type: node.type });
-                setDeleteOpen(true);
-              }}
-              onAddMembers={(sectorId) =>
-                router.push(`/members?sector=${sectorId}`)
-              }
-              onAddCell={(subSectorId, sectorId) => {
-                setTargetSubSector({ id: subSectorId, sectorId });
-                setCreateCellOpen(true);
-              }}
-            />
-          ))}
-        </div>
-      )}
+      </CardHeader>
+      <CardContent className="p-0 sm:px-6 sm:pb-6">
+        {isLoading ? (
+          <div className="flex flex-col justify-center items-center gap-6 h-48">
+            <p className="text-muted-foreground">Cargando jerarquía</p>
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+        ) : nodes.length === 0 ? (
+          <div className="p-6 text-muted-foreground text-center">
+            No hay sectores registrados
+          </div>
+        ) : (
+          <div className="space-y-4 p-0 sm:p-6">
+            {nodes.map((node) => (
+              <SectorItem
+                key={node.id}
+                node={node}
+                expandedIds={expandedIds}
+                onToggle={toggleNode}
+                onAddChild={(parentId: string) => {
+                  setCreateParentId(parentId);
+                  setCreateOpen(true);
+                }}
+                onEdit={(s: { id: string; name: string }) => {
+                  router.push(`/sectors/edit/${s.id}`);
+                }}
+                onDelete={(s: { id: string; name: string }) => {
+                  setDeleteTarget({ id: s.id, name: s.name, type: node.type });
+                  setDeleteOpen(true);
+                }}
+                onAddMembers={(sectorId: string) =>
+                  router.push(`/members?sector=${sectorId}`)
+                }
+                onAddCell={(subSectorId: string, sectorId: string) => {
+                  setTargetSubSector({ id: subSectorId, sectorId });
+                  setCreateCellOpen(true);
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </CardContent>
 
       <CreateSectorModal
         open={createOpen}
@@ -241,12 +333,14 @@ export default function SectorHierarchy() {
           deleteSectorMutation.isPending || deleteSubSectorMutation.isPending
         }
       />
-    </div>
+    </Card>
   );
 }
 
-function ParentCollapse({
+function SectorItem({
   node,
+  expandedIds,
+  onToggle,
   onAddChild,
   onEdit,
   onDelete,
@@ -255,6 +349,8 @@ function ParentCollapse({
   parentSectorId,
 }: {
   node: SectorNode;
+  expandedIds: Set<string>;
+  onToggle: (id: string) => void;
   onAddChild: (parentId: string) => void;
   onEdit: (s: { id: string; name: string }) => void;
   onDelete: (s: { id: string; name: string }) => void;
@@ -262,162 +358,211 @@ function ParentCollapse({
   onAddCell: (subSectorId: string, sectorId: string) => void;
   parentSectorId?: string;
 }) {
-  const [open, setOpen] = React.useState(false);
+  const isOpen = expandedIds.has(node.id);
+
   return (
-    <div
-      className={`collapse border-b-2 border-base-300 ${
-        open ? "collapse-open" : "collapse-close"
-      } bg-base-100`}
+    <Collapsible
+      open={isOpen}
+      onOpenChange={() => onToggle(node.id)}
+      className="group/collapsible"
     >
-      <div
-        className="collapse-title p-3 sm:px-4 text-base font-semibold h-auto min-h-12 bg-base-300 hover:cursor-pointer hover:bg-base-300/70"
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpen(!open);
-        }}
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pointer-events-none">
-          <span className="pointer-events-auto text-sm sm:text-base wrap-break-word pr-2">
-            {node.name}
-          </span>
-          <div className="flex flex-wrap items-center gap-2 pointer-events-auto">
+      <div className="flex items-center justify-between py-2 pr-2 hover:bg-muted/30 rounded-md transition-colors">
+        <CollapsibleTrigger asChild>
+          <Button
+            variant="ghost"
+            className="p-2 hover:bg-transparent justify-start gap-2 h-auto font-semibold text-base sm:text-lg flex-1"
+          >
+            <ChevronDown
+              className={cn(
+                "h-5 w-5 transition-transform duration-200 text-muted-foreground",
+                isOpen ? "" : "-rotate-90"
+              )}
+            />
+            <span
+              className={cn(
+                "text-foreground",
+                node.type === "SUB_SECTOR" && "text-sm sm:text-base"
+              )}
+            >
+              {node.name}
+            </span>
+          </Button>
+        </CollapsibleTrigger>
+
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="hidden md:flex items-center text-sm text-muted-foreground">
             {node.supervisorName &&
               node.supervisorName !== "Sin supervisor" && (
-                <div className="flex flex-wrap text-xs p-2">
-                  Supervisor:{" "}
-                  <span className="md:ml-2">{node.supervisorName}</span>
-                </div>
+                <>
+                  <span className="mr-2">Supervisor:</span>
+                  <span className="font-medium text-foreground max-w-[150px] truncate">
+                    {node.supervisorName}
+                  </span>
+                </>
               )}
-            {node.type === "SECTOR" && (
-              <div className="badge badge-soft text-xs">
-                {node.subSectorsCount} subsectores
-              </div>
-            )}
-            <div className="badge badge-soft text-xs">
-              {node.cellsCount} células
-            </div>
-            <div className="badge badge-soft text-xs">
-              {node.membersCount} miembros
-            </div>
+          </div>
 
-            <div className="flex items-center gap-1 ml-auto sm:ml-2">
-              <button
-                className="btn btn-ghost btn-xs sm:btn-sm btn-square"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(node);
-                }}
-              >
-                <RiEdit2Fill className="w-4 h-4" />
-              </button>
-              <button
-                className="btn btn-ghost btn-xs sm:btn-sm btn-square"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(node);
-                }}
-              >
-                <RiDeleteBinLine className="w-4 h-4" />
-              </button>
-              {node.type === "SECTOR" && (
-                <button
-                  className="btn btn-ghost btn-xs sm:btn-sm btn-square"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAddChild(node.id);
-                  }}
-                  title="Agregar subsector"
+          <div className="hidden sm:flex items-center gap-2">
+            {node.type === "SECTOR" && (
+              <Badge variant="secondary" className="font-normal">
+                {node.subSectorsCount} subsectores
+              </Badge>
+            )}
+            <Badge variant="secondary" className="font-normal">
+              {node.cellsCount} células
+            </Badge>
+            <Badge variant="secondary" className="font-normal">
+              {node.membersCount} miembros
+            </Badge>
+          </div>
+
+          <div className="flex items-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Acciones</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onEdit(node)}>
+                  <Edit2 className="mr-2 h-4 w-4" /> Editar
+                </DropdownMenuItem>
+
+                {node.type === "SECTOR" && (
+                  <DropdownMenuItem onClick={() => onAddChild(node.id)}>
+                    <Plus className="mr-2 h-4 w-4" /> Agregar Subsector
+                  </DropdownMenuItem>
+                )}
+
+                {node.type === "SUB_SECTOR" && parentSectorId && (
+                  <DropdownMenuItem
+                    onClick={() => onAddCell(node.id, parentSectorId)}
+                  >
+                    <Grid2X2 className="mr-2 h-4 w-4" /> Agregar Célula
+                  </DropdownMenuItem>
+                )}
+
+                <DropdownMenuItem
+                  onClick={() => onDelete(node)}
+                  className="text-destructive focus:text-destructive"
                 >
-                  <RiAddLine className="w-4 h-4" />
-                </button>
-              )}
-              {node.type === "SUB_SECTOR" && parentSectorId && (
-                <button
-                  className="btn btn-ghost btn-xs sm:btn-sm btn-square"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAddCell(node.id, parentSectorId);
-                  }}
-                  title="Agregar célula"
-                >
-                  <RiAddLine className="w-4 h-4" />
-                </button>
-              )}
-              <button
-                className="btn btn-ghost btn-xs sm:btn-sm btn-square"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpen(!open);
-                }}
-              >
-                <RiArrowDownSLine
-                  className={`w-5 h-5 transition-transform ${
-                    open ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-            </div>
+                  <Trash2 className="mr-2 h-4 w-4" /> Eliminar
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
-      <div className="collapse-content bg-base-100">
-        <div className="pt-2 pl-2 sm:pl-4 border-l-2 border-base-300 space-y-2">
+
+      <CollapsibleContent>
+        <div className="pl-3 sm:pl-8 ml-1 sm:ml-4 border-l border-border/50 space-y-4 pt-2 pb-4 pr-2">
+          {/* Mobile stats */}
+          <div className="flex sm:hidden flex-col gap-3 pb-2 text-sm text-muted-foreground">
+            {node.supervisorName &&
+              node.supervisorName !== "Sin supervisor" && (
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium uppercase tracking-wider opacity-70">
+                    Supervisor
+                  </span>
+                  <span className="font-medium text-foreground text-sm">
+                    {node.supervisorName}
+                  </span>
+                </div>
+              )}
+            <div className="flex flex-wrap gap-2">
+              {node.type === "SECTOR" && (
+                <Badge variant="outline" className="text-xs">
+                  {node.subSectorsCount} subsectores
+                </Badge>
+              )}
+              <Badge variant="outline" className="text-xs">
+                {node.cellsCount} células
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                {node.membersCount} miembros
+              </Badge>
+            </div>
+          </div>
+
           {node.children.length > 0 ? (
-            node.children.map((child) => (
-              <ParentCollapse
-                key={child.id}
-                node={child}
-                onAddChild={onAddChild}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onAddMembers={onAddMembers}
-                onAddCell={onAddCell}
-                parentSectorId={node.type === "SECTOR" ? node.id : undefined}
-              />
-            ))
-          ) : node.cells && node.cells.length > 0 ? (
             <div className="space-y-2">
+              {node.children.map((child) => (
+                <SectorItem
+                  key={child.id}
+                  node={child}
+                  expandedIds={expandedIds}
+                  onToggle={onToggle}
+                  onAddChild={onAddChild}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                  onAddMembers={onAddMembers}
+                  onAddCell={onAddCell}
+                  parentSectorId={node.type === "SECTOR" ? node.id : undefined}
+                />
+              ))}
+            </div>
+          ) : node.cells && node.cells.length > 0 ? (
+            <div className="grid grid-cols-1 gap-3">
               {node.cells.map((cell) => (
-                <div
+                <Card
                   key={cell.id}
-                  className="bg-base-200 p-3 px-4 rounded-lg border border-base-300 flex flex-wrap justify-between items-center"
+                  className="bg-card/50 hover:bg-card transition-colors border-dashed"
                 >
-                  <div>
-                    <Link
-                      href={`/cells/edit/${cell.id}`}
-                      className="font-medium hover:text-primary hover:underline flex items-center gap-1 group"
-                    >
-                      {cell.name}
-                      <RiExternalLinkLine className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
-                    </Link>
-                    <div className="text-sm mt-1">
-                      <div className="mt-2">
-                        <span className="font-medium">Líder:</span>{" "}
-                        {cell.leaderName}
+                  <CardHeader className="p-3 pb-2">
+                    <div className="flex items-center justify-between">
+                      <Link
+                        href={`/cells/edit/${cell.id}`}
+                        className="font-medium hover:underline flex items-center gap-2 text-primary"
+                      >
+                        {cell.name}
+                        <ExternalLink className="h-3 w-3 opacity-50" />
+                      </Link>
+                      <Badge variant="secondary" className="ml-auto text-xs">
+                        {cell.membersCount} miembros
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-3 pt-0 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-muted-foreground mt-2">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-medium uppercase tracking-wider opacity-70">
+                          Líder
+                        </span>
+                        <span className="text-foreground text-xs">
+                          {cell.leaderName}
+                        </span>
                       </div>
-                      <div className="mt-2">
-                        <span className="font-medium">Asistente:</span>{" "}
-                        {cell.assistantName}
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-medium uppercase tracking-wider opacity-70">
+                          Asistente
+                        </span>
+                        <span className="text-foreground text-xs">
+                          {cell.assistantName}
+                        </span>
                       </div>
-                      <div className="mt-2">
-                        <span className="font-medium">Anfitrión:</span>{" "}
-                        {cell.hostName}
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-medium uppercase tracking-wider opacity-70">
+                          Anfitrión
+                        </span>
+                        <span className="text-foreground text-xs">
+                          {cell.hostName}
+                        </span>
                       </div>
                     </div>
-                  </div>
-                  <div className="mt-4 md:mt-0 font-semibold">
-                    {cell.membersCount} miembros
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           ) : (
-            <div className="text-sm text-base-content/50 py-2 italic">
-              {node.type === "SECTOR" ? "No hay subsectores" : "No hay células"}
+            <div className="text-sm text-muted-foreground italic py-2 pl-2">
+              {node.type === "SECTOR"
+                ? "No hay subsectores registrados"
+                : "No hay células registradas"}
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

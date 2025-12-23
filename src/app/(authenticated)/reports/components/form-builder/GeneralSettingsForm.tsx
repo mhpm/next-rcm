@@ -5,6 +5,7 @@ import {
   UseFormRegister,
   UseFormSetValue,
   UseFormWatch,
+  Control,
 } from "react-hook-form";
 import { InputField, SelectField } from "@/components/FormControls";
 import { ColorPicker } from "./ColorPicker";
@@ -14,12 +15,14 @@ interface GeneralSettingsFormProps {
   register: UseFormRegister<ReportFormValues>;
   watch: UseFormWatch<ReportFormValues>;
   setValue: UseFormSetValue<ReportFormValues>;
+  control: Control<ReportFormValues>;
 }
 
 export function GeneralSettingsForm({
   register,
   watch,
   setValue,
+  control,
 }: GeneralSettingsFormProps) {
   const color = watch("color");
   const watchedValues = watch();
@@ -45,7 +48,7 @@ export function GeneralSettingsForm({
           <SelectField
             name="scope"
             label="Tipo de Entidad"
-            register={register}
+            control={control}
             options={[
               { value: "CELL", label: "Célula" },
               { value: "GROUP", label: "Grupo" },

@@ -5,6 +5,9 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useMemo, useEffect } from "react";
 import Link from "next/link";
 import { FaLink } from "react-icons/fa6";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 import { useEmailAvailability } from "@/app/(authenticated)/members/hooks/useMembers";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -256,16 +259,12 @@ export const MemberForm: React.FC<MemberFormProps> = ({
         {/* Columna Izquierda */}
         <div className="lg:col-span-2 space-y-8">
           {/* Basic Information */}
-          <div className="card bg-base-100 shadow-sm">
-            <div className="card-body">
-              {title && (
-                <h2 className="card-title text-2xl font-semibold text-base-content">
-                  {title}
-                </h2>
-              )}
-              {subtitle && (
-                <p className="text-sm text-base-content/70 mb-4">{subtitle}</p>
-              )}
+          <Card>
+            <CardHeader>
+              {title && <CardTitle>{title}</CardTitle>}
+              {subtitle && <CardDescription>{subtitle}</CardDescription>}
+            </CardHeader>
+            <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InputField<FormValues>
                   name="firstName"
@@ -347,13 +346,15 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   error={errors.gender?.message}
                 />
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Address */}
-          <div className="card bg-base-100 shadow-sm">
-            <div className="card-body">
-              <h2 className="card-title mb-4">Dirección</h2>
+          <Card>
+            <CardHeader>
+              <CardTitle>Dirección</CardTitle>
+            </CardHeader>
+            <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InputField<FormValues>
                   name="street"
@@ -381,8 +382,8 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   register={register}
                 />
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Columna Derecha */}
@@ -400,13 +401,15 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           </div> */}
 
           {/* Role & Ministerio */}
-          <div className="card bg-base-100 shadow-sm">
-            <div className="card-body">
-              <h2 className="card-title mb-4">Rol</h2>
+          <Card>
+            <CardHeader>
+              <CardTitle>Rol</CardTitle>
+            </CardHeader>
+            <CardContent>
               <SelectField<FormValues>
                 name="role"
                 label="Rol"
-                register={register}
+                control={control}
                 rules={{ required: "El rol es requerido" }}
                 error={errors.role?.message}
                 options={[
@@ -428,35 +431,33 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                 error={errors.ministries?.message}
               />
               <div className="flex flex-wrap justify-start items-start gap-2 mt-2">
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-muted-foreground">
                   ¿No se encuentra tu ministerio?
                 </p>
                 <Link href="/ministries" className="underline text-primary">
                   Agreagar nuevo ministerio <FaLink className="inline-block" />
                 </Link>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {showPasswordCard && (
-            <div className="card bg-base-100 shadow-sm">
-              <div className="card-body">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="card-title">
-                    {isEditMode ? "Cambiar Contraseña" : "Crear Contraseña"}
-                  </h2>
-                  {isEditMode && (
-                    <label className="label cursor-pointer">
-                      <span className="label-text mr-2">Editar</span>
-                      <input
-                        type="checkbox"
-                        className="toggle toggle-primary"
-                        checked={changePassword}
-                        onChange={(e) => setChangePassword(e.target.checked)}
-                      />
-                    </label>
-                  )}
-                </div>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>
+                  {isEditMode ? "Cambiar Contraseña" : "Crear Contraseña"}
+                </CardTitle>
+                {isEditMode && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setChangePassword((v) => !v)}
+                  >
+                    {changePassword ? "Editar: ON" : "Editar: OFF"}
+                  </Button>
+                )}
+              </CardHeader>
+              <CardContent>
                 {(isEditMode ? changePassword : requiresPassword) && (
                   <div className="space-y-4">
                     <PasswordField<FormValues>
@@ -493,24 +494,20 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     />
                   </div>
                 )}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>
 
       <div className="flex justify-end gap-4 mt-8">
-        <Link href="/members" className="btn btn-ghost">
-          Cancelar
-        </Link>
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={isSubmitting}
-        >
+        <Button variant="ghost" asChild>
+          <Link href="/members">Cancelar</Link>
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <>
-              <span className="loading loading-spinner loading-sm"></span>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               {isEditMode ? "Actualizando..." : "Guardando..."}
             </>
           ) : isEditMode ? (
@@ -518,7 +515,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           ) : (
             "Guardar Cambios"
           )}
-        </button>
+        </Button>
       </div>
     </form>
   );

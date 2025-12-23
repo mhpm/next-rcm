@@ -3,6 +3,8 @@
 import { Modal } from "@/components/Modal/Modal";
 import { InputField } from "@/components/FormControls";
 import { MemberSearchField } from "@/components/FormControls/MemberSearchField";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateMinistry } from "../hooks/useMinistries";
@@ -94,9 +96,9 @@ export default function CreateMinistryModal({
           />
         </div>
         <div className="flex justify-end gap-2 mt-8">
-          <button
+          <Button
             type="button"
-            className="btn btn-ghost"
+            variant="ghost"
             onClick={() => {
               onClose();
               reset({ name: "", description: "", leaderId: undefined });
@@ -104,18 +106,14 @@ export default function CreateMinistryModal({
             disabled={createMinistryMutation.isPending}
           >
             Cancelar
-          </button>
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={createMinistryMutation.isPending}
-          >
+          </Button>
+          <Button type="submit" disabled={createMinistryMutation.isPending}>
             {createMinistryMutation.isPending ? (
-              <span className="loading loading-spinner loading-sm"></span>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               "Crear"
             )}
-          </button>
+          </Button>
         </div>
       </form>
     </Modal>

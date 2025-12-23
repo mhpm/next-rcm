@@ -183,13 +183,17 @@ export interface TableAction<T = Record<string, unknown>> {
    * - `ghost` - Minimal styling, transparent background
    */
   variant?:
-    | "primary"
+    | "default"
+    | "destructive"
+    | "outline"
     | "secondary"
+    | "ghost"
+    | "link"
+    | "primary"
     | "success"
     | "warning"
     | "info"
-    | "error"
-    | "ghost";
+    | "error";
 
   /**
    * Additional CSS classes to apply to the action element.
@@ -428,13 +432,17 @@ export interface AddButtonConfig {
    * - `ghost` - Minimal styling, transparent background
    */
   variant?:
-    | "primary"
+    | "default"
+    | "destructive"
+    | "outline"
     | "secondary"
+    | "ghost"
+    | "link"
+    | "primary"
     | "success"
     | "warning"
     | "info"
-    | "error"
-    | "ghost";
+    | "error";
 
   /**
    * Additional CSS classes to apply to the button element.

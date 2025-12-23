@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputField, MemberSearchField } from "@/components/FormControls";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 import {
   ministryFormSchema,
   type MinistryFormInput,
@@ -72,67 +75,55 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(handleSubmitInternal)} className="space-y-4">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Columna principal */}
-        <div className="lg:col-span-3 space-y-8">
-          {/* Información del Ministerio */}
-          <div className="card bg-base-100 shadow-sm">
-            <div className="card-body">
-              <h2 className="card-title mb-4">
-                {isEditMode ? "Editar Ministerio" : "Nuevo Ministerio"}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <InputField<MinistryFormInput>
-                  name="name"
-                  label="Nombre del Ministerio"
-                  register={register}
-                  rules={{ required: "El nombre es requerido" }}
-                  defaultValue={initialData?.name}
-                  error={errors.name?.message}
-                />
-                <InputField<MinistryFormInput>
-                  name="description"
-                  label="Descripción"
-                  register={register}
-                  defaultValue={initialData?.description}
-                  placeholder="Breve descripción"
-                />
-                {/* Buscador y selección de líder (reusable) */}
-                <MemberSearchField<MinistryFormInput>
-                  name="leaderId"
-                  label="Líder del Ministerio"
-                  register={register}
-                  setValue={setValue}
-                  watch={watch}
-                  error={errors.leaderId?.message}
-                />
-              </div>
-            </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Información</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <InputField<MinistryFormInput>
+              name="name"
+              label="Nombre del Ministerio"
+              register={register}
+              rules={{ required: "El nombre es requerido" }}
+              defaultValue={initialData?.name}
+              error={errors.name?.message}
+            />
+            <InputField<MinistryFormInput>
+              name="description"
+              label="Descripción"
+              register={register}
+              defaultValue={initialData?.description}
+              placeholder="Breve descripción"
+            />
           </div>
-        </div>
-
-        {/* Columna secundaria (opcional para futuras secciones) */}
-        <div className="space-y-8"></div>
-      </div>
+          <div className="border-t pt-6">
+            <MemberSearchField<MinistryFormInput>
+              name="leaderId"
+              label="Líder del Ministerio"
+              register={register}
+              setValue={setValue}
+              watch={watch}
+              error={errors.leaderId?.message}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Botones de acción */}
       <div className="flex justify-end gap-4 mt-8">
-        <button
+        <Button
           type="button"
-          className="btn btn-ghost"
+          variant="ghost"
           onClick={() => router.push("/ministries")}
           disabled={isSubmitting}
         >
           Cancelar
-        </button>
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={isSubmitting}
-        >
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <>
-              <span className="loading loading-spinner loading-sm"></span>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               {isEditMode ? "Actualizando..." : "Guardando..."}
             </>
           ) : isEditMode ? (
@@ -140,7 +131,7 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
           ) : (
             "Crear Ministerio"
           )}
-        </button>
+        </Button>
       </div>
     </form>
   );

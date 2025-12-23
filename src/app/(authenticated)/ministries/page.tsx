@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RiAddLine } from "react-icons/ri";
 import { BackLink, Breadcrumbs, DataTable } from "@/components";
+import { Button } from "@/components/ui/button";
 import { TableColumn, TableAction, AddButtonConfig } from "@/types";
 import { useMinistries, useDeleteMinistry } from "./hooks/useMinistries";
 import { Modal } from "@/components/Modal/Modal";
@@ -132,9 +133,9 @@ export default function MinistriesPage() {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4">
         <p className="text-error">Error al cargar los ministerios</p>
-        <button onClick={() => refetch()} className="btn btn-primary btn-sm">
+        <Button onClick={() => refetch()} size="sm">
           Reintentar
-        </button>
+        </Button>
       </div>
     );
   }

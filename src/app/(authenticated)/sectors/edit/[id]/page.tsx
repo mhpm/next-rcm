@@ -9,7 +9,8 @@ import {
   useUpdateSubSector,
 } from "../../hooks/useSectors";
 import { useNotificationStore } from "@/store/NotificationStore";
-import { BackLink, Breadcrumbs, MinimalLoader } from "@/components";
+import { BackLink, Breadcrumbs } from "@/components";
+import { Loader2 } from "lucide-react";
 
 export default function EditSectorPage({
   params,
@@ -54,8 +55,8 @@ export default function EditSectorPage({
 
   if (isLoading) {
     return (
-      <div className="p-8">
-        <MinimalLoader />
+      <div className="flex justify-center items-center p-8 h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
@@ -63,7 +64,7 @@ export default function EditSectorPage({
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 p-8">
-        <p className="text-error">Error al cargar el sector</p>
+        <p className="text-destructive">Error al cargar el sector</p>
         <BackLink text="Volver a la lista" fallbackHref="/sectors" />
       </div>
     );

@@ -2,8 +2,19 @@
 
 import React from "react";
 import { useForm } from "react-hook-form";
-import { RiCloseLine, RiFilter3Line } from "react-icons/ri";
+import { RiFilter3Line } from "react-icons/ri";
 import { MemberRole } from "@/generated/prisma/enums";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { InputField, SelectField } from "@/components/FormControls";
+import { useMinistries } from "@/app/(authenticated)/ministries/hooks/useMinistries";
+// ScrollArea no está disponible; usamos un contenedor con overflow
 
 type MembersFilterModalProps = {
   isOpen: boolean;
@@ -20,9 +31,25 @@ export default function MembersFilterModal({
   onClear,
   activeFilters,
 }: MembersFilterModalProps) {
-  const { register, handleSubmit, reset } = useForm({
+  const { handleSubmit, reset, control } = useForm({
     defaultValues: activeFilters,
   });
+
+  const { data: ministriesData, isLoading: isLoadingMinistries } =
+    useMinistries({
+      limit: 100, // Cargar suficientes ministerios
+    });
+
+  const ministryOptions = React.useMemo(() => {
+    if (!ministriesData?.ministries) return [{ value: "", label: "Todos" }];
+    return [
+      { value: "", label: "Todos" },
+      ...ministriesData.ministries.map((ministry) => ({
+        value: ministry.name, // Usamos el nombre para filtrar por nombre como estaba antes, o ID si el filtro lo requiere
+        label: ministry.name,
+      })),
+    ];
+  }, [ministriesData]);
 
   // Update form when activeFilters change (e.g. when opening)
   React.useEffect(() => {
@@ -48,121 +75,107 @@ export default function MembersFilterModal({
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="modal modal-open z-50">
-      <div className="modal-box w-11/12 max-w-3xl relative">
-        <button
-          onClick={onClose}
-          className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-        >
-          <RiCloseLine className="w-6 h-6" />
-        </button>
-
-        <h3 className="font-bold text-lg flex items-center gap-2 mb-6">
-          <RiFilter3Line className="text-primary" />
-          Filtros Avanzados de Miembros
-        </h3>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[700px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <RiFilter3Line className="text-primary" />
+            Filtros Avanzados de Miembros
+          </DialogTitle>
+        </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2">
-            
-            {/* Rol */}
-            <div className="form-control">
-              <label className="label font-medium">Rol</label>
-              <select {...register("role")} className="select select-bordered w-full">
-                <option value="">Todos</option>
-                {Object.values(MemberRole).map((role) => (
-                  <option key={role} value={role}>
-                    {role}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Ministerios */}
-             <div className="form-control">
-              <label className="label font-medium">Ministerio</label>
-              <input
-                {...register("ministries")}
-                className="input input-bordered w-full"
-                placeholder="Buscar por ministerio..."
+          <div className="max-h-[60vh] pr-4 overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
+              {/* Rol */}
+              <SelectField
+                name="role"
+                label="Rol"
+                control={control}
+                options={[
+                  { value: "", label: "Todos" },
+                  ...Object.values(MemberRole).map((role) => ({
+                    value: role,
+                    label: role,
+                  })),
+                ]}
               />
-            </div>
 
-            {/* Dirección */}
-            <div className="form-control">
-              <label className="label font-medium">Dirección</label>
-              <input
-                {...register("address")}
-                className="input input-bordered w-full"
+              {/* Ministerios */}
+              <SelectField
+                name="ministries"
+                label="Ministerio"
+                control={control}
+                options={ministryOptions}
+                placeholder="Seleccionar ministerio..."
+                disabled={isLoadingMinistries}
+              />
+
+              {/* Dirección */}
+              <InputField
+                name="address"
+                label="Dirección"
+                control={control}
                 placeholder="Ciudad, calle, etc..."
               />
-            </div>
 
-             {/* Email */}
-             <div className="form-control">
-              <label className="label font-medium">Email</label>
-              <input
-                {...register("email")}
-                className="input input-bordered w-full"
+              {/* Email */}
+              <InputField
+                name="email"
+                label="Email"
+                control={control}
                 placeholder="Contiene..."
               />
-            </div>
 
-            {/* Fecha Nacimiento */}
-            <div className="form-control">
-              <label className="label font-medium">Fecha Nacimiento (Desde)</label>
-              <input
+              {/* Fecha Nacimiento */}
+              <InputField
+                name="birthDate_from"
+                label="Fecha Nacimiento (Desde)"
                 type="date"
-                {...register("birthDate_from")}
-                className="input input-bordered w-full"
+                control={control}
               />
-            </div>
-            <div className="form-control">
-              <label className="label font-medium">Fecha Nacimiento (Hasta)</label>
-              <input
+              <InputField
+                name="birthDate_to"
+                label="Fecha Nacimiento (Hasta)"
                 type="date"
-                {...register("birthDate_to")}
-                className="input input-bordered w-full"
+                control={control}
               />
-            </div>
 
-            {/* Fecha Bautismo */}
-             <div className="form-control">
-              <label className="label font-medium">Fecha Bautismo (Desde)</label>
-              <input
+              {/* Fecha Bautismo */}
+              <InputField
+                name="baptismDate_from"
+                label="Fecha Bautismo (Desde)"
                 type="date"
-                {...register("baptismDate_from")}
-                className="input input-bordered w-full"
+                control={control}
               />
-            </div>
-            <div className="form-control">
-              <label className="label font-medium">Fecha Bautismo (Hasta)</label>
-              <input
+              <InputField
+                name="baptismDate_to"
+                label="Fecha Bautismo (Hasta)"
                 type="date"
-                {...register("baptismDate_to")}
-                className="input input-bordered w-full"
+                control={control}
               />
             </div>
           </div>
 
-          <div className="modal-action">
-            <button
+          <DialogFooter className="flex justify-between items-center w-full sm:justify-between">
+            <Button
               type="button"
+              variant="ghost"
               onClick={handleClear}
-              className="btn btn-ghost"
+              className="text-destructive hover:text-destructive/90"
             >
               Limpiar Filtros
-            </button>
-            <button type="submit" className="btn btn-primary">
-              Aplicar Filtros
-            </button>
-          </div>
+            </Button>
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={onClose}>
+                Cancelar
+              </Button>
+              <Button type="submit">Aplicar Filtros</Button>
+            </div>
+          </DialogFooter>
         </form>
-      </div>
-       <div className="modal-backdrop" onClick={onClose}></div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,4 +1,7 @@
-import { FaArrowTrendUp, FaArrowTrendDown } from "react-icons/fa6";
+import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 type StatCardExtraStat = {
   label: string;
@@ -12,7 +15,7 @@ interface StatCardProps {
   change: string;
   changeType: "increase" | "decrease";
   period: string;
-  iconBg?: string;
+  iconBg?: string; // Ignored in new design or used for icon color
   extraStats?: StatCardExtraStat[];
   isLoading?: boolean;
   action?: React.ReactNode;
@@ -25,74 +28,65 @@ export const StatCard = ({
   change,
   changeType,
   period,
-  iconBg = "bg-base-300",
   extraStats,
   isLoading,
   action,
-}: StatCardProps) => (
-  <div className="card bg-base-100 card-border shadow h-full">
-    <div className="stats relative">
-      <div className="stat">
-        <div className="stat-title text-bold font-extrabold text-lg">
-          {isLoading ? <span className="skeleton h-4 w-24"></span> : title}
-        </div>
-        <div className="stat-value">
-          {isLoading ? <span className="skeleton h-8 w-16"></span> : value}
-        </div>
-        <div className={`rounded-full absolute top-4 right-4 p-2 ${iconBg}`}>
-          {isLoading ? (
-            <span className="loading loading-spinner loading-sm" />
+}: StatCardProps) => {
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Skeleton className="h-4 w-[100px]" />
+          <Skeleton className="h-4 w-4 rounded-full" />
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-8 w-[60px] mb-2" />
+          <Skeleton className="h-4 w-[140px]" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <div className="text-muted-foreground">{icon}</div>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
+        <p className="text-xs text-muted-foreground flex items-center mt-1">
+          {changeType === "increase" ? (
+            <ArrowUpRight className="mr-1 h-4 w-4 text-green-500" />
           ) : (
-            icon
+            <ArrowDownRight className="mr-1 h-4 w-4 text-red-500" />
           )}
-        </div>
-        <div className="stat-desc flex items-center gap-2 text-md">
-          {isLoading ? (
-            <span className="skeleton h-4 w-28"></span>
-          ) : (
-            <>
-              <span
-                className={`flex items-center ${
-                  changeType === "increase" ? "text-success" : "text-error"
-                }`}
+          <span
+            className={
+              changeType === "increase" ? "text-green-500" : "text-red-500"
+            }
+          >
+            {change}
+          </span>
+          <span className="ml-1">{period}</span>
+        </p>
+        {extraStats && extraStats.length > 0 && (
+          <div className="mt-4 grid gap-2 border-t pt-4">
+            {extraStats.map((item) => (
+              <div
+                key={item.label}
+                className="flex items-center justify-between text-xs"
               >
-                {changeType === "increase" ? (
-                  <FaArrowTrendUp />
-                ) : (
-                  <FaArrowTrendDown />
-                )}
-                <span className="ml-1">{change}</span>
-              </span>
-              <span className="text-base-content/60">{period}</span>
-            </>
-          )}
-        </div>
-        {isLoading ? (
-          <div className="mt-4">
-            <div className="grid grid-cols-1 gap-2">
-              <span className="skeleton h-4 w-32"></span>
-              <span className="skeleton h-4 w-12"></span>
-            </div>
+                <span className="text-muted-foreground">{item.label}</span>
+                <span className="font-medium bg-secondary px-2 py-0.5 rounded-full">
+                  {item.value}
+                </span>
+              </div>
+            ))}
           </div>
-        ) : extraStats && extraStats.length > 0 ? (
-          <div className="mt-4">
-            <div className="grid grid-cols-1 gap-2">
-              {extraStats.map((item) => (
-                <div
-                  key={item.label}
-                  className="flex items-center justify-between text-sm border-b border-base-content/10 pb-2 border-dashed"
-                >
-                  <span className="text-base-content/70">{item.label}</span>
-                  <span className="badge bg-base-content/10 badge-sm rounded-full font-semibold">
-                    {String(item.value)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : null}
-        {action && <div className="mt-4 pt-2 flex justify-end">{action}</div>}
-      </div>
-    </div>
-  </div>
-);
+        )}
+        {action && <div className="mt-4 pt-2">{action}</div>}
+      </CardContent>
+    </Card>
+  );
+};

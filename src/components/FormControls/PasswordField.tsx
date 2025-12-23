@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import { FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form';
 import { RiEyeLine, RiEyeOffLine, RiKey2Fill } from 'react-icons/ri';
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 type PasswordFieldProps<T extends FieldValues> = {
   name: Path<T>;
@@ -24,31 +27,32 @@ export function PasswordField<T extends FieldValues>({
   const [show, setShow] = useState(false);
 
   return (
-    <fieldset>
-      <label className="label">
-        <span className="label-text">{label}</span>
-      </label>
+    <Field data-invalid={!!error}>
+      <FieldLabel htmlFor={String(name)}>{label}</FieldLabel>
       <div className="relative">
-        <span className="absolute inset-y-0 left-0 flex items-center pl-3 z-10">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-muted-foreground">
           <RiKey2Fill />
         </span>
-        <input
+        <Input
+          id={String(name)}
           type={show ? 'text' : 'password'}
           placeholder={placeholder || label}
-          className="input input-bordered w-full pl-10 pr-10"
+          className={cn('pl-9 pr-10')}
           autoComplete="new-password"
+          aria-invalid={!!error}
           {...register(name, rules)}
         />
         <button
           type="button"
-          className="absolute inset-y-0 right-0 flex items-center pr-3 z-10"
+          className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 rounded-sm opacity-60 hover:opacity-100 flex items-center justify-center transition-opacity"
           onClick={() => setShow(!show)}
+          aria-label={show ? 'Ocultar contraseña' : 'Mostrar contraseña'}
         >
           {show ? <RiEyeOffLine /> : <RiEyeLine />}
         </button>
       </div>
-      {error && <p className="text-error text-sm mt-1">{error}</p>}
-    </fieldset>
+      {error && <FieldError>{error}</FieldError>}
+    </Field>
   );
 }
 

@@ -17,6 +17,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllSectors } from "../actions/sectors.actions";
 import { getAllMembers } from "../../members/actions/members.actions";
 import { MemberRole } from "@/generated/prisma/enums";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 interface SectorFormProps {
   initialData?: Partial<SectorFormInput> & { id?: string };
@@ -38,6 +41,7 @@ const SectorForm: React.FC<SectorFormProps> = ({
     reset,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<SectorFormInput>({
     defaultValues: initialData,
@@ -96,81 +100,51 @@ const SectorForm: React.FC<SectorFormProps> = ({
     <form onSubmit={handleSubmit(handleSubmitInternal)} className="space-y-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-3 space-y-8">
-          <div className="card bg-base-100 shadow-sm">
-            <div className="card-body">
-              <h2 className="card-title mb-4">
-                {isEditMode
-                  ? isSubSector
-                    ? "Editar Subsector"
-                    : "Editar Sector"
-                  : "Nuevo Sector"}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <InputField<SectorFormInput>
+          <Card>
+            <CardContent className="pt-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <InputField
+                  label="Nombre del Sector"
                   name="name"
-                  label={
-                    isSubSector ? "Nombre del Subsector" : "Nombre del Sector"
-                  }
                   register={register}
-                  rules={{ required: "El nombre es requerido" }}
-                  defaultValue={initialData?.name}
                   error={errors.name?.message}
+                  placeholder="Ej. Sector Norte"
                 />
-                <MemberSearchField<SectorFormInput>
-                  name="supervisorId"
-                  label="Supervisor (opcional)"
-                  register={register}
-                  setValue={setValue}
-                  watch={watch}
-                  error={errors.supervisorId?.message}
-                  search={async (term) => {
-                    const res = await getAllMembers({
-                      search: term,
-                      limit: 10,
-                      // Removed role filter to allow searching all members
-                    });
-                    return res.members;
-                  }}
+
+                <SelectField
+                  label="Sector Padre (Opcional)"
+                  name="parentId"
+                  control={control}
+                  error={errors.parentId?.message}
+                  options={parentSelectOptions}
+                  disabled={isEditMode} // Cannot change parent on edit for now to avoid loops
                 />
-                {isSubSector ? (
-                  <SelectField<SectorFormInput>
-                    name="parentId"
-                    label="Sector Padre"
-                    register={register}
-                    options={parentSelectOptions}
-                    error={errors.parentId?.message}
-                  />
-                ) : (
-                  <SelectField<SectorFormInput>
-                    name="zoneId"
-                    label="Zona (Opcional)"
-                    register={register}
-                    // TODO: Fetch zones options
-                    options={[{ value: "", label: "Sin zona" }]}
-                    error={errors.zoneId?.message}
-                  />
-                )}
               </div>
-            </div>
+
+              <MemberSearchField
+                label="Supervisor"
+                name="supervisorId"
+                register={register}
+                setValue={setValue}
+                watch={watch}
+                error={errors.supervisorId?.message}
+              />
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full lg:w-auto"
+            >
+              {isSubmitting && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+            </Button>
           </div>
         </div>
-      </div>
-
-      <div className="flex justify-end gap-4">
-        <button
-          type="button"
-          className="btn btn-ghost"
-          onClick={() => router.back()}
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          className={`btn btn-primary ${isSubmitting ? "loading" : ""}`}
-          disabled={isSubmitting}
-        >
-          {isEditMode ? "Guardar Cambios" : "Crear Sector"}
-        </button>
       </div>
     </form>
   );
