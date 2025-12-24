@@ -5,28 +5,44 @@ import {
   RiArrowDownSLine,
   RiArrowRightSLine,
 } from 'react-icons/ri';
+import { Control, UseFormRegister, UseFormSetValue } from 'react-hook-form';
+import { FieldEditor } from './FieldEditor';
+import { SortableField } from './SortableField';
+import { ReportFormValues, GroupItem, FieldItem } from './types';
+import { Button } from '@/components/ui/button';
+import { AddFieldMenu } from './AddFieldMenu';
 
 interface SortableSectionProps {
   id: string;
   index: number;
-  children: React.ReactNode;
-  header: React.ReactNode;
-  footer?: React.ReactNode;
-  isExpanded: boolean;
-  onToggle: () => void;
-  isDropDisabled?: boolean;
+  group: GroupItem;
+  register: UseFormRegister<ReportFormValues>;
+  control: Control<ReportFormValues>;
+  setValue: UseFormSetValue<ReportFormValues>;
+  onRemove: (index: number) => void;
+  onDuplicate: (index: number) => void;
+  onToggleUi: (id: string, key: 'section' | 'options' | 'advanced') => void;
+  getUiState: (id: string, key: 'section' | 'options' | 'advanced') => boolean;
+  getStableId: (field: FieldItem) => string;
+  onAddFieldToSection: (sectionIndex: number, type: FieldItem['type']) => void;
 }
 
-export function SortableSection({
+export const SortableSection = React.memo(function SortableSection({
   id,
   index,
-  children,
-  header,
-  footer,
-  isExpanded,
-  onToggle,
-  isDropDisabled = false,
+  group,
+  register,
+  control,
+  setValue,
+  onRemove,
+  onDuplicate,
+  onToggleUi,
+  getUiState,
+  getStableId,
+  onAddFieldToSection,
 }: SortableSectionProps) {
+  const isExpanded = getUiState(id, 'section');
+
   return (
     <Draggable draggableId={id} index={index}>
       {(provided, snapshot) => (
@@ -50,7 +66,7 @@ export function SortableSection({
 
             <button
               type="button"
-              onClick={onToggle}
+              onClick={() => onToggleUi(id, 'section')}
               className="mt-3 mr-2 text-muted-foreground hover:text-foreground transition-colors"
               onPointerDown={(e) => e.stopPropagation()}
             >
@@ -61,38 +77,80 @@ export function SortableSection({
               )}
             </button>
 
-            <div className="flex-1">{header}</div>
+            <div className="flex-1">
+              <FieldEditor
+                id={id}
+                index={group.index}
+                field={group.field}
+                register={register}
+                control={control}
+                setValue={setValue}
+                onRemove={onRemove}
+                onDuplicate={onDuplicate}
+                advancedExpanded={getUiState(id, 'advanced')}
+                optionsExpanded={getUiState(id, 'options')}
+                onToggleUi={onToggleUi}
+              />
+            </div>
           </div>
 
           {isExpanded && (
             <>
-              <Droppable
-                droppableId={id}
-                type="ITEM"
-                isDropDisabled={isDropDisabled}
-              >
+              <Droppable droppableId={id} type="ITEM" isDropDisabled={false}>
                 {(provided, snapshot) => (
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                     className={`p-4 space-y-3 transition-colors ${
                       snapshot.isDraggingOver ? 'bg-primary/5' : 'bg-muted/20'
-                    } ${footer ? '' : 'rounded-b-lg'}`}
+                    } rounded-b-lg`}
                   >
-                    {children}
+                    {group.children.map((child, childIndex) => {
+                      const childId =
+                        getStableId(child.field) || `child_${child.index}`;
+                      return (
+                        <SortableField
+                          key={childId}
+                          id={childId}
+                          index={childIndex}
+                          fieldIndex={child.index}
+                          field={child.field}
+                          register={register}
+                          control={control}
+                          setValue={setValue}
+                          onRemove={onRemove}
+                          onDuplicate={onDuplicate}
+                          advancedExpanded={getUiState(childId, 'advanced')}
+                          optionsExpanded={getUiState(childId, 'options')}
+                          onToggleUi={onToggleUi}
+                        />
+                      );
+                    })}
                     {provided.placeholder}
                   </div>
                 )}
               </Droppable>
-              {footer && (
-                <div className="p-4 bg-muted/20 border-t border-border rounded-b-lg">
-                  {footer}
-                </div>
-              )}
+              <div className="p-4 bg-muted/20 border-t border-border rounded-b-lg">
+                <AddFieldMenu
+                  onAdd={(type) => onAddFieldToSection(index, type)}
+                  className="w-full"
+                  trigger={
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="w-full border-dashed text-muted-foreground hover:text-primary"
+                    >
+                      <span className="text-lg">+</span>
+                      <span>Agregar Campo</span>
+                    </Button>
+                  }
+                />
+              </div>
             </>
           )}
         </div>
       )}
     </Draggable>
   );
-}
+});

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Control, useWatch } from 'react-hook-form';
 import { ReportFormValues } from './types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,7 +13,8 @@ import {
 } from '@/components/ui/collapsible';
 import { ChevronDown } from 'lucide-react';
 
-export function LivePreview({ values }: { values: Partial<ReportFormValues> }) {
+export function LivePreview({ control }: { control: Control<ReportFormValues> }) {
+  const values = useWatch({ control });
   const [openSections, setOpenSections] = React.useState<Record<string, boolean>>(
     {}
   );

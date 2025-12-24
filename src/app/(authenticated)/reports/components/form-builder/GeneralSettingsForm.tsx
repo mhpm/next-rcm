@@ -26,7 +26,6 @@ export function GeneralSettingsForm({
   control,
 }: GeneralSettingsFormProps) {
   const color = watch("color");
-  const watchedValues = watch();
 
   return (
     <Card>
@@ -60,7 +59,7 @@ export function GeneralSettingsForm({
             ]}
           />
           <ColorPicker
-            selected={color || watchedValues.color || "#3b82f6"}
+            selected={color || "#3b82f6"}
             onChange={(color) => setValue("color", color)}
           />
         </div>

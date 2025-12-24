@@ -18,6 +18,7 @@ import {
 import { ChevronDown } from 'lucide-react';
 
 interface FieldEditorProps {
+  id: string;
   index: number;
   field: FieldItem;
   register: UseFormRegister<ReportFormValues>;
@@ -27,12 +28,12 @@ interface FieldEditorProps {
   onRemove: (index: number) => void;
   // UI State props
   advancedExpanded: boolean;
-  onToggleAdvanced: () => void;
   optionsExpanded: boolean;
-  onToggleOptions: () => void;
+  onToggleUi: (id: string, key: 'section' | 'options' | 'advanced') => void;
 }
 
-export function FieldEditor({
+export const FieldEditor = React.memo(function FieldEditor({
+  id,
   index,
   field,
   register,
@@ -41,9 +42,8 @@ export function FieldEditor({
   onDuplicate,
   onRemove,
   advancedExpanded,
-  onToggleAdvanced,
   optionsExpanded,
-  onToggleOptions,
+  onToggleUi,
 }: FieldEditorProps) {
   return (
     <div className="p-4 border rounded-lg bg-muted/30 hover:shadow-sm transition-all group">
@@ -132,7 +132,7 @@ export function FieldEditor({
             control={control}
             register={register}
             isExpanded={optionsExpanded}
-            onToggle={onToggleOptions}
+            onToggle={() => onToggleUi(id, 'options')}
           />
         )}
 
@@ -140,7 +140,7 @@ export function FieldEditor({
           <Collapsible
             open={advancedExpanded}
             onOpenChange={(open) => {
-              if (open !== advancedExpanded) onToggleAdvanced();
+              if (open !== advancedExpanded) onToggleUi(id, 'advanced');
             }}
             className="rounded-md border bg-card"
           >
@@ -174,4 +174,4 @@ export function FieldEditor({
       </div>
     </div>
   );
-}
+});

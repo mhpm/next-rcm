@@ -12,6 +12,15 @@ export type FieldItem = {
   required?: boolean;
 };
 
+export type GroupItem = {
+  id: string;
+  type: 'SECTION' | 'FIELD';
+  field: FieldItem;
+  index: number;
+  children: { field: FieldItem; index: number }[];
+  endIndex: number;
+};
+
 export type ReportFormValues = {
   title: string;
   description?: string | null;
