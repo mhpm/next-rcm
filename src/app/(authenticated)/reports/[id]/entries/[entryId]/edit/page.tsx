@@ -2,6 +2,7 @@ import { getChurchPrisma } from "@/actions/churchContext";
 import SubmitReportForm from "@/app/(authenticated)/reports/components/SubmitReportForm";
 import { notFound } from "next/navigation";
 import { BackLink, Breadcrumbs } from "@/components";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default async function EditReportEntryPage({
   params,
@@ -70,10 +71,11 @@ export default async function EditReportEntryPage({
         <Breadcrumbs />
       </div>
 
-      <div
-        className="bg-base-100 p-6 rounded-box shadow-md max-w-4xl mx-auto border-t-8"
+      <Card
+        className="max-w-4xl mx-auto border-t-8"
         style={{ borderTopColor: report.color || "#3b82f6" }}
       >
+        <CardContent className="p-6">
         <SubmitReportForm
           reportId={report.id}
           title={`Editar entrada: ${report.title}`}
@@ -95,7 +97,8 @@ export default async function EditReportEntryPage({
           initialValues={initialValues}
           entryId={entryId}
         />
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

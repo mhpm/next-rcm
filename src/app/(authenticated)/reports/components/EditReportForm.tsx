@@ -7,6 +7,8 @@ import { updateReportWithFields } from '../actions/reports.actions';
 import { useRouter } from 'next/navigation';
 import { ReportFormValues, FieldItem, ReportBuilder } from './form-builder';
 import { useNotificationStore } from '@/store/NotificationStore';
+import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 
 export default function EditReportForm({
   initial,
@@ -89,13 +91,13 @@ export default function EditReportForm({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="prose max-w-none">
+        <div className="space-y-1">
           <h1 className="text-2xl font-bold">Editar Reporte</h1>
-          <p className="text-base-content/70">
-            Modifica la estructura de tu reporte.
-          </p>
+          <p className="text-muted-foreground">Modifica la estructura de tu reporte.</p>
         </div>
-        <button
+        <Button
+          type="button"
+          variant="ghost"
           onClick={() => {
             if (
               confirm('¿Estás seguro? Se perderán los cambios no guardados.')
@@ -103,10 +105,9 @@ export default function EditReportForm({
               router.push('/reports');
             }
           }}
-          className="btn btn-ghost"
         >
           Cancelar
-        </button>
+        </Button>
       </div>
 
       <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
@@ -118,28 +119,24 @@ export default function EditReportForm({
         />
 
         <div className="flex justify-end gap-4 pt-6">
-          <button
+          <Button
             type="button"
-            className="btn"
+            variant="outline"
             onClick={() => router.back()}
             disabled={isSubmitting}
           >
             Volver
-          </button>
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={isSubmitting}
-          >
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
-                <span className="loading loading-spinner"></span>
+                <Loader2 className="animate-spin" />
                 Guardando...
               </>
             ) : (
               'Guardar Cambios'
             )}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

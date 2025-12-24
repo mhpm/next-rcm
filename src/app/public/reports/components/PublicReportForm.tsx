@@ -10,13 +10,25 @@ import {
   getDraftReportEntry,
 } from "../../actions";
 import { useNotificationStore } from "@/store/NotificationStore";
+import { FaLock, FaFloppyDisk, FaPaperPlane, FaKey } from "react-icons/fa6";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  FaLock,
-  FaFloppyDisk,
-  FaPaperPlane,
-  FaSpinner,
-  FaKey,
-} from "react-icons/fa6";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDown, Loader2 } from "lucide-react";
 
 type Option = { value: string; label: string };
 
@@ -77,6 +89,7 @@ export default function PublicReportForm({
   const [formDataToSubmit, setFormDataToSubmit] = useState<FormValues | null>(
     null
   );
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
   const {
     register,
@@ -351,82 +364,80 @@ export default function PublicReportForm({
 
   if (submitted) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 text-center space-y-4 bg-base-100 rounded-lg shadow-lg border border-base-200">
-        <div className="text-success text-5xl">✓</div>
-        <h2 className="text-2xl font-bold">¡Reporte enviado!</h2>
-        <p className="text-base-content/70">
-          Gracias por enviar tu reporte para {churchName}.
-        </p>
-        <button
-          className="btn btn-primary mt-4"
-          onClick={() => setSubmitted(false)}
-        >
-          Enviar otro reporte
-        </button>
-      </div>
+      <Card>
+        <CardContent className="p-8 text-center space-y-4">
+          <div className="text-5xl">✓</div>
+          <h2 className="text-2xl font-bold">¡Reporte enviado!</h2>
+          <p className="text-muted-foreground">
+            Gracias por enviar tu reporte para {churchName}.
+          </p>
+          <Button className="mt-4" onClick={() => setSubmitted(false)}>
+            Enviar otro reporte
+          </Button>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
     <>
-      {isConfirmOpen && (
-        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-base-100 rounded-xl shadow-2xl border border-base-200 p-6 max-w-md w-full relative">
-            <h3 className="font-bold text-lg text-warning flex items-center gap-2">
+      <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
               <FaLock /> Confirmar Envío
-            </h3>
-            <p className="py-4 text-base-content/80">
+            </AlertDialogTitle>
+            <AlertDialogDescription>
               ¿Estás seguro de que deseas enviar el reporte?
-              <br />
-              <span className="font-semibold text-error block mt-2">
+              <span className="font-semibold text-destructive block mt-2">
                 Una vez enviado, no podrás volver a modificarlo.
               </span>
-            </p>
-            <div className="flex justify-end gap-2 mt-4">
-              <button
-                type="button"
-                className="btn btn-ghost"
-                onClick={() => setIsConfirmOpen(false)}
-                disabled={isConfirming}
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={confirmSubmit}
-                disabled={isConfirming}
-              >
-                {isConfirming ? (
-                  <>
-                    <span className="loading loading-spinner loading-xs"></span>
-                    Enviando...
-                  </>
-                ) : (
-                  "Confirmar y Enviar"
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              disabled={isConfirming}
+              onClick={() => setIsConfirmOpen(false)}
+            >
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={isConfirming}
+              onClick={(e) => {
+                e.preventDefault();
+                confirmSubmit();
+              }}
+            >
+              {isConfirming ? (
+                <>
+                  <Loader2 className="animate-spin" />
+                  Enviando...
+                </>
+              ) : (
+                "Confirmar y Enviar"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <form className="space-y-6" onSubmit={handleSubmit(onPreSubmit)}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
             <h2 className="text-xl font-semibold">{title}</h2>
             {description && (
-              <p className="text-base-content/70 mt-2">{description}</p>
+              <p className="text-muted-foreground mt-2">{description}</p>
             )}
           </div>
           <div className="md:col-span-1 space-y-4">
             {scope === "CELL" && (
-              <div className="card bg-base-100 border border-base-300 shadow-sm">
-                <div className="card-body p-4 space-y-4">
-                  <h3 className="font-semibold text-lg uppercase text-base-content/60">
+              <Card>
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg uppercase text-muted-foreground">
                     Autenticación
-                  </h3>
-
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   {!isAuthenticated && (
                     <>
                       <InputField
@@ -437,7 +448,7 @@ export default function PublicReportForm({
                         error={errors.accessCode?.message}
                         type="password"
                         placeholder="Clave de Acceso"
-                        startIcon={<FaKey className="text-base-content/40" />}
+                        startIcon={<FaKey className="text-muted-foreground" />}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -445,28 +456,29 @@ export default function PublicReportForm({
                           }
                         }}
                       />
-                      <button
+                      <Button
                         type="button"
-                        className="btn btn-primary btn-lg w-full"
+                        className="w-full"
                         onClick={verifyAccess}
                         disabled={isVerifying}
                       >
                         {isVerifying ? (
-                          <span className="loading loading-spinner loading-xs"></span>
+                          <Loader2 className="animate-spin" />
                         ) : (
                           "Verificar Acceso"
                         )}
-                      </button>
+                      </Button>
                     </>
                   )}
 
                   {isAuthenticated && cellInfo && (
                     <div className="space-y-3">
-                      <div className="alert alert-success py-2 text-sm flex justify-between items-center">
-                        <span className="font-medium">✓ Acceso verificado</span>
-                        <button
+                      <div className="rounded-md border border-primary/20 bg-primary/10 p-3 text-sm flex justify-between items-center">
+                        <span className="font-medium">Acceso verificado</span>
+                        <Button
                           type="button"
-                          className="btn btn-ghost btn-xs text-base-content/70 hover:text-base-content"
+                          variant="ghost"
+                          size="sm"
                           onClick={() => {
                             setIsAuthenticated(false);
                             setCellInfo(null);
@@ -475,27 +487,23 @@ export default function PublicReportForm({
                           }}
                         >
                           Cambiar
-                        </button>
+                        </Button>
                       </div>
 
-                      <div className="bg-base-200/50 p-3 rounded-lg space-y-2 text-sm">
+                      <div className="bg-muted/30 p-3 rounded-lg space-y-2 text-sm border">
                         <div>
-                          <span className="block text-xs text-base-content/60 uppercase">
+                          <span className="block text-xs text-muted-foreground uppercase">
                             Célula
                           </span>
-                          <span className="font-semibold text-base-content">
-                            {cellInfo.name}
-                          </span>
+                          <span className="font-semibold">{cellInfo.name}</span>
                         </div>
 
                         {cellInfo.leader && (
                           <div>
-                            <span className="block text-xs text-base-content/60 uppercase">
+                            <span className="block text-xs text-muted-foreground uppercase">
                               Líder
                             </span>
-                            <span className="text-base-content">
-                              {cellInfo.leader}
-                            </span>
+                            <span>{cellInfo.leader}</span>
                           </div>
                         )}
 
@@ -503,22 +511,18 @@ export default function PublicReportForm({
                           <div className="grid grid-cols-2 gap-2">
                             {cellInfo.sector && (
                               <div>
-                                <span className="block text-xs text-base-content/60 uppercase">
+                                <span className="block text-xs text-muted-foreground uppercase">
                                   Sector
                                 </span>
-                                <span className="text-base-content">
-                                  {cellInfo.sector}
-                                </span>
+                                <span>{cellInfo.sector}</span>
                               </div>
                             )}
                             {cellInfo.subSector && (
                               <div>
-                                <span className="block text-xs text-base-content/60 uppercase">
+                                <span className="block text-xs text-muted-foreground uppercase">
                                   Subsector
                                 </span>
-                                <span className="text-base-content">
-                                  {cellInfo.subSector}
-                                </span>
+                                <span>{cellInfo.subSector}</span>
                               </div>
                             )}
                           </div>
@@ -526,8 +530,8 @@ export default function PublicReportForm({
                       </div>
                     </div>
                   )}
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             )}
 
             {scope === "GROUP" && (
@@ -560,29 +564,49 @@ export default function PublicReportForm({
         {/* Form Fields - Only show if authenticated (for CELL scope) or if other scope */}
         {(scope !== "CELL" || isAuthenticated) && (
           <>
-            <div className="card bg-base-100 border border-base-300 shadow-sm">
-              <div className="card-body">
-                <div className="space-y-4 mt-4">
+            <Card>
+              <CardContent className="p-6">
+                <div className="space-y-4">
                   {groupedFields.map((group, i) => {
                     if (group.section) {
+                      const sectionKey = String(group.section.id || i);
+                      const isOpen = openSections[sectionKey] ?? true;
                       return (
-                        <div
-                          key={group.section.id}
-                          className="collapse collapse-arrow bg-base-300/30 px-4 py-2 border border-base-300 rounded-sm"
+                        <Collapsible
+                          key={sectionKey}
+                          open={isOpen}
+                          onOpenChange={(open) =>
+                            setOpenSections((prev) => ({
+                              ...prev,
+                              [sectionKey]: open,
+                            }))
+                          }
+                          className="rounded-lg border"
                         >
-                          <input type="checkbox" defaultChecked />
-                          <div className="collapse-title text-lg font-bold p-2 rounded-md">
-                            {group.section.label || "Sección"}
-                          </div>
-                          <div className="collapse-content">
-                            <div className="grid grid-cols-1 gap-4 pt-4">
+                          <CollapsibleTrigger asChild>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              className="w-full justify-between px-4 py-3"
+                            >
+                              <span className="text-base font-semibold">
+                                {group.section.label || "Sección"}
+                              </span>
+                              <ChevronDown
+                                className={`transition-transform ${
+                                  isOpen ? "rotate-180" : ""
+                                }`}
+                              />
+                            </Button>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="px-4 pb-4">
+                            <div className="grid grid-cols-1 gap-4 pt-2">
                               {group.fields.map((f) => renderField(f))}
                             </div>
-                          </div>
-                        </div>
+                          </CollapsibleContent>
+                        </Collapsible>
                       );
                     }
-                    // Default fields (no section)
                     return (
                       <div
                         key={`group-${i}`}
@@ -593,31 +617,32 @@ export default function PublicReportForm({
                     );
                   })}
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
-            <div className="flex flex-col md:flex-row justify-end gap-3 sticky bottom-4 bg-base-100/80 backdrop-blur-md p-4 rounded-sm border border-base-200 shadow-sm z-20">
-              <button
+            <div className="flex flex-col md:flex-row justify-end gap-3 sticky bottom-4 bg-background/80 backdrop-blur-md p-4 rounded-md border shadow-sm z-20">
+              <Button
                 type="button"
-                className="btn btn-ghost w-full md:w-auto gap-2"
+                variant="outline"
+                className="w-full md:w-auto gap-2"
                 onClick={handleSubmit(onSaveDraft)}
                 disabled={isSavingDraft || isSubmitting}
               >
                 {isSavingDraft ? (
-                  <span className="loading loading-spinner loading-xs"></span>
+                  <Loader2 className="animate-spin" />
                 ) : (
                   <FaFloppyDisk />
                 )}
                 Guardar Borrador
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                className="btn btn-primary w-full md:w-auto gap-2"
+                className="w-full md:w-auto gap-2"
                 disabled={isSubmitting || isSavingDraft}
               >
                 {isSubmitting ? (
                   <>
-                    <span className="loading loading-spinner loading-xs"></span>
+                    <Loader2 className="animate-spin" />
                     Enviando...
                   </>
                 ) : (
@@ -626,7 +651,7 @@ export default function PublicReportForm({
                     Enviar Reporte
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           </>
         )}

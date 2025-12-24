@@ -1,26 +1,28 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
   Control,
   useFieldArray,
   UseFormRegister,
   UseFormSetValue,
   UseFormWatch,
-} from 'react-hook-form';
-import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
-import { ReportFormValues } from './types';
-import { SortableField } from './SortableField';
-import { FieldEditor } from './FieldEditor';
-import { AddFieldMenu } from './AddFieldMenu';
-import { FieldsEmptyState } from './FieldsEmptyState';
-import { GeneralSettingsForm } from './GeneralSettingsForm';
-import { LivePreview } from './LivePreview';
-import { ReportFieldType } from '@/generated/prisma/client';
+} from "react-hook-form";
+import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
+import { ReportFormValues } from "./types";
+import { SortableField } from "./SortableField";
+import { FieldEditor } from "./FieldEditor";
+import { AddFieldMenu } from "./AddFieldMenu";
+import { FieldsEmptyState } from "./FieldsEmptyState";
+import { GeneralSettingsForm } from "./GeneralSettingsForm";
+import { LivePreview } from "./LivePreview";
+import { ReportFieldType } from "@/generated/prisma/client";
 
-import { SortableSection } from './SortableSection';
-import { generateTempId } from './utils';
-import { BottomDropZone } from './DropZone';
+import { SortableSection } from "./SortableSection";
+import { generateTempId } from "./utils";
+import { BottomDropZone } from "./DropZone";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 
 interface ReportBuilderProps {
   control: Control<ReportFormValues>;
@@ -37,7 +39,7 @@ export function ReportBuilder({
 }: ReportBuilderProps) {
   const { fields, append, remove, replace, insert } = useFieldArray({
     control,
-    name: 'fields',
+    name: "fields",
   });
 
   const getStableId = React.useCallback((field: any) => {
@@ -55,7 +57,7 @@ export function ReportBuilder({
       }
     >
   >(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const key = `report-builder-ui-state-${window.location.pathname}`;
       try {
         const stored = localStorage.getItem(key);
@@ -63,7 +65,7 @@ export function ReportBuilder({
           return JSON.parse(stored);
         }
       } catch (e) {
-        console.error('Failed to load ui state', e);
+        console.error("Failed to load ui state", e);
       }
     }
     return {};
@@ -71,7 +73,7 @@ export function ReportBuilder({
 
   // Persist UI State
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const key = `report-builder-ui-state-${window.location.pathname}`;
       localStorage.setItem(key, JSON.stringify(uiState));
     }
@@ -79,7 +81,7 @@ export function ReportBuilder({
 
   const toggleUiState = (
     id: string,
-    key: 'section' | 'options' | 'advanced'
+    key: "section" | "options" | "advanced"
   ) => {
     setUiState((prev) => {
       const current = prev[id]?.[key];
@@ -87,7 +89,7 @@ export function ReportBuilder({
       // Section: true (expanded)
       // Options: true
       // Advanced: false
-      const defaultValue = key === 'advanced' ? false : true;
+      const defaultValue = key === "advanced" ? false : true;
       const newValue = current === undefined ? !defaultValue : !current;
 
       return {
@@ -102,15 +104,15 @@ export function ReportBuilder({
 
   const getUiState = (
     id: string | undefined,
-    key: 'section' | 'options' | 'advanced'
+    key: "section" | "options" | "advanced"
   ) => {
     if (!id) {
-      if (key === 'advanced') return false;
+      if (key === "advanced") return false;
       return true;
     }
     const val = uiState[id]?.[key];
     if (val !== undefined) return val;
-    if (key === 'advanced') return false;
+    if (key === "advanced") return false;
     return true;
   };
 
@@ -130,13 +132,13 @@ export function ReportBuilder({
     }
   }, [fields, replace]);
 
-  const SECTION_BREAK_VALUE = 'SECTION_BREAK';
+  const SECTION_BREAK_VALUE = "SECTION_BREAK";
 
   // Group fields by section for rendering
   const groupedFields = React.useMemo(() => {
     const groups: {
       id: string;
-      type: 'SECTION' | 'FIELD';
+      type: "SECTION" | "FIELD";
       field: any;
       index: number;
       children: { field: any; index: number }[];
@@ -148,7 +150,7 @@ export function ReportBuilder({
     fields.forEach((field, index) => {
       const stableId = getStableId(field) || `fallback_${index}`;
 
-      if (field.type === 'SECTION') {
+      if (field.type === "SECTION") {
         if (field.value === SECTION_BREAK_VALUE) {
           currentSection = null;
           return;
@@ -156,7 +158,7 @@ export function ReportBuilder({
 
         currentSection = {
           id: stableId,
-          type: 'SECTION',
+          type: "SECTION",
           field,
           index,
           children: [],
@@ -170,7 +172,7 @@ export function ReportBuilder({
         } else {
           groups.push({
             id: stableId,
-            type: 'FIELD',
+            type: "FIELD",
             field,
             index,
             children: [],
@@ -197,7 +199,7 @@ export function ReportBuilder({
     let sourceStartIndex = -1;
     let sourceEndIndex = -1;
 
-    if (source.droppableId === 'ROOT') {
+    if (source.droppableId === "ROOT") {
       const group = groupedFields[source.index];
       if (!group) return;
 
@@ -205,7 +207,7 @@ export function ReportBuilder({
       sourceEndIndex = group.endIndex;
 
       // If it's a section, check if there's a break after it to include
-      if (group.type === 'SECTION') {
+      if (group.type === "SECTION") {
         const nextField = fields[group.endIndex + 1];
         if (nextField && nextField.value === SECTION_BREAK_VALUE) {
           sourceEndIndex = group.endIndex + 1;
@@ -224,14 +226,14 @@ export function ReportBuilder({
     let destIndex = -1;
     let needsBreak = false;
 
-    if (destination.droppableId === 'bottom-drop-zone') {
+    if (destination.droppableId === "bottom-drop-zone") {
       destIndex = fields.length;
-    } else if (destination.droppableId === 'ROOT') {
+    } else if (destination.droppableId === "ROOT") {
       let targetGroupIndex = destination.index - 1;
 
       // When moving an item down within the same list, we need to insert *after* the item
       // that is currently at the destination index, because the source item will be removed.
-      if (source.droppableId === 'ROOT' && source.index < destination.index) {
+      if (source.droppableId === "ROOT" && source.index < destination.index) {
         targetGroupIndex = destination.index;
       }
 
@@ -247,7 +249,7 @@ export function ReportBuilder({
           destIndex = prevGroup.endIndex + 1;
 
           // Check if we are inserting after a Section that needs a break
-          if (prevGroup.type === 'SECTION') {
+          if (prevGroup.type === "SECTION") {
             const nextField = fields[destIndex];
             // If the next field is a break, we insert after it
             if (nextField && nextField.value === SECTION_BREAK_VALUE) {
@@ -290,8 +292,8 @@ export function ReportBuilder({
       newFields.splice(finalDestIndex, 0, {
         id: generateTempId(),
         tempId: generateTempId(),
-        type: 'SECTION',
-        label: 'Section Break',
+        type: "SECTION",
+        label: "Section Break",
         key: `break_${Date.now()}`,
         value: SECTION_BREAK_VALUE,
         required: false,
@@ -310,7 +312,7 @@ export function ReportBuilder({
       id: generateTempId(),
       tempId: generateTempId(),
       type,
-      label: type === 'SECTION' ? 'Nueva Sección' : 'Nuevo Campo',
+      label: type === "SECTION" ? "Nueva Sección" : "Nuevo Campo",
       key: `${type.toLowerCase()}_${Date.now()}`,
       required: false,
       order: fields.length,
@@ -321,15 +323,15 @@ export function ReportBuilder({
     const lastGroup = groupedFields[groupedFields.length - 1];
     let itemsToAdd: any[] = [newField];
 
-    if (lastGroup && lastGroup.type === 'SECTION') {
+    if (lastGroup && lastGroup.type === "SECTION") {
       const lastField = fields[fields.length - 1];
       if (lastField.value !== SECTION_BREAK_VALUE) {
         itemsToAdd = [
           {
             id: generateTempId(),
             tempId: generateTempId(),
-            type: 'SECTION',
-            label: 'Section Break',
+            type: "SECTION",
+            label: "Section Break",
             key: `break_${Date.now()}`,
             value: SECTION_BREAK_VALUE,
             required: false,
@@ -344,8 +346,8 @@ export function ReportBuilder({
 
     append(itemsToAdd);
 
-    if (type === 'SECTION') {
-      toggleUiState(newField.tempId, 'section');
+    if (type === "SECTION") {
+      toggleUiState(newField.tempId, "section");
     }
   };
 
@@ -357,7 +359,7 @@ export function ReportBuilder({
       id: generateTempId(),
       tempId: generateTempId(),
       type,
-      label: type === 'SECTION' ? 'Nueva Sección' : 'Nuevo Campo',
+      label: type === "SECTION" ? "Nueva Sección" : "Nuevo Campo",
       key: `${type.toLowerCase()}_${Date.now()}`,
       required: false,
       order: 0, // Order will be handled by array position
@@ -369,8 +371,8 @@ export function ReportBuilder({
     // group.endIndex is the index of the last child (or the section header if no children)
     insert(group.endIndex + 1, newField);
 
-    if (type === 'SECTION') {
-      toggleUiState(newField.tempId, 'section');
+    if (type === "SECTION") {
+      toggleUiState(newField.tempId, "section");
     }
   };
 
@@ -387,8 +389,8 @@ export function ReportBuilder({
   };
 
   const [activeTab, setActiveTab] = React.useState<
-    'settings' | 'fields' | 'preview'
-  >('settings');
+    "settings" | "fields" | "preview"
+  >("settings");
   const [isDragging, setIsDragging] = React.useState(false);
   const values = watch();
 
@@ -398,36 +400,25 @@ export function ReportBuilder({
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold">Constructor de Reporte</h2>
-          {activeTab === 'fields' && <AddFieldMenu onAdd={addField} />}
+          {activeTab === "fields" && <AddFieldMenu onAdd={addField} />}
         </div>
 
-        <div role="tablist" className="tabs tabs-boxed mb-4">
-          <a
-            role="tab"
-            className={`tab ${activeTab === 'settings' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('settings')}
-          >
-            Configuración General
-          </a>
-          <a
-            role="tab"
-            className={`tab ${activeTab === 'fields' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('fields')}
-          >
-            Campos del Reporte
-          </a>
-          <a
-            role="tab"
-            className={`tab lg:hidden ${
-              activeTab === 'preview' ? 'tab-active' : ''
-            }`}
-            onClick={() => setActiveTab('preview')}
-          >
-            Vista Previa
-          </a>
-        </div>
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) =>
+            setActiveTab(value as "settings" | "fields" | "preview")
+          }
+        >
+          <TabsList className="w-full justify-start">
+            <TabsTrigger value="settings">Configuración General</TabsTrigger>
+            <TabsTrigger value="fields">Campos del Reporte</TabsTrigger>
+            <TabsTrigger value="preview" className="lg:hidden">
+              Vista Previa
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
 
-        {activeTab === 'settings' && (
+        {activeTab === "settings" && (
           <GeneralSettingsForm
             control={control}
             register={register}
@@ -436,7 +427,7 @@ export function ReportBuilder({
           />
         )}
 
-        {activeTab === 'fields' && (
+        {activeTab === "fields" && (
           <>
             {fields.length === 0 ? (
               <FieldsEmptyState />
@@ -458,7 +449,7 @@ export function ReportBuilder({
                       >
                         {groupedFields.map((group, index) => (
                           <React.Fragment key={group.id}>
-                            {group.type === 'SECTION' ? (
+                            {group.type === "SECTION" ? (
                               <SortableSection
                                 id={group.id}
                                 index={index}
@@ -475,23 +466,23 @@ export function ReportBuilder({
                                     }
                                     advancedExpanded={getUiState(
                                       group.id,
-                                      'advanced'
+                                      "advanced"
                                     )}
                                     onToggleAdvanced={() =>
-                                      toggleUiState(group.id, 'advanced')
+                                      toggleUiState(group.id, "advanced")
                                     }
                                     optionsExpanded={getUiState(
                                       group.id,
-                                      'options'
+                                      "options"
                                     )}
                                     onToggleOptions={() =>
-                                      toggleUiState(group.id, 'options')
+                                      toggleUiState(group.id, "options")
                                     }
                                   />
                                 }
-                                isExpanded={getUiState(group.id, 'section')}
+                                isExpanded={getUiState(group.id, "section")}
                                 onToggle={() =>
-                                  toggleUiState(group.id, 'section')
+                                  toggleUiState(group.id, "section")
                                 }
                                 isDropDisabled={false}
                                 footer={
@@ -499,12 +490,17 @@ export function ReportBuilder({
                                     onAdd={(type) =>
                                       addFieldToSection(index, type)
                                     }
-                                    className="dropdown-top w-full"
+                                    className="w-full"
                                     trigger={
-                                      <div className="btn btn-ghost btn-sm w-full border border-dashed border-base-300 hover:border-primary hover:bg-base-100 text-base-content/50 hover:text-primary flex gap-2 normal-case transition-all">
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="outline"
+                                        className="w-full border-dashed text-muted-foreground hover:text-primary"
+                                      >
                                         <span className="text-lg">+</span>
                                         <span>Agregar Campo</span>
-                                      </div>
+                                      </Button>
                                     }
                                   />
                                 }
@@ -533,22 +529,22 @@ export function ReportBuilder({
                                       }
                                       advancedExpanded={getUiState(
                                         getStableId(child.field),
-                                        'advanced'
+                                        "advanced"
                                       )}
                                       onToggleAdvanced={() =>
                                         toggleUiState(
                                           getStableId(child.field),
-                                          'advanced'
+                                          "advanced"
                                         )
                                       }
                                       optionsExpanded={getUiState(
                                         getStableId(child.field),
-                                        'options'
+                                        "options"
                                       )}
                                       onToggleOptions={() =>
                                         toggleUiState(
                                           getStableId(child.field),
-                                          'options'
+                                          "options"
                                         )
                                       }
                                     />
@@ -569,17 +565,17 @@ export function ReportBuilder({
                                   }
                                   advancedExpanded={getUiState(
                                     group.id,
-                                    'advanced'
+                                    "advanced"
                                   )}
                                   onToggleAdvanced={() =>
-                                    toggleUiState(group.id, 'advanced')
+                                    toggleUiState(group.id, "advanced")
                                   }
                                   optionsExpanded={getUiState(
                                     group.id,
-                                    'options'
+                                    "options"
                                   )}
                                   onToggleOptions={() =>
-                                    toggleUiState(group.id, 'options')
+                                    toggleUiState(group.id, "options")
                                   }
                                 />
                               </SortableField>
@@ -599,12 +595,16 @@ export function ReportBuilder({
                     />
                     <AddFieldMenu
                       onAdd={addField}
-                      className="dropdown-top w-full"
+                      className="w-full"
                       trigger={
-                        <div className="btn btn-ghost btn-block h-24 border-2 border-dashed border-base-300 hover:border-primary hover:bg-base-100 text-base-content/50 hover:text-primary flex gap-2 normal-case transition-all">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="h-24 w-full border-2 border-dashed text-muted-foreground hover:text-primary"
+                        >
                           <span className="text-3xl">+</span>
                           <span className="text-lg">Agregar Campo</span>
-                        </div>
+                        </Button>
                       }
                     />
                   </div>
@@ -614,7 +614,7 @@ export function ReportBuilder({
           </>
         )}
 
-        {activeTab === 'preview' && (
+        {activeTab === "preview" && (
           <div className="lg:hidden">
             <LivePreview values={values} />
           </div>
@@ -622,7 +622,7 @@ export function ReportBuilder({
       </div>
 
       {/* Right Column: Preview (Desktop Only) */}
-      <div className="hidden lg:block lg:pl-8 lg:border-l border-base-200">
+      <div className="hidden lg:block lg:pl-8 lg:border-l border-border">
         <div className="sticky top-6">
           <h2 className="text-2xl font-bold mb-6">Vista Previa</h2>
           <LivePreview values={values} />

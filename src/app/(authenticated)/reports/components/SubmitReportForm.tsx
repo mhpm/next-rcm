@@ -11,6 +11,14 @@ import {
 } from "@/app/(authenticated)/reports/actions/reports.actions";
 import { useRouter } from "next/navigation";
 import { useNotificationStore } from "@/store/NotificationStore";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDown, Loader2 } from "lucide-react";
 
 type Option = { value: string; label: string };
 
@@ -75,6 +83,16 @@ export default function SubmitReportForm({
   const watchedCellId = watch("cellId");
   const watchedGroupId = watch("groupId");
   const watchedSectorId = watch("sectorId");
+
+  const [openSections, setOpenSections] = React.useState<
+    Record<string, boolean>
+  >({});
+
+  const getSectionOpen = (sectionId: string) => openSections[sectionId] ?? true;
+
+  const setSectionOpen = (sectionId: string, open: boolean) => {
+    setOpenSections((prev) => ({ ...prev, [sectionId]: open }));
+  };
 
   React.useEffect(() => {
     const fetchMembers = async () => {
@@ -287,7 +305,7 @@ export default function SubmitReportForm({
         <div className="md:col-span-2">
           <h2 className="text-xl font-semibold">{title}</h2>
           {description && (
-            <p className="text-base-content/70 mt-2">{description}</p>
+            <p className="text-muted-foreground mt-2">{description}</p>
           )}
         </div>
         <div className="md:col-span-1">
@@ -329,26 +347,43 @@ export default function SubmitReportForm({
         </div>
       </div>
 
-      <div className="card bg-base-100 border border-base-300">
-        <div className="card-body">
+      <Card>
+        <CardContent className="p-6">
           <div className="space-y-4 mt-4">
             {groupedFields.map((group, i) => {
               if (group.section) {
+                const sectionId = group.section.id;
+                const sectionLabel = group.section.label || "Sección";
+                const isOpen = getSectionOpen(sectionId);
                 return (
-                  <div
-                    key={group.section.id}
-                    className="collapse collapse-arrow bg-base-50 border border-base-200"
+                  <Collapsible
+                    key={sectionId}
+                    open={isOpen}
+                    onOpenChange={(open) => setSectionOpen(sectionId, open)}
+                    className="rounded-lg border"
                   >
-                    <input type="checkbox" defaultChecked />
-                    <div className="collapse-title text-lg font-bold">
-                      {group.section.label || "Sección"}
-                    </div>
-                    <div className="collapse-content">
-                      <div className="grid grid-cols-1 gap-4 pt-4">
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="w-full justify-between px-4 py-3"
+                      >
+                        <span className="text-base font-semibold">
+                          {sectionLabel}
+                        </span>
+                        <ChevronDown
+                          className={`transition-transform ${
+                            isOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="px-4 pb-4">
+                      <div className="grid grid-cols-1 gap-4 pt-2">
                         {group.fields.map((f) => renderField(f))}
                       </div>
-                    </div>
-                  </div>
+                    </CollapsibleContent>
+                  </Collapsible>
                 );
               }
               // Default fields (no section)
@@ -359,32 +394,28 @@ export default function SubmitReportForm({
               );
             })}
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       <div className="flex justify-end gap-3">
-        <button
+        <Button
           type="button"
-          className="btn"
+          variant="outline"
           onClick={() => router.push("/reports")}
           disabled={isSubmitting}
         >
           Cancelar
-        </button>
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={isSubmitting}
-        >
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <>
-              <span className="loading loading-spinner loading-xs"></span>
+              <Loader2 className="animate-spin" />
               Enviando...
             </>
           ) : (
             "Enviar"
           )}
-        </button>
+        </Button>
       </div>
     </form>
   );

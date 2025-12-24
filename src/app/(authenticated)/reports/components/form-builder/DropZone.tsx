@@ -32,7 +32,7 @@ export function BottomDropZone({
                 ? 'border-primary bg-primary/10 text-primary h-32 relative z-50 scale-[1.02] shadow-xl'
                 : isDragging
                 ? 'border-primary/50 bg-primary/5 text-primary/50 h-32 relative z-40'
-                : 'border-base-300 bg-base-100/50 text-base-content/30 h-24 hover:border-base-content/30'
+                : 'border-border bg-muted/20 text-muted-foreground/60 h-24 hover:border-muted-foreground/60'
             }
           `}
         >

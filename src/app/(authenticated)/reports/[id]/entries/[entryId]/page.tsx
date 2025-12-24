@@ -1,6 +1,8 @@
 import { getChurchPrisma } from "@/actions/churchContext";
 import { notFound } from "next/navigation";
 import { BackLink, Breadcrumbs } from "@/components";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 export default async function ViewReportEntryPage({
   params,
@@ -100,13 +102,13 @@ export default async function ViewReportEntryPage({
         <Breadcrumbs />
       </div>
 
-      <div
-        className="card bg-base-100 shadow-md max-w-3xl mx-auto border-t-8"
+      <Card
+        className="max-w-3xl mx-auto border-t-8"
         style={{ borderTopColor: report.color || "#3b82f6" }}
       >
-        <div className="card-body">
+        <CardContent className="p-6">
           <h1 className="text-2xl font-bold mb-2">{report.title}</h1>
-          <div className="text-sm text-base-content/70 mb-6 flex flex-col gap-1">
+          <div className="text-sm text-muted-foreground mb-6 flex flex-col gap-1">
             <p>
               Entidad: <span className="font-semibold">{entidad}</span>
             </p>
@@ -136,7 +138,7 @@ export default async function ViewReportEntryPage({
             </p>
           </div>
 
-          <div className="divider"></div>
+          <Separator />
 
           <div className="space-y-6">
             {report.fields.map((f) => {
@@ -146,9 +148,7 @@ export default async function ViewReportEntryPage({
 
               if (val == null || val === "")
                 display = (
-                  <span className="text-base-content/40 italic">
-                    Sin respuesta
-                  </span>
+                  <span className="text-muted-foreground italic">Sin respuesta</span>
                 );
               else if (f.type === "BOOLEAN") display = val ? "Sí" : "No";
               else if (f.type === "DATE")
@@ -162,9 +162,9 @@ export default async function ViewReportEntryPage({
               return (
                 <div
                   key={f.id}
-                  className="border-b border-base-200 pb-3 last:border-0"
+                  className="border-b border-border pb-3 last:border-0"
                 >
-                  <h3 className="font-semibold text-sm text-base-content/60 mb-1">
+                  <h3 className="font-semibold text-sm text-muted-foreground mb-1">
                     {f.label || f.key}
                   </h3>
                   <div className="text-lg">{display}</div>
@@ -172,8 +172,8 @@ export default async function ViewReportEntryPage({
               );
             })}
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

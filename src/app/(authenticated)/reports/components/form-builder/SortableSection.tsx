@@ -38,11 +38,11 @@ export function SortableSection({
             marginBottom: '16px',
             opacity: snapshot.isDragging ? 0.6 : 1,
           }}
-          className={`border rounded-lg bg-base-100 shadow-sm`}
+          className="border rounded-lg bg-card shadow-sm"
         >
-          <div className="flex items-start p-2 bg-base-200/50 rounded-t-lg border-b border-base-200">
+          <div className="flex items-start p-2 bg-muted/50 rounded-t-lg border-b border-border">
             <div
-              className="mt-3 mr-2 cursor-grab active:cursor-grabbing text-base-content/40 hover:text-base-content"
+              className="mt-3 mr-2 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
               {...provided.dragHandleProps}
             >
               <RiDraggable size={20} />
@@ -51,7 +51,7 @@ export function SortableSection({
             <button
               type="button"
               onClick={onToggle}
-              className="mt-3 mr-2 text-base-content/40 hover:text-base-content transition-colors"
+              className="mt-3 mr-2 text-muted-foreground hover:text-foreground transition-colors"
               onPointerDown={(e) => e.stopPropagation()}
             >
               {isExpanded ? (
@@ -76,7 +76,7 @@ export function SortableSection({
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                     className={`p-4 space-y-3 transition-colors ${
-                      snapshot.isDraggingOver ? 'bg-primary/5' : 'bg-base-50/50'
+                      snapshot.isDraggingOver ? 'bg-primary/5' : 'bg-muted/20'
                     } ${footer ? '' : 'rounded-b-lg'}`}
                   >
                     {children}
@@ -85,7 +85,7 @@ export function SortableSection({
                 )}
               </Droppable>
               {footer && (
-                <div className="p-4 bg-base-50/50 border-t border-base-200 rounded-b-lg">
+                <div className="p-4 bg-muted/20 border-t border-border rounded-b-lg">
                   {footer}
                 </div>
               )}

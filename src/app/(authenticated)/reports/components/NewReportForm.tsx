@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { createReport } from "../actions/reports.actions";
 import { useRouter } from "next/navigation";
 import { ReportFormValues, ReportBuilder } from "./form-builder";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 export default function NewReportForm() {
   const router = useRouter();
@@ -50,11 +52,9 @@ export default function NewReportForm() {
 
   return (
     <div className="space-y-6">
-      <div className="prose max-w-none">
+      <div className="space-y-1">
         <h1 className="text-2xl font-bold">Crear Nuevo Reporte</h1>
-        <p className="text-base-content/70">
-          Diseña la estructura de tu reporte.
-        </p>
+        <p className="text-muted-foreground">Diseña la estructura de tu reporte.</p>
       </div>
 
       <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
@@ -66,28 +66,24 @@ export default function NewReportForm() {
         />
 
         <div className="flex justify-end gap-4">
-          <button
+          <Button
             type="button"
-            className="btn"
+            variant="outline"
             onClick={() => router.back()}
             disabled={isSubmitting}
           >
             Cancelar
-          </button>
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={isSubmitting}
-          >
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
-                <span className="loading loading-spinner"></span>
+                <Loader2 className="animate-spin" />
                 Guardando...
               </>
             ) : (
               "Guardar Reporte"
             )}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

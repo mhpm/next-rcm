@@ -618,7 +618,7 @@ function DataTable<T extends Record<string, unknown>>({
                       setCurrentPage(1);
                     }}
                   >
-                    <SelectTrigger className="w-24">
+                    <SelectTrigger className="w-24 text-foreground">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -703,7 +703,7 @@ function DataTable<T extends Record<string, unknown>>({
                     setCurrentPage(1);
                   }}
                 >
-                  <SelectTrigger className="w-28">
+                  <SelectTrigger className="w-28 text-foreground">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

@@ -57,7 +57,7 @@ export default function EditCellPage({
       </div>
       <div className="flex flex-col gap-4">
         <Tabs defaultValue="info" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="w-full justify-start">
             <TabsTrigger value="info">Información</TabsTrigger>
             <TabsTrigger value="members">Miembros</TabsTrigger>
           </TabsList>

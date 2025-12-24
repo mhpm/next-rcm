@@ -10,6 +10,7 @@ import {
 import { InputField, SelectField } from "@/components/FormControls";
 import { ColorPicker } from "./ColorPicker";
 import { ReportFormValues } from "./types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface GeneralSettingsFormProps {
   register: UseFormRegister<ReportFormValues>;
@@ -28,9 +29,11 @@ export function GeneralSettingsForm({
   const watchedValues = watch();
 
   return (
-    <div className="card bg-base-100 border border-base-300 shadow-sm">
-      <div className="card-body p-6">
-        <h3 className="font-semibold text-lg mb-4">Configuración General</h3>
+    <Card>
+      <CardHeader className="pb-4">
+        <CardTitle className="text-lg">Configuración General</CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0">
         <div className="space-y-4">
           <InputField
             name="title"
@@ -61,7 +64,7 @@ export function GeneralSettingsForm({
             onChange={(color) => setValue("color", color)}
           />
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

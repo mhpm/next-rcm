@@ -17,12 +17,10 @@ export default async function PublicReportPage({
   if (!entities) notFound(); // Should not happen if report exists, but good for safety
 
   return (
-    <div className="min-h-screen bg-base-200 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary">
-            {report.church.name}
-          </h1>
+    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold">{report.church.name}</h1>
         </div>
 
         <PublicReportForm
@@ -50,9 +48,7 @@ export default async function PublicReportPage({
           sectors={entities.sectors.map((s) => ({
             value: s.id,
             label: `${s.name}${
-              s.supervisor
-                ? ` - ${s.supervisor.firstName} ${s.supervisor.lastName}`
-                : ""
+              s.supervisor ? ` - ${s.supervisor.firstName} ${s.supervisor.lastName}` : ""
             }`,
           }))}
           members={entities.members.map((m) => ({

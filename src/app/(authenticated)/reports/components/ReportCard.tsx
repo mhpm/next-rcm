@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useRef, useState, useTransition } from 'react';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   FaFileLines,
   FaPenToSquare,
@@ -47,67 +49,80 @@ export default function ReportCard({ report }: ReportCardProps) {
   };
 
   return (
-    <div
-      className="card relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] border-none text-white"
-      style={{
-        backgroundColor: report.color || '#3b82f6',
-      }}
+    <Card
+      className="relative overflow-hidden border-0 text-white transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
+      style={{ backgroundColor: report.color || '#3b82f6' }}
     >
       {/* Background Icon */}
       <div className="absolute -right-6 -bottom-8 text-white opacity-20 rotate-12 pointer-events-none">
         <FaFileSignature className="text-9xl" />
       </div>
 
-      <div className="card-body relative z-10 p-6">
+      <CardContent className="relative z-10 p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <Link href={`/reports/${report.id}/submit`} className="flex-1">
-            <h2 className="card-title text-2xl font-bold text-white mb-2 line-clamp-2">
+            <h2 className="text-2xl font-bold text-white mb-2 line-clamp-2">
               {report.title}
             </h2>
           </Link>
           <div className="flex w-full lg:w-auto justify-around sm:items-center gap-1 bg-white/20 backdrop-blur-md rounded-lg p-1 shadow-sm">
             {report.publicToken && (
               <>
-                <Link
-                  href={`/public/reports/${report.publicToken}`}
-                  target="_blank"
-                  className="btn btn-ghost btn-sm btn-square text-white hover:bg-white/20"
+                <Button
+                  asChild
+                  size="icon"
+                  variant="ghost"
+                  className="h-9 w-9 text-white hover:bg-white/20"
                   title="Ir al reporte público"
                 >
-                  <FaArrowUpRightFromSquare className="text-lg" />
-                </Link>
-                <button
+                  <Link href={`/public/reports/${report.publicToken}`} target="_blank">
+                    <FaArrowUpRightFromSquare className="text-lg" />
+                  </Link>
+                </Button>
+                <Button
                   type="button"
-                  className="btn btn-ghost btn-sm btn-square text-white hover:bg-white/20"
+                  size="icon"
+                  variant="ghost"
+                  className="h-9 w-9 text-white hover:bg-white/20"
                   title="Copiar enlace público"
                   onClick={handleCopyLink}
                 >
                   <FaShareNodes className="text-lg" />
-                </button>
+                </Button>
               </>
             )}
-            <Link
-              href={`/reports/${report.id}/edit`}
-              className="btn btn-ghost btn-sm btn-square text-white hover:bg-white/20"
+            <Button
+              asChild
+              size="icon"
+              variant="ghost"
+              className="h-9 w-9 text-white hover:bg-white/20"
               title="Editar"
             >
-              <FaPenToSquare className="text-lg" />
-            </Link>
-            <Link
-              href={`/reports/${report.id}/entries`}
-              className="btn btn-ghost btn-sm btn-square text-white hover:bg-white/20"
+              <Link href={`/reports/${report.id}/edit`}>
+                <FaPenToSquare className="text-lg" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="icon"
+              variant="ghost"
+              className="h-9 w-9 text-white hover:bg-white/20"
               title="Ver entradas"
             >
-              <FaTable className="text-lg" />
-            </Link>
-            <button
+              <Link href={`/reports/${report.id}/entries`}>
+                <FaTable className="text-lg" />
+              </Link>
+            </Button>
+            <Button
               type="button"
-              className="btn btn-ghost btn-sm btn-square text-white hover:bg-white/20 hover:text-red-200"
+              size="icon"
+              variant="ghost"
+              className="h-9 w-9 text-white hover:bg-white/20 hover:text-red-200"
               title="Eliminar"
               onClick={() => setOpen(true)}
             >
               <FaTrash className="text-lg" />
-            </button>
+            </Button>
             <form
               ref={formRef}
               action={deleteReportAction}
@@ -131,7 +146,7 @@ export default function ReportCard({ report }: ReportCardProps) {
             {new Date(report.createdAt).toLocaleDateString()}
           </span>
         </div>
-      </div>
+      </CardContent>
 
       <DeleteConfirmationModal
         open={open}
@@ -141,6 +156,6 @@ export default function ReportCard({ report }: ReportCardProps) {
         isPending={isPending}
         description="Se eliminará el reporte y todas sus entradas asociadas. Esta acción no se puede deshacer."
       />
-    </div>
+    </Card>
   );
 }

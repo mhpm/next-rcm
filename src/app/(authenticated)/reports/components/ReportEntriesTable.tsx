@@ -10,6 +10,20 @@ import { deleteReportEntryAction } from "@/app/(authenticated)/reports/actions/r
 import { RiFilter3Line } from "react-icons/ri";
 import AdvancedFilterModal, { FilterField } from "./AdvancedFilterModal";
 import { usePersistentFilters } from "@/hooks/usePersistentFilters";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Custom hook for scoped column visibility
 function useReportColumnVisibility(
@@ -480,97 +494,109 @@ export default function ReportEntriesTable({
         showColumnVisibility={true}
         searchEndContent={
           <div className="flex items-start gap-4">
-            <div className="tooltip" data-tip="Filtros avanzados">
-              <button
-                className={`btn btn-square h-10 min-h-10 w-12 ${
-                  Object.keys(activeFilters).length > 0
-                    ? "btn-primary"
-                    : "btn-ghost bg-base-200 border border-base-300"
-                }`}
-                onClick={() => setIsFilterModalOpen(true)}
-              >
-                <RiFilter3Line className="w-5 h-5" />
-              </button>
-            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant={
+                      Object.keys(activeFilters).length > 0 ? "default" : "outline"
+                    }
+                    size="icon"
+                    className="h-10 w-12"
+                    onClick={() => setIsFilterModalOpen(true)}
+                  >
+                    <RiFilter3Line className="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Filtros avanzados</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             {/* Year Selector */}
-            <select
-              className="select select-bordered w-64 h-10 min-h-10"
-              value={selectedYear}
-              onChange={(e) => handleYearChange(Number(e.target.value))}
+            <Select
+              value={String(selectedYear)}
+              onValueChange={(v) => handleYearChange(Number(v))}
             >
-              {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map(
-                (year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                )
-              )}
-            </select>
+              <SelectTrigger className="w-64">
+                <SelectValue placeholder="Año" />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map(
+                  (year) => (
+                    <SelectItem key={year} value={String(year)}>
+                      {year}
+                    </SelectItem>
+                  )
+                )}
+              </SelectContent>
+            </Select>
 
             {/* Type Selector */}
-            <select
-              className="select select-bordered h-10 min-h-10"
-              value={filterType}
-              onChange={(e) => handleTypeChange(e.target.value as any)}
-            >
-              <option value="year">Todo el año</option>
-              <option value="cuatrimestre">Por Cuatrimestre</option>
-              <option value="trimestre">Por Trimestre</option>
-              <option value="month">Por Mes</option>
-            </select>
+            <Select value={filterType} onValueChange={(v) => handleTypeChange(v as any)}>
+              <SelectTrigger className="w-56">
+                <SelectValue placeholder="Tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="year">Todo el año</SelectItem>
+                <SelectItem value="cuatrimestre">Por Cuatrimestre</SelectItem>
+                <SelectItem value="trimestre">Por Trimestre</SelectItem>
+                <SelectItem value="month">Por Mes</SelectItem>
+              </SelectContent>
+            </Select>
 
             {/* Dynamic Controls */}
             {filterType === "cuatrimestre" && (
-              <div className="join mr-8">
+              <div className="flex mr-8">
                 {[1, 2, 3].map((q) => (
-                  <button
+                  <Button
                     key={q}
-                    className={`btn join-item h-10 min-h-10 ${
-                      selectedPeriod === q
-                        ? "btn-active btn-primary"
-                        : "bg-base-100 border-base-300 hover:bg-base-200"
-                    }`}
+                    type="button"
+                    variant={selectedPeriod === q ? "default" : "outline"}
+                    className={`h-10 rounded-none ${
+                      q === 1 ? "rounded-l-md" : ""
+                    } ${q === 3 ? "rounded-r-md" : ""}`}
                     onClick={() => handlePeriodClick(q)}
                   >
                     {q}º C
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
 
             {filterType === "trimestre" && (
-              <div className="join mr-10">
+              <div className="flex mr-10">
                 {[1, 2, 3, 4].map((t) => (
-                  <button
+                  <Button
                     key={t}
-                    className={`btn join-item h-10 min-h-10 ${
-                      selectedPeriod === t
-                        ? "btn-active btn-primary"
-                        : "bg-base-100 border-base-300 hover:bg-base-200"
-                    }`}
+                    type="button"
+                    variant={selectedPeriod === t ? "default" : "outline"}
+                    className={`h-10 rounded-none ${
+                      t === 1 ? "rounded-l-md" : ""
+                    } ${t === 4 ? "rounded-r-md" : ""}`}
                     onClick={() => handlePeriodClick(t)}
                   >
                     {t}º T
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
 
             {filterType === "month" && (
-              <select
-                className="select select-bordered w-32 h-10 min-h-10"
-                value={selectedPeriod ?? ""}
-                onChange={(e) => handlePeriodClick(Number(e.target.value))}
+              <Select
+                value={selectedPeriod !== null ? String(selectedPeriod) : ""}
+                onValueChange={(v) => handlePeriodClick(Number(v))}
               >
-                <option value="" disabled>
-                  Seleccionar mes
-                </option>
-                {months.map((m, i) => (
-                  <option key={i} value={i}>
-                    {m}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Seleccionar mes" />
+                </SelectTrigger>
+                <SelectContent>
+                  {months.map((m, i) => (
+                    <SelectItem key={i} value={String(i)}>
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
           </div>
         }

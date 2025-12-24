@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { useFieldArray, Control, UseFormRegister } from "react-hook-form";
 import { ReportFormValues } from "./types";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ChevronDown, ChevronUp, X, Plus } from "lucide-react";
 
 export function OptionsEditor({
   nestIndex,
@@ -22,54 +24,51 @@ export function OptionsEditor({
   });
 
   return (
-    <div className="pl-4 border-l-2 border-base-200 ml-1 space-y-2">
-      <div
-        className="flex items-center justify-between cursor-pointer hover:bg-base-200/50 p-1 rounded transition-colors"
+    <div className="pl-4 border-l-2 border-border ml-1 space-y-2">
+      <Button
+        type="button"
+        variant="ghost"
+        className="w-full justify-between px-2"
         onClick={onToggle}
       >
-        <label className="label text-xs font-semibold uppercase text-base-content/50 cursor-pointer">
+        <span className="text-xs font-semibold uppercase text-muted-foreground">
           Opciones ({fields.length})
-        </label>
-        <button
-          type="button"
-          className="btn btn-ghost btn-xs btn-square"
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggle();
-          }}
-        >
-          {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
-        </button>
-      </div>
+        </span>
+        {isExpanded ? <ChevronUp /> : <ChevronDown />}
+      </Button>
 
       {isExpanded && (
         <div className="space-y-2 animate-in slide-in-from-top-2 duration-200">
           {fields.map((item, k) => (
             <div key={item.id} className="flex gap-2">
-              <input
+              <Input
                 {...register(`fields.${nestIndex}.options.${k}.value`, {
                   required: true,
                 })}
-                className="input input-bordered input-sm flex-1"
                 placeholder={`Opción ${k + 1}`}
               />
-              <button
+              <Button
                 type="button"
-                className="btn btn-ghost btn-xs text-error"
+                variant="ghost"
+                size="icon"
+                className="text-destructive hover:text-destructive"
                 onClick={() => remove(k)}
                 disabled={fields.length <= 1}
               >
-                ✕
-              </button>
+                <X />
+              </Button>
             </div>
           ))}
-          <button
+          <Button
             type="button"
-            className="btn btn-ghost btn-xs gap-1"
+            variant="ghost"
+            size="sm"
+            className="gap-1"
             onClick={() => append({ value: "" })}
           >
-            <span>+ Añadir opción</span>
-          </button>
+            <Plus className="h-4 w-4" />
+            Añadir opción
+          </Button>
         </div>
       )}
     </div>

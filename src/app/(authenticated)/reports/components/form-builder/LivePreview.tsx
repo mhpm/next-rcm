@@ -1,7 +1,22 @@
 import React from 'react';
 import { ReportFormValues } from './types';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { ChevronDown } from 'lucide-react';
 
 export function LivePreview({ values }: { values: Partial<ReportFormValues> }) {
+  const [openSections, setOpenSections] = React.useState<Record<string, boolean>>(
+    {}
+  );
+
   const groupedFields = React.useMemo(() => {
     const fields = values.fields || [];
     return fields.reduce((groups, f) => {
@@ -29,178 +44,152 @@ export function LivePreview({ values }: { values: Partial<ReportFormValues> }) {
 
   const renderField = (field: any, i: number) => {
     return (
-      <div
-        key={i}
-        className="form-control w-full p-4 bg-base-50 rounded-lg border border-base-200"
-      >
-        <label className="label">
-          <span className="label-text font-medium">
+      <div key={i} className="w-full rounded-lg border bg-card p-4">
+        <div className="flex items-start justify-between gap-3">
+          <Label className="font-medium">
             {field.label || `Pregunta ${i + 1}`}
-          </span>
+          </Label>
           {field.required && (
-            <span className="label-text-alt text-error">*</span>
+            <span className="text-destructive text-sm leading-none">*</span>
           )}
-        </label>
+        </div>
 
         {field.type === 'TEXT' && (
-          <input
-            type="text"
-            className="input input-bordered w-full"
-            placeholder="Tu respuesta"
-            disabled
-          />
+          <Input type="text" placeholder="Tu respuesta" disabled className="mt-2" />
         )}
 
         {field.type === 'NUMBER' && (
-          <input
-            type="number"
-            className="input input-bordered w-full"
-            placeholder="0"
-            disabled
-          />
+          <Input type="number" placeholder="0" disabled className="mt-2" />
         )}
 
         {field.type === 'CURRENCY' && (
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">
+          <div className="relative mt-2">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">
               $
             </span>
-            <input
-              type="number"
-              className="input input-bordered w-full pl-8"
-              placeholder="0.00"
-              disabled
-            />
+            <Input type="number" placeholder="0.00" disabled className="pl-8" />
           </div>
         )}
 
-        {field.type === 'DATE' && (
-          <input type="date" className="input input-bordered w-full" disabled />
-        )}
+        {field.type === 'DATE' && <Input type="date" disabled className="mt-2" />}
 
-        {field.type === 'BOOLEAN' && (
-          <select className="select select-bordered w-full" disabled>
-            <option>Selecciona una opción</option>
-            <option>Sí</option>
-            <option>No</option>
-          </select>
-        )}
-
-        {field.type === 'SELECT' && (
-          <select className="select select-bordered w-full" disabled>
-            <option>Selecciona una opción</option>
-            {field.options?.map((opt: any, idx: number) => (
-              <option key={idx}>{opt.value || opt}</option>
-            ))}
-          </select>
-        )}
-
-        {field.type === 'MEMBER_SELECT' && (
-          <select className="select select-bordered w-full" disabled>
-            <option>Selecciona un miembro</option>
-          </select>
+        {(field.type === 'BOOLEAN' ||
+          field.type === 'SELECT' ||
+          field.type === 'MEMBER_SELECT') && (
+          <Input disabled className="mt-2" placeholder="Selecciona una opción" />
         )}
       </div>
     );
   };
 
   return (
-    <div className="mockup-window border border-base-300 bg-base-200 shadow-xl h-full">
-      <div className="flex justify-center px-4 py-8 bg-base-100 h-full overflow-y-auto max-h-[calc(100vh-200px)]">
-        <div className="w-full max-w-lg space-y-6">
-          <div
-            className="text-center mb-8 border-b border-base-200 pb-6 rounded-t-lg border-t-8"
-            style={{ borderTopColor: values.color || '#3b82f6' }}
-          >
-            <h2 className="text-2xl font-bold text-base-content mt-4">
-              {values.title || 'Título del Reporte'}
-            </h2>
-            {values.description ? (
-              <p className="text-base-content/70 mt-2">{values.description}</p>
-            ) : (
-              <p className="text-base-content/30 italic mt-2">
-                Sin descripción
-              </p>
-            )}
-          </div>
+    <Card className="h-full">
+      <CardContent className="p-0 h-full">
+        <div className="flex justify-center px-4 py-6 h-full overflow-y-auto max-h-[calc(100vh-200px)]">
+          <div className="w-full max-w-lg space-y-6">
+            <div
+              className="text-center mb-8 pb-6 rounded-t-lg border-t-8"
+              style={{ borderTopColor: values.color || '#3b82f6' }}
+            >
+              <h2 className="text-2xl font-bold mt-4">
+                {values.title || 'Título del Reporte'}
+              </h2>
+              {values.description ? (
+                <p className="text-muted-foreground mt-2">{values.description}</p>
+              ) : (
+                <p className="text-muted-foreground/70 italic mt-2">Sin descripción</p>
+              )}
+            </div>
 
-          <div className="space-y-4">
-            {/* Scope Selection Preview */}
-            {values.scope === 'CELL' && (
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text font-medium">Célula</span>
-                  <span className="label-text-alt text-error">*</span>
-                </label>
-                <select className="select select-bordered w-full" disabled>
-                  <option>Selecciona una célula</option>
-                </select>
-              </div>
-            )}
-            {values.scope === 'GROUP' && (
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text font-medium">Grupo</span>
-                  <span className="label-text-alt text-error">*</span>
-                </label>
-                <select className="select select-bordered w-full" disabled>
-                  <option>Selecciona un grupo</option>
-                </select>
-              </div>
-            )}
-            {values.scope === 'SECTOR' && (
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text font-medium">Sector</span>
-                  <span className="label-text-alt text-error">*</span>
-                </label>
-                <select className="select select-bordered w-full" disabled>
-                  <option>Selecciona un sector</option>
-                </select>
-              </div>
-            )}
+            <div className="space-y-4">
+              {values.scope === 'CELL' && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <Label>Célula</Label>
+                    <span className="text-destructive text-sm leading-none">*</span>
+                  </div>
+                  <Input disabled placeholder="Selecciona una célula" />
+                </div>
+              )}
+              {values.scope === 'GROUP' && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <Label>Grupo</Label>
+                    <span className="text-destructive text-sm leading-none">*</span>
+                  </div>
+                  <Input disabled placeholder="Selecciona un grupo" />
+                </div>
+              )}
+              {values.scope === 'SECTOR' && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <Label>Sector</Label>
+                    <span className="text-destructive text-sm leading-none">*</span>
+                  </div>
+                  <Input disabled placeholder="Selecciona un sector" />
+                </div>
+              )}
 
-            {/* Dynamic Fields Preview */}
-            {groupedFields.map((group, i) => {
-              if (group.section) {
+              {groupedFields.map((group, i) => {
+                if (group.section) {
+                  const sectionKey = String(
+                    group.section.key || group.section.tempId || group.section.id || i
+                  );
+                  const isOpen = openSections[sectionKey] ?? true;
+                  return (
+                    <Collapsible
+                      key={sectionKey}
+                      open={isOpen}
+                      onOpenChange={(open) =>
+                        setOpenSections((prev) => ({ ...prev, [sectionKey]: open }))
+                      }
+                      className="rounded-lg border"
+                    >
+                      <CollapsibleTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="w-full justify-between px-4 py-3"
+                        >
+                          <span className="text-base font-semibold">
+                            {group.section.label || 'Sección'}
+                          </span>
+                          <ChevronDown
+                            className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                          />
+                        </Button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="px-4 pb-4">
+                        <div className="grid grid-cols-1 gap-4 pt-2">
+                          {group.fields.map((f, idx) => renderField(f, idx))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  );
+                }
                 return (
-                  <div
-                    key={i}
-                    className="collapse collapse-arrow bg-base-100 border border-base-200"
-                  >
-                    <input type="checkbox" defaultChecked />
-                    <div className="collapse-title text-lg font-bold">
-                      {group.section.label || 'Sección'}
-                    </div>
-                    <div className="collapse-content">
-                      <div className="grid grid-cols-1 gap-4 pt-4">
-                        {group.fields.map((f, idx) => renderField(f, idx))}
-                      </div>
-                    </div>
+                  <div key={i} className="grid grid-cols-1 gap-4">
+                    {group.fields.map((f, idx) => renderField(f, idx))}
                   </div>
                 );
-              }
-              return (
-                <div key={i} className="grid grid-cols-1 gap-4">
-                  {group.fields.map((f, idx) => renderField(f, idx))}
+              })}
+
+              {(!values.fields || values.fields.length === 0) && (
+                <div className="text-center py-8 text-muted-foreground border-2 border-dashed border-border rounded-lg">
+                  No hay preguntas añadidas
                 </div>
-              );
-            })}
+              )}
+            </div>
 
-            {(!values.fields || values.fields.length === 0) && (
-              <div className="text-center py-8 text-base-content/40 border-2 border-dashed border-base-200 rounded-lg">
-                No hay preguntas añadidas
-              </div>
-            )}
-          </div>
-
-          <div className="flex justify-end py-6 border-t border-base-200 mt-8">
-            <button className="btn btn-primary w-full sm:w-auto" disabled>
-              Enviar Reporte
-            </button>
+            <Separator />
+            <div className="flex justify-end py-4">
+              <Button disabled className="w-full sm:w-auto">
+                Enviar Reporte
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
