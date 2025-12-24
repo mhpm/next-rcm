@@ -57,10 +57,12 @@ export default function EditCellPage({
       </div>
       <div className="flex flex-col gap-4">
         <Tabs defaultValue="info" className="w-full">
-          <TabsList className="w-full justify-start">
-            <TabsTrigger value="info">Información</TabsTrigger>
-            <TabsTrigger value="members">Miembros</TabsTrigger>
-          </TabsList>
+          <div className="w-full overflow-x-auto pb-2">
+            <TabsList className="w-full min-w-max justify-start">
+              <TabsTrigger value="info">Información</TabsTrigger>
+              <TabsTrigger value="members">Miembros</TabsTrigger>
+            </TabsList>
+          </div>
           <div className="mt-4">
             <TabsContent value="info">
               <CellForm

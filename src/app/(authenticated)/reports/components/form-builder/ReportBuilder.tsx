@@ -409,13 +409,15 @@ export function ReportBuilder({
             setActiveTab(value as "settings" | "fields" | "preview")
           }
         >
-          <TabsList className="w-full justify-start">
-            <TabsTrigger value="settings">Configuración General</TabsTrigger>
-            <TabsTrigger value="fields">Campos del Reporte</TabsTrigger>
-            <TabsTrigger value="preview" className="lg:hidden">
-              Vista Previa
-            </TabsTrigger>
-          </TabsList>
+          <div className="w-full overflow-x-auto pb-2">
+            <TabsList className="w-full min-w-max justify-start">
+              <TabsTrigger value="settings">Configuración General</TabsTrigger>
+              <TabsTrigger value="fields">Campos del Reporte</TabsTrigger>
+              <TabsTrigger value="preview" className="lg:hidden">
+                Vista Previa
+              </TabsTrigger>
+            </TabsList>
+          </div>
         </Tabs>
 
         {activeTab === "settings" && (
