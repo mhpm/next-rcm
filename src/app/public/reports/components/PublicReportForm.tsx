@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { InputField, SelectField } from "@/components/FormControls";
-import type { ReportFieldType, ReportScope } from "@/generated/prisma/client";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { InputField, SelectField } from '@/components/FormControls';
+import type { ReportFieldType, ReportScope } from '@/generated/prisma/client';
 import {
   submitPublicReportEntry,
   verifyCellAccess,
   getDraftReportEntry,
-} from "../../actions";
-import { useNotificationStore } from "@/store/NotificationStore";
-import { FaLock, FaFloppyDisk, FaPaperPlane, FaKey } from "react-icons/fa6";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+} from '../../actions';
+import { useNotificationStore } from '@/store/NotificationStore';
+import { FaLock, FaFloppyDisk, FaPaperPlane, FaKey } from 'react-icons/fa6';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,13 +22,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ChevronDown, Loader2 } from "lucide-react";
+} from '@/components/ui/collapsible';
+import { ChevronDown, Loader2, Check } from 'lucide-react';
 
 type Option = { value: string; label: string };
 
@@ -107,8 +107,8 @@ export default function PublicReportForm({
   // Helper to group fields by section
   const groupedFields = (fields || []).reduce((groups, f) => {
     const lastGroup = groups[groups.length - 1];
-    if (f.type === "SECTION") {
-      if (f.value === "SECTION_BREAK") {
+    if (f.type === 'SECTION') {
+      if (f.value === 'SECTION_BREAK') {
         // Break section: start a new root group if not already there
         // Or if the last group is a section, we just ensure next items go to a root group
         if (!lastGroup || lastGroup.section) {
@@ -131,96 +131,96 @@ export default function PublicReportForm({
     const baseName = `values.${f.id}` as const;
 
     const content = (() => {
-      if (f.type === "NUMBER" || f.type === "CURRENCY") {
+      if (f.type === 'NUMBER' || f.type === 'CURRENCY') {
         return (
           <InputField<FormValues>
             name={baseName}
             label={f.label || f.key}
             register={register}
             type="number"
-            step={f.type === "CURRENCY" ? "0.01" : "1"}
-            placeholder={f.type === "CURRENCY" ? "0.00" : "0"}
+            step={f.type === 'CURRENCY' ? '0.01' : '1'}
+            placeholder={f.type === 'CURRENCY' ? '0.00' : '0'}
             rules={{
-              ...(f.required ? { required: "Requerido" } : {}),
+              ...(f.required ? { required: 'Requerido' } : {}),
               valueAsNumber: true,
             }}
             startIcon={
-              f.type === "CURRENCY" ? (
+              f.type === 'CURRENCY' ? (
                 <span className="text-gray-500 font-bold">$</span>
               ) : undefined
             }
           />
         );
       }
-      if (f.type === "BOOLEAN") {
+      if (f.type === 'BOOLEAN') {
         return (
           <SelectField<FormValues>
             name={baseName}
             label={f.label || f.key}
             control={control}
             options={[
-              { value: "", label: "Selecciona" },
-              { value: "true", label: "Sí" },
-              { value: "false", label: "No" },
+              { value: '', label: 'Selecciona' },
+              { value: 'true', label: 'Sí' },
+              { value: 'false', label: 'No' },
             ]}
             rules={{
-              ...(f.required ? { required: "Requerido" } : {}),
+              ...(f.required ? { required: 'Requerido' } : {}),
               setValueAs: (v) =>
-                v === "true" ? true : v === "false" ? false : undefined,
+                v === 'true' ? true : v === 'false' ? false : undefined,
             }}
           />
         );
       }
-      if (f.type === "DATE") {
+      if (f.type === 'DATE') {
         return (
           <InputField<FormValues>
             name={baseName}
             label={f.label || f.key}
             register={register}
             type="date"
-            rules={f.required ? { required: "Requerido" } : undefined}
+            rules={f.required ? { required: 'Requerido' } : undefined}
           />
         );
       }
-      if (f.type === "SELECT") {
+      if (f.type === 'SELECT') {
         return (
           <SelectField<FormValues>
             name={baseName}
             label={f.label || f.key}
             control={control}
             options={[
-              { value: "", label: "Selecciona una opción" },
+              { value: '', label: 'Selecciona una opción' },
               ...(f.options || []).map((opt) => ({
                 value: opt,
                 label: opt,
               })),
             ]}
-            rules={f.required ? { required: "Requerido" } : undefined}
+            rules={f.required ? { required: 'Requerido' } : undefined}
           />
         );
       }
-      if (f.type === "MEMBER_SELECT") {
+      if (f.type === 'MEMBER_SELECT') {
         return (
           <SelectField<FormValues>
             name={baseName}
             label={f.label || f.key}
             control={control}
             options={[
-              { value: "", label: "Selecciona un miembro" },
+              { value: '', label: 'Selecciona un miembro' },
               ...members,
             ]}
-            rules={f.required ? { required: "Requerido" } : undefined}
+            rules={f.required ? { required: 'Requerido' } : undefined}
           />
         );
       }
-      if (f.type === "SECTION") return null;
+      if (f.type === 'SECTION') return null;
 
       return (
         <InputField<FormValues>
           name={baseName}
           label={f.label || f.key}
           register={register}
-          rules={f.required ? { required: "Requerido" } : undefined}
+          rules={f.required ? { required: 'Requerido' } : undefined}
         />
       );
     })();
@@ -234,14 +234,14 @@ export default function PublicReportForm({
     );
   };
 
-  const accessCode = watch("accessCode");
+  const accessCode = watch('accessCode');
 
   const verifyAccess = async () => {
-    const isValid = await trigger("accessCode");
+    const isValid = await trigger('accessCode');
     if (!isValid) return;
 
     if (!accessCode) {
-      showError("Ingresa la clave de acceso");
+      showError('Ingresa la clave de acceso');
       return;
     }
 
@@ -258,15 +258,15 @@ export default function PublicReportForm({
           sector: cell.subSector?.sector?.name,
           subSector: cell.subSector?.name,
         });
-        setValue("cellId", cell.id);
+        setValue('cellId', cell.id);
 
-        showSuccess("Acceso correcto. Buscando borradores...");
+        showSuccess('Acceso correcto. Buscando borradores...');
 
         // Load draft if exists
         const draft = await getDraftReportEntry(token, scope, cell.id);
         if (draft) {
           setDraftId(draft.id);
-          showSuccess("Borrador recuperado");
+          showSuccess('Borrador recuperado');
           // Populate form
           draft.values.forEach((v: any) => {
             // Handle different value types if necessary
@@ -276,11 +276,11 @@ export default function PublicReportForm({
           });
         }
       } else {
-        showError("Clave incorrecta o célula no encontrada");
+        showError('Clave incorrecta o célula no encontrada');
       }
     } catch (error) {
       console.error(error);
-      showError("Error al verificar acceso");
+      showError('Error al verificar acceso');
     } finally {
       setIsVerifying(false);
     }
@@ -290,13 +290,13 @@ export default function PublicReportForm({
     data: FormValues,
     isDraft: boolean
   ): Promise<boolean> => {
-    if (scope === "CELL" && !isAuthenticated && isDraft) {
-      showError("Debes autenticarte primero para guardar borrador");
+    if (scope === 'CELL' && !isAuthenticated && isDraft) {
+      showError('Debes autenticarte primero para guardar borrador');
       return false;
     }
 
-    if (scope === "CELL" && !isAuthenticated) {
-      showError("Debes autenticarte primero");
+    if (scope === 'CELL' && !isAuthenticated) {
+      showError('Debes autenticarte primero');
       return false;
     }
 
@@ -313,19 +313,19 @@ export default function PublicReportForm({
       const result = await submitPublicReportEntry({
         token,
         scope,
-        cellId: scope === "CELL" ? data.cellId : undefined,
-        groupId: scope === "GROUP" ? data.groupId : undefined,
-        sectorId: scope === "SECTOR" ? data.sectorId : undefined,
+        cellId: scope === 'CELL' ? data.cellId : undefined,
+        groupId: scope === 'GROUP' ? data.groupId : undefined,
+        sectorId: scope === 'SECTOR' ? data.sectorId : undefined,
         values,
         entryId: draftId || undefined,
         isDraft,
       });
 
       if (isDraft) {
-        showSuccess("Borrador guardado exitosamente");
+        showSuccess('Borrador guardado exitosamente');
         if (result?.id) setDraftId(result.id);
       } else {
-        showSuccess("Reporte enviado exitosamente");
+        showSuccess('Reporte enviado exitosamente');
         setSubmitted(true);
         reset();
         setDraftId(null);
@@ -333,8 +333,8 @@ export default function PublicReportForm({
       }
       return true;
     } catch (error) {
-      console.error("Error al enviar reporte:", error);
-      showError("Error al enviar el reporte");
+      console.error('Error al enviar reporte:', error);
+      showError('Error al enviar el reporte');
       return false;
     } finally {
       if (isDraft) setIsSavingDraft(false);
@@ -414,7 +414,7 @@ export default function PublicReportForm({
                   Enviando...
                 </>
               ) : (
-                "Confirmar y Enviar"
+                'Confirmar y Enviar'
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -430,7 +430,7 @@ export default function PublicReportForm({
             )}
           </div>
           <div className="md:col-span-1 space-y-4">
-            {scope === "CELL" && (
+            {scope === 'CELL' && (
               <Card>
                 <CardHeader className="pb-4">
                   <CardTitle className="text-lg uppercase text-muted-foreground">
@@ -444,13 +444,13 @@ export default function PublicReportForm({
                         name="accessCode"
                         label="Clave de Acceso"
                         register={register}
-                        rules={{ required: "La clave de acceso es requerida" }}
+                        rules={{ required: 'La clave de acceso es requerida' }}
                         error={errors.accessCode?.message}
                         type="password"
                         placeholder="Clave de Acceso"
                         startIcon={<FaKey className="text-muted-foreground" />}
                         onKeyDown={(e) => {
-                          if (e.key === "Enter") {
+                          if (e.key === 'Enter') {
                             e.preventDefault();
                             verifyAccess();
                           }
@@ -465,7 +465,7 @@ export default function PublicReportForm({
                         {isVerifying ? (
                           <Loader2 className="animate-spin" />
                         ) : (
-                          "Verificar Acceso"
+                          'Verificar Acceso'
                         )}
                       </Button>
                     </>
@@ -473,17 +473,21 @@ export default function PublicReportForm({
 
                   {isAuthenticated && cellInfo && (
                     <div className="space-y-3">
-                      <div className="rounded-md border border-primary/20 bg-primary/10 p-3 text-sm flex justify-between items-center">
-                        <span className="font-medium">Acceso verificado</span>
+                      <div className="rounded-md border border-green-500/30 bg-green-500/10 p-3 text-sm flex justify-between items-center text-green-700 dark:text-green-400 transition-colors duration-300">
+                        <span className="font-medium flex items-center gap-2">
+                          <Check className="w-4 h-4" />
+                          Acceso verificado
+                        </span>
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
+                          className="hover:bg-green-500/20 hover:text-green-800 dark:hover:text-green-300"
                           onClick={() => {
                             setIsAuthenticated(false);
                             setCellInfo(null);
                             setDraftId(null);
-                            reset({ scope, cellId: "" });
+                            reset({ scope, cellId: '' });
                           }}
                         >
                           Cambiar
@@ -534,35 +538,35 @@ export default function PublicReportForm({
               </Card>
             )}
 
-            {scope === "GROUP" && (
+            {scope === 'GROUP' && (
               <SelectField
                 name="groupId"
                 label="Grupo"
                 control={control}
                 options={[
-                  { value: "", label: "Selecciona un grupo" },
+                  { value: '', label: 'Selecciona un grupo' },
                   ...groups,
                 ]}
-                rules={{ required: "Requerido" }}
+                rules={{ required: 'Requerido' }}
               />
             )}
-            {scope === "SECTOR" && (
+            {scope === 'SECTOR' && (
               <SelectField
                 name="sectorId"
                 label="Sector"
                 control={control}
                 options={[
-                  { value: "", label: "Selecciona un sector" },
+                  { value: '', label: 'Selecciona un sector' },
                   ...sectors,
                 ]}
-                rules={{ required: "Requerido" }}
+                rules={{ required: 'Requerido' }}
               />
             )}
           </div>
         </div>
 
         {/* Form Fields - Only show if authenticated (for CELL scope) or if other scope */}
-        {(scope !== "CELL" || isAuthenticated) && (
+        {(scope !== 'CELL' || isAuthenticated) && (
           <>
             <Card>
               <CardContent className="p-6">
@@ -590,11 +594,11 @@ export default function PublicReportForm({
                               className="w-full justify-between px-4 py-3"
                             >
                               <span className="text-base font-semibold">
-                                {group.section.label || "Sección"}
+                                {group.section.label || 'Sección'}
                               </span>
                               <ChevronDown
                                 className={`transition-transform ${
-                                  isOpen ? "rotate-180" : ""
+                                  isOpen ? 'rotate-180' : ''
                                 }`}
                               />
                             </Button>
