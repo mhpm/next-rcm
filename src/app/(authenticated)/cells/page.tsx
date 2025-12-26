@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { RiAddLine, RiFilter3Line } from "react-icons/ri";
-import { BackLink, Breadcrumbs, DataTable } from "@/components";
-import { TableColumn, AddButtonConfig, TableAction } from "@/types";
-import { useCells } from "./hooks/useCells";
-import { transformCellsToTableData } from "./utils/cellsUtils";
-import { CellTableData } from "./types/cells";
-import { useState, useMemo } from "react";
-import Link from "next/link";
-import CreateCellModal from "./components/CreateCellModal";
-import CellsFilterModal from "./components/CellsFilterModal";
-import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
-import { useDeleteCell } from "./hooks/useCells";
-import { useNotificationStore } from "@/store/NotificationStore";
-import { usePersistentFilters } from "@/hooks/usePersistentFilters";
-import { Button } from "@/components/ui/button";
+import { useRouter } from 'next/navigation';
+import { RiAddLine, RiFilter3Line } from 'react-icons/ri';
+import { BackLink, Breadcrumbs, DataTable } from '@/components';
+import { TableColumn, AddButtonConfig, TableAction } from '@/types';
+import { useCells } from './hooks/useCells';
+import { transformCellsToTableData } from './utils/cellsUtils';
+import { CellTableData } from './types/cells';
+import { useState, useMemo } from 'react';
+import Link from 'next/link';
+import CreateCellModal from './components/CreateCellModal';
+import CellsFilterModal from './components/CellsFilterModal';
+import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
+import { useDeleteCell } from './hooks/useCells';
+import { useNotificationStore } from '@/store/NotificationStore';
+import { usePersistentFilters } from '@/hooks/usePersistentFilters';
+import { Button } from '@/components/ui/button';
 
 export default function CellsPage() {
   const router = useRouter();
@@ -27,7 +27,7 @@ export default function CellsPage() {
     filters: activeFilters,
     setFilters: setActiveFilters,
     clearFilters,
-  } = usePersistentFilters<Record<string, any>>("cells-filters", {});
+  } = usePersistentFilters<Record<string, any>>('cells-filters', {});
 
   const {
     data,
@@ -36,8 +36,8 @@ export default function CellsPage() {
     refetch,
   } = useCells({
     limit: 1000,
-    orderBy: "name",
-    orderDirection: "asc",
+    orderBy: 'name',
+    orderDirection: 'asc',
   });
 
   const cells = useMemo(
@@ -129,16 +129,16 @@ export default function CellsPage() {
 
   const columns: TableColumn<CellTableData>[] = [
     {
-      key: "name",
-      label: "Nombre",
+      key: 'name',
+      label: 'Nombre',
       sortable: true,
-      className: "font-semibold",
+      className: 'font-semibold',
     },
     {
-      key: "sectorName",
-      label: "Sector",
+      key: 'sectorName',
+      label: 'Sector',
       sortable: true,
-      className: "font-semibold",
+      className: 'font-semibold',
       render: (value, row) => {
         const name = value as string;
         if (row.sectorId) {
@@ -153,16 +153,16 @@ export default function CellsPage() {
         }
         return (
           <span className="text-destructive font-bold flex items-center gap-1">
-            ⚠️ {name || "Sin ubicación"}
+            ⚠️ {name || 'Sin ubicación'}
           </span>
         );
       },
     },
     {
-      key: "leaderName",
-      label: "Líder",
+      key: 'leaderName',
+      label: 'Líder',
       sortable: true,
-      className: "font-semibold",
+      className: 'font-semibold',
       render: (value, row) => {
         const name = value as string;
         if (row.leaderId) {
@@ -179,10 +179,10 @@ export default function CellsPage() {
       },
     },
     {
-      key: "hostName",
-      label: "Anfitrión",
+      key: 'hostName',
+      label: 'Anfitrión',
       sortable: true,
-      className: "font-semibold",
+      className: 'font-semibold',
       render: (value, row) => {
         const name = value as string;
         if (row.hostName && row.hostId) {
@@ -199,10 +199,10 @@ export default function CellsPage() {
       },
     },
     {
-      key: "assistantName",
-      label: "Asistente",
+      key: 'assistantName',
+      label: 'Asistente',
       sortable: true,
-      className: "font-semibold",
+      className: 'font-semibold',
       render: (value, row) => {
         const name = value as string;
         if (row.assistantName && row.assistantId) {
@@ -219,17 +219,17 @@ export default function CellsPage() {
       },
     },
     {
-      key: "memberCount",
-      label: "Miembros",
+      key: 'memberCount',
+      label: 'Miembros',
       sortable: true,
-      className: "text-center font-semibold",
+      className: 'text-center font-semibold',
     },
   ];
 
   const addButton: AddButtonConfig = {
-    text: "Nueva Célula",
+    text: 'Nueva Célula',
     onClick: () => setCreateModalOpen(true),
-    variant: "primary",
+    variant: 'primary',
     icon: <RiAddLine className="w-4 h-4" />,
   };
 
@@ -239,13 +239,13 @@ export default function CellsPage() {
 
   const actions: TableAction<CellTableData>[] = [
     {
-      label: "Editar",
-      variant: "ghost",
+      label: 'Editar',
+      variant: 'ghost',
       onClick: (cell) => router.push(`/cells/edit/${cell.id}`),
     },
     {
-      label: "Eliminar",
-      variant: "ghost",
+      label: 'Eliminar',
+      variant: 'ghost',
       onClick: (cell) => {
         setCellToDelete(cell);
         setDeleteModalOpen(true);
@@ -265,7 +265,7 @@ export default function CellsPage() {
   }
 
   return (
-    <div className="space-y-6 p-8">
+    <div className="space-y-6 p-4">
       <div className="flex items-center justify-between">
         <BackLink text="Volver atrás" fallbackHref="/dashboard" />
         <Breadcrumbs />
@@ -293,8 +293,8 @@ export default function CellsPage() {
             <button
               className={`btn btn-square ${
                 Object.keys(activeFilters).length > 0
-                  ? "btn-primary"
-                  : "btn-ghost bg-base-200"
+                  ? 'btn-primary'
+                  : 'btn-ghost bg-base-200'
               }`}
               onClick={() => setIsFilterModalOpen(true)}
             >
@@ -335,12 +335,12 @@ export default function CellsPage() {
           if (!id) return;
           try {
             await deleteCellMutation.mutateAsync(id);
-            showSuccess("Célula eliminada exitosamente");
+            showSuccess('Célula eliminada exitosamente');
             setDeleteModalOpen(false);
             setCellToDelete(null);
             refetch();
           } catch (e) {
-            showError("Error al eliminar la célula");
+            showError('Error al eliminar la célula');
           }
         }}
         isPending={deleteCellMutation.isPending}

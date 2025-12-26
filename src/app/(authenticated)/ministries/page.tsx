@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { RiAddLine } from "react-icons/ri";
-import { BackLink, Breadcrumbs, DataTable } from "@/components";
-import { Button } from "@/components/ui/button";
-import { TableColumn, TableAction, AddButtonConfig } from "@/types";
-import { useMinistries, useDeleteMinistry } from "./hooks/useMinistries";
-import { Modal } from "@/components/Modal/Modal";
-import { useNotificationStore } from "@/store/NotificationStore";
-import { transformMinistriesToTableData } from "./utils/ministriesUtils";
-import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
-import { MinistryTableData } from "./types/ministries";
-import CreateMinistryModal from "./components/CreateMinistryModal";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { RiAddLine } from 'react-icons/ri';
+import { BackLink, Breadcrumbs, DataTable } from '@/components';
+import { Button } from '@/components/ui/button';
+import { TableColumn, TableAction, AddButtonConfig } from '@/types';
+import { useMinistries, useDeleteMinistry } from './hooks/useMinistries';
+import { Modal } from '@/components/Modal/Modal';
+import { useNotificationStore } from '@/store/NotificationStore';
+import { transformMinistriesToTableData } from './utils/ministriesUtils';
+import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
+import { MinistryTableData } from './types/ministries';
+import CreateMinistryModal from './components/CreateMinistryModal';
 
 export default function MinistriesPage() {
   const router = useRouter();
@@ -27,8 +27,8 @@ export default function MinistriesPage() {
     refetch,
   } = useMinistries({
     limit: 50,
-    orderBy: "name",
-    orderDirection: "asc",
+    orderBy: 'name',
+    orderDirection: 'asc',
   });
 
   // Delete functionality
@@ -46,22 +46,22 @@ export default function MinistriesPage() {
   // Define table columns
   const columns: TableColumn<MinistryTableData>[] = [
     {
-      key: "name",
-      label: "Nombre",
+      key: 'name',
+      label: 'Nombre',
       sortable: true,
-      className: "font-semibold",
+      className: 'font-semibold',
     },
     {
-      key: "description",
-      label: "Descripción",
+      key: 'description',
+      label: 'Descripción',
       sortable: false,
-      className: "max-w-xs truncate",
+      className: 'max-w-xs truncate',
     },
     {
-      key: "leaderName",
-      label: "Líder",
+      key: 'leaderName',
+      label: 'Líder',
       sortable: true,
-      className: "font-semibold",
+      className: 'font-semibold',
       render: (value, row) => {
         const name = value as string;
         if (row.leaderId) {
@@ -78,25 +78,25 @@ export default function MinistriesPage() {
       },
     },
     {
-      key: "memberCount",
-      label: "Miembros",
+      key: 'memberCount',
+      label: 'Miembros',
       sortable: true,
-      className: "text-center font-semibold",
+      className: 'text-center font-semibold',
     },
   ];
 
   // Define table actions
   const actions: TableAction<MinistryTableData>[] = [
     {
-      label: "Editar",
-      variant: "ghost",
+      label: 'Editar',
+      variant: 'ghost',
       onClick: (ministry) => {
         router.push(`/ministries/edit/${ministry.id}`);
       },
     },
     {
-      label: "Eliminar",
-      variant: "ghost",
+      label: 'Eliminar',
+      variant: 'ghost',
       onClick: (ministry) => {
         setMinistryToDelete(ministry);
         setDeleteModalOpen(true);
@@ -106,9 +106,9 @@ export default function MinistriesPage() {
 
   // Add button configuration
   const addButton: AddButtonConfig = {
-    text: "Nuevo Ministerio",
+    text: 'Nuevo Ministerio',
     onClick: () => setCreateModalOpen(true),
-    variant: "primary",
+    variant: 'primary',
     icon: <RiAddLine className="w-4 h-4" />,
   };
 
@@ -118,13 +118,13 @@ export default function MinistriesPage() {
 
     try {
       await deleteMinistryMutation.mutateAsync(ministryToDelete.id);
-      showSuccess("Ministerio eliminado exitosamente");
+      showSuccess('Ministerio eliminado exitosamente');
       setDeleteModalOpen(false);
       setMinistryToDelete(null);
       refetch();
     } catch (error) {
-      showError("Error al eliminar el ministerio");
-      console.error("Error deleting ministry:", error);
+      showError('Error al eliminar el ministerio');
+      console.error('Error deleting ministry:', error);
     }
   };
 
@@ -141,7 +141,7 @@ export default function MinistriesPage() {
   }
 
   return (
-    <div className="space-y-6 p-8">
+    <div className="space-y-6 p-4">
       <div className="flex items-center justify-between">
         <BackLink text="Volver atrás" fallbackHref="/dashboard" />
         <Breadcrumbs />

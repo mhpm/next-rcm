@@ -1,8 +1,8 @@
-import { Suspense } from "react";
-import { getFriends } from "./actions/friends.actions";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import Link from "next/link";
+import { Suspense } from 'react';
+import { getFriends } from './actions/friends.actions';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -10,13 +10,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 
 export default async function FriendsPage() {
   const { friends } = await getFriends();
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Amigos</h1>
@@ -46,7 +46,10 @@ export default async function FriendsPage() {
           <TableBody>
             {friends.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
+                <TableCell
+                  colSpan={5}
+                  className="text-center h-24 text-muted-foreground"
+                >
                   No hay amigos registrados.
                 </TableCell>
               </TableRow>
@@ -54,18 +57,18 @@ export default async function FriendsPage() {
               friends.map((friend) => (
                 <TableRow key={friend.id}>
                   <TableCell className="font-medium">{friend.name}</TableCell>
-                  <TableCell>{friend.cell?.name || "Sin Célula"}</TableCell>
+                  <TableCell>{friend.cell?.name || 'Sin Célula'}</TableCell>
                   <TableCell>
                     {friend.spiritualFather
                       ? `${friend.spiritualFather.firstName} ${friend.spiritualFather.lastName}`
-                      : "-"}
+                      : '-'}
                   </TableCell>
                   <TableCell>
                     {friend.invitedBy
                       ? `${friend.invitedBy.firstName} ${friend.invitedBy.lastName}`
-                      : "-"}
+                      : '-'}
                   </TableCell>
-                  <TableCell>{friend.isBaptized ? "Sí" : "No"}</TableCell>
+                  <TableCell>{friend.isBaptized ? 'Sí' : 'No'}</TableCell>
                 </TableRow>
               ))
             )}

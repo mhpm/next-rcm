@@ -332,7 +332,7 @@ function DataTable<T extends Record<string, unknown>>({
   return (
     <div
       className={cn(
-        'rounded-lg border bg-card text-card-foreground shadow-sm w-full max-w-[85vw] mx-auto',
+        'rounded-lg border bg-card text-card-foreground shadow-sm w-full',
         className
       )}
     >

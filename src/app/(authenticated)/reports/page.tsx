@@ -1,16 +1,16 @@
-import Link from "next/link";
-import { getChurchPrisma } from "@/actions/churchContext";
-import ReportCard from "./components/ReportCard";
-import { BackLink, Breadcrumbs } from "@/components";
-import { connection } from "next/server";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import Link from 'next/link';
+import { getChurchPrisma } from '@/actions/churchContext';
+import ReportCard from './components/ReportCard';
+import { BackLink, Breadcrumbs } from '@/components';
+import { connection } from 'next/server';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default async function ReportsPage() {
   await connection();
   const prisma = await getChurchPrisma();
   const reports = await prisma.reports.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
     take: 50,
     select: {
       id: true,
@@ -24,7 +24,7 @@ export default async function ReportsPage() {
   });
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 space-y-6">
       <div className="flex items-center justify-between">
         <BackLink text="Volver atrás" fallbackHref="/dashboard" />
         <Breadcrumbs />

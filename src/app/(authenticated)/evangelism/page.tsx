@@ -21,13 +21,13 @@ export default async function EvangelismDashboard() {
   );
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-2 space-y-4">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             Seguimiento Evangelístico
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mt-2">
             Monitoreo de metas por célula y avance de amigos
           </p>
         </div>
@@ -109,12 +109,15 @@ export default async function EvangelismDashboard() {
                       <TableCell key={goal.eventId} className="text-center">
                         <div className="flex flex-col gap-1 items-center">
                           <span className="text-sm font-medium">
-                            {goal.actual} <span className="text-muted-foreground">/ {goal.target}</span>
+                            {goal.actual}{' '}
+                            <span className="text-muted-foreground">
+                              / {goal.target}
+                            </span>
                           </span>
                           <div className="h-2 w-20 bg-secondary rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-primary transition-all" 
-                              style={{ width: `${Math.min(percent, 100)}%` }} 
+                            <div
+                              className="h-full bg-primary transition-all"
+                              style={{ width: `${Math.min(percent, 100)}%` }}
                             />
                           </div>
                         </div>

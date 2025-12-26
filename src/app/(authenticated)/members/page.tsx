@@ -1,32 +1,32 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { RiAddLine, RiFilter3Line } from "react-icons/ri";
-import { Breadcrumbs, DataTable, BackLink } from "@/components";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { RiAddLine, RiFilter3Line } from 'react-icons/ri';
+import { Breadcrumbs, DataTable, BackLink } from '@/components';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-} from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
 import {
   TableColumn,
   TableAction,
   AddButtonConfig,
   MemberTableData,
-} from "@/types";
-import { useMembers } from "@/app/(authenticated)/members/hooks/useMembers";
-import { useColumnVisibilityStore } from "@/components/ColumnVisibilityDropdown";
-import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
-import { useDeleteMember } from "@/app/(authenticated)/members/hooks/useMembers";
-import { useNotificationStore } from "@/store/NotificationStore";
-import { transformMemberToTableData } from "./utils/membersUtils";
-import MembersFilterModal from "./components/MembersFilterModal";
-import { usePersistentFilters } from "@/hooks/usePersistentFilters";
+} from '@/types';
+import { useMembers } from '@/app/(authenticated)/members/hooks/useMembers';
+import { useColumnVisibilityStore } from '@/components/ColumnVisibilityDropdown';
+import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
+import { useDeleteMember } from '@/app/(authenticated)/members/hooks/useMembers';
+import { useNotificationStore } from '@/store/NotificationStore';
+import { transformMemberToTableData } from './utils/membersUtils';
+import MembersFilterModal from './components/MembersFilterModal';
+import { usePersistentFilters } from '@/hooks/usePersistentFilters';
 
 export default function MembersPage() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export default function MembersPage() {
     filters: activeFilters,
     setFilters: setActiveFilters,
     clearFilters,
-  } = usePersistentFilters<Record<string, any>>("members-filters", {});
+  } = usePersistentFilters<Record<string, any>>('members-filters', {});
 
   // Usar Zustand store para manejar la visibilidad de columnas
   const {
@@ -51,14 +51,14 @@ export default function MembersPage() {
   // Inicializar columnas por defecto
   useEffect(() => {
     const defaultColumns = [
-      "firstName",
-      "lastName",
-      "email",
-      "phone",
-      "role",
-      "ministries",
-      "birthDate",
-      "baptismDate",
+      'firstName',
+      'lastName',
+      'email',
+      'phone',
+      'role',
+      'ministries',
+      'birthDate',
+      'baptismDate',
     ];
     initializeColumns(defaultColumns);
   }, [initializeColumns]);
@@ -107,7 +107,7 @@ export default function MembersPage() {
         // Email
         if (
           activeFilters.email &&
-          !(member.email || "")
+          !(member.email || '')
             .toLowerCase()
             .includes(activeFilters.email.toLowerCase())
         )
@@ -159,53 +159,53 @@ export default function MembersPage() {
   // Configuración de todas las columnas disponibles
   const allColumns: TableColumn<MemberTableData>[] = [
     {
-      key: "firstName",
-      label: "Nombre",
+      key: 'firstName',
+      label: 'Nombre',
       sortable: true,
     },
     {
-      key: "lastName",
-      label: "Apellidos",
+      key: 'lastName',
+      label: 'Apellidos',
       sortable: true,
     },
     {
-      key: "phone",
-      label: "Teléfono",
+      key: 'phone',
+      label: 'Teléfono',
       sortable: true,
     },
     {
-      key: "email",
-      label: "Email",
+      key: 'email',
+      label: 'Email',
       sortable: true,
     },
     {
-      key: "address",
-      label: "Dirección",
+      key: 'address',
+      label: 'Dirección',
       sortable: true,
     },
     {
-      key: "role",
-      label: "Rol",
+      key: 'role',
+      label: 'Rol',
       sortable: true,
     },
     {
-      key: "ministries",
-      label: "Ministerios",
+      key: 'ministries',
+      label: 'Ministerios',
       sortable: true,
     },
     {
-      key: "notes",
-      label: "Notas",
+      key: 'notes',
+      label: 'Notas',
       sortable: true,
     },
     {
-      key: "birthDate",
-      label: "Fecha de Nacimiento",
+      key: 'birthDate',
+      label: 'Fecha de Nacimiento',
       sortable: true,
     },
     {
-      key: "baptismDate",
-      label: "Fecha de Bautismo",
+      key: 'baptismDate',
+      label: 'Fecha de Bautismo',
       sortable: true,
     },
   ];
@@ -237,13 +237,13 @@ export default function MembersPage() {
 
     deleteMemberMutation.mutate(selectedMember.id, {
       onSuccess: () => {
-        showSuccess("Miembro eliminado exitosamente");
+        showSuccess('Miembro eliminado exitosamente');
         closeDeleteModal();
         refetch();
       },
       onError: (error) => {
-        showError("Error al eliminar miembro");
-        console.error("Error al eliminar miembro:", error);
+        showError('Error al eliminar miembro');
+        console.error('Error al eliminar miembro:', error);
       },
     });
   };
@@ -251,15 +251,15 @@ export default function MembersPage() {
   // Configuración de acciones para cada fila
   const actions: TableAction<MemberTableData>[] = [
     {
-      label: "Editar",
-      variant: "ghost",
+      label: 'Editar',
+      variant: 'ghost',
       onClick: (row) => {
         router.push(`/members/edit/${row.id}`);
       },
     },
     {
-      label: "Eliminar",
-      variant: "ghost",
+      label: 'Eliminar',
+      variant: 'ghost',
       onClick: (row) => {
         openDeleteModal(row);
       },
@@ -268,16 +268,16 @@ export default function MembersPage() {
 
   // Configuración del botón de agregar (enfoque actual)
   const addButtonConfig: AddButtonConfig = {
-    text: "Agregar Miembro",
-    onClick: () => router.push("/members/new"),
-    variant: "default",
+    text: 'Agregar Miembro',
+    onClick: () => router.push('/members/new'),
+    variant: 'default',
     icon: <RiAddLine className="w-4 h-4" />,
   };
 
   // Mostrar estado de error
   if (error) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-4">
         <div className="flex items-center justify-center min-h-[400px]">
           <Card className="max-w-md w-full">
             <CardContent className="p-6 text-center">
@@ -285,7 +285,7 @@ export default function MembersPage() {
                 Error al cargar los datos
               </h3>
               <p className="text-sm text-muted-foreground">
-                {error?.message || "Error desconocido"}
+                {error?.message || 'Error desconocido'}
               </p>
               <div className="mt-4">
                 <Button onClick={() => refetch()}>Reintentar</Button>
@@ -298,7 +298,7 @@ export default function MembersPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-8">
+    <div className="flex flex-col gap-6 p-4">
       <div className="flex items-center justify-between">
         <BackLink text="Volver atrás" fallbackHref="/dashboard" />
         <Breadcrumbs />
@@ -331,8 +331,8 @@ export default function MembersPage() {
                     type="button"
                     variant={
                       Object.keys(activeFilters).length > 0
-                        ? "default"
-                        : "ghost"
+                        ? 'default'
+                        : 'ghost'
                     }
                     size="sm"
                     onClick={() => setIsFilterModalOpen(true)}
