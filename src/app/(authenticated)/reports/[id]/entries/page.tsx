@@ -5,12 +5,14 @@ import ReportEntriesTable from '@/app/(authenticated)/reports/components/ReportE
 import ConsolidatedReportView from '@/app/(authenticated)/reports/components/ConsolidatedReportView';
 import { BackLink, Breadcrumbs } from '@/components';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { connection } from 'next/server';
 
 export default async function ReportEntriesPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await connection();
   const { id } = await params;
   const prisma = await getChurchPrisma();
 

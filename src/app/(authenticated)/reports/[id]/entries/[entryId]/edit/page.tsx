@@ -3,12 +3,14 @@ import SubmitReportForm from "@/app/(authenticated)/reports/components/SubmitRep
 import { notFound } from "next/navigation";
 import { BackLink, Breadcrumbs } from "@/components";
 import { Card, CardContent } from "@/components/ui/card";
+import { connection } from "next/server";
 
 export default async function EditReportEntryPage({
   params,
 }: {
   params: Promise<{ id: string; entryId: string }>;
 }) {
+  await connection();
   const { id, entryId } = await params;
   const prisma = await getChurchPrisma();
 

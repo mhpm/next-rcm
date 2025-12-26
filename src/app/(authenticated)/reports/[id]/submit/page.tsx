@@ -4,12 +4,14 @@ import { notFound } from "next/navigation";
 import { BackLink } from "@/components";
 import { Breadcrumbs } from "@/components";
 import { Card, CardContent } from "@/components/ui/card";
+import { connection } from "next/server";
 
 export default async function SubmitReportPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await connection();
   const { id } = await params;
   const prisma = await getChurchPrisma();
 

@@ -1,12 +1,14 @@
 import { notFound } from "next/navigation";
 import { getPublicReport, getPublicEntities } from "../../actions";
 import PublicReportForm from "../components/PublicReportForm";
+import { connection } from "next/server";
 
 export default async function PublicReportPage({
   params,
 }: {
   params: Promise<{ token: string }>;
 }) {
+  await connection();
   const { token } = await params;
   const report = await getPublicReport(token);
 

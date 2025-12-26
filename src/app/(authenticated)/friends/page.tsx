@@ -1,8 +1,8 @@
-import { Suspense } from 'react';
 import { getFriends } from './actions/friends.actions';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
+import { connection } from 'next/server';
 import {
   Table,
   TableBody,
@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/table';
 
 export default async function FriendsPage() {
+  await connection();
   const { friends } = await getFriends();
 
   return (

@@ -3,12 +3,14 @@ import { notFound } from "next/navigation";
 import { BackLink, Breadcrumbs } from "@/components";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { connection } from "next/server";
 
 export default async function ViewReportEntryPage({
   params,
 }: {
   params: Promise<{ id: string; entryId: string }>;
 }) {
+  await connection();
   const { id, entryId } = await params;
   const prisma = await getChurchPrisma();
 

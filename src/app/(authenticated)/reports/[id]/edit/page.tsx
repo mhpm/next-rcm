@@ -1,12 +1,14 @@
 import { getChurchPrisma } from "@/actions/churchContext";
 import { notFound } from "next/navigation";
 import EditReportForm from "../../components/EditReportForm";
+import { connection } from "next/server";
 
 export default async function EditReportPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await connection();
   const { id } = await params;
   const prisma = await getChurchPrisma();
   const report = await prisma.reports.findUnique({
