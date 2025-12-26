@@ -60,11 +60,15 @@ export const ModelName = {
   SubSectors: 'SubSectors',
   Groups: 'Groups',
   GroupFields: 'GroupFields',
+  CellGoals: 'CellGoals',
   Reports: 'Reports',
   ReportFields: 'ReportFields',
   ReportEntries: 'ReportEntries',
   ReportEntryValues: 'ReportEntryValues',
-  MemberMinistry: 'MemberMinistry'
+  MemberMinistry: 'MemberMinistry',
+  Friends: 'Friends',
+  Events: 'Events',
+  EventAttendances: 'EventAttendances'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -219,6 +223,19 @@ export const GroupFieldsScalarFieldEnum = {
 export type GroupFieldsScalarFieldEnum = (typeof GroupFieldsScalarFieldEnum)[keyof typeof GroupFieldsScalarFieldEnum]
 
 
+export const CellGoalsScalarFieldEnum = {
+  id: 'id',
+  church_id: 'church_id',
+  cell_id: 'cell_id',
+  event_id: 'event_id',
+  target: 'target',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CellGoalsScalarFieldEnum = (typeof CellGoalsScalarFieldEnum)[keyof typeof CellGoalsScalarFieldEnum]
+
+
 export const ReportsScalarFieldEnum = {
   id: 'id',
   church_id: 'church_id',
@@ -296,6 +313,49 @@ export const MemberMinistryScalarFieldEnum = {
 } as const
 
 export type MemberMinistryScalarFieldEnum = (typeof MemberMinistryScalarFieldEnum)[keyof typeof MemberMinistryScalarFieldEnum]
+
+
+export const FriendsScalarFieldEnum = {
+  id: 'id',
+  church_id: 'church_id',
+  name: 'name',
+  phone: 'phone',
+  cell_id: 'cell_id',
+  invited_by_id: 'invited_by_id',
+  spiritual_father_id: 'spiritual_father_id',
+  isBaptized: 'isBaptized',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FriendsScalarFieldEnum = (typeof FriendsScalarFieldEnum)[keyof typeof FriendsScalarFieldEnum]
+
+
+export const EventsScalarFieldEnum = {
+  id: 'id',
+  church_id: 'church_id',
+  name: 'name',
+  date: 'date',
+  type: 'type',
+  friendAttendanceGoal: 'friendAttendanceGoal',
+  memberAttendanceGoal: 'memberAttendanceGoal',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventsScalarFieldEnum = (typeof EventsScalarFieldEnum)[keyof typeof EventsScalarFieldEnum]
+
+
+export const EventAttendancesScalarFieldEnum = {
+  id: 'id',
+  church_id: 'church_id',
+  friend_id: 'friend_id',
+  event_id: 'event_id',
+  attended: 'attended',
+  createdAt: 'createdAt'
+} as const
+
+export type EventAttendancesScalarFieldEnum = (typeof EventAttendancesScalarFieldEnum)[keyof typeof EventAttendancesScalarFieldEnum]
 
 
 export const SortOrder = {

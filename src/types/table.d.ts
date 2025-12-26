@@ -722,6 +722,21 @@ export interface DataTableProps<T = Record<string, unknown>> {
   className?: string;
 
   /**
+   * Set of keys of selected rows.
+   */
+  selectedRows?: Set<string>;
+
+  /**
+   * Callback for selecting/deselecting a single row.
+   */
+  onSelectRow?: (id: string, checked: boolean) => void;
+
+  /**
+   * Callback for selecting/deselecting all rows.
+   */
+  onSelectAll?: (checked: boolean) => void;
+
+  /**
    * Callback function called when row selection changes.
    * Receives an array of currently selected row data objects.
    * Only relevant when selectable is true.

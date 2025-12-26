@@ -1,8 +1,8 @@
-import "dotenv/config";
-import { PrismaClient } from "../../generated/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import fs from "fs";
-import path from "path";
+import 'dotenv/config';
+import { PrismaClient } from '../../generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import fs from 'fs';
+import path from 'path';
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
@@ -11,17 +11,17 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 const dateFields = new Set([
-  "createdAt",
-  "updatedAt",
-  "birthDate",
-  "baptismDate",
+  'createdAt',
+  'updatedAt',
+  'birthDate',
+  'baptismDate',
 ]);
 
 function reviveDates(rows: any[]) {
   return rows.map((row) => {
     const newRow = { ...row };
     for (const key of Object.keys(newRow)) {
-      if (dateFields.has(key) && typeof newRow[key] === "string") {
+      if (dateFields.has(key) && typeof newRow[key] === 'string') {
         newRow[key] = new Date(newRow[key]);
       }
     }
@@ -30,23 +30,28 @@ function reviveDates(rows: any[]) {
 }
 
 async function restore() {
-  console.log("🔄 Starting restore...");
+  console.log('🔄 Starting restore...');
 
-  const backupPath = path.join(__dirname, "../backup.json");
+  const backupPath = path.join(__dirname, '../backup.json');
   if (!fs.existsSync(backupPath)) {
-    throw new Error("Backup file not found at " + backupPath);
+    throw new Error('Backup file not found at ' + backupPath);
   }
 
-  const data = JSON.parse(fs.readFileSync(backupPath, "utf-8"));
-  console.log("📖 Backup file loaded.");
+  const data = JSON.parse(fs.readFileSync(backupPath, 'utf-8'));
+  console.log('📖 Backup file loaded.');
 
   // Clean database
-  console.log("🧹 Cleaning existing data...");
+  console.log('🧹 Cleaning existing data...');
   // Delete in reverse order of dependency
   await prisma.reportEntryValues.deleteMany();
   await prisma.reportEntries.deleteMany();
   await prisma.reportFields.deleteMany();
   await prisma.reports.deleteMany();
+
+  await prisma.cellGoals.deleteMany();
+  await prisma.eventAttendances.deleteMany();
+  await prisma.events.deleteMany();
+  await prisma.friends.deleteMany();
 
   await prisma.groupFields.deleteMany();
   await prisma.groups.deleteMany();
@@ -61,7 +66,7 @@ async function restore() {
   await prisma.members.deleteMany();
   await prisma.churches.deleteMany();
 
-  console.log("🌱 Inserting data...");
+  console.log('🌱 Inserting data...');
 
   // 1. Churches
   if (data.churches?.length) {
@@ -194,7 +199,7 @@ async function restore() {
   // 15. Link Members to their hierarchy (Cells, Zones, Sectors)
   // We cleared these fields in step 2. Now we restore them.
   if (data.members?.length) {
-    console.log("   > Restoring Member hierarchy links...");
+    console.log('   > Restoring Member hierarchy links...');
     const membersWithLinks = reviveDates(data.members).filter(
       (m: any) => m.cell_id || m.zone_id || m.sector_id || m.sub_sector_id
     );
@@ -223,12 +228,12 @@ async function restore() {
     console.log(`   + Restored links for ${membersWithLinks.length} Members`);
   }
 
-  console.log("✅ Restore completed successfully!");
+  console.log('✅ Restore completed successfully!');
 }
 
 restore()
   .catch((e) => {
-    console.error("❌ Restore failed:", e);
+    console.error('❌ Restore failed:', e);
     process.exit(1);
   })
   .finally(async () => {

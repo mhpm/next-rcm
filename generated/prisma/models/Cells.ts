@@ -228,6 +228,8 @@ export type CellsWhereInput = {
   host?: Prisma.XOR<Prisma.MembersNullableScalarRelationFilter, Prisma.MembersWhereInput> | null
   assistant?: Prisma.XOR<Prisma.MembersNullableScalarRelationFilter, Prisma.MembersWhereInput> | null
   members?: Prisma.MembersListRelationFilter
+  friends?: Prisma.FriendsListRelationFilter
+  goals?: Prisma.CellGoalsListRelationFilter
   reports?: Prisma.ReportsListRelationFilter
   reportEntries?: Prisma.ReportEntriesListRelationFilter
 }
@@ -249,6 +251,8 @@ export type CellsOrderByWithRelationInput = {
   host?: Prisma.MembersOrderByWithRelationInput
   assistant?: Prisma.MembersOrderByWithRelationInput
   members?: Prisma.MembersOrderByRelationAggregateInput
+  friends?: Prisma.FriendsOrderByRelationAggregateInput
+  goals?: Prisma.CellGoalsOrderByRelationAggregateInput
   reports?: Prisma.ReportsOrderByRelationAggregateInput
   reportEntries?: Prisma.ReportEntriesOrderByRelationAggregateInput
 }
@@ -273,6 +277,8 @@ export type CellsWhereUniqueInput = Prisma.AtLeast<{
   host?: Prisma.XOR<Prisma.MembersNullableScalarRelationFilter, Prisma.MembersWhereInput> | null
   assistant?: Prisma.XOR<Prisma.MembersNullableScalarRelationFilter, Prisma.MembersWhereInput> | null
   members?: Prisma.MembersListRelationFilter
+  friends?: Prisma.FriendsListRelationFilter
+  goals?: Prisma.CellGoalsListRelationFilter
   reports?: Prisma.ReportsListRelationFilter
   reportEntries?: Prisma.ReportEntriesListRelationFilter
 }, "id" | "accessCode">
@@ -321,6 +327,8 @@ export type CellsCreateInput = {
   host?: Prisma.MembersCreateNestedOneWithoutHostedCellsInput
   assistant?: Prisma.MembersCreateNestedOneWithoutAssistedCellsInput
   members?: Prisma.MembersCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutCellInput
 }
@@ -337,6 +345,8 @@ export type CellsUncheckedCreateInput = {
   assistant_id?: string | null
   accessCode?: string | null
   members?: Prisma.MembersUncheckedCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsUncheckedCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutCellInput
 }
@@ -353,6 +363,8 @@ export type CellsUpdateInput = {
   host?: Prisma.MembersUpdateOneWithoutHostedCellsNestedInput
   assistant?: Prisma.MembersUpdateOneWithoutAssistedCellsNestedInput
   members?: Prisma.MembersUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUpdateManyWithoutCellNestedInput
 }
@@ -369,6 +381,8 @@ export type CellsUncheckedUpdateInput = {
   assistant_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MembersUncheckedUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUncheckedUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUncheckedUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutCellNestedInput
 }
@@ -459,6 +473,11 @@ export type CellsMinOrderByAggregateInput = {
   host_id?: Prisma.SortOrder
   assistant_id?: Prisma.SortOrder
   accessCode?: Prisma.SortOrder
+}
+
+export type CellsScalarRelationFilter = {
+  is?: Prisma.CellsWhereInput
+  isNot?: Prisma.CellsWhereInput
 }
 
 export type CellsCreateNestedManyWithoutChurchInput = {
@@ -687,6 +706,20 @@ export type CellsUncheckedUpdateManyWithoutSubSectorNestedInput = {
   deleteMany?: Prisma.CellsScalarWhereInput | Prisma.CellsScalarWhereInput[]
 }
 
+export type CellsCreateNestedOneWithoutGoalsInput = {
+  create?: Prisma.XOR<Prisma.CellsCreateWithoutGoalsInput, Prisma.CellsUncheckedCreateWithoutGoalsInput>
+  connectOrCreate?: Prisma.CellsCreateOrConnectWithoutGoalsInput
+  connect?: Prisma.CellsWhereUniqueInput
+}
+
+export type CellsUpdateOneRequiredWithoutGoalsNestedInput = {
+  create?: Prisma.XOR<Prisma.CellsCreateWithoutGoalsInput, Prisma.CellsUncheckedCreateWithoutGoalsInput>
+  connectOrCreate?: Prisma.CellsCreateOrConnectWithoutGoalsInput
+  upsert?: Prisma.CellsUpsertWithoutGoalsInput
+  connect?: Prisma.CellsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CellsUpdateToOneWithWhereWithoutGoalsInput, Prisma.CellsUpdateWithoutGoalsInput>, Prisma.CellsUncheckedUpdateWithoutGoalsInput>
+}
+
 export type CellsCreateNestedOneWithoutReportsInput = {
   create?: Prisma.XOR<Prisma.CellsCreateWithoutReportsInput, Prisma.CellsUncheckedCreateWithoutReportsInput>
   connectOrCreate?: Prisma.CellsCreateOrConnectWithoutReportsInput
@@ -719,6 +752,20 @@ export type CellsUpdateOneWithoutReportEntriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CellsUpdateToOneWithWhereWithoutReportEntriesInput, Prisma.CellsUpdateWithoutReportEntriesInput>, Prisma.CellsUncheckedUpdateWithoutReportEntriesInput>
 }
 
+export type CellsCreateNestedOneWithoutFriendsInput = {
+  create?: Prisma.XOR<Prisma.CellsCreateWithoutFriendsInput, Prisma.CellsUncheckedCreateWithoutFriendsInput>
+  connectOrCreate?: Prisma.CellsCreateOrConnectWithoutFriendsInput
+  connect?: Prisma.CellsWhereUniqueInput
+}
+
+export type CellsUpdateOneRequiredWithoutFriendsNestedInput = {
+  create?: Prisma.XOR<Prisma.CellsCreateWithoutFriendsInput, Prisma.CellsUncheckedCreateWithoutFriendsInput>
+  connectOrCreate?: Prisma.CellsCreateOrConnectWithoutFriendsInput
+  upsert?: Prisma.CellsUpsertWithoutFriendsInput
+  connect?: Prisma.CellsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CellsUpdateToOneWithWhereWithoutFriendsInput, Prisma.CellsUpdateWithoutFriendsInput>, Prisma.CellsUncheckedUpdateWithoutFriendsInput>
+}
+
 export type CellsCreateWithoutChurchInput = {
   id?: string
   name: string
@@ -730,6 +777,8 @@ export type CellsCreateWithoutChurchInput = {
   host?: Prisma.MembersCreateNestedOneWithoutHostedCellsInput
   assistant?: Prisma.MembersCreateNestedOneWithoutAssistedCellsInput
   members?: Prisma.MembersCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutCellInput
 }
@@ -745,6 +794,8 @@ export type CellsUncheckedCreateWithoutChurchInput = {
   assistant_id?: string | null
   accessCode?: string | null
   members?: Prisma.MembersUncheckedCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsUncheckedCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutCellInput
 }
@@ -802,6 +853,8 @@ export type CellsCreateWithoutLeaderInput = {
   host?: Prisma.MembersCreateNestedOneWithoutHostedCellsInput
   assistant?: Prisma.MembersCreateNestedOneWithoutAssistedCellsInput
   members?: Prisma.MembersCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutCellInput
 }
@@ -817,6 +870,8 @@ export type CellsUncheckedCreateWithoutLeaderInput = {
   assistant_id?: string | null
   accessCode?: string | null
   members?: Prisma.MembersUncheckedCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsUncheckedCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutCellInput
 }
@@ -842,6 +897,8 @@ export type CellsCreateWithoutHostInput = {
   leader?: Prisma.MembersCreateNestedOneWithoutCellsInput
   assistant?: Prisma.MembersCreateNestedOneWithoutAssistedCellsInput
   members?: Prisma.MembersCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutCellInput
 }
@@ -857,6 +914,8 @@ export type CellsUncheckedCreateWithoutHostInput = {
   assistant_id?: string | null
   accessCode?: string | null
   members?: Prisma.MembersUncheckedCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsUncheckedCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutCellInput
 }
@@ -882,6 +941,8 @@ export type CellsCreateWithoutAssistantInput = {
   leader?: Prisma.MembersCreateNestedOneWithoutCellsInput
   host?: Prisma.MembersCreateNestedOneWithoutHostedCellsInput
   members?: Prisma.MembersCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutCellInput
 }
@@ -897,6 +958,8 @@ export type CellsUncheckedCreateWithoutAssistantInput = {
   host_id?: string | null
   accessCode?: string | null
   members?: Prisma.MembersUncheckedCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsUncheckedCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutCellInput
 }
@@ -922,6 +985,8 @@ export type CellsCreateWithoutMembersInput = {
   leader?: Prisma.MembersCreateNestedOneWithoutCellsInput
   host?: Prisma.MembersCreateNestedOneWithoutHostedCellsInput
   assistant?: Prisma.MembersCreateNestedOneWithoutAssistedCellsInput
+  friends?: Prisma.FriendsCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutCellInput
 }
@@ -937,6 +1002,8 @@ export type CellsUncheckedCreateWithoutMembersInput = {
   host_id?: string | null
   assistant_id?: string | null
   accessCode?: string | null
+  friends?: Prisma.FriendsUncheckedCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutCellInput
 }
@@ -1016,6 +1083,8 @@ export type CellsUpdateWithoutMembersInput = {
   leader?: Prisma.MembersUpdateOneWithoutCellsNestedInput
   host?: Prisma.MembersUpdateOneWithoutHostedCellsNestedInput
   assistant?: Prisma.MembersUpdateOneWithoutAssistedCellsNestedInput
+  friends?: Prisma.FriendsUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUpdateManyWithoutCellNestedInput
 }
@@ -1031,6 +1100,8 @@ export type CellsUncheckedUpdateWithoutMembersInput = {
   host_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assistant_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  friends?: Prisma.FriendsUncheckedUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUncheckedUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutCellNestedInput
 }
@@ -1046,6 +1117,8 @@ export type CellsCreateWithoutSubSectorInput = {
   host?: Prisma.MembersCreateNestedOneWithoutHostedCellsInput
   assistant?: Prisma.MembersCreateNestedOneWithoutAssistedCellsInput
   members?: Prisma.MembersCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutCellInput
 }
@@ -1061,6 +1134,8 @@ export type CellsUncheckedCreateWithoutSubSectorInput = {
   assistant_id?: string | null
   accessCode?: string | null
   members?: Prisma.MembersUncheckedCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsUncheckedCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutCellInput
 }
@@ -1091,6 +1166,90 @@ export type CellsUpdateManyWithWhereWithoutSubSectorInput = {
   data: Prisma.XOR<Prisma.CellsUpdateManyMutationInput, Prisma.CellsUncheckedUpdateManyWithoutSubSectorInput>
 }
 
+export type CellsCreateWithoutGoalsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accessCode?: string | null
+  church: Prisma.ChurchesCreateNestedOneWithoutCellsInput
+  subSector?: Prisma.SubSectorsCreateNestedOneWithoutCellsInput
+  leader?: Prisma.MembersCreateNestedOneWithoutCellsInput
+  host?: Prisma.MembersCreateNestedOneWithoutHostedCellsInput
+  assistant?: Prisma.MembersCreateNestedOneWithoutAssistedCellsInput
+  members?: Prisma.MembersCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsCreateNestedManyWithoutCellInput
+  reports?: Prisma.ReportsCreateNestedManyWithoutCellInput
+  reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutCellInput
+}
+
+export type CellsUncheckedCreateWithoutGoalsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  church_id: string
+  sub_sector_id?: string | null
+  leader_id?: string | null
+  host_id?: string | null
+  assistant_id?: string | null
+  accessCode?: string | null
+  members?: Prisma.MembersUncheckedCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsUncheckedCreateNestedManyWithoutCellInput
+  reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutCellInput
+  reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutCellInput
+}
+
+export type CellsCreateOrConnectWithoutGoalsInput = {
+  where: Prisma.CellsWhereUniqueInput
+  create: Prisma.XOR<Prisma.CellsCreateWithoutGoalsInput, Prisma.CellsUncheckedCreateWithoutGoalsInput>
+}
+
+export type CellsUpsertWithoutGoalsInput = {
+  update: Prisma.XOR<Prisma.CellsUpdateWithoutGoalsInput, Prisma.CellsUncheckedUpdateWithoutGoalsInput>
+  create: Prisma.XOR<Prisma.CellsCreateWithoutGoalsInput, Prisma.CellsUncheckedCreateWithoutGoalsInput>
+  where?: Prisma.CellsWhereInput
+}
+
+export type CellsUpdateToOneWithWhereWithoutGoalsInput = {
+  where?: Prisma.CellsWhereInput
+  data: Prisma.XOR<Prisma.CellsUpdateWithoutGoalsInput, Prisma.CellsUncheckedUpdateWithoutGoalsInput>
+}
+
+export type CellsUpdateWithoutGoalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accessCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutCellsNestedInput
+  subSector?: Prisma.SubSectorsUpdateOneWithoutCellsNestedInput
+  leader?: Prisma.MembersUpdateOneWithoutCellsNestedInput
+  host?: Prisma.MembersUpdateOneWithoutHostedCellsNestedInput
+  assistant?: Prisma.MembersUpdateOneWithoutAssistedCellsNestedInput
+  members?: Prisma.MembersUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUpdateManyWithoutCellNestedInput
+  reports?: Prisma.ReportsUpdateManyWithoutCellNestedInput
+  reportEntries?: Prisma.ReportEntriesUpdateManyWithoutCellNestedInput
+}
+
+export type CellsUncheckedUpdateWithoutGoalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leader_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  host_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assistant_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accessCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MembersUncheckedUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUncheckedUpdateManyWithoutCellNestedInput
+  reports?: Prisma.ReportsUncheckedUpdateManyWithoutCellNestedInput
+  reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutCellNestedInput
+}
+
 export type CellsCreateWithoutReportsInput = {
   id?: string
   name: string
@@ -1103,6 +1262,8 @@ export type CellsCreateWithoutReportsInput = {
   host?: Prisma.MembersCreateNestedOneWithoutHostedCellsInput
   assistant?: Prisma.MembersCreateNestedOneWithoutAssistedCellsInput
   members?: Prisma.MembersCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutCellInput
 }
 
@@ -1118,6 +1279,8 @@ export type CellsUncheckedCreateWithoutReportsInput = {
   assistant_id?: string | null
   accessCode?: string | null
   members?: Prisma.MembersUncheckedCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsUncheckedCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutCellInput
   reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutCellInput
 }
 
@@ -1149,6 +1312,8 @@ export type CellsUpdateWithoutReportsInput = {
   host?: Prisma.MembersUpdateOneWithoutHostedCellsNestedInput
   assistant?: Prisma.MembersUpdateOneWithoutAssistedCellsNestedInput
   members?: Prisma.MembersUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUpdateManyWithoutCellNestedInput
 }
 
@@ -1164,6 +1329,8 @@ export type CellsUncheckedUpdateWithoutReportsInput = {
   assistant_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MembersUncheckedUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUncheckedUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUncheckedUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutCellNestedInput
 }
 
@@ -1179,6 +1346,8 @@ export type CellsCreateWithoutReportEntriesInput = {
   host?: Prisma.MembersCreateNestedOneWithoutHostedCellsInput
   assistant?: Prisma.MembersCreateNestedOneWithoutAssistedCellsInput
   members?: Prisma.MembersCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsCreateNestedManyWithoutCellInput
 }
 
@@ -1194,6 +1363,8 @@ export type CellsUncheckedCreateWithoutReportEntriesInput = {
   assistant_id?: string | null
   accessCode?: string | null
   members?: Prisma.MembersUncheckedCreateNestedManyWithoutCellInput
+  friends?: Prisma.FriendsUncheckedCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutCellInput
   reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutCellInput
 }
 
@@ -1225,6 +1396,8 @@ export type CellsUpdateWithoutReportEntriesInput = {
   host?: Prisma.MembersUpdateOneWithoutHostedCellsNestedInput
   assistant?: Prisma.MembersUpdateOneWithoutAssistedCellsNestedInput
   members?: Prisma.MembersUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutCellNestedInput
 }
 
@@ -1240,7 +1413,93 @@ export type CellsUncheckedUpdateWithoutReportEntriesInput = {
   assistant_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MembersUncheckedUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUncheckedUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUncheckedUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutCellNestedInput
+}
+
+export type CellsCreateWithoutFriendsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accessCode?: string | null
+  church: Prisma.ChurchesCreateNestedOneWithoutCellsInput
+  subSector?: Prisma.SubSectorsCreateNestedOneWithoutCellsInput
+  leader?: Prisma.MembersCreateNestedOneWithoutCellsInput
+  host?: Prisma.MembersCreateNestedOneWithoutHostedCellsInput
+  assistant?: Prisma.MembersCreateNestedOneWithoutAssistedCellsInput
+  members?: Prisma.MembersCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsCreateNestedManyWithoutCellInput
+  reports?: Prisma.ReportsCreateNestedManyWithoutCellInput
+  reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutCellInput
+}
+
+export type CellsUncheckedCreateWithoutFriendsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  church_id: string
+  sub_sector_id?: string | null
+  leader_id?: string | null
+  host_id?: string | null
+  assistant_id?: string | null
+  accessCode?: string | null
+  members?: Prisma.MembersUncheckedCreateNestedManyWithoutCellInput
+  goals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutCellInput
+  reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutCellInput
+  reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutCellInput
+}
+
+export type CellsCreateOrConnectWithoutFriendsInput = {
+  where: Prisma.CellsWhereUniqueInput
+  create: Prisma.XOR<Prisma.CellsCreateWithoutFriendsInput, Prisma.CellsUncheckedCreateWithoutFriendsInput>
+}
+
+export type CellsUpsertWithoutFriendsInput = {
+  update: Prisma.XOR<Prisma.CellsUpdateWithoutFriendsInput, Prisma.CellsUncheckedUpdateWithoutFriendsInput>
+  create: Prisma.XOR<Prisma.CellsCreateWithoutFriendsInput, Prisma.CellsUncheckedCreateWithoutFriendsInput>
+  where?: Prisma.CellsWhereInput
+}
+
+export type CellsUpdateToOneWithWhereWithoutFriendsInput = {
+  where?: Prisma.CellsWhereInput
+  data: Prisma.XOR<Prisma.CellsUpdateWithoutFriendsInput, Prisma.CellsUncheckedUpdateWithoutFriendsInput>
+}
+
+export type CellsUpdateWithoutFriendsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accessCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutCellsNestedInput
+  subSector?: Prisma.SubSectorsUpdateOneWithoutCellsNestedInput
+  leader?: Prisma.MembersUpdateOneWithoutCellsNestedInput
+  host?: Prisma.MembersUpdateOneWithoutHostedCellsNestedInput
+  assistant?: Prisma.MembersUpdateOneWithoutAssistedCellsNestedInput
+  members?: Prisma.MembersUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUpdateManyWithoutCellNestedInput
+  reports?: Prisma.ReportsUpdateManyWithoutCellNestedInput
+  reportEntries?: Prisma.ReportEntriesUpdateManyWithoutCellNestedInput
+}
+
+export type CellsUncheckedUpdateWithoutFriendsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leader_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  host_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assistant_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accessCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MembersUncheckedUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUncheckedUpdateManyWithoutCellNestedInput
+  reports?: Prisma.ReportsUncheckedUpdateManyWithoutCellNestedInput
+  reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutCellNestedInput
 }
 
 export type CellsCreateManyChurchInput = {
@@ -1266,6 +1525,8 @@ export type CellsUpdateWithoutChurchInput = {
   host?: Prisma.MembersUpdateOneWithoutHostedCellsNestedInput
   assistant?: Prisma.MembersUpdateOneWithoutAssistedCellsNestedInput
   members?: Prisma.MembersUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUpdateManyWithoutCellNestedInput
 }
@@ -1281,6 +1542,8 @@ export type CellsUncheckedUpdateWithoutChurchInput = {
   assistant_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MembersUncheckedUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUncheckedUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUncheckedUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutCellNestedInput
 }
@@ -1344,6 +1607,8 @@ export type CellsUpdateWithoutLeaderInput = {
   host?: Prisma.MembersUpdateOneWithoutHostedCellsNestedInput
   assistant?: Prisma.MembersUpdateOneWithoutAssistedCellsNestedInput
   members?: Prisma.MembersUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUpdateManyWithoutCellNestedInput
 }
@@ -1359,6 +1624,8 @@ export type CellsUncheckedUpdateWithoutLeaderInput = {
   assistant_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MembersUncheckedUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUncheckedUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUncheckedUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutCellNestedInput
 }
@@ -1386,6 +1653,8 @@ export type CellsUpdateWithoutHostInput = {
   leader?: Prisma.MembersUpdateOneWithoutCellsNestedInput
   assistant?: Prisma.MembersUpdateOneWithoutAssistedCellsNestedInput
   members?: Prisma.MembersUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUpdateManyWithoutCellNestedInput
 }
@@ -1401,6 +1670,8 @@ export type CellsUncheckedUpdateWithoutHostInput = {
   assistant_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MembersUncheckedUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUncheckedUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUncheckedUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutCellNestedInput
 }
@@ -1428,6 +1699,8 @@ export type CellsUpdateWithoutAssistantInput = {
   leader?: Prisma.MembersUpdateOneWithoutCellsNestedInput
   host?: Prisma.MembersUpdateOneWithoutHostedCellsNestedInput
   members?: Prisma.MembersUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUpdateManyWithoutCellNestedInput
 }
@@ -1443,6 +1716,8 @@ export type CellsUncheckedUpdateWithoutAssistantInput = {
   host_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MembersUncheckedUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUncheckedUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUncheckedUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutCellNestedInput
 }
@@ -1482,6 +1757,8 @@ export type CellsUpdateWithoutSubSectorInput = {
   host?: Prisma.MembersUpdateOneWithoutHostedCellsNestedInput
   assistant?: Prisma.MembersUpdateOneWithoutAssistedCellsNestedInput
   members?: Prisma.MembersUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUpdateManyWithoutCellNestedInput
 }
@@ -1497,6 +1774,8 @@ export type CellsUncheckedUpdateWithoutSubSectorInput = {
   assistant_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MembersUncheckedUpdateManyWithoutCellNestedInput
+  friends?: Prisma.FriendsUncheckedUpdateManyWithoutCellNestedInput
+  goals?: Prisma.CellGoalsUncheckedUpdateManyWithoutCellNestedInput
   reports?: Prisma.ReportsUncheckedUpdateManyWithoutCellNestedInput
   reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutCellNestedInput
 }
@@ -1520,12 +1799,16 @@ export type CellsUncheckedUpdateManyWithoutSubSectorInput = {
 
 export type CellsCountOutputType = {
   members: number
+  friends: number
+  goals: number
   reports: number
   reportEntries: number
 }
 
 export type CellsCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | CellsCountOutputTypeCountMembersArgs
+  friends?: boolean | CellsCountOutputTypeCountFriendsArgs
+  goals?: boolean | CellsCountOutputTypeCountGoalsArgs
   reports?: boolean | CellsCountOutputTypeCountReportsArgs
   reportEntries?: boolean | CellsCountOutputTypeCountReportEntriesArgs
 }
@@ -1545,6 +1828,20 @@ export type CellsCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
  */
 export type CellsCountOutputTypeCountMembersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MembersWhereInput
+}
+
+/**
+ * CellsCountOutputType without action
+ */
+export type CellsCountOutputTypeCountFriendsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FriendsWhereInput
+}
+
+/**
+ * CellsCountOutputType without action
+ */
+export type CellsCountOutputTypeCountGoalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CellGoalsWhereInput
 }
 
 /**
@@ -1579,6 +1876,8 @@ export type CellsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   host?: boolean | Prisma.Cells$hostArgs<ExtArgs>
   assistant?: boolean | Prisma.Cells$assistantArgs<ExtArgs>
   members?: boolean | Prisma.Cells$membersArgs<ExtArgs>
+  friends?: boolean | Prisma.Cells$friendsArgs<ExtArgs>
+  goals?: boolean | Prisma.Cells$goalsArgs<ExtArgs>
   reports?: boolean | Prisma.Cells$reportsArgs<ExtArgs>
   reportEntries?: boolean | Prisma.Cells$reportEntriesArgs<ExtArgs>
   _count?: boolean | Prisma.CellsCountOutputTypeDefaultArgs<ExtArgs>
@@ -1641,6 +1940,8 @@ export type CellsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   host?: boolean | Prisma.Cells$hostArgs<ExtArgs>
   assistant?: boolean | Prisma.Cells$assistantArgs<ExtArgs>
   members?: boolean | Prisma.Cells$membersArgs<ExtArgs>
+  friends?: boolean | Prisma.Cells$friendsArgs<ExtArgs>
+  goals?: boolean | Prisma.Cells$goalsArgs<ExtArgs>
   reports?: boolean | Prisma.Cells$reportsArgs<ExtArgs>
   reportEntries?: boolean | Prisma.Cells$reportEntriesArgs<ExtArgs>
   _count?: boolean | Prisma.CellsCountOutputTypeDefaultArgs<ExtArgs>
@@ -1669,6 +1970,8 @@ export type $CellsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     host: Prisma.$MembersPayload<ExtArgs> | null
     assistant: Prisma.$MembersPayload<ExtArgs> | null
     members: Prisma.$MembersPayload<ExtArgs>[]
+    friends: Prisma.$FriendsPayload<ExtArgs>[]
+    goals: Prisma.$CellGoalsPayload<ExtArgs>[]
     reports: Prisma.$ReportsPayload<ExtArgs>[]
     reportEntries: Prisma.$ReportEntriesPayload<ExtArgs>[]
   }
@@ -2083,6 +2386,8 @@ export interface Prisma__CellsClient<T, Null = never, ExtArgs extends runtime.Ty
   host<T extends Prisma.Cells$hostArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Cells$hostArgs<ExtArgs>>): Prisma.Prisma__MembersClient<runtime.Types.Result.GetResult<Prisma.$MembersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   assistant<T extends Prisma.Cells$assistantArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Cells$assistantArgs<ExtArgs>>): Prisma.Prisma__MembersClient<runtime.Types.Result.GetResult<Prisma.$MembersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   members<T extends Prisma.Cells$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Cells$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MembersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  friends<T extends Prisma.Cells$friendsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Cells$friendsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FriendsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  goals<T extends Prisma.Cells$goalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Cells$goalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CellGoalsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reports<T extends Prisma.Cells$reportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Cells$reportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReportsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reportEntries<T extends Prisma.Cells$reportEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Cells$reportEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReportEntriesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -2617,6 +2922,54 @@ export type Cells$membersArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.MembersScalarFieldEnum | Prisma.MembersScalarFieldEnum[]
+}
+
+/**
+ * Cells.friends
+ */
+export type Cells$friendsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Friends
+   */
+  select?: Prisma.FriendsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Friends
+   */
+  omit?: Prisma.FriendsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FriendsInclude<ExtArgs> | null
+  where?: Prisma.FriendsWhereInput
+  orderBy?: Prisma.FriendsOrderByWithRelationInput | Prisma.FriendsOrderByWithRelationInput[]
+  cursor?: Prisma.FriendsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FriendsScalarFieldEnum | Prisma.FriendsScalarFieldEnum[]
+}
+
+/**
+ * Cells.goals
+ */
+export type Cells$goalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CellGoals
+   */
+  select?: Prisma.CellGoalsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CellGoals
+   */
+  omit?: Prisma.CellGoalsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CellGoalsInclude<ExtArgs> | null
+  where?: Prisma.CellGoalsWhereInput
+  orderBy?: Prisma.CellGoalsOrderByWithRelationInput | Prisma.CellGoalsOrderByWithRelationInput[]
+  cursor?: Prisma.CellGoalsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CellGoalsScalarFieldEnum | Prisma.CellGoalsScalarFieldEnum[]
 }
 
 /**

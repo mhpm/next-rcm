@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo } from 'react';
 import {
   RiSearchLine,
   RiEyeLine,
@@ -13,18 +13,18 @@ import {
   RiArrowDownSLine,
   RiSkipBackLine,
   RiSkipForwardLine,
-} from "react-icons/ri";
-import { DataTableProps, PaginationInfo } from "@/types";
-import { ColumnVisibilityDropdown } from "../ColumnVisibilityDropdown";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from 'react-icons/ri';
+import { DataTableProps, PaginationInfo } from '@/types';
+import { ColumnVisibilityDropdown } from '../ColumnVisibilityDropdown';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -32,31 +32,31 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, MoreHorizontal } from "lucide-react";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/dropdown-menu';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Loader2, MoreHorizontal } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 function DataTable<T extends Record<string, unknown>>({
   data,
-  title = "",
-  subTitle = "",
+  title = '',
+  subTitle = '',
   columns,
   actions = [],
   searchable = true,
-  searchPlaceholder = "Buscar...",
+  searchPlaceholder = 'Buscar...',
   selectable = false,
   pagination = true,
   itemsPerPage = 10,
   loading = false,
-  emptyMessage = "No data available",
-  className = "",
+  emptyMessage = 'No data available',
+  className = '',
   onSelectionChange,
   addButton,
   // Props para visibilidad de columnas
@@ -67,11 +67,19 @@ function DataTable<T extends Record<string, unknown>>({
   onHideAllColumns,
   showColumnVisibility = false,
   searchEndContent,
+  selectedRows: selectedRowsProp,
+  onSelectRow: onSelectRowProp,
+  onSelectAll: onSelectAllProp,
 }: DataTableProps<T>) {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [internalSelectedRows, setInternalSelectedRows] = useState<Set<string>>(
+    new Set()
+  );
   const [itemsPerPageState, setItemsPerPageState] = useState(itemsPerPage);
+
+  const selectedRows = selectedRowsProp || internalSelectedRows;
+  const isControlled = !!selectedRowsProp;
 
   // Filter columns based on visibility
   const visibleColumnsFiltered = useMemo(() => {
@@ -84,10 +92,10 @@ function DataTable<T extends Record<string, unknown>>({
   // Sorting state
   const [sortConfig, setSortConfig] = useState<{
     key: keyof T | null;
-    direction: "asc" | "desc";
+    direction: 'asc' | 'desc';
   }>({
     key: null,
-    direction: "asc",
+    direction: 'asc',
   });
 
   // Handle sorting
@@ -99,12 +107,12 @@ function DataTable<T extends Record<string, unknown>>({
       if (prevConfig.key === columnKey) {
         return {
           key: columnKey,
-          direction: prevConfig.direction === "asc" ? "desc" : "asc",
+          direction: prevConfig.direction === 'asc' ? 'desc' : 'asc',
         };
       } else {
         return {
           key: columnKey,
-          direction: "asc",
+          direction: 'asc',
         };
       }
     });
@@ -123,33 +131,33 @@ function DataTable<T extends Record<string, unknown>>({
 
       // Handle null/undefined values
       if (aValue == null && bValue == null) return 0;
-      if (aValue == null) return sortConfig.direction === "asc" ? 1 : -1;
-      if (bValue == null) return sortConfig.direction === "asc" ? -1 : 1;
+      if (aValue == null) return sortConfig.direction === 'asc' ? 1 : -1;
+      if (bValue == null) return sortConfig.direction === 'asc' ? -1 : 1;
 
       // Handle different data types
-      if (typeof aValue === "string" && typeof bValue === "string") {
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
         const comparison = aValue
           .toLowerCase()
           .localeCompare(bValue.toLowerCase());
-        return sortConfig.direction === "asc" ? comparison : -comparison;
+        return sortConfig.direction === 'asc' ? comparison : -comparison;
       }
 
-      if (typeof aValue === "number" && typeof bValue === "number") {
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
         const comparison = aValue - bValue;
-        return sortConfig.direction === "asc" ? comparison : -comparison;
+        return sortConfig.direction === 'asc' ? comparison : -comparison;
       }
 
       // Handle dates
       if (aValue instanceof Date && bValue instanceof Date) {
         const comparison = aValue.getTime() - bValue.getTime();
-        return sortConfig.direction === "asc" ? comparison : -comparison;
+        return sortConfig.direction === 'asc' ? comparison : -comparison;
       }
 
       // Convert to string for comparison as fallback
       const aStr = String(aValue).toLowerCase();
       const bStr = String(bValue).toLowerCase();
       const comparison = aStr.localeCompare(bStr);
-      return sortConfig.direction === "asc" ? comparison : -comparison;
+      return sortConfig.direction === 'asc' ? comparison : -comparison;
     });
   }, [data, sortConfig]);
 
@@ -160,10 +168,10 @@ function DataTable<T extends Record<string, unknown>>({
     return sortedData.filter((item) => {
       return columns.some((column) => {
         const value = item[column.key];
-        if (typeof value === "string") {
+        if (typeof value === 'string') {
           return value.toLowerCase().includes(searchTerm.toLowerCase());
         }
-        if (typeof value === "object" && value !== null) {
+        if (typeof value === 'object' && value !== null) {
           return JSON.stringify(value)
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
@@ -184,7 +192,7 @@ function DataTable<T extends Record<string, unknown>>({
     if (!column?.sortable) return null;
 
     if (sortConfig.key === columnKey) {
-      return sortConfig.direction === "asc" ? (
+      return sortConfig.direction === 'asc' ? (
         <RiArrowUpSLine className="w-4 h-4 text-primary" />
       ) : (
         <RiArrowDownSLine className="w-4 h-4 text-primary" />
@@ -226,22 +234,30 @@ function DataTable<T extends Record<string, unknown>>({
 
   // Selection handlers
   const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      const allIds = paginatedData.map((item) => String(item.id || item.ID));
-      setSelectedRows(new Set(allIds));
+    if (onSelectAllProp) {
+      onSelectAllProp(checked);
     } else {
-      setSelectedRows(new Set());
+      if (checked) {
+        const allIds = paginatedData.map((item) => String(item.id || item.ID));
+        setInternalSelectedRows(new Set(allIds));
+      } else {
+        setInternalSelectedRows(new Set());
+      }
     }
   };
 
   const handleSelectRow = (id: string, checked: boolean) => {
-    const newSelected = new Set(selectedRows);
-    if (checked) {
-      newSelected.add(id);
+    if (onSelectRowProp) {
+      onSelectRowProp(id, checked);
     } else {
-      newSelected.delete(id);
+      const newSelected = new Set(internalSelectedRows);
+      if (checked) {
+        newSelected.add(id);
+      } else {
+        newSelected.delete(id);
+      }
+      setInternalSelectedRows(newSelected);
     }
-    setSelectedRows(newSelected);
   };
 
   // Notify parent of selection changes
@@ -268,7 +284,7 @@ function DataTable<T extends Record<string, unknown>>({
       return column.render(value, row);
     }
 
-    return String(value || "");
+    return String(value || '');
   };
 
   // Handle action clicks
@@ -288,11 +304,11 @@ function DataTable<T extends Record<string, unknown>>({
 
     // Fallback icons based on label
     switch (action.label) {
-      case "Ver":
+      case 'Ver':
         return <RiEyeLine className="w-4 h-4" />;
-      case "Editar":
+      case 'Editar':
         return <RiEdit2Fill className="w-4 h-4" />;
-      case "Eliminar":
+      case 'Eliminar':
         return <RiDeleteBinLine className="w-4 h-4" />;
       default:
         return null;
@@ -316,7 +332,7 @@ function DataTable<T extends Record<string, unknown>>({
   return (
     <div
       className={cn(
-        "rounded-lg border bg-card text-card-foreground shadow-sm",
+        'rounded-lg border bg-card text-card-foreground shadow-sm w-full max-w-[85vw] mx-auto',
         className
       )}
     >
@@ -331,25 +347,25 @@ function DataTable<T extends Record<string, unknown>>({
 
             <div className="flex items-center gap-2">
               {addButton &&
-                (typeof addButton === "function" ? (
+                (typeof addButton === 'function' ? (
                   addButton()
                 ) : (
                   <Button
                     size="sm"
-                    className={addButton.className || ""}
+                    className={addButton.className || ''}
                     variant={
-                      addButton.variant === "secondary"
-                        ? "secondary"
-                        : addButton.variant === "ghost"
-                        ? "ghost"
-                        : addButton.variant === "error" ||
-                          addButton.variant === "destructive"
-                        ? "destructive"
-                        : addButton.variant === "outline"
-                        ? "outline"
-                        : addButton.variant === "link"
-                        ? "link"
-                        : "default"
+                      addButton.variant === 'secondary'
+                        ? 'secondary'
+                        : addButton.variant === 'ghost'
+                        ? 'ghost'
+                        : addButton.variant === 'error' ||
+                          addButton.variant === 'destructive'
+                        ? 'destructive'
+                        : addButton.variant === 'outline'
+                        ? 'outline'
+                        : addButton.variant === 'link'
+                        ? 'link'
+                        : 'default'
                     }
                     onClick={addButton.onClick}
                   >
@@ -407,8 +423,8 @@ function DataTable<T extends Record<string, unknown>>({
                 <div
                   key={rowId}
                   className={cn(
-                    "border rounded-lg bg-muted/20",
-                    isSelected ? "border-primary bg-primary/5" : ""
+                    'border rounded-lg bg-muted/20',
+                    isSelected ? 'border-primary bg-primary/5' : ''
                   )}
                 >
                   <div className="p-4">
@@ -435,11 +451,11 @@ function DataTable<T extends Record<string, unknown>>({
                                 key={actionIndex}
                                 onClick={() => handleAction(action, row)}
                                 className={cn(
-                                  "cursor-pointer",
-                                  action.variant === "error" ||
-                                    action.variant === "destructive"
-                                    ? "text-destructive focus:text-destructive"
-                                    : ""
+                                  'cursor-pointer',
+                                  action.variant === 'error' ||
+                                    action.variant === 'destructive'
+                                    ? 'text-destructive focus:text-destructive'
+                                    : ''
                                 )}
                               >
                                 {getActionIcon(action)}
@@ -475,124 +491,136 @@ function DataTable<T extends Record<string, unknown>>({
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden md:block overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {selectable && (
-                <TableHead className="w-12">
-                  <Checkbox
-                    checked={isAllSelected}
-                    onCheckedChange={(checked) =>
-                      handleSelectAll(checked as boolean)
-                    }
-                  />
-                </TableHead>
-              )}
-              {visibleColumnsFiltered.map((column) => (
-                <TableHead
-                  key={String(column.key)}
-                  className={cn(
-                    column.className || "",
-                    column.sortable
-                      ? "cursor-pointer select-none group hover:bg-accent transition-colors"
-                      : ""
-                  )}
-                  onClick={() => column.sortable && handleSort(column.key)}
-                >
-                  <div className="flex items-center justify-between">
-                    <span>{column.label}</span>
-                    {column.sortable && (
-                      <div className="ml-2 flex-shrink-0">
-                        {getSortIcon(column.key)}
-                      </div>
-                    )}
-                  </div>
-                </TableHead>
-              ))}
-              {actions.length > 0 && (
-                <TableHead className="text-right">Actions</TableHead>
-              )}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedData.length === 0 ? (
+      <div className="hidden md:block overflow-hidden rounded-md border w-full">
+        <div className="overflow-x-auto w-full">
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell
-                  colSpan={
-                    visibleColumnsFiltered.length +
-                    (selectable ? 1 : 0) +
-                    (actions.length > 0 ? 1 : 0)
-                  }
-                  className="text-center py-8 text-muted-foreground"
-                >
-                  {emptyMessage}
-                </TableCell>
-              </TableRow>
-            ) : (
-              paginatedData.map((row, index) => {
-                const rowId = String(row.id || row.ID || index);
-                const isSelected = selectedRows.has(rowId);
-
-                return (
-                  <TableRow
-                    key={rowId}
-                    data-state={isSelected ? "selected" : undefined}
+                {selectable && (
+                  <TableHead className="w-12">
+                    <Checkbox
+                      checked={isAllSelected}
+                      onCheckedChange={(checked) =>
+                        handleSelectAll(checked as boolean)
+                      }
+                    />
+                  </TableHead>
+                )}
+                {visibleColumnsFiltered.map((column) => (
+                  <TableHead
+                    key={String(column.key)}
+                    className={cn(
+                      'whitespace-nowrap',
+                      column.className || '',
+                      column.sortable
+                        ? 'cursor-pointer select-none group hover:bg-accent transition-colors'
+                        : ''
+                    )}
+                    onClick={() => column.sortable && handleSort(column.key)}
                   >
-                    {selectable && (
-                      <TableCell>
-                        <Checkbox
-                          checked={isSelected}
-                          onCheckedChange={(checked) =>
-                            handleSelectRow(rowId, checked as boolean)
-                          }
-                        />
-                      </TableCell>
-                    )}
-                    {visibleColumnsFiltered.map((column) => (
-                      <TableCell
-                        key={String(column.key)}
-                        className={column.className || ""}
-                      >
-                        {renderCell(column, row[column.key], row)}
-                      </TableCell>
-                    ))}
-                    {actions.length > 0 && (
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {actions.map((action, actionIndex) => (
-                              <DropdownMenuItem
-                                key={actionIndex}
-                                onClick={() => handleAction(action, row)}
-                                className={cn(
-                                  "cursor-pointer",
-                                  action.variant === "error" ||
-                                    action.variant === "destructive"
-                                    ? "text-destructive focus:text-destructive"
-                                    : ""
-                                )}
-                              >
-                                {getActionIcon(action)}
-                                <span className="ml-2">{action.label}</span>
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
+                    <div className="flex items-center justify-between">
+                      <span>{column.label}</span>
+                      {column.sortable && (
+                        <div className="ml-2 flex-shrink-0">
+                          {getSortIcon(column.key)}
+                        </div>
+                      )}
+                    </div>
+                  </TableHead>
+                ))}
+                {actions.length > 0 && (
+                  <TableHead className="text-right whitespace-nowrap">
+                    Actions
+                  </TableHead>
+                )}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginatedData.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={
+                      visibleColumnsFiltered.length +
+                      (selectable ? 1 : 0) +
+                      (actions.length > 0 ? 1 : 0)
+                    }
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    {emptyMessage}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                paginatedData.map((row, index) => {
+                  const rowId = String(row.id || row.ID || index);
+                  const isSelected = selectedRows.has(rowId);
+
+                  return (
+                    <TableRow
+                      key={rowId}
+                      data-state={isSelected ? 'selected' : undefined}
+                    >
+                      {selectable && (
+                        <TableCell>
+                          <Checkbox
+                            checked={isSelected}
+                            onCheckedChange={(checked) =>
+                              handleSelectRow(rowId, checked as boolean)
+                            }
+                          />
+                        </TableCell>
+                      )}
+                      {visibleColumnsFiltered.map((column) => (
+                        <TableCell
+                          key={String(column.key)}
+                          className={cn(
+                            'whitespace-nowrap',
+                            column.className || ''
+                          )}
+                        >
+                          {renderCell(column, row[column.key], row)}
+                        </TableCell>
+                      ))}
+                      {actions.length > 0 && (
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {actions.map((action, actionIndex) => (
+                                <DropdownMenuItem
+                                  key={actionIndex}
+                                  onClick={() =>
+                                    action.onClick && action.onClick(row)
+                                  }
+                                  className={cn(
+                                    action.variant === 'destructive'
+                                      ? 'text-destructive focus:text-destructive'
+                                      : ''
+                                  )}
+                                >
+                                  {action.icon && (
+                                    <span className="mr-2 h-4 w-4">
+                                      {action.icon}
+                                    </span>
+                                  )}
+                                  {action.label}
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       {/* Pagination */}
@@ -604,7 +632,7 @@ function DataTable<T extends Record<string, unknown>>({
               {/* Items info and per page selector */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="text-sm text-muted-foreground text-center sm:text-left">
-                  {paginationInfo.startItem}-{paginationInfo.endItem} de{" "}
+                  {paginationInfo.startItem}-{paginationInfo.endItem} de{' '}
                   {paginationInfo.totalItems}
                 </div>
                 <div className="flex items-center justify-center gap-2">
@@ -762,7 +790,7 @@ function DataTable<T extends Record<string, unknown>>({
                         key={pageNum}
                         onClick={() => setCurrentPage(pageNum)}
                         size="sm"
-                        variant={pageNum === currentPage ? "default" : "ghost"}
+                        variant={pageNum === currentPage ? 'default' : 'ghost'}
                       >
                         {pageNum}
                       </Button>

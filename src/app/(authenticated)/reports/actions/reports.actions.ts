@@ -95,6 +95,25 @@ export async function deleteReportAction(formData: FormData) {
   await deleteReport(id);
 }
 
+export async function deleteReportEntriesAction(ids: string[]) {
+  const prisma = await getChurchPrisma();
+  // We need to find at least one entry to know the report_id for revalidation,
+  // or just revalidate all if that's acceptable.
+  // Let's get the report_id from the first one.
+  const first = await prisma.reportEntries.findUnique({
+    where: { id: ids[0] },
+    select: { report_id: true },
+  });
+
+  await prisma.reportEntries.deleteMany({
+    where: { id: { in: ids } },
+  });
+
+  if (first) {
+    revalidatePath(`/reports/${first.report_id}/entries`);
+  }
+}
+
 export type UpdateReportInput = {
   id: string;
   title: string;
@@ -154,79 +173,82 @@ export async function updateReportWithFields(input: UpdateReportInput) {
   };
 
   // Transaction for atomicity if possible, or sequential
-  await prisma.$transaction(async (tx) => {
-    if (toDelete.length > 0) {
-      await tx.reportFields.deleteMany({
-        where: { id: { in: toDelete } },
+  await prisma.$transaction(
+    async (tx) => {
+      if (toDelete.length > 0) {
+        await tx.reportFields.deleteMany({
+          where: { id: { in: toDelete } },
+        });
+      }
+
+      // Prepare fields with unique keys and correct order
+      const preparedFields = (input.fields || []).map((f, index) => {
+        let key = f.key;
+        if (!key) {
+          key = slugify(
+            f.label ||
+              `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+          );
+        }
+
+        // Normalize key (slugify again just in case, or trust input?)
+        // Best to trust input if present, but ensure uniqueness
+        key = ensureUniqueKey(key);
+
+        return { ...f, key, order: index };
       });
+
+      // Separate updates and creates
+      const updates = preparedFields.filter((f) => f.id);
+      const creates = preparedFields.filter((f) => !f.id);
+
+      // 1. Perform Updates
+      for (const f of updates) {
+        const base: Prisma.ReportFieldsUncheckedUpdateInput = {
+          key: f.key,
+          label: f.label ?? null,
+          type: f.type,
+          required: !!f.required,
+          order: f.order,
+        } as Prisma.ReportFieldsUncheckedUpdateInput;
+
+        if (typeof f.value !== 'undefined') {
+          (base as any).value = f.value as Prisma.InputJsonValue;
+        }
+        if (f.options && Array.isArray(f.options)) {
+          (base as any).options = f.options as Prisma.InputJsonValue;
+        }
+
+        await tx.reportFields.update({
+          where: { id: f.id! },
+          data: base,
+        });
+      }
+
+      // 2. Perform Creates
+      for (const f of creates) {
+        const createData: Prisma.ReportFieldsCreateInput = {
+          key: f.key,
+          label: f.label ?? null,
+          type: f.type,
+          required: !!f.required,
+          order: f.order,
+          report: { connect: { id: input.id } },
+        };
+        if (typeof f.value !== 'undefined') {
+          (createData as any).value = f.value as Prisma.InputJsonValue;
+        }
+        if (f.options && Array.isArray(f.options)) {
+          (createData as any).options = f.options as Prisma.InputJsonValue;
+        }
+        await tx.reportFields.create({ data: createData });
+      }
+    },
+    {
+      maxWait: 5000,
+      timeout: 20000,
     }
-
-    // Prepare fields with unique keys and correct order
-    const preparedFields = (input.fields || []).map((f, index) => {
-      let key = f.key;
-      if (!key) {
-        key = slugify(
-          f.label ||
-            `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-        );
-      }
-
-      // Normalize key (slugify again just in case, or trust input?)
-      // Best to trust input if present, but ensure uniqueness
-      key = ensureUniqueKey(key);
-
-      return { ...f, key, order: index };
-    });
-
-    // Separate updates and creates
-    const updates = preparedFields.filter((f) => f.id);
-    const creates = preparedFields.filter((f) => !f.id);
-
-    // 1. Perform Updates
-    for (const f of updates) {
-      const base: Prisma.ReportFieldsUncheckedUpdateInput = {
-        key: f.key,
-        label: f.label ?? null,
-        type: f.type,
-        required: !!f.required,
-        order: f.order,
-      } as Prisma.ReportFieldsUncheckedUpdateInput;
-
-      if (typeof f.value !== 'undefined') {
-        (base as any).value = f.value as Prisma.InputJsonValue;
-      }
-      if (f.options && Array.isArray(f.options)) {
-        (base as any).options = f.options as Prisma.InputJsonValue;
-      }
-
-      await tx.reportFields.update({
-        where: { id: f.id! },
-        data: base,
-      });
-    }
-
-    // 2. Perform Creates
-    for (const f of creates) {
-      const createData: Prisma.ReportFieldsCreateInput = {
-        key: f.key,
-        label: f.label ?? null,
-        type: f.type,
-        required: !!f.required,
-        order: f.order,
-        report: { connect: { id: input.id } },
-      };
-      if (typeof f.value !== 'undefined') {
-        (createData as any).value = f.value as Prisma.InputJsonValue;
-      }
-      if (f.options && Array.isArray(f.options)) {
-        (createData as any).options = f.options as Prisma.InputJsonValue;
-      }
-      await tx.reportFields.create({ data: createData });
-    }
-  }, {
-    maxWait: 5000,
-    timeout: 20000,
-  });
+  );
 
   revalidatePath('/reports');
   revalidatePath(`/reports/${input.id}`);
@@ -239,24 +261,15 @@ export async function updateReportWithFields(input: UpdateReportInput) {
 
 export async function deleteReportEntry(id: string) {
   const prisma = await getChurchPrisma();
-  await prisma.reportEntries.delete({ where: { id } });
+  const entry = await prisma.reportEntries.delete({ where: { id } });
+  revalidatePath(`/reports/${entry.report_id}/entries`);
+  return entry;
 }
 
 export async function deleteReportEntryAction(formData: FormData) {
   const id = formData.get('id') as string;
   if (!id) throw new Error('id requerido');
-
-  const prisma = await getChurchPrisma();
-  const existing = await prisma.reportEntries.findUnique({
-    where: { id },
-    select: { report_id: true },
-  });
-
   await deleteReportEntry(id);
-
-  if (existing?.report_id) {
-    revalidatePath(`/reports/${existing.report_id}/entries`);
-  }
 }
 
 export type UpdateReportEntryInput = {

@@ -85,6 +85,11 @@ export type Groups = Prisma.GroupsModel
  */
 export type GroupFields = Prisma.GroupFieldsModel
 /**
+ * Model CellGoals
+ * 
+ */
+export type CellGoals = Prisma.CellGoalsModel
+/**
  * Model Reports
  * 
  */
@@ -109,3 +114,18 @@ export type ReportEntryValues = Prisma.ReportEntryValuesModel
  * 
  */
 export type MemberMinistry = Prisma.MemberMinistryModel
+/**
+ * Model Friends
+ * 
+ */
+export type Friends = Prisma.FriendsModel
+/**
+ * Model Events
+ * 
+ */
+export type Events = Prisma.EventsModel
+/**
+ * Model EventAttendances
+ * 
+ */
+export type EventAttendances = Prisma.EventAttendancesModel

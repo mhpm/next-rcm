@@ -75,7 +75,10 @@ export default function ReportCard({ report }: ReportCardProps) {
                   className="h-9 w-9 text-white hover:bg-white/20"
                   title="Ir al reporte público"
                 >
-                  <Link href={`/public/reports/${report.publicToken}`} target="_blank">
+                  <Link
+                    href={`/public/reports/${report.publicToken}`}
+                    target="_blank"
+                  >
                     <FaArrowUpRightFromSquare className="text-lg" />
                   </Link>
                 </Button>

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { AppSidebar } from "@/components/AppSidebar";
-import { SidebarSheet } from "@/components/SidebarSheet";
-import { Sun, Moon, PanelLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useTheme } from "@/components/ThemeProvider";
+import { AppSidebar } from '@/components/AppSidebar';
+import { SidebarSheet } from '@/components/SidebarSheet';
+import { Sun, Moon, PanelLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useTheme } from '@/components/ThemeProvider';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,10 +12,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 export default function AuthenticatedLayout({
   children,
@@ -29,16 +29,16 @@ export default function AuthenticatedLayout({
     <div className="flex min-h-screen w-full bg-muted/40">
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-10 hidden flex-col border-r bg-background sm:flex transition-all duration-300",
-          isSidebarOpen ? "w-64" : "w-16"
+          'fixed inset-y-0 left-0 z-10 hidden flex-col border-r bg-background sm:flex transition-all duration-300',
+          isSidebarOpen ? 'w-64' : 'w-16'
         )}
       >
         <AppSidebar className="border-none w-full" collapsed={!isSidebarOpen} />
       </aside>
       <div
         className={cn(
-          "flex flex-col sm:gap-4 sm:py-4 w-full transition-all duration-300",
-          isSidebarOpen ? "sm:pl-64" : "sm:pl-16"
+          'flex flex-col sm:gap-4 sm:py-4 w-full transition-all duration-300',
+          isSidebarOpen ? 'sm:pl-64' : 'sm:pl-16'
         )}
       >
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
@@ -58,10 +58,10 @@ export default function AuthenticatedLayout({
               variant="ghost"
               size="icon"
               onClick={() =>
-                setTheme(resolvedTheme === "dark" ? "light" : "dark")
+                setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
               }
             >
-              {resolvedTheme === "dark" ? (
+              {resolvedTheme === 'dark' ? (
                 <Sun className="h-5 w-5" />
               ) : (
                 <Moon className="h-5 w-5" />
@@ -88,7 +88,7 @@ export default function AuthenticatedLayout({
             </DropdownMenu>
           </div>
         </header>
-        <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+        <main className="grid flex-1 items-start gap-4 p-4 sm:py-0 md:gap-8">
           {children}
         </main>
       </div>
