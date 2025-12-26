@@ -201,7 +201,7 @@ export default async function ReportEntriesPage({
   ];
 
   return (
-    <div className="space-y-6 p-8">
+    <div className="space-y-6 p-4 w-full max-w-full overflow-x-hidden">
       <div className="flex items-center justify-between">
         <BackLink text="Volver atrás" fallbackHref="/dashboard" />
         <Breadcrumbs />

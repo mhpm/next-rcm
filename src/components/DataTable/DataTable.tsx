@@ -337,7 +337,7 @@ function DataTable<T extends Record<string, unknown>>({
       )}
     >
       {/* Header */}
-      <div className="p-4 sm:p-6 border-b rounded-t-lg">
+      <div className="p-3 sm:p-6 border-b rounded-t-lg">
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -389,19 +389,20 @@ function DataTable<T extends Record<string, unknown>>({
             </div>
           </div>
 
-          {/* Search - Mobile First */}
           {searchable && (
-            <div className="flex flex-row gap-2 w-full sm:w-auto md:max-w-md">
-              <div className="relative w-full md:w-64">
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full">
+              <div className="relative w-full sm:w-64">
                 <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 w-5 h-5 pointer-events-none" />
                 <Input
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-full md:w-64"
+                  className="pl-10 w-full"
                 />
               </div>
-              {searchEndContent}
+              <div className="w-full sm:w-auto">
+                {searchEndContent}
+              </div>
             </div>
           )}
         </div>
@@ -414,7 +415,7 @@ function DataTable<T extends Record<string, unknown>>({
             {emptyMessage}
           </div>
         ) : (
-          <div className="p-4 space-y-4">
+          <div className="p-2 sm:p-4 space-y-4">
             {paginatedData.map((row, index) => {
               const rowId = String(row.id || row.ID || index);
               const isSelected = selectedRows.has(rowId);
@@ -423,35 +424,42 @@ function DataTable<T extends Record<string, unknown>>({
                 <div
                   key={rowId}
                   className={cn(
-                    'border rounded-lg bg-muted/20',
-                    isSelected ? 'border-primary bg-primary/5' : ''
+                    'border rounded-xl bg-linear-to-br from-card/50 to-card transition-all duration-200 shadow-sm',
+                    isSelected ? 'ring-2 ring-primary border-primary/50' : 'hover:border-accent'
                   )}
                 >
-                  <div className="p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      {selectable && (
-                        <Checkbox
-                          checked={isSelected}
-                          onCheckedChange={(checked) =>
-                            handleSelectRow(rowId, checked as boolean)
-                          }
-                        />
-                      )}
+                  <div className="p-5">
+                    <div className="flex items-center justify-between mb-4 pb-2 border-b border-muted/30">
+                      <div className="flex items-center gap-3">
+                        {selectable && (
+                          <Checkbox
+                            checked={isSelected}
+                            onCheckedChange={(checked) =>
+                              handleSelectRow(rowId, checked as boolean)
+                            }
+                            className="h-5 w-5"
+                          />
+                        )}
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Registro #{index + 1 + (currentPage - 1) * itemsPerPageState}
+                        </span>
+                      </div>
+                      
                       {actions.length > 0 && (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
+                            <Button variant="ghost" className="h-9 w-9 p-0 rounded-full hover:bg-accent/50">
                               <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
+                              <MoreHorizontal className="h-5 w-5" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent align="end" className="w-48">
                             {actions.map((action, actionIndex) => (
                               <DropdownMenuItem
                                 key={actionIndex}
                                 onClick={() => handleAction(action, row)}
                                 className={cn(
-                                  'cursor-pointer',
+                                  'cursor-pointer py-2.5',
                                   action.variant === 'error' ||
                                     action.variant === 'destructive'
                                     ? 'text-destructive focus:text-destructive'
@@ -459,7 +467,7 @@ function DataTable<T extends Record<string, unknown>>({
                                 )}
                               >
                                 {getActionIcon(action)}
-                                <span className="ml-2">{action.label}</span>
+                                <span className="ml-2 font-medium">{action.label}</span>
                               </DropdownMenuItem>
                             ))}
                           </DropdownMenuContent>
@@ -467,18 +475,18 @@ function DataTable<T extends Record<string, unknown>>({
                       )}
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-1 gap-y-3">
                       {visibleColumnsFiltered.map((column) => (
                         <div
                           key={String(column.key)}
-                          className="flex flex-col sm:flex-row sm:justify-between"
+                          className="flex flex-col gap-1 border-b border-muted/10 last:border-0 pb-2 last:pb-0"
                         >
-                          <span className="text-sm font-semibold mb-1 sm:mb-0">
-                            {column.label}:
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">
+                            {column.label}
                           </span>
-                          <span className="text-sm text-muted-foreground break-words">
+                          <div className="text-sm font-medium text-foreground leading-relaxed wrap-break-word">
                             {renderCell(column, row[column.key], row)}
-                          </span>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -491,9 +499,9 @@ function DataTable<T extends Record<string, unknown>>({
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden md:block overflow-hidden rounded-md border w-full">
-        <div className="overflow-x-auto w-full">
-          <Table>
+      <div className="hidden md:block w-full overflow-hidden">
+        <div className="overflow-x-auto rounded-md border max-w-full relative">
+          <Table className="w-full">
             <TableHeader>
               <TableRow>
                 {selectable && (
@@ -521,7 +529,7 @@ function DataTable<T extends Record<string, unknown>>({
                     <div className="flex items-center justify-between">
                       <span>{column.label}</span>
                       {column.sortable && (
-                        <div className="ml-2 flex-shrink-0">
+                        <div className="ml-2 shrink-0">
                           {getSortIcon(column.key)}
                         </div>
                       )}
@@ -774,7 +782,7 @@ function DataTable<T extends Record<string, unknown>>({
                 {Array.from(
                   { length: Math.min(5, paginationInfo.totalPages) },
                   (_, i) => {
-                    let pageNum;
+                    let pageNum: number;
                     if (paginationInfo.totalPages <= 5) {
                       pageNum = i + 1;
                     } else if (currentPage <= 3) {

@@ -545,116 +545,96 @@ export default function ReportEntriesTable({
         onHideAllColumns={hideAllColumns}
         showColumnVisibility={true}
         searchEndContent={
-          <div className="flex items-start gap-4">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    variant={
-                      Object.keys(activeFilters).length > 0
-                        ? 'default'
-                        : 'outline'
-                    }
-                    size="icon"
-                    className="h-10 w-12"
-                    onClick={() => setIsFilterModalOpen(true)}
-                  >
-                    <RiFilter3Line className="w-5 h-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Filtros avanzados</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            {/* Year Selector */}
-            <Select
-              value={String(selectedYear)}
-              onValueChange={(v) => handleYearChange(Number(v))}
-            >
-              <SelectTrigger className="w-64">
-                <SelectValue placeholder="Año" />
-              </SelectTrigger>
-              <SelectContent>
-                {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map(
-                  (year) => (
-                    <SelectItem key={year} value={String(year)}>
-                      {year}
-                    </SelectItem>
-                  )
-                )}
-              </SelectContent>
-            </Select>
+          <div className="space-y-2 w-full sm:w-auto">
+            <div className="flex flex-wrap items-center gap-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant={Object.keys(activeFilters).length > 0 ? 'default' : 'outline'}
+                      size="icon"
+                      className="h-9 w-9 shrink-0"
+                      onClick={() => setIsFilterModalOpen(true)}
+                    >
+                      <RiFilter3Line className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Filtros avanzados</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
-            {/* Type Selector */}
-            <Select
-              value={filterType}
-              onValueChange={(v) => handleTypeChange(v as any)}
-            >
-              <SelectTrigger className="w-56">
-                <SelectValue placeholder="Tipo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="year">Todo el año</SelectItem>
-                <SelectItem value="cuatrimestre">Por Cuatrimestre</SelectItem>
-                <SelectItem value="trimestre">Por Trimestre</SelectItem>
-                <SelectItem value="month">Por Mes</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Dynamic Controls */}
-            {filterType === 'cuatrimestre' && (
-              <div className="flex mr-8">
-                {[1, 2, 3].map((q) => (
-                  <Button
-                    key={q}
-                    type="button"
-                    variant={selectedPeriod === q ? 'default' : 'outline'}
-                    className={`h-10 rounded-none ${
-                      q === 1 ? 'rounded-l-md' : ''
-                    } ${q === 3 ? 'rounded-r-md' : ''}`}
-                    onClick={() => handlePeriodClick(q)}
-                  >
-                    {q}º C
-                  </Button>
-                ))}
-              </div>
-            )}
-
-            {filterType === 'trimestre' && (
-              <div className="flex mr-10">
-                {[1, 2, 3, 4].map((t) => (
-                  <Button
-                    key={t}
-                    type="button"
-                    variant={selectedPeriod === t ? 'default' : 'outline'}
-                    className={`h-10 rounded-none ${
-                      t === 1 ? 'rounded-l-md' : ''
-                    } ${t === 4 ? 'rounded-r-md' : ''}`}
-                    onClick={() => handlePeriodClick(t)}
-                  >
-                    {t}º T
-                  </Button>
-                ))}
-              </div>
-            )}
-
-            {filterType === 'month' && (
-              <Select
-                value={selectedPeriod !== null ? String(selectedPeriod) : ''}
-                onValueChange={(v) => handlePeriodClick(Number(v))}
-              >
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Seleccionar mes" />
+              <Select value={String(selectedYear)} onValueChange={(v) => handleYearChange(Number(v))}>
+                <SelectTrigger className="h-9 w-20 text-xs sm:text-sm">
+                  <SelectValue placeholder="Año" />
                 </SelectTrigger>
                 <SelectContent>
-                  {months.map((m, i) => (
-                    <SelectItem key={i} value={String(i)}>
-                      {m}
-                    </SelectItem>
+                  {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map((year) => (
+                    <SelectItem key={year} value={String(year)}>{year}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            )}
+
+              <Select value={filterType} onValueChange={(v) => handleTypeChange(v as any)}>
+                <SelectTrigger className="h-9 flex-1 min-w-[120px] text-xs sm:text-sm">
+                  <SelectValue placeholder="Tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="year">Todo el año</SelectItem>
+                  <SelectItem value="cuatrimestre">Por Cuatrimestre</SelectItem>
+                  <SelectItem value="trimestre">Por Trimestre</SelectItem>
+                  <SelectItem value="month">Por Mes</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {filterType === 'cuatrimestre' && (
+                <div className="flex w-full sm:w-auto gap-1">
+                  {[1, 2, 3].map((q) => (
+                    <Button
+                      key={q}
+                      type="button"
+                      variant={selectedPeriod === q ? 'default' : 'outline'}
+                      className="h-9 flex-1 sm:flex-none text-xs sm:text-sm"
+                      onClick={() => handlePeriodClick(q)}
+                    >
+                      {q}º C
+                    </Button>
+                  ))}
+                </div>
+              )}
+
+              {filterType === 'trimestre' && (
+                <div className="flex w-full sm:w-auto gap-1">
+                  {[1, 2, 3, 4].map((t) => (
+                    <Button
+                      key={t}
+                      type="button"
+                      variant={selectedPeriod === t ? 'default' : 'outline'}
+                      className="h-9 flex-1 sm:flex-none text-xs sm:text-sm"
+                      onClick={() => handlePeriodClick(t)}
+                    >
+                      {t}º T
+                    </Button>
+                  ))}
+                </div>
+              )}
+
+              {filterType === 'month' && (
+                <Select
+                  value={selectedPeriod !== null ? String(selectedPeriod) : ''}
+                  onValueChange={(v) => handlePeriodClick(Number(v))}
+                >
+                  <SelectTrigger className="h-9 w-full sm:w-40 text-xs sm:text-sm">
+                    <SelectValue placeholder="Seleccionar mes" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((m, i) => (
+                      <SelectItem key={i} value={String(i)}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
           </div>
         }
       />

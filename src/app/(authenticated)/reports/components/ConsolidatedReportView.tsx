@@ -458,14 +458,17 @@ export default function ConsolidatedReportView({
   }, [consolidatedData, numericFields, booleanFields]);
 
   return (
-    <Card className="w-full max-w-[85vw] mx-auto">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>Vista Consolidada</CardTitle>
+    <Card className="w-full border-0 sm:border shadow-none sm:shadow-sm">
+      <CardHeader className="px-2 sm:px-6 py-3 sm:py-4 space-y-3">
+        <CardTitle className="text-base sm:text-xl font-bold">Vista Consolidada</CardTitle>
+        
+        {/* Controls - Stacked on mobile */}
+        <div className="space-y-2">
+          {/* Row 1: Group By */}
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Agrupar por:</span>
+            <span className="text-xs sm:text-sm font-medium shrink-0 text-muted-foreground min-w-[60px]">Agrupar:</span>
             <Select value={groupBy} onValueChange={setGroupBy}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="h-9 text-xs sm:text-sm">
                 <SelectValue placeholder="Seleccionar..." />
               </SelectTrigger>
               <SelectContent>
@@ -476,53 +479,40 @@ export default function ConsolidatedReportView({
                 ))}
               </SelectContent>
             </Select>
+          </div>
 
+          {/* Row 2: Filters */}
+          <div className="flex flex-wrap items-center gap-2">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     type="button"
-                    variant={
-                      Object.keys(activeFilters).length > 0
-                        ? 'default'
-                        : 'outline'
-                    }
+                    variant={Object.keys(activeFilters).length > 0 ? 'default' : 'outline'}
                     size="icon"
-                    className="h-10 w-12"
+                    className="h-9 w-9 shrink-0"
                     onClick={() => setIsFilterModalOpen(true)}
                   >
-                    <RiFilter3Line className="w-5 h-5" />
+                    <RiFilter3Line className="w-4 h-4" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Filtros avanzados</TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
-            {/* Year Selector */}
-            <Select
-              value={String(selectedYear)}
-              onValueChange={(v) => handleYearChange(Number(v))}
-            >
-              <SelectTrigger className="w-24">
+            <Select value={String(selectedYear)} onValueChange={(v) => handleYearChange(Number(v))}>
+              <SelectTrigger className="h-9 w-20 text-xs sm:text-sm">
                 <SelectValue placeholder="Año" />
               </SelectTrigger>
               <SelectContent>
-                {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map(
-                  (year) => (
-                    <SelectItem key={year} value={String(year)}>
-                      {year}
-                    </SelectItem>
-                  )
-                )}
+                {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map((year) => (
+                  <SelectItem key={year} value={String(year)}>{year}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
-            {/* Type Selector */}
-            <Select
-              value={filterType}
-              onValueChange={(v) => handleTypeChange(v as any)}
-            >
-              <SelectTrigger className="w-40">
+            <Select value={filterType} onValueChange={(v) => handleTypeChange(v as any)}>
+              <SelectTrigger className="h-9 flex-1 min-w-[120px] text-xs sm:text-sm">
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
               <SelectContent>
@@ -533,17 +523,14 @@ export default function ConsolidatedReportView({
               </SelectContent>
             </Select>
 
-            {/* Dynamic Controls */}
             {filterType === 'cuatrimestre' && (
-              <div className="flex">
+              <div className="flex w-full sm:w-auto gap-1">
                 {[1, 2, 3].map((q) => (
                   <Button
                     key={q}
                     type="button"
                     variant={selectedPeriod === q ? 'default' : 'outline'}
-                    className={`h-10 rounded-none ${
-                      q === 1 ? 'rounded-l-md' : ''
-                    } ${q === 3 ? 'rounded-r-md' : ''}`}
+                    className="h-9 flex-1 sm:flex-none text-xs sm:text-sm"
                     onClick={() => handlePeriodClick(q)}
                   >
                     {q}º C
@@ -553,15 +540,13 @@ export default function ConsolidatedReportView({
             )}
 
             {filterType === 'trimestre' && (
-              <div className="flex">
+              <div className="flex w-full sm:w-auto gap-1">
                 {[1, 2, 3, 4].map((t) => (
                   <Button
                     key={t}
                     type="button"
                     variant={selectedPeriod === t ? 'default' : 'outline'}
-                    className={`h-10 rounded-none ${
-                      t === 1 ? 'rounded-l-md' : ''
-                    } ${t === 4 ? 'rounded-r-md' : ''}`}
+                    className="h-9 flex-1 sm:flex-none text-xs sm:text-sm"
                     onClick={() => handlePeriodClick(t)}
                   >
                     {t}º T
@@ -575,14 +560,12 @@ export default function ConsolidatedReportView({
                 value={selectedPeriod !== null ? String(selectedPeriod) : ''}
                 onValueChange={(v) => handlePeriodClick(Number(v))}
               >
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="h-9 w-full sm:w-40 text-xs sm:text-sm">
                   <SelectValue placeholder="Seleccionar mes" />
                 </SelectTrigger>
                 <SelectContent>
                   {months.map((m, i) => (
-                    <SelectItem key={i} value={String(i)}>
-                      {m}
-                    </SelectItem>
+                    <SelectItem key={i} value={String(i)}>{m}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -590,67 +573,100 @@ export default function ConsolidatedReportView({
           </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="rounded-md border overflow-x-auto w-full">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[200px] whitespace-nowrap">
-                  Grupo
-                </TableHead>
-                <TableHead className="whitespace-nowrap">Registros</TableHead>
+
+      <CardContent className="px-2 sm:px-6 pb-4">
+        {/* Mobile Cards View */}
+        <div className="block md:hidden space-y-3">
+          {consolidatedData.map((group: any) => (
+            <div key={group.key} className="border rounded-lg p-3 bg-card space-y-2">
+              <div className="font-bold text-sm border-b pb-2 mb-2">{group.label}</div>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span className="text-muted-foreground">Registros:</span>
+                  <span className="ml-2 font-semibold">{group.count}</span>
+                </div>
                 {numericFields.map((f) => (
-                  <TableHead key={f.id} className="whitespace-nowrap">
-                    {f.label || 'Campo'}
-                  </TableHead>
+                  <div key={f.id}>
+                    <span className="text-muted-foreground">{f.label}:</span>
+                    <span className="ml-2 font-semibold">{group.values[f.id].toLocaleString()}</span>
+                  </div>
                 ))}
                 {booleanFields.map((f) => (
-                  <TableHead key={f.id} className="whitespace-nowrap">
-                    {f.label || 'Campo'} (Sí)
-                  </TableHead>
+                  <div key={f.id}>
+                    <span className="text-muted-foreground">{f.label} (Sí):</span>
+                    <span className="ml-2 font-semibold">{group.values[f.id]}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+          
+          {/* Totals Card */}
+          <div className="border-2 border-primary rounded-lg p-3 bg-primary/5 space-y-2">
+            <div className="font-bold text-sm border-b border-primary/20 pb-2 mb-2">TOTAL</div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span className="text-muted-foreground">Registros:</span>
+                <span className="ml-2 font-bold">{totals.count}</span>
+              </div>
+              {numericFields.map((f) => (
+                <div key={f.id}>
+                  <span className="text-muted-foreground">{f.label}:</span>
+                  <span className="ml-2 font-bold">{totals[f.id].toLocaleString()}</span>
+                </div>
+              ))}
+              {booleanFields.map((f) => (
+                <div key={f.id}>
+                  <span className="text-muted-foreground">{f.label} (Sí):</span>
+                  <span className="ml-2 font-bold">{totals[f.id]}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block w-full overflow-hidden">
+          <div className="overflow-x-auto rounded-md border max-w-full relative">
+            <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[200px] whitespace-nowrap">Grupo</TableHead>
+                <TableHead className="whitespace-nowrap">Registros</TableHead>
+                {numericFields.map((f) => (
+                  <TableHead key={f.id} className="whitespace-nowrap">{f.label || 'Campo'}</TableHead>
+                ))}
+                {booleanFields.map((f) => (
+                  <TableHead key={f.id} className="whitespace-nowrap">{f.label || 'Campo'} (Sí)</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
             <TableBody>
               {consolidatedData.map((group: any) => (
                 <TableRow key={group.key}>
-                  <TableCell className="font-medium whitespace-nowrap">
-                    {group.label}
-                  </TableCell>
-                  <TableCell className="whitespace-nowrap">
-                    {group.count}
-                  </TableCell>
+                  <TableCell className="font-medium whitespace-nowrap">{group.label}</TableCell>
+                  <TableCell className="whitespace-nowrap">{group.count}</TableCell>
                   {numericFields.map((f) => (
-                    <TableCell key={f.id} className="whitespace-nowrap">
-                      {group.values[f.id].toLocaleString()}
-                    </TableCell>
+                    <TableCell key={f.id} className="whitespace-nowrap">{group.values[f.id].toLocaleString()}</TableCell>
                   ))}
                   {booleanFields.map((f) => (
-                    <TableCell key={f.id} className="whitespace-nowrap">
-                      {group.values[f.id]}
-                    </TableCell>
+                    <TableCell key={f.id} className="whitespace-nowrap">{group.values[f.id]}</TableCell>
                   ))}
                 </TableRow>
               ))}
-              {/* Totals Row */}
               <TableRow className="bg-muted/50 font-bold">
                 <TableCell className="whitespace-nowrap">TOTAL</TableCell>
-                <TableCell className="whitespace-nowrap">
-                  {totals.count}
-                </TableCell>
+                <TableCell className="whitespace-nowrap">{totals.count}</TableCell>
                 {numericFields.map((f) => (
-                  <TableCell key={f.id} className="whitespace-nowrap">
-                    {totals[f.id].toLocaleString()}
-                  </TableCell>
+                  <TableCell key={f.id} className="whitespace-nowrap">{totals[f.id].toLocaleString()}</TableCell>
                 ))}
                 {booleanFields.map((f) => (
-                  <TableCell key={f.id} className="whitespace-nowrap">
-                    {totals[f.id]}
-                  </TableCell>
+                  <TableCell key={f.id} className="whitespace-nowrap">{totals[f.id]}</TableCell>
                 ))}
               </TableRow>
             </TableBody>
-          </Table>
+            </Table>
+          </div>
         </div>
       </CardContent>
 

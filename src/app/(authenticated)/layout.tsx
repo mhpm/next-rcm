@@ -26,7 +26,7 @@ export default function AuthenticatedLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
-    <div className="flex min-h-screen w-full bg-muted/40">
+    <div className="flex min-h-screen w-full bg-muted/40 overflow-x-hidden">
       <aside
         className={cn(
           'fixed inset-y-0 left-0 z-10 hidden flex-col border-r bg-background sm:flex transition-all duration-300',
@@ -37,7 +37,7 @@ export default function AuthenticatedLayout({
       </aside>
       <div
         className={cn(
-          'flex flex-col sm:gap-4 sm:py-4 w-full transition-all duration-300',
+          'flex flex-col sm:gap-4 sm:py-4 w-full transition-all duration-300 min-w-0 overflow-x-hidden',
           isSidebarOpen ? 'sm:pl-64' : 'sm:pl-16'
         )}
       >
@@ -88,7 +88,7 @@ export default function AuthenticatedLayout({
             </DropdownMenu>
           </div>
         </header>
-        <main className="grid flex-1 items-start gap-4 p-4 sm:py-0 md:gap-8">
+        <main className="grid flex-1 items-start gap-4 p-4 sm:py-0 md:gap-8 min-w-0 overflow-x-hidden">
           {children}
         </main>
       </div>
