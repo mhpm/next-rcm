@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { RiFilter3Line, RiDeleteBinLine } from "react-icons/ri";
-import { InputField, SelectField } from "@/components/FormControls";
-import type { ReportFieldType } from "@/generated/prisma/client";
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { RiFilter3Line, RiDeleteBinLine } from 'react-icons/ri';
+import { InputField, SelectField } from '@/components/FormControls';
+import type { ReportFieldType } from '@/generated/prisma/client';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 // ScrollArea no está disponible; usamos un contenedor con overflow
 
 export type FilterField = {
@@ -30,6 +30,7 @@ type AdvancedFilterModalProps = {
   onClear: () => void;
   fields: FilterField[];
   activeFilters: Record<string, any>;
+  title?: string;
 };
 
 export default function AdvancedFilterModal({
@@ -39,6 +40,7 @@ export default function AdvancedFilterModal({
   onClear,
   fields,
   activeFilters,
+  title,
 }: AdvancedFilterModalProps) {
   const { register, handleSubmit, reset, control } = useForm();
 
@@ -52,7 +54,7 @@ export default function AdvancedFilterModal({
   const onSubmit = (data: Record<string, any>) => {
     // Filter out empty values
     const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
-      if (value !== "" && value !== null && value !== undefined) {
+      if (value !== '' && value !== null && value !== undefined) {
         acc[key] = value;
       }
       return acc;
@@ -74,7 +76,7 @@ export default function AdvancedFilterModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <RiFilter3Line className="text-primary" />
-            Filtros Avanzados
+            {title || 'Filtros Avanzados'}
           </DialogTitle>
         </DialogHeader>
 
@@ -106,7 +108,7 @@ export default function AdvancedFilterModal({
               {/* Campos dinámicos del reporte */}
               {fields.map((field) => (
                 <div key={field.id} className="w-full">
-                  {field.type === "TEXT" && (
+                  {field.type === 'TEXT' && (
                     <InputField
                       name={field.id}
                       label={field.label || field.key}
@@ -115,7 +117,7 @@ export default function AdvancedFilterModal({
                     />
                   )}
 
-                  {(field.type === "NUMBER" || field.type === "CURRENCY") && (
+                  {(field.type === 'NUMBER' || field.type === 'CURRENCY') && (
                     <div className="space-y-2">
                       <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         {field.label || field.key}
@@ -125,7 +127,7 @@ export default function AdvancedFilterModal({
                           name={`${field.id}_min`}
                           label=""
                           type="number"
-                          step={field.type === "CURRENCY" ? "0.01" : "1"}
+                          step={field.type === 'CURRENCY' ? '0.01' : '1'}
                           register={register}
                           placeholder="Min"
                           className="mt-0"
@@ -134,7 +136,7 @@ export default function AdvancedFilterModal({
                           name={`${field.id}_max`}
                           label=""
                           type="number"
-                          step={field.type === "CURRENCY" ? "0.01" : "1"}
+                          step={field.type === 'CURRENCY' ? '0.01' : '1'}
                           register={register}
                           placeholder="Max"
                           className="mt-0"
@@ -143,20 +145,20 @@ export default function AdvancedFilterModal({
                     </div>
                   )}
 
-                  {field.type === "BOOLEAN" && (
+                  {field.type === 'BOOLEAN' && (
                     <SelectField
                       name={field.id}
                       label={field.label || field.key}
                       control={control}
                       options={[
-                        { value: "", label: "Todos" },
-                        { value: "true", label: "Sí" },
-                        { value: "false", label: "No" },
+                        { value: '', label: 'Todos' },
+                        { value: 'true', label: 'Sí' },
+                        { value: 'false', label: 'No' },
                       ]}
                     />
                   )}
 
-                  {field.type === "DATE" && (
+                  {field.type === 'DATE' && (
                     <div className="space-y-2">
                       <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         {field.label || field.key}
@@ -180,13 +182,13 @@ export default function AdvancedFilterModal({
                     </div>
                   )}
 
-                  {field.type === "SELECT" && (
+                  {field.type === 'SELECT' && (
                     <SelectField
                       name={field.id}
                       label={field.label || field.key}
                       control={control}
                       options={[
-                        { value: "", label: "Todos" },
+                        { value: '', label: 'Todos' },
                         ...(field.options || []).map((opt) => ({
                           value: opt,
                           label: opt,

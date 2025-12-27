@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import type { TableColumn } from '@/types';
 import ReportEntriesTable from '@/app/(authenticated)/reports/components/ReportEntriesTable';
 import ConsolidatedReportView from '@/app/(authenticated)/reports/components/ConsolidatedReportView';
+import ComparisonReportView from '@/app/(authenticated)/reports/components/ComparisonReportView';
 import { BackLink, Breadcrumbs } from '@/components';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { connection } from 'next/server';
@@ -73,7 +74,7 @@ export default async function ReportEntriesPage({
         },
       },
     },
-    take: 100,
+    take: 5000,
   });
 
   type Row = Record<string, unknown> & {
@@ -211,6 +212,7 @@ export default async function ReportEntriesPage({
         <TabsList className="mb-4">
           <TabsTrigger value="list">Lista Detallada</TabsTrigger>
           <TabsTrigger value="consolidated">Totales</TabsTrigger>
+          <TabsTrigger value="comparison">Comparativa</TabsTrigger>
         </TabsList>
 
         <TabsContent value="list">
@@ -236,6 +238,14 @@ export default async function ReportEntriesPage({
 
         <TabsContent value="consolidated">
           <ConsolidatedReportView
+            rows={rows}
+            fields={report.fields}
+            reportId={id}
+          />
+        </TabsContent>
+
+        <TabsContent value="comparison">
+          <ComparisonReportView
             rows={rows}
             fields={report.fields}
             reportId={id}

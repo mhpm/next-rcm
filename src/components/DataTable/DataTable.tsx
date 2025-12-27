@@ -400,9 +400,7 @@ function DataTable<T extends Record<string, unknown>>({
                   className="pl-10 w-full"
                 />
               </div>
-              <div className="w-full sm:w-auto">
-                {searchEndContent}
-              </div>
+              <div className="w-full sm:w-auto">{searchEndContent}</div>
             </div>
           )}
         </div>
@@ -425,7 +423,9 @@ function DataTable<T extends Record<string, unknown>>({
                   key={rowId}
                   className={cn(
                     'border rounded-xl bg-linear-to-br from-card/50 to-card transition-all duration-200 shadow-sm',
-                    isSelected ? 'ring-2 ring-primary border-primary/50' : 'hover:border-accent'
+                    isSelected
+                      ? 'ring-2 ring-primary border-primary/50'
+                      : 'hover:border-accent'
                   )}
                 >
                   <div className="p-5">
@@ -441,14 +441,18 @@ function DataTable<T extends Record<string, unknown>>({
                           />
                         )}
                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                          Registro #{index + 1 + (currentPage - 1) * itemsPerPageState}
+                          Registro #
+                          {index + 1 + (currentPage - 1) * itemsPerPageState}
                         </span>
                       </div>
-                      
+
                       {actions.length > 0 && (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-9 w-9 p-0 rounded-full hover:bg-accent/50">
+                            <Button
+                              variant="ghost"
+                              className="h-9 w-9 p-0 rounded-full hover:bg-accent/50"
+                            >
                               <span className="sr-only">Open menu</span>
                               <MoreHorizontal className="h-5 w-5" />
                             </Button>
@@ -467,7 +471,9 @@ function DataTable<T extends Record<string, unknown>>({
                                 )}
                               >
                                 {getActionIcon(action)}
-                                <span className="ml-2 font-medium">{action.label}</span>
+                                <span className="ml-2 font-medium">
+                                  {action.label}
+                                </span>
                               </DropdownMenuItem>
                             ))}
                           </DropdownMenuContent>
@@ -505,7 +511,7 @@ function DataTable<T extends Record<string, unknown>>({
             <TableHeader>
               <TableRow>
                 {selectable && (
-                  <TableHead className="w-12">
+                  <TableHead className="w-12 h-10 py-2">
                     <Checkbox
                       checked={isAllSelected}
                       onCheckedChange={(checked) =>
@@ -518,7 +524,7 @@ function DataTable<T extends Record<string, unknown>>({
                   <TableHead
                     key={String(column.key)}
                     className={cn(
-                      'whitespace-nowrap',
+                      'whitespace-nowrap h-10 py-2',
                       column.className || '',
                       column.sortable
                         ? 'cursor-pointer select-none group hover:bg-accent transition-colors'
@@ -537,7 +543,7 @@ function DataTable<T extends Record<string, unknown>>({
                   </TableHead>
                 ))}
                 {actions.length > 0 && (
-                  <TableHead className="text-right whitespace-nowrap">
+                  <TableHead className="text-right whitespace-nowrap h-10 py-2">
                     Actions
                   </TableHead>
                 )}
@@ -568,7 +574,7 @@ function DataTable<T extends Record<string, unknown>>({
                       data-state={isSelected ? 'selected' : undefined}
                     >
                       {selectable && (
-                        <TableCell>
+                        <TableCell className="py-2">
                           <Checkbox
                             checked={isSelected}
                             onCheckedChange={(checked) =>
@@ -581,7 +587,7 @@ function DataTable<T extends Record<string, unknown>>({
                         <TableCell
                           key={String(column.key)}
                           className={cn(
-                            'whitespace-nowrap',
+                            'whitespace-nowrap py-2',
                             column.className || ''
                           )}
                         >
@@ -589,7 +595,7 @@ function DataTable<T extends Record<string, unknown>>({
                         </TableCell>
                       ))}
                       {actions.length > 0 && (
-                        <TableCell className="text-right">
+                        <TableCell className="text-right py-2">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" className="h-8 w-8 p-0">

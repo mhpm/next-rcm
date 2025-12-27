@@ -1,0 +1,245 @@
+import { useMemo } from 'react';
+import { ReportFields } from '@/generated/prisma/client';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+
+// Type definition for Row (copied from ConsolidatedReportView for now, should be shared)
+export type Row = Record<string, unknown> & {
+  id: string;
+  createdAt: string;
+  entidad: string;
+  supervisor?: string;
+  lider?: string;
+  raw_createdAt?: string;
+  supervisor_sector?: string;
+  supervisor_subsector?: string;
+  celula?: string;
+  subsector?: string;
+  sector?: string;
+  zona?: string;
+};
+
+const parseLocalFilterDate = (dateStr: string) => {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
+
+export function useReportData(
+  rows: Row[],
+  fields: ReportFields[],
+  activeFilters: Record<string, any>,
+  groupBy: string
+) {
+  // Identify numeric fields that can be aggregated
+  const numericFields = useMemo(() => {
+    return fields.filter((f) => f.type === 'NUMBER' || f.type === 'CURRENCY');
+  }, [fields]);
+
+  // Identify boolean fields
+  const booleanFields = useMemo(() => {
+    return fields.filter((f) => f.type === 'BOOLEAN');
+  }, [fields]);
+
+  // Filter rows
+  const filteredRows = useMemo(() => {
+    return rows.filter((row) => {
+      // Entidad
+      if (
+        activeFilters.entidad &&
+        !String(row.entidad || '')
+          .toLowerCase()
+          .includes(activeFilters.entidad.toLowerCase())
+      )
+        return false;
+
+      // CreatedAt
+      if (activeFilters.createdAt_from) {
+        const rowDate = new Date(row.raw_createdAt as string);
+        const filterDate = parseLocalFilterDate(activeFilters.createdAt_from);
+        rowDate.setHours(0, 0, 0, 0);
+        if (rowDate < filterDate) return false;
+      }
+      if (activeFilters.createdAt_to) {
+        const rowDate = new Date(row.raw_createdAt as string);
+        const filterDate = parseLocalFilterDate(activeFilters.createdAt_to);
+        rowDate.setHours(0, 0, 0, 0);
+        if (rowDate > filterDate) return false;
+      }
+
+      // Dynamic fields
+      for (const field of fields) {
+        const rawVal = row[`raw_${field.id}`];
+
+        if (field.type === 'TEXT' && activeFilters[field.id]) {
+          if (
+            !String(rawVal || '')
+              .toLowerCase()
+              .includes(activeFilters[field.id].toLowerCase())
+          )
+            return false;
+        }
+
+        if (field.type === 'NUMBER' || field.type === 'CURRENCY') {
+          const min = activeFilters[`${field.id}_min`];
+          const max = activeFilters[`${field.id}_max`];
+          const val = Number(rawVal);
+
+          if (
+            min &&
+            rawVal !== null &&
+            rawVal !== undefined &&
+            val < Number(min)
+          )
+            return false;
+          if (
+            max &&
+            rawVal !== null &&
+            rawVal !== undefined &&
+            val > Number(max)
+          )
+            return false;
+        }
+
+        if (field.type === 'BOOLEAN' && activeFilters[field.id]) {
+          const filterVal = activeFilters[field.id] === 'true';
+          if (rawVal !== filterVal) return false;
+        }
+
+        if (field.type === 'DATE') {
+          const from = activeFilters[`${field.id}_from`];
+          const to = activeFilters[`${field.id}_to`];
+          if (from || to) {
+            if (!rawVal) return false;
+            const dateVal = new Date(String(rawVal));
+            dateVal.setHours(0, 0, 0, 0);
+
+            if (from) {
+              const fromDate = parseLocalFilterDate(from);
+              if (dateVal < fromDate) return false;
+            }
+            if (to) {
+              const toDate = parseLocalFilterDate(to);
+              if (dateVal > toDate) return false;
+            }
+          }
+        }
+
+        if (field.type === 'SELECT' && activeFilters[field.id]) {
+          if (rawVal !== activeFilters[field.id]) return false;
+        }
+      }
+
+      return true;
+    });
+  }, [rows, activeFilters, fields]);
+
+  // Process data (Grouping)
+  const consolidatedData = useMemo(() => {
+    const groups: Record<string, any> = {};
+
+    filteredRows.forEach((row) => {
+      let key = '';
+      let label = '';
+
+      if (groupBy === 'entidad') {
+        key = row.entidad || 'Sin Entidad';
+        label = key;
+      } else if (groupBy === 'celula') {
+        key = row.celula || 'Sin Célula';
+        label = key;
+      } else if (groupBy === 'subsector') {
+        key = row.subsector || 'Sin Subsector';
+        label = key;
+      } else if (groupBy === 'sector') {
+        key = row.sector || 'Sin Sector';
+        label = key;
+      } else if (groupBy === 'zona') {
+        key = row.zona || 'Sin Zona';
+        label = key;
+      } else if (groupBy === 'supervisor_sector') {
+        key = row.supervisor_sector || 'Sin Supervisor Sector';
+        label = key;
+      } else if (groupBy === 'supervisor_subsector') {
+        key = row.supervisor_subsector || 'Sin Supervisor Subsector';
+        label = key;
+      } else if (groupBy === 'lider') {
+        key = row.lider || 'Sin Líder';
+        label = key;
+      } else if (groupBy === 'month') {
+        const date = new Date((row.raw_createdAt as string) || row.createdAt);
+        key = format(date, 'yyyy-MM');
+        label = format(date, 'MMMM yyyy', { locale: es });
+      } else if (groupBy === 'week') {
+        const date = new Date((row.raw_createdAt as string) || row.createdAt);
+        key = format(date, "yyyy-'W'ww");
+        label = `Semana ${format(date, 'ww, yyyy')}`;
+      }
+
+      if (!groups[key]) {
+        groups[key] = {
+          key,
+          label,
+          count: 0,
+          values: {},
+        };
+        // Initialize sums
+        numericFields.forEach((f) => {
+          groups[key].values[f.id] = 0;
+        });
+        // Initialize boolean counts
+        booleanFields.forEach((f) => {
+          groups[key].values[f.id] = 0;
+        });
+      }
+
+      groups[key].count++;
+
+      // Sum numeric values
+      numericFields.forEach((f) => {
+        // Try to get raw value first, then fallback to field id
+        const rawKey = `raw_${f.id}`;
+        const val = row[rawKey] ?? row[f.id];
+
+        const num = parseFloat(String(val || '0'));
+        if (!isNaN(num)) {
+          groups[key].values[f.id] += num;
+        }
+      });
+
+      // Count boolean true values
+      booleanFields.forEach((f) => {
+        const rawKey = `raw_${f.id}`;
+        const val = row[rawKey] ?? row[f.id];
+        // Check for boolean true or string "true" or "Sí" (display value)
+        if (val === true || val === 'true' || val === 'Sí') {
+          groups[key].values[f.id]++;
+        }
+      });
+    });
+
+    return Object.values(groups).sort((a: any, b: any) =>
+      a.label.localeCompare(b.label)
+    );
+  }, [filteredRows, groupBy, numericFields, booleanFields]);
+
+  // Calculate totals
+  const totals = useMemo(() => {
+    const total: Record<string, number> = { count: 0 };
+    numericFields.forEach((f) => (total[f.id] = 0));
+    booleanFields.forEach((f) => (total[f.id] = 0));
+
+    consolidatedData.forEach((group: any) => {
+      total.count += group.count;
+      numericFields.forEach((f) => {
+        total[f.id] += group.values[f.id];
+      });
+      booleanFields.forEach((f) => {
+        total[f.id] += group.values[f.id];
+      });
+    });
+
+    return total;
+  }, [consolidatedData, numericFields, booleanFields]);
+
+  return { consolidatedData, totals, filteredRows, numericFields, booleanFields };
+}
