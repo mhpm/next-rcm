@@ -63,7 +63,11 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     unregister,
     formState: { errors },
   } = useForm<FormValues>({
-    defaultValues: { gender: "MASCULINO", ...(initialData || {}) },
+    defaultValues: {
+      gender: "MASCULINO",
+      role: "MIEMBRO",
+      ...(initialData || {}),
+    },
     mode: "onChange",
     reValidateMode: "onChange",
     resolver: zodResolver(isEditMode ? memberFormSchemaEdit : memberFormSchema),
