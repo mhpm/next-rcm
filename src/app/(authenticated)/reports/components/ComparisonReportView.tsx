@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -34,8 +34,7 @@ import {
   Row,
   useReportData,
 } from '@/app/(authenticated)/reports/hooks/useReportData';
-import { Badge } from '@/components/ui/badge';
-import { ArrowRight, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import { ColumnVisibilityDropdown } from '@/components/ColumnVisibilityDropdown/ColumnVisibilityDropdown';
 
 // Custom hook for scoped column visibility

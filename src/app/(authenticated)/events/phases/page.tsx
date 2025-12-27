@@ -1,3 +1,4 @@
+import { connection } from 'next/server';
 import { getPhases } from '../actions/phases.actions';
 import { PhasesList } from '../components/PhasesList';
 
@@ -7,11 +8,12 @@ export const metadata = {
 };
 
 export default async function PhasesPage() {
+  await connection();
   const phases = await getPhases();
 
   return (
     <div className="container mx-auto py-6">
-       <PhasesList initialPhases={phases} />
+      <PhasesList initialPhases={phases} />
     </div>
   );
 }
