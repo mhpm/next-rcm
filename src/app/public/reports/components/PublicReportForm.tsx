@@ -603,7 +603,7 @@ export default function PublicReportForm({
                               />
                             </Button>
                           </CollapsibleTrigger>
-                          <CollapsibleContent className="px-4 pb-4">
+                          <CollapsibleContent className="px-4 pb-4 overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
                             <div className="grid grid-cols-1 gap-4 pt-2">
                               {group.fields.map((f) => renderField(f))}
                             </div>

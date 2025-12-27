@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useForm } from "react-hook-form";
-import { InputField, SelectField } from "@/components/FormControls";
-import type { ReportFieldType, ReportScope } from "@/generated/prisma/client";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { InputField, SelectField } from '@/components/FormControls';
+import type { ReportFieldType, ReportScope } from '@/generated/prisma/client';
 import {
   createReportEntry,
   updateReportEntry,
   getReportEntityMembers,
-} from "@/app/(authenticated)/reports/actions/reports.actions";
-import { useRouter } from "next/navigation";
-import { useNotificationStore } from "@/store/NotificationStore";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+} from '@/app/(authenticated)/reports/actions/reports.actions';
+import { useRouter } from 'next/navigation';
+import { useNotificationStore } from '@/store/NotificationStore';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ChevronDown, Loader2 } from "lucide-react";
+} from '@/components/ui/collapsible';
+import { ChevronDown, Loader2 } from 'lucide-react';
 
 type Option = { value: string; label: string };
 
@@ -80,9 +80,9 @@ export default function SubmitReportForm({
     { id: string; firstName: string; lastName: string }[]
   >([]);
 
-  const watchedCellId = watch("cellId");
-  const watchedGroupId = watch("groupId");
-  const watchedSectorId = watch("sectorId");
+  const watchedCellId = watch('cellId');
+  const watchedGroupId = watch('groupId');
+  const watchedSectorId = watch('sectorId');
 
   const [openSections, setOpenSections] = React.useState<
     Record<string, boolean>
@@ -97,9 +97,9 @@ export default function SubmitReportForm({
   React.useEffect(() => {
     const fetchMembers = async () => {
       let entityId: string | undefined;
-      if (scope === "CELL") entityId = watchedCellId;
-      if (scope === "GROUP") entityId = watchedGroupId;
-      if (scope === "SECTOR") entityId = watchedSectorId;
+      if (scope === 'CELL') entityId = watchedCellId;
+      if (scope === 'GROUP') entityId = watchedGroupId;
+      if (scope === 'SECTOR') entityId = watchedSectorId;
 
       if (entityId) {
         try {
@@ -125,9 +125,9 @@ export default function SubmitReportForm({
     };
 
     fields.forEach((f) => {
-      if (f.type === "SECTION") {
+      if (f.type === 'SECTION') {
         // Check for Section Break
-        if (f.value === "SECTION_BREAK") {
+        if (f.value === 'SECTION_BREAK') {
           // If we have a current group with content or a section header, push it
           if (currentGroup.section || currentGroup.fields.length > 0) {
             groups.push(currentGroup);
@@ -155,7 +155,7 @@ export default function SubmitReportForm({
 
   const renderField = (f: FieldDef) => {
     const baseName = `values.${f.id}` as const;
-    if (f.type === "NUMBER" || f.type === "CURRENCY") {
+    if (f.type === 'NUMBER' || f.type === 'CURRENCY') {
       return (
         <InputField<FormValues>
           key={f.id}
@@ -163,21 +163,21 @@ export default function SubmitReportForm({
           label={f.label || f.key}
           register={register}
           type="number"
-          step={f.type === "CURRENCY" ? "0.01" : "1"}
-          placeholder={f.type === "CURRENCY" ? "0.00" : "0"}
+          step={f.type === 'CURRENCY' ? '0.01' : '1'}
+          placeholder={f.type === 'CURRENCY' ? '0.00' : '0'}
           rules={{
-            ...(f.required ? { required: "Requerido" } : {}),
+            ...(f.required ? { required: 'Requerido' } : {}),
             valueAsNumber: true,
           }}
           startIcon={
-            f.type === "CURRENCY" ? (
+            f.type === 'CURRENCY' ? (
               <span className="text-gray-500 font-bold">$</span>
             ) : undefined
           }
         />
       );
     }
-    if (f.type === "BOOLEAN") {
+    if (f.type === 'BOOLEAN') {
       return (
         <SelectField<FormValues>
           key={f.id}
@@ -185,19 +185,19 @@ export default function SubmitReportForm({
           label={f.label || f.key}
           control={control}
           options={[
-            { value: "", label: "Selecciona" },
-            { value: "true", label: "Sí" },
-            { value: "false", label: "No" },
+            { value: '', label: 'Selecciona' },
+            { value: 'true', label: 'Sí' },
+            { value: 'false', label: 'No' },
           ]}
           rules={{
-            ...(f.required ? { required: "Requerido" } : {}),
+            ...(f.required ? { required: 'Requerido' } : {}),
             setValueAs: (v) =>
-              v === "true" ? true : v === "false" ? false : undefined,
+              v === 'true' ? true : v === 'false' ? false : undefined,
           }}
         />
       );
     }
-    if (f.type === "DATE") {
+    if (f.type === 'DATE') {
       return (
         <InputField<FormValues>
           key={f.id}
@@ -205,11 +205,11 @@ export default function SubmitReportForm({
           label={f.label || f.key}
           register={register}
           type="date"
-          rules={f.required ? { required: "Requerido" } : undefined}
+          rules={f.required ? { required: 'Requerido' } : undefined}
         />
       );
     }
-    if (f.type === "SELECT") {
+    if (f.type === 'SELECT') {
       return (
         <SelectField<FormValues>
           key={f.id}
@@ -217,17 +217,17 @@ export default function SubmitReportForm({
           label={f.label || f.key}
           control={control}
           options={[
-            { value: "", label: "Selecciona una opción" },
+            { value: '', label: 'Selecciona una opción' },
             ...(f.options || []).map((opt) => ({
               value: opt,
               label: opt,
             })),
           ]}
-          rules={f.required ? { required: "Requerido" } : undefined}
+          rules={f.required ? { required: 'Requerido' } : undefined}
         />
       );
     }
-    if (f.type === "MEMBER_SELECT") {
+    if (f.type === 'MEMBER_SELECT') {
       return (
         <SelectField<FormValues>
           key={f.id}
@@ -235,17 +235,17 @@ export default function SubmitReportForm({
           label={f.label || f.key}
           control={control}
           options={[
-            { value: "", label: "Selecciona un miembro" },
+            { value: '', label: 'Selecciona un miembro' },
             ...members.map((m) => ({
               value: m.id,
               label: `${m.firstName} ${m.lastName}`,
             })),
           ]}
-          rules={f.required ? { required: "Requerido" } : undefined}
+          rules={f.required ? { required: 'Requerido' } : undefined}
         />
       );
     }
-    if (f.type === "SECTION") {
+    if (f.type === 'SECTION') {
       // Should not happen inside renderField as we handle it in groups, but fallback just in case
       return null;
     }
@@ -255,7 +255,7 @@ export default function SubmitReportForm({
         name={baseName}
         label={f.label || f.key}
         register={register}
-        rules={f.required ? { required: "Requerido" } : undefined}
+        rules={f.required ? { required: 'Requerido' } : undefined}
       />
     );
   };
@@ -273,29 +273,29 @@ export default function SubmitReportForm({
         await updateReportEntry({
           id: entryId,
           scope,
-          cellId: scope === "CELL" ? data.cellId : undefined,
-          groupId: scope === "GROUP" ? data.groupId : undefined,
-          sectorId: scope === "SECTOR" ? data.sectorId : undefined,
+          cellId: scope === 'CELL' ? data.cellId : undefined,
+          groupId: scope === 'GROUP' ? data.groupId : undefined,
+          sectorId: scope === 'SECTOR' ? data.sectorId : undefined,
           values,
         });
-        showSuccess("Entrada actualizada exitosamente");
+        showSuccess('Entrada actualizada exitosamente');
         router.push(`/reports/${reportId}/entries`);
       } else {
         await createReportEntry({
           reportId,
           scope,
-          cellId: scope === "CELL" ? data.cellId : undefined,
-          groupId: scope === "GROUP" ? data.groupId : undefined,
-          sectorId: scope === "SECTOR" ? data.sectorId : undefined,
+          cellId: scope === 'CELL' ? data.cellId : undefined,
+          groupId: scope === 'GROUP' ? data.groupId : undefined,
+          sectorId: scope === 'SECTOR' ? data.sectorId : undefined,
           values,
         });
-        showSuccess("Reporte enviado exitosamente");
+        showSuccess('Reporte enviado exitosamente');
         reset(); // Limpiar el formulario para una nueva entrada
         router.refresh();
       }
     } catch (error) {
-      console.error("Error al enviar reporte:", error);
-      showError("Error al enviar el reporte");
+      console.error('Error al enviar reporte:', error);
+      showError('Error al enviar el reporte');
     }
   };
 
@@ -309,39 +309,39 @@ export default function SubmitReportForm({
           )}
         </div>
         <div className="md:col-span-1">
-          {scope === "CELL" && (
+          {scope === 'CELL' && (
             <SelectField
               name="cellId"
               label="Célula"
               control={control}
               options={[
-                { value: "", label: "Selecciona una célula" },
+                { value: '', label: 'Selecciona una célula' },
                 ...cells,
               ]}
-              rules={{ required: "Selecciona una célula" }}
+              rules={{ required: 'Selecciona una célula' }}
             />
           )}
 
-          {scope === "GROUP" && (
+          {scope === 'GROUP' && (
             <SelectField
               name="groupId"
               label="Grupo"
               control={control}
-              options={[{ value: "", label: "Selecciona un grupo" }, ...groups]}
-              rules={{ required: "Selecciona un grupo" }}
+              options={[{ value: '', label: 'Selecciona un grupo' }, ...groups]}
+              rules={{ required: 'Selecciona un grupo' }}
             />
           )}
 
-          {scope === "SECTOR" && (
+          {scope === 'SECTOR' && (
             <SelectField
               name="sectorId"
               label="Sector"
               control={control}
               options={[
-                { value: "", label: "Selecciona un sector" },
+                { value: '', label: 'Selecciona un sector' },
                 ...sectors,
               ]}
-              rules={{ required: "Selecciona un sector" }}
+              rules={{ required: 'Selecciona un sector' }}
             />
           )}
         </div>
@@ -353,7 +353,7 @@ export default function SubmitReportForm({
             {groupedFields.map((group, i) => {
               if (group.section) {
                 const sectionId = group.section.id;
-                const sectionLabel = group.section.label || "Sección";
+                const sectionLabel = group.section.label || 'Sección';
                 const isOpen = getSectionOpen(sectionId);
                 return (
                   <Collapsible
@@ -373,12 +373,12 @@ export default function SubmitReportForm({
                         </span>
                         <ChevronDown
                           className={`transition-transform ${
-                            isOpen ? "rotate-180" : ""
+                            isOpen ? 'rotate-180' : ''
                           }`}
                         />
                       </Button>
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="px-4 pb-4">
+                    <CollapsibleContent className="px-4 pb-4 overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
                       <div className="grid grid-cols-1 gap-4 pt-2">
                         {group.fields.map((f) => renderField(f))}
                       </div>
@@ -401,7 +401,7 @@ export default function SubmitReportForm({
         <Button
           type="button"
           variant="outline"
-          onClick={() => router.push("/reports")}
+          onClick={() => router.push('/reports')}
           disabled={isSubmitting}
         >
           Cancelar
@@ -413,7 +413,7 @@ export default function SubmitReportForm({
               Enviando...
             </>
           ) : (
-            "Enviar"
+            'Enviar'
           )}
         </Button>
       </div>
