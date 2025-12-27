@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -18,8 +18,6 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ReportFields } from '@/generated/prisma/client';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 
 type Row = Record<string, unknown> & {
   id: string;
@@ -37,7 +35,7 @@ type Row = Record<string, unknown> & {
 };
 
 import { usePersistentFilters } from '@/hooks/usePersistentFilters';
-import AdvancedFilterModal, { FilterField } from './AdvancedFilterModal';
+import AdvancedFilterModal from './AdvancedFilterModal';
 import { Button } from '@/components/ui/button';
 import { RiFilter3Line } from 'react-icons/ri';
 import {

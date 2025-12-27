@@ -11,7 +11,7 @@ import type { GroupCreateSchema } from "../schema/groups.schema";
 import { useCreateGroup, useGroupsList } from "../hooks/useGroups";
 import React from "react";
 import { useNotificationStore } from "@/store/NotificationStore";
-import { searchGroups, getGroupById } from "../actions/groups.actions";
+
 
 type CreateGroupModalProps = {
   open: boolean;

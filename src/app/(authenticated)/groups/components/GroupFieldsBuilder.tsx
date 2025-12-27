@@ -142,7 +142,8 @@ export default function GroupFieldsBuilder({
     control,
     name: "fields",
   });
-  const [justAddedId, setJustAddedId] = React.useState<string | null>(null);
+  // Removed unused state variables: justAddedId
+  // const [justAddedId, setJustAddedId] = React.useState<string | null>(null);
   const [removingId, setRemovingId] = React.useState<string | null>(null);
 
   const addField = (t: "TEXT" | "NUMBER" | "BOOLEAN" | "DATE") => {
@@ -214,8 +215,6 @@ export default function GroupFieldsBuilder({
                         >
                           <div
                             className={`p-4 border border-base-300 rounded-lg relative bg-base-50/50 hover:bg-base-100 transition-all ${
-                              justAddedId === field.id ? "animate-pulse" : ""
-                            } ${
                               removingId === field.id
                                 ? "opacity-0 scale-95"
                                 : ""

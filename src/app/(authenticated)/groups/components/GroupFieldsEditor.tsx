@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 import {
   Control,
   useFieldArray,
   UseFormRegister,
   FieldErrors,
   useWatch,
-} from "react-hook-form";
-import { GroupCreateSchema } from "../schema/groups.schema";
-import { InputField, SelectField } from "@/components/FormControls";
+} from 'react-hook-form';
+import { GroupCreateSchema } from '../schema/groups.schema';
+import { InputField, SelectField } from '@/components/FormControls';
 import {
   DragDropContext,
   Droppable,
   Draggable,
   DropResult,
-} from "@hello-pangea/dnd";
-import { RiDeleteBinLine, RiDraggable } from "react-icons/ri";
+} from '@hello-pangea/dnd';
+import { RiDeleteBinLine, RiDraggable } from 'react-icons/ri';
 
 type Props = {
   control: Control<GroupCreateSchema>;
@@ -34,20 +34,20 @@ function FieldValueInput({
   index: number;
 }) {
   const type = useWatch({ control, name: `fields.${index}.type` });
-  if (type === "BOOLEAN") {
+  if (type === 'BOOLEAN') {
     return (
       <SelectField
         name={`fields.${index}.value`}
         label="Valor"
         control={control}
         options={[
-          { value: "true", label: "Verdadero" },
-          { value: "false", label: "Falso" },
+          { value: 'true', label: 'Verdadero' },
+          { value: 'false', label: 'Falso' },
         ]}
       />
     );
   }
-  if (type === "DATE") {
+  if (type === 'DATE') {
     return (
       <InputField
         name={`fields.${index}.value`}
@@ -57,7 +57,7 @@ function FieldValueInput({
       />
     );
   }
-  if (type === "NUMBER") {
+  if (type === 'NUMBER') {
     return (
       <InputField
         name={`fields.${index}.value`}
@@ -81,9 +81,9 @@ function PaletteItem({
   label,
   onAdd,
 }: {
-  type: "TEXT" | "NUMBER" | "BOOLEAN" | "DATE";
+  type: 'TEXT' | 'NUMBER' | 'BOOLEAN' | 'DATE';
   label: string;
-  onAdd: (t: "TEXT" | "NUMBER" | "BOOLEAN" | "DATE") => void;
+  onAdd: (t: 'TEXT' | 'NUMBER' | 'BOOLEAN' | 'DATE') => void;
 }) {
   return (
     <button
@@ -114,7 +114,7 @@ function SortableField({
           style={{
             ...provided.draggableProps.style,
             zIndex: snapshot.isDragging ? 50 : undefined,
-            marginBottom: "1rem",
+            marginBottom: '1rem',
           }}
         >
           <div className="relative">
@@ -140,17 +140,18 @@ export default function GroupFieldsEditor({
 }: Props) {
   const { fields, append, remove, move } = useFieldArray({
     control,
-    name: "fields",
+    name: 'fields',
   });
-  const [justAddedId, setJustAddedId] = React.useState<string | null>(null);
+  // Removed unused state variables
+  // const [justAddedId, setJustAddedId] = React.useState<string | null>(null);
   const [removingId, setRemovingId] = React.useState<string | null>(null);
 
-  const addField = (t: "TEXT" | "NUMBER" | "BOOLEAN" | "DATE") => {
+  const addField = (t: 'TEXT' | 'NUMBER' | 'BOOLEAN' | 'DATE') => {
     append({
-      key: "",
-      label: "",
+      key: '',
+      label: '',
       type: t,
-      value: t === "NUMBER" ? 0 : t === "BOOLEAN" ? "false" : "",
+      value: t === 'NUMBER' ? 0 : t === 'BOOLEAN' ? 'false' : '',
     });
   };
 
@@ -211,11 +212,9 @@ export default function GroupFieldsEditor({
                         >
                           <div
                             className={`p-4 border border-base-300 rounded-lg relative bg-base-50/50 hover:bg-base-100 transition-all ${
-                              justAddedId === field.id ? "animate-pulse" : ""
-                            } ${
                               removingId === field.id
-                                ? "opacity-0 scale-95"
-                                : ""
+                                ? 'opacity-0 scale-95'
+                                : ''
                             }`}
                           >
                             <button
@@ -238,11 +237,11 @@ export default function GroupFieldsEditor({
                                 label="Clave (ID interno)"
                                 register={register}
                                 rules={{
-                                  required: "Requerido",
+                                  required: 'Requerido',
                                   pattern: {
                                     value: /^[a-z0-9_]+$/i,
                                     message:
-                                      "Solo letras, números y guion bajo",
+                                      'Solo letras, números y guion bajo',
                                   },
                                 }}
                                 error={errors.fields?.[index]?.key?.message}
@@ -252,7 +251,7 @@ export default function GroupFieldsEditor({
                                 name={`fields.${index}.label`}
                                 label="Etiqueta (Visible)"
                                 register={register}
-                                rules={{ required: "Requerido" }}
+                                rules={{ required: 'Requerido' }}
                                 error={errors.fields?.[index]?.label?.message}
                                 placeholder="ej. Día de Reunión"
                               />
@@ -261,10 +260,10 @@ export default function GroupFieldsEditor({
                                 label="Tipo de dato"
                                 control={control}
                                 options={[
-                                  { value: "TEXT", label: "Texto" },
-                                  { value: "NUMBER", label: "Número" },
-                                  { value: "BOOLEAN", label: "Sí/No" },
-                                  { value: "DATE", label: "Fecha" },
+                                  { value: 'TEXT', label: 'Texto' },
+                                  { value: 'NUMBER', label: 'Número' },
+                                  { value: 'BOOLEAN', label: 'Sí/No' },
+                                  { value: 'DATE', label: 'Fecha' },
                                 ]}
                               />
                               <FieldValueInput

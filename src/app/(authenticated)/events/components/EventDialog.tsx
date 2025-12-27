@@ -9,8 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
 import { EventForm } from './EventForm';
 import { EventFormData } from '../types/events.d';
 

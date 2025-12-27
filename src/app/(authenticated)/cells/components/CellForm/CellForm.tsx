@@ -96,7 +96,7 @@ const CellForm: React.FC<CellFormProps> = ({
     gcTime: 10 * 60 * 1000,
   });
 
-  const { data: sectorsData, isLoading: loadingSectors } = useQuery({
+  const { data: sectorsData } = useQuery({
     queryKey: ["cells", "sectors"],
     queryFn: () => getAllSectors(),
     staleTime: 5 * 60 * 1000,

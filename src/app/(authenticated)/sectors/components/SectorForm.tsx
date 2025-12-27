@@ -1,25 +1,22 @@
-"use client";
+'use client';
 
-import React, { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect, useRef } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   InputField,
   MemberSearchField,
   SelectField,
-} from "@/components/FormControls";
+} from '@/components/FormControls';
 import {
   sectorFormSchema,
   type SectorFormInput,
-} from "../schema/sectors.schema";
-import { useQuery } from "@tanstack/react-query";
-import { getAllSectors } from "../actions/sectors.actions";
-import { getAllMembers } from "../../members/actions/members.actions";
-import { MemberRole } from "@/generated/prisma/enums";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+} from '../schema/sectors.schema';
+import { useQuery } from '@tanstack/react-query';
+import { getAllSectors } from '../actions/sectors.actions';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 
 interface SectorFormProps {
   initialData?: Partial<SectorFormInput> & { id?: string };
@@ -34,7 +31,6 @@ const SectorForm: React.FC<SectorFormProps> = ({
   isEditMode = false,
   isSubmitting = false,
 }) => {
-  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -45,13 +41,13 @@ const SectorForm: React.FC<SectorFormProps> = ({
     formState: { errors },
   } = useForm<SectorFormInput>({
     defaultValues: initialData,
-    mode: "onChange",
+    mode: 'onChange',
     resolver: zodResolver(sectorFormSchema),
   });
 
   // Fetch all sectors for the parent selector
   const { data: sectorsData } = useQuery({
-    queryKey: ["sectors", "all"],
+    queryKey: ['sectors', 'all'],
     queryFn: () => getAllSectors({ limit: 1000 }),
   });
 
@@ -63,7 +59,7 @@ const SectorForm: React.FC<SectorFormProps> = ({
     }));
 
   const parentSelectOptions = [
-    { value: "", label: "Sin sector padre (Sector Principal)" },
+    { value: '', label: 'Sin sector padre (Sector Principal)' },
     ...parentOptions,
   ];
 
@@ -80,19 +76,15 @@ const SectorForm: React.FC<SectorFormProps> = ({
   const handleSubmitInternal = async (data: SectorFormInput) => {
     try {
       await onSubmit(data);
-      reset(data);
-      prevInitialDataRef.current = JSON.stringify(data ?? {});
     } catch (error) {
-      console.error("Error al enviar el formulario", error);
+      console.error('Error al enviar el formulario', error);
     }
   };
-
-  const isSubSector = !!initialData?.parentId;
 
   // Watch parentId to update the value when options are loaded
   useEffect(() => {
     if (initialData?.parentId && sectorsData?.sectors) {
-      setValue("parentId", initialData.parentId);
+      setValue('parentId', initialData.parentId);
     }
   }, [initialData?.parentId, sectorsData?.sectors, setValue]);
 
@@ -141,7 +133,7 @@ const SectorForm: React.FC<SectorFormProps> = ({
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+              {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
             </Button>
           </div>
         </div>

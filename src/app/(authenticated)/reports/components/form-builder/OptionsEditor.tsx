@@ -1,4 +1,3 @@
-import React from "react";
 import { useFieldArray, Control, UseFormRegister } from "react-hook-form";
 import { ReportFormValues } from "./types";
 import { Button } from "@/components/ui/button";

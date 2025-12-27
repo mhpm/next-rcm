@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { DataTable } from "@/components";
 import { TableColumn, TableAction } from "@/types";
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useMembers } from "@/app/(authenticated)/members/hooks/useMembers";
 import {
-  useAddMemberToMinistry,
   useAddMembersToMinistry,
   useRemoveMemberFromMinistry,
 } from "@/app/(authenticated)/ministries/hooks/useMinistries";

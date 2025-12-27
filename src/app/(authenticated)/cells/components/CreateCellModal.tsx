@@ -41,13 +41,12 @@ export default function CreateCellModal({
   const { showSuccess, showError } = useNotificationStore();
 
   const {
-    register,
     handleSubmit,
     watch,
     setValue,
     reset,
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<FormValues & { subSectorId?: string }>({
     resolver: zodResolver(cellCreateSchema),
     defaultValues: {

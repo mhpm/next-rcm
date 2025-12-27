@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form';
 import { RiEyeLine, RiEyeOffLine, RiKey2Fill } from 'react-icons/ri';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';

@@ -79,7 +79,6 @@ function DataTable<T extends Record<string, unknown>>({
   const [itemsPerPageState, setItemsPerPageState] = useState(itemsPerPage);
 
   const selectedRows = selectedRowsProp || internalSelectedRows;
-  const isControlled = !!selectedRowsProp;
 
   // Filter columns based on visibility
   const visibleColumnsFiltered = useMemo(() => {
@@ -315,11 +314,6 @@ function DataTable<T extends Record<string, unknown>>({
     }
   };
 
-  const isIndeterminate =
-    paginatedData.some((item) =>
-      selectedRows.has(String(item.id || item.ID))
-    ) && !isAllSelected;
-
   if (loading) {
     return (
       <div className="flex flex-col justify-center items-center gap-3 h-64 text-muted-foreground">
@@ -423,10 +417,26 @@ function DataTable<T extends Record<string, unknown>>({
                   key={rowId}
                   className={cn(
                     'border rounded-xl bg-linear-to-br from-card/50 to-card transition-all duration-200 shadow-sm',
+                    selectable ? 'cursor-pointer' : '',
                     isSelected
                       ? 'ring-2 ring-primary border-primary/50'
                       : 'hover:border-accent'
                   )}
+                  onClick={(e) => {
+                    const target = e.target as HTMLElement;
+                    // Evitar toggle si se hace click en acciones interactivas
+                    if (
+                      target.closest('button') ||
+                      target.closest('a') ||
+                      target.closest('[role="checkbox"]') ||
+                      target.closest('[role="menuitem"]')
+                    ) {
+                      return;
+                    }
+                    if (selectable) {
+                      handleSelectRow(rowId, !isSelected);
+                    }
+                  }}
                 >
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-4 pb-2 border-b border-muted/30">
@@ -572,6 +582,22 @@ function DataTable<T extends Record<string, unknown>>({
                     <TableRow
                       key={rowId}
                       data-state={isSelected ? 'selected' : undefined}
+                      className={selectable ? 'cursor-pointer' : ''}
+                      onClick={(e) => {
+                        const target = e.target as HTMLElement;
+                        // Evitar toggle si se hace click en acciones interactivas
+                        if (
+                          target.closest('button') ||
+                          target.closest('a') ||
+                          target.closest('[role="checkbox"]') ||
+                          target.closest('[role="menuitem"]')
+                        ) {
+                          return;
+                        }
+                        if (selectable) {
+                          handleSelectRow(rowId, !isSelected);
+                        }
+                      }}
                     >
                       {selectable && (
                         <TableCell className="py-2">

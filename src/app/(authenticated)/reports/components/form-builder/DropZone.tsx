@@ -1,11 +1,10 @@
-import React from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 
 // We don't need the individual DropZone for react-beautiful-dnd 
 // because it handles placeholders automatically. 
 // But we keep BottomDropZone as a specific drop target.
 
-export function DropZone({ className }: { className?: string }) {
+export function DropZone() {
   // No-op for now, or could be used for custom placeholders if needed
   return null;
 }

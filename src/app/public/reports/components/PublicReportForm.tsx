@@ -72,7 +72,7 @@ export default function PublicReportForm({
   members: Option[];
   churchName: string;
 }) {
-  const { showSuccess, showError, showWarning } = useNotificationStore();
+  const { showSuccess, showError } = useNotificationStore();
   const [submitted, setSubmitted] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [cellInfo, setCellInfo] = useState<{

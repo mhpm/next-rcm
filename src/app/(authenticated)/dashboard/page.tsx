@@ -4,7 +4,6 @@ import {
   FaPeopleRoof,
   FaUserGroup,
   FaUsersGear,
-  FaUsers,
   FaPersonChalkboard,
 } from 'react-icons/fa6';
 import Link from 'next/link';

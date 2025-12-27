@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { RiFilter3Line, RiDeleteBinLine } from 'react-icons/ri';
 import { InputField, SelectField } from '@/components/FormControls';

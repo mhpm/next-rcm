@@ -9,7 +9,7 @@
     "prepare": "husky",
     "start": "next start",
     "test": "jest",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit --noUnusedLocals --noUnusedParameters",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "prisma:seed": "tsx prisma/seed.ts",

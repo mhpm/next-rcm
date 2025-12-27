@@ -1,16 +1,15 @@
-"use client";
+'use client';
 
-import React from "react";
 import {
   UseFormRegister,
   UseFormSetValue,
   UseFormWatch,
   Control,
-} from "react-hook-form";
-import { InputField, SelectField } from "@/components/FormControls";
-import { ColorPicker } from "./ColorPicker";
-import { ReportFormValues } from "./types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+} from 'react-hook-form';
+import { InputField, SelectField } from '@/components/FormControls';
+import { ColorPicker } from './ColorPicker';
+import { ReportFormValues } from './types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface GeneralSettingsFormProps {
   register: UseFormRegister<ReportFormValues>;
@@ -25,7 +24,7 @@ export function GeneralSettingsForm({
   setValue,
   control,
 }: GeneralSettingsFormProps) {
-  const color = watch("color");
+  const color = watch('color');
 
   return (
     <Card>
@@ -38,7 +37,7 @@ export function GeneralSettingsForm({
             name="title"
             label="Título del Reporte"
             register={register}
-            rules={{ required: "Requerido" }}
+            rules={{ required: 'Requerido' }}
             placeholder="ej. Reporte Semanal de Célula"
           />
           <InputField
@@ -52,15 +51,15 @@ export function GeneralSettingsForm({
             label="Tipo de Entidad"
             control={control}
             options={[
-              { value: "CELL", label: "Célula" },
-              { value: "GROUP", label: "Grupo" },
-              { value: "SECTOR", label: "Sector" },
-              { value: "CHURCH", label: "Iglesia" },
+              { value: 'CELL', label: 'Célula' },
+              { value: 'GROUP', label: 'Grupo' },
+              { value: 'SECTOR', label: 'Sector' },
+              { value: 'CHURCH', label: 'Iglesia' },
             ]}
           />
           <ColorPicker
-            selected={color || "#3b82f6"}
-            onChange={(color) => setValue("color", color)}
+            selected={color || '#3b82f6'}
+            onChange={(color) => setValue('color', color)}
           />
         </div>
       </CardContent>

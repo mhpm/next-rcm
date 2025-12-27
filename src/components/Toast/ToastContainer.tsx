@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC } from "react";
+import { FC } from "react";
 import { useNotificationStore } from "@/store/NotificationStore";
 import Toast from "./Toast";
 

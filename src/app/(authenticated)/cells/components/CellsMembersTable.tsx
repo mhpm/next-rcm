@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { DataTable } from "@/components";
 import { TableColumn, TableAction } from "@/types";
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";

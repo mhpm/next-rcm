@@ -1,12 +1,11 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useForm } from "react-hook-form";
-import { createReport } from "../actions/reports.actions";
-import { useRouter } from "next/navigation";
-import { ReportFormValues, ReportBuilder } from "./form-builder";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { useForm } from 'react-hook-form';
+import { createReport } from '../actions/reports.actions';
+import { useRouter } from 'next/navigation';
+import { ReportFormValues, ReportBuilder } from './form-builder';
+import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 
 export default function NewReportForm() {
   const router = useRouter();
@@ -18,7 +17,7 @@ export default function NewReportForm() {
     handleSubmit,
     formState: { isSubmitting },
   } = useForm<ReportFormValues>({
-    defaultValues: { scope: "CELL", fields: [], color: "#3b82f6" },
+    defaultValues: { scope: 'CELL', fields: [], color: '#3b82f6' },
   });
 
   const onSubmit = async (data: ReportFormValues) => {
@@ -27,11 +26,11 @@ export default function NewReportForm() {
         title: data.title,
         description: data.description,
         scope: data.scope,
-        color: data.color || "#3b82f6",
+        color: data.color || '#3b82f6',
         fields: data.fields.map((f, index) => {
           let key = f.key;
           // Ensure SECTION fields have a key even if label is empty
-          if (f.type === "SECTION" && !key) {
+          if (f.type === 'SECTION' && !key) {
             key = `section_${index}_${Math.random().toString(36).substr(2, 9)}`;
           }
           return {
@@ -45,7 +44,7 @@ export default function NewReportForm() {
     } catch (error) {
       console.error(error);
       alert(
-        "Error al crear el reporte. Por favor revisa los campos e intenta de nuevo."
+        'Error al crear el reporte. Por favor revisa los campos e intenta de nuevo.'
       );
     }
   };
@@ -55,7 +54,9 @@ export default function NewReportForm() {
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold">Crear Nuevo Reporte</h1>
-          <p className="text-muted-foreground">Diseña la estructura de tu reporte.</p>
+          <p className="text-muted-foreground">
+            Diseña la estructura de tu reporte.
+          </p>
         </div>
         <div className="flex gap-4">
           <Button
@@ -73,13 +74,17 @@ export default function NewReportForm() {
                 Guardando...
               </>
             ) : (
-              "Guardar Reporte"
+              'Guardar Reporte'
             )}
           </Button>
         </div>
       </div>
 
-      <form id="new-report-form" className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        id="new-report-form"
+        className="space-y-6"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <ReportBuilder
           control={control}
           register={register}
@@ -103,7 +108,7 @@ export default function NewReportForm() {
                 Guardando...
               </>
             ) : (
-              "Guardar Reporte"
+              'Guardar Reporte'
             )}
           </Button>
         </div>

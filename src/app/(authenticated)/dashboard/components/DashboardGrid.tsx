@@ -1,6 +1,4 @@
-"use client";
-
-import { useState, useEffect } from "react";
+'use client';
 
 interface DashboardGridProps {
   ministriesCard: React.ReactNode;

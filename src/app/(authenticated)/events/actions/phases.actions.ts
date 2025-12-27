@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
 import { phaseSchema, PhaseFormValues } from "../schema/phases.schema";
-import { Prisma } from "@/generated/prisma/client";
 
 export async function getPhases() {
   const prisma = await getChurchPrisma();

@@ -4,8 +4,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {

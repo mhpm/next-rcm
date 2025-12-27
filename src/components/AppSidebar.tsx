@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -80,7 +79,7 @@ export function AppSidebar({ className, collapsed = false }: AppSidebarProps) {
             </div>
           </div>
 
-          {sidebarItems.map((section, index) => (
+          {sidebarItems.map((section) => (
             <div key={section.title} className="px-3 py-2">
               {!collapsed && (
                 <h2 className="mb-2 px-4 text-xs font-semibold tracking-tight text-muted-foreground uppercase">

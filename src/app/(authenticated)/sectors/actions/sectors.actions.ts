@@ -1,9 +1,9 @@
-"use server";
+'use server';
 
-import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
-import { Prisma } from "@/generated/prisma/client";
-import { MemberRole } from "@/generated/prisma/enums";
-import { revalidateTag } from "next/cache";
+import { getChurchPrisma, getChurchId } from '@/actions/churchContext';
+import { Prisma } from '@/generated/prisma/client';
+import { MemberRole } from '@/generated/prisma/enums';
+import { revalidateTag } from 'next/cache';
 
 // Helper to ensure member has SUPERVISOR role
 async function ensureSupervisorRole(prisma: any, memberId: string) {
@@ -25,16 +25,16 @@ export async function getAllSectors(options?: {
   limit?: number;
   offset?: number;
   search?: string;
-  orderBy?: "name" | "createdAt";
-  orderDirection?: "asc" | "desc";
+  orderBy?: 'name' | 'createdAt';
+  orderDirection?: 'asc' | 'desc';
 }) {
   try {
     const {
       limit = 50,
       offset = 0,
       search,
-      orderBy = "name",
-      orderDirection = "asc",
+      orderBy = 'name',
+      orderDirection = 'asc',
     } = options || {};
 
     const prisma = await getChurchPrisma();
@@ -43,7 +43,7 @@ export async function getAllSectors(options?: {
 
     // Add search filter
     if (search) {
-      whereClause.name = { contains: search, mode: "insensitive" };
+      whereClause.name = { contains: search, mode: 'insensitive' };
     }
 
     const findManyArgs = {
@@ -81,8 +81,8 @@ export async function getAllSectors(options?: {
       hasMore: offset + limit < total,
     };
   } catch (error) {
-    console.error("Error fetching sectors:", error);
-    throw new Error("Failed to fetch sectors");
+    console.error('Error fetching sectors:', error);
+    throw new Error('Failed to fetch sectors');
   }
 }
 
@@ -109,7 +109,7 @@ export async function getSectorById(id: string) {
     });
 
     if (sector && sector.church_id === churchId) {
-      return { ...sector, type: "SECTOR" as const };
+      return { ...sector, type: 'SECTOR' as const };
     }
 
     // Try finding as SubSector
@@ -132,13 +132,13 @@ export async function getSectorById(id: string) {
       subSector.sector &&
       subSector.sector.church_id === churchId
     ) {
-      return { ...subSector, type: "SUB_SECTOR" as const };
+      return { ...subSector, type: 'SUB_SECTOR' as const };
     }
 
-    throw new Error("Sector or SubSector not found");
+    throw new Error('Sector or SubSector not found');
   } catch (error) {
-    console.error("Error fetching sector/subsector:", error);
-    throw new Error("Failed to fetch sector or subsector");
+    console.error('Error fetching sector/subsector:', error);
+    throw new Error('Failed to fetch sector or subsector');
   }
 }
 
@@ -148,12 +148,12 @@ export async function getSectorHierarchy() {
 
   const sectors = await prisma.sectors.findMany({
     where: { church_id: churchId },
-    orderBy: { name: "asc" },
+    orderBy: { name: 'asc' },
     include: {
       supervisor: true,
       _count: { select: { members: true, subSectors: true } },
       subSectors: {
-        orderBy: { name: "asc" },
+        orderBy: { name: 'asc' },
         include: {
           supervisor: true,
           cells: {
@@ -198,11 +198,11 @@ export async function createSector(data: {
       },
     });
 
-    revalidateTag("sectors", { expire: 0 });
+    revalidateTag('sectors', { expire: 0 });
     return sector;
   } catch (error) {
-    console.error("Error creating sector:", error);
-    throw new Error("Failed to create sector");
+    console.error('Error creating sector:', error);
+    throw new Error('Failed to create sector');
   }
 }
 
@@ -225,7 +225,7 @@ export async function createSubSector(data: {
     });
 
     if (!sector) {
-      throw new Error("Sector padre no encontrado");
+      throw new Error('Sector padre no encontrado');
     }
 
     const subSector = await prisma.subSectors.create({
@@ -238,11 +238,11 @@ export async function createSubSector(data: {
       },
     });
 
-    revalidateTag("sectors", { expire: 0 });
+    revalidateTag('sectors', { expire: 0 });
     return subSector;
   } catch (error) {
-    console.error("Error creating sub-sector:", error);
-    throw new Error("Failed to create sub-sector");
+    console.error('Error creating sub-sector:', error);
+    throw new Error('Failed to create sub-sector');
   }
 }
 
@@ -269,7 +269,7 @@ export async function updateSector(
     });
 
     if (!existingSector || existingSector.church_id !== churchId) {
-      throw new Error("Sector not found or access denied");
+      throw new Error('Sector not found or access denied');
     }
 
     const sector = await prisma.sectors.update({
@@ -291,11 +291,11 @@ export async function updateSector(
       },
     });
 
-    revalidateTag("sectors", { expire: 0 });
+    revalidateTag('sectors', { expire: 0 });
     return sector;
   } catch (error) {
-    console.error("Error updating sector:", error);
-    throw new Error("Failed to update sector");
+    console.error('Error updating sector:', error);
+    throw new Error('Failed to update sector');
   }
 }
 
@@ -331,11 +331,11 @@ export async function updateSubSector(
       },
     });
 
-    revalidateTag("sectors", { expire: 0 });
+    revalidateTag('sectors', { expire: 0 });
     return subSector;
   } catch (error) {
-    console.error("Error updating sub-sector:", error);
-    throw new Error("Failed to update sub-sector");
+    console.error('Error updating sub-sector:', error);
+    throw new Error('Failed to update sub-sector');
   }
 }
 
@@ -351,18 +351,18 @@ export async function deleteSector(id: string) {
     });
 
     if (!existingSector || existingSector.church_id !== churchId) {
-      throw new Error("Sector not found or access denied");
+      throw new Error('Sector not found or access denied');
     }
 
     await prisma.sectors.delete({
       where: { id },
     });
 
-    revalidateTag("sectors", { expire: 0 });
+    revalidateTag('sectors', { expire: 0 });
     return { success: true };
   } catch (error) {
-    console.error("Error deleting sector:", error);
-    throw new Error("Failed to delete sector");
+    console.error('Error deleting sector:', error);
+    throw new Error('Failed to delete sector');
   }
 }
 
@@ -370,11 +370,11 @@ export async function deleteSubSector(id: string) {
   try {
     const prisma = await getChurchPrisma();
     await prisma.subSectors.delete({ where: { id } });
-    revalidateTag("sectors", { expire: 0 });
+    revalidateTag('sectors', { expire: 0 });
     return { success: true };
   } catch (error) {
-    console.error("Error deleting sub-sector:", error);
-    throw new Error("Failed to delete sub-sector");
+    console.error('Error deleting sub-sector:', error);
+    throw new Error('Failed to delete sub-sector');
   }
 }
 
@@ -382,27 +382,17 @@ export async function getSectorStats() {
   const prisma = await getChurchPrisma();
   const churchId = await getChurchId();
 
-  const [totalSectors, totalSubSectors, totalCells, totalMembers] =
-    await Promise.all([
-      prisma.sectors.count({
-        where: { church_id: churchId },
-      }),
-      prisma.subSectors.count({
-        where: { sector: { church_id: churchId } },
-      }),
-      prisma.cells.count({
-        where: { subSector: { sector: { church_id: churchId } } },
-      }),
-      prisma.members.count({
-        where: { church_id: churchId }, // Simplified for now, or should be filtered by having a sector/subsector?
-        // User previously wanted members in sectors.
-        // Members now have sub_sector_id, sector_id, zone_id relations.
-        // Let's count members linked to any sector via subsector or sector directly if we support that.
-        // For now, let's keep it simple: all members in the church or specifically in the hierarchy?
-        // Original query was: where: { sector: { church_id: churchId } }
-        // Let's use: where: { subSector: { sector: { church_id: churchId } } } or similar
-      }),
-    ]);
+  const [totalSectors, totalSubSectors, totalCells] = await Promise.all([
+    prisma.sectors.count({
+      where: { church_id: churchId },
+    }),
+    prisma.subSectors.count({
+      where: { sector: { church_id: churchId } },
+    }),
+    prisma.cells.count({
+      where: { subSector: { sector: { church_id: churchId } } },
+    }),
+  ]);
 
   // Re-evaluating members count query based on new schema
   // Members have sector_id and sub_sector_id

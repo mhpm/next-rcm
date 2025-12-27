@@ -4,10 +4,8 @@ import { useSectorHierarchy } from "../hooks/useSectors";
 import {
   RiGovernmentLine,
   RiGitMergeLine,
-  RiUserAddLine,
 } from "react-icons/ri";
 import { useMemo } from "react";
-import { SectorNode } from "../types/sectors";
 import { FaPeopleRoof, FaUsers } from "react-icons/fa6";
 
 // Helper to transform raw data to nodes if needed,

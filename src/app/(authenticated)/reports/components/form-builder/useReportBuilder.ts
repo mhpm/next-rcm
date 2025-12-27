@@ -12,7 +12,7 @@ interface UseReportBuilderProps {
   setValue: UseFormSetValue<ReportFormValues>;
 }
 
-export function useReportBuilder({ control, setValue }: UseReportBuilderProps) {
+export function useReportBuilder({ control }: UseReportBuilderProps) {
   const { fields, append, remove, replace, insert } = useFieldArray({
     control,
     name: 'fields',

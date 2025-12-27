@@ -8,7 +8,6 @@ import { BackLink, Breadcrumbs, DataTable } from '@/components';
 import { Button } from '@/components/ui/button';
 import { TableColumn, TableAction, AddButtonConfig } from '@/types';
 import { useMinistries, useDeleteMinistry } from './hooks/useMinistries';
-import { Modal } from '@/components/Modal/Modal';
 import { useNotificationStore } from '@/store/NotificationStore';
 import { transformMinistriesToTableData } from './utils/ministriesUtils';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';

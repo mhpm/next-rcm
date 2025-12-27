@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { RiSettings3Line } from 'react-icons/ri';
 import { TableColumn } from '@/types';
 import { Button } from '@/components/ui/button';

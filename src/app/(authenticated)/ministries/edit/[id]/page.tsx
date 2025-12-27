@@ -1,25 +1,23 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useRouter } from "next/navigation";
+import React from 'react';
 import MinistryForm, {
   MinistryFormInput,
-} from "@/app/(authenticated)/ministries/components/MinistryForm/MinistryForm";
+} from '@/app/(authenticated)/ministries/components/MinistryForm/MinistryForm';
 import {
   useMinistry,
   useUpdateMinistry,
-} from "@/app/(authenticated)/ministries/hooks/useMinistries";
-import { useNotificationStore } from "@/store/NotificationStore";
-import { BackLink, Breadcrumbs, MinimalLoader } from "@/components";
-import MinistryMembersTable from "@/app/(authenticated)/ministries/components/MinistryMembersTable";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from '@/app/(authenticated)/ministries/hooks/useMinistries';
+import { useNotificationStore } from '@/store/NotificationStore';
+import { BackLink, Breadcrumbs, MinimalLoader } from '@/components';
+import MinistryMembersTable from '@/app/(authenticated)/ministries/components/MinistryMembersTable';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function EditMinistryPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const router = useRouter();
   const { id } = React.use(params);
   const { data: ministryData, isLoading, error } = useMinistry(id);
   const updateMinistry = useUpdateMinistry();
@@ -29,13 +27,13 @@ export default function EditMinistryPage({
   const handleSubmit = async (data: MinistryFormInput) => {
     try {
       await updateMinistry.mutateAsync({ id, data });
-      showSuccess("Ministerio actualizado exitosamente");
+      showSuccess('Ministerio actualizado exitosamente');
     } catch (err) {
       console.error(err);
       const message =
         err instanceof Error
           ? err.message
-          : "Error al actualizar el ministerio";
+          : 'Error al actualizar el ministerio';
       showError(message);
     }
   };
@@ -76,11 +74,11 @@ export default function EditMinistryPage({
             <TabsContent value="info">
               <MinistryForm
                 initialData={{
-                  name: ministryData?.name || "",
-                  description: ministryData?.description || "",
+                  name: ministryData?.name || '',
+                  description: ministryData?.description || '',
                   id: ministryData?.id,
                   leaderId:
-                    ministryData?.leader?.id || ministryData?.leader_id || "",
+                    ministryData?.leader?.id || ministryData?.leader_id || '',
                 }}
                 onSubmit={handleSubmit}
                 isEditMode={true}

@@ -1,26 +1,25 @@
-"use server";
+'use server';
 
-import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
-import { Prisma } from "@/generated/prisma/client";
-import type { Cells, Members, Sectors } from "@/generated/prisma/client";
-import type { CellListItem, CellWithRelations } from "../types/cells";
-import { revalidateTag } from "next/cache";
+import { getChurchPrisma, getChurchId } from '@/actions/churchContext';
+import { Prisma } from '@/generated/prisma/client';
+import type { CellListItem, CellWithRelations } from '../types/cells';
+import { revalidateTag } from 'next/cache';
 // Removed prisma-zod types usage; rely on Prisma types and normal Zod for form payloads
 
 export async function getAllCells(options?: {
   limit?: number;
   offset?: number;
   search?: string;
-  orderBy?: "name" | "createdAt";
-  orderDirection?: "asc" | "desc";
+  orderBy?: 'name' | 'createdAt';
+  orderDirection?: 'asc' | 'desc';
 }): Promise<{ cells: CellListItem[]; total: number; hasMore: boolean }> {
   try {
     const {
       limit = 50,
       offset = 0,
       search,
-      orderBy = "name",
-      orderDirection = "asc",
+      orderBy = 'name',
+      orderDirection = 'asc',
     } = options || {};
 
     const prisma = await getChurchPrisma();
@@ -29,7 +28,7 @@ export async function getAllCells(options?: {
     const whereClause: Prisma.CellsWhereInput = { church_id: churchId };
 
     if (search && search.trim().length > 0) {
-      whereClause.OR = [{ name: { contains: search, mode: "insensitive" } }];
+      whereClause.OR = [{ name: { contains: search, mode: 'insensitive' } }];
     }
 
     const findArgs = {
@@ -73,8 +72,8 @@ export async function getAllCells(options?: {
       hasMore: offset + limit < total,
     };
   } catch (error) {
-    console.error("Error fetching cells:", error);
-    throw new Error("Failed to fetch cells");
+    console.error('Error fetching cells:', error);
+    throw new Error('Failed to fetch cells');
   }
 }
 
@@ -82,11 +81,11 @@ export async function deleteCell(id: string) {
   try {
     const prisma = await getChurchPrisma();
     await prisma.cells.delete({ where: { id } });
-    revalidateTag("cells", { expire: 0 });
+    revalidateTag('cells', { expire: 0 });
     return { success: true };
   } catch (error) {
-    console.error("Error deleting cell:", error);
-    throw new Error("Failed to delete cell");
+    console.error('Error deleting cell:', error);
+    throw new Error('Failed to delete cell');
   }
 }
 
@@ -112,13 +111,13 @@ export async function getCellById(id: string): Promise<CellWithRelations> {
     const cell = await prisma.cells.findUnique(findUniqueArgs);
 
     if (!cell || cell.church_id !== churchId) {
-      throw new Error("Cell not found");
+      throw new Error('Cell not found');
     }
 
     return cell as CellWithRelations;
   } catch (error) {
-    console.error("Error fetching cell:", error);
-    throw new Error("Failed to fetch cell");
+    console.error('Error fetching cell:', error);
+    throw new Error('Failed to fetch cell');
   }
 }
 
@@ -137,19 +136,19 @@ export async function createCell(data: {
     const prismaData: Prisma.CellsCreateInput = {
       name: data.name,
       church: { connect: { id: churchId } },
-      ...(data.accessCode && data.accessCode !== ""
+      ...(data.accessCode && data.accessCode !== ''
         ? { accessCode: data.accessCode }
         : {}),
-      ...(data.subSectorId && data.subSectorId !== ""
+      ...(data.subSectorId && data.subSectorId !== ''
         ? { subSector: { connect: { id: data.subSectorId } } }
         : {}),
-      ...(data.leaderId && data.leaderId !== ""
+      ...(data.leaderId && data.leaderId !== ''
         ? { leader: { connect: { id: data.leaderId } } }
         : {}),
-      ...(data.hostId && data.hostId !== ""
+      ...(data.hostId && data.hostId !== ''
         ? { host: { connect: { id: data.hostId } } }
         : {}),
-      ...(data.assistantId && data.assistantId !== ""
+      ...(data.assistantId && data.assistantId !== ''
         ? { assistant: { connect: { id: data.assistantId } } }
         : {}),
     };
@@ -161,7 +160,7 @@ export async function createCell(data: {
       data.leaderId,
       data.hostId,
       data.assistantId,
-    ].filter((v): v is string => !!v && v !== "");
+    ].filter((v): v is string => !!v && v !== '');
     if (ensureMemberIds.length) {
       await prisma.members.updateMany({
         where: { id: { in: ensureMemberIds }, church_id: churchId },
@@ -169,26 +168,26 @@ export async function createCell(data: {
       });
     }
 
-    revalidateTag("cells", { expire: 0 });
+    revalidateTag('cells', { expire: 0 });
 
     return cell;
   } catch (error) {
-    console.error("Error creating cell:", error);
+    console.error('Error creating cell:', error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       const target = error.meta?.target;
       if (
-        error.code === "P2002" &&
-        ((Array.isArray(target) && target.includes("accessCode")) ||
-          error.message.includes("accessCode"))
+        error.code === 'P2002' &&
+        ((Array.isArray(target) && target.includes('accessCode')) ||
+          error.message.includes('accessCode'))
       ) {
-        throw new Error("La clave de acceso ya existe. Por favor, elige otra.");
+        throw new Error('La clave de acceso ya existe. Por favor, elige otra.');
       }
       throw new Error(
         `Error de base de datos al crear la célula: ${error.message}`
       );
     }
     const message =
-      error instanceof Error ? error.message : "Failed to create cell";
+      error instanceof Error ? error.message : 'Failed to create cell';
     throw new Error(message);
   }
 }
@@ -215,7 +214,7 @@ export async function updateCell(
     });
     if (!existingCell || existingCell.church_id !== churchId) {
       throw new Error(
-        "La célula no existe en esta iglesia o el ID es inválido."
+        'La célula no existe en esta iglesia o el ID es inválido.'
       );
     }
 
@@ -224,28 +223,28 @@ export async function updateCell(
     if (data.accessCode !== undefined) {
       updateData.accessCode = data.accessCode || null;
     }
-    if (Object.prototype.hasOwnProperty.call(data, "subSectorId")) {
+    if (Object.prototype.hasOwnProperty.call(data, 'subSectorId')) {
       updateData.subSector =
-        data.subSectorId && data.subSectorId !== ""
+        data.subSectorId && data.subSectorId !== ''
           ? { connect: { id: data.subSectorId } }
           : { disconnect: true };
     }
 
-    if (Object.prototype.hasOwnProperty.call(data, "leaderId")) {
+    if (Object.prototype.hasOwnProperty.call(data, 'leaderId')) {
       updateData.leader =
-        data.leaderId && data.leaderId !== ""
+        data.leaderId && data.leaderId !== ''
           ? { connect: { id: data.leaderId } }
           : { disconnect: true };
     }
-    if (Object.prototype.hasOwnProperty.call(data, "hostId")) {
+    if (Object.prototype.hasOwnProperty.call(data, 'hostId')) {
       updateData.host =
-        data.hostId && data.hostId !== ""
+        data.hostId && data.hostId !== ''
           ? { connect: { id: data.hostId } }
           : { disconnect: true };
     }
-    if (Object.prototype.hasOwnProperty.call(data, "assistantId")) {
+    if (Object.prototype.hasOwnProperty.call(data, 'assistantId')) {
       updateData.assistant =
-        data.assistantId && data.assistantId !== ""
+        data.assistantId && data.assistantId !== ''
           ? { connect: { id: data.assistantId } }
           : { disconnect: true };
     }
@@ -255,23 +254,23 @@ export async function updateCell(
     // Si se asignó líder/anfitrión/asistente, asegurar su membresía en la célula
     const setIds: string[] = [];
     if (
-      Object.prototype.hasOwnProperty.call(data, "leaderId") &&
+      Object.prototype.hasOwnProperty.call(data, 'leaderId') &&
       data.leaderId &&
-      data.leaderId !== ""
+      data.leaderId !== ''
     ) {
       setIds.push(data.leaderId);
     }
     if (
-      Object.prototype.hasOwnProperty.call(data, "hostId") &&
+      Object.prototype.hasOwnProperty.call(data, 'hostId') &&
       data.hostId &&
-      data.hostId !== ""
+      data.hostId !== ''
     ) {
       setIds.push(data.hostId);
     }
     if (
-      Object.prototype.hasOwnProperty.call(data, "assistantId") &&
+      Object.prototype.hasOwnProperty.call(data, 'assistantId') &&
       data.assistantId &&
-      data.assistantId !== ""
+      data.assistantId !== ''
     ) {
       setIds.push(data.assistantId);
     }
@@ -282,26 +281,26 @@ export async function updateCell(
       });
     }
 
-    revalidateTag("cells", { expire: 0 });
+    revalidateTag('cells', { expire: 0 });
 
     return cell;
   } catch (error) {
-    console.error("Error updating cell:", { error, id, data, churchId });
+    console.error('Error updating cell:', { error, id, data, churchId });
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       const target = error.meta?.target;
       if (
-        error.code === "P2002" &&
-        ((Array.isArray(target) && target.includes("accessCode")) ||
-          error.message.includes("accessCode"))
+        error.code === 'P2002' &&
+        ((Array.isArray(target) && target.includes('accessCode')) ||
+          error.message.includes('accessCode'))
       ) {
-        throw new Error("La clave de acceso ya existe. Por favor, elige otra.");
+        throw new Error('La clave de acceso ya existe. Por favor, elige otra.');
       }
       throw new Error(
         `Error de base de datos al actualizar la célula: ${error.message}`
       );
     }
     const message =
-      error instanceof Error ? error.message : "Failed to update cell";
+      error instanceof Error ? error.message : 'Failed to update cell';
     throw new Error(message);
   }
 }
@@ -313,15 +312,15 @@ export async function searchSectors(term: string) {
     const sectors = await prisma.sectors.findMany({
       where: {
         church_id: churchId,
-        name: { contains: term, mode: "insensitive" },
+        name: { contains: term, mode: 'insensitive' },
       },
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
       take: 10,
     });
     return sectors;
   } catch (error) {
-    console.error("Error searching sectors:", error);
-    throw new Error("Failed to search sectors");
+    console.error('Error searching sectors:', error);
+    throw new Error('Failed to search sectors');
   }
 }
 
@@ -331,7 +330,7 @@ export async function getAllSectors() {
     const churchId = await getChurchId();
     const sectors = await prisma.sectors.findMany({
       where: { church_id: churchId },
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
       include: {
         subSectors: {
           include: {
@@ -342,8 +341,8 @@ export async function getAllSectors() {
     });
     return sectors;
   } catch (error) {
-    console.error("Error fetching sectors:", error);
-    throw new Error("Failed to fetch sectors");
+    console.error('Error fetching sectors:', error);
+    throw new Error('Failed to fetch sectors');
   }
 }
 
@@ -353,7 +352,7 @@ export async function getSectorById(id: string) {
     const sector = await prisma.sectors.findUnique({ where: { id } });
     return sector;
   } catch (error) {
-    console.error("Error fetching sector by ID:", error);
+    console.error('Error fetching sector by ID:', error);
     return null;
   }
 }
@@ -363,13 +362,13 @@ export async function getMembersByCell(cellId: string) {
     const prisma = await getChurchPrisma();
     const membersFindArgs = {
       where: { cell_id: cellId },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: 'asc' },
     } satisfies Prisma.MembersFindManyArgs;
     const members = await prisma.members.findMany(membersFindArgs);
     return members;
   } catch (error) {
-    console.error("Error fetching cell members:", error);
-    throw new Error("Failed to fetch cell members");
+    console.error('Error fetching cell members:', error);
+    throw new Error('Failed to fetch cell members');
   }
 }
 
@@ -388,8 +387,8 @@ export async function getCellStats() {
 
     return { total, membersInCells, membersWithoutCell };
   } catch (error) {
-    console.error("Error fetching cell stats:", error);
-    throw new Error("Failed to fetch cell statistics");
+    console.error('Error fetching cell stats:', error);
+    throw new Error('Failed to fetch cell statistics');
   }
 }
 
@@ -402,19 +401,19 @@ export async function searchMembersInCell(cellId: string, term: string) {
         church_id: churchId,
         cell_id: cellId,
         OR: [
-          { firstName: { contains: term, mode: "insensitive" } },
-          { lastName: { contains: term, mode: "insensitive" } },
-          { email: { contains: term, mode: "insensitive" } },
+          { firstName: { contains: term, mode: 'insensitive' } },
+          { lastName: { contains: term, mode: 'insensitive' } },
+          { email: { contains: term, mode: 'insensitive' } },
         ],
       },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: 'asc' },
       take: 10,
     } satisfies Prisma.MembersFindManyArgs;
     const members = await prisma.members.findMany(searchArgs);
     return members.map((m) => ({ ...m, ministries: [] }));
   } catch (error) {
-    console.error("Error searching members in cell:", error);
-    throw new Error("Failed to search members in cell");
+    console.error('Error searching members in cell:', error);
+    throw new Error('Failed to search members in cell');
   }
 }
 
@@ -435,10 +434,10 @@ export async function addMemberToCell(cellId: string, memberId: string) {
     ]);
 
     if (!cell || cell.church_id !== churchId) {
-      throw new Error("La célula no pertenece a esta iglesia");
+      throw new Error('La célula no pertenece a esta iglesia');
     }
     if (!member) {
-      throw new Error("El miembro no pertenece a esta iglesia");
+      throw new Error('El miembro no pertenece a esta iglesia');
     }
 
     const updateMemberArgs = {
@@ -446,11 +445,11 @@ export async function addMemberToCell(cellId: string, memberId: string) {
       data: { cell: { connect: { id: cellId } } },
     } satisfies Prisma.MembersUpdateArgs;
     const updated = await prisma.members.update(updateMemberArgs);
-    revalidateTag("cells", { expire: 0 });
+    revalidateTag('cells', { expire: 0 });
     return updated;
   } catch (error) {
-    console.error("Error adding member to cell:", error);
-    throw new Error("Failed to add member to cell");
+    console.error('Error adding member to cell:', error);
+    throw new Error('Failed to add member to cell');
   }
 }
 
@@ -465,11 +464,11 @@ export async function addMembersToCell(cellId: string, memberIds: string[]) {
       data: { cell_id: cellId },
     } satisfies Prisma.MembersUpdateManyArgs;
     const result = await prisma.members.updateMany(updateManyArgs);
-    revalidateTag("cells", { expire: 0 });
+    revalidateTag('cells', { expire: 0 });
     return { count: result.count };
   } catch (error) {
-    console.error("Error adding members to cell:", error);
-    throw new Error("Failed to add members to cell");
+    console.error('Error adding members to cell:', error);
+    throw new Error('Failed to add members to cell');
   }
 }
 
@@ -488,10 +487,10 @@ export async function removeMemberFromCell(cellId: string, memberId: string) {
       }),
     ]);
     if (!existing) {
-      throw new Error("El miembro no pertenece a esta célula");
+      throw new Error('El miembro no pertenece a esta célula');
     }
     if (!cell || cell.church_id !== churchId) {
-      throw new Error("La célula no pertenece a esta iglesia");
+      throw new Error('La célula no pertenece a esta iglesia');
     }
     const removeMemberArgs = {
       where: { id: memberId },
@@ -513,10 +512,10 @@ export async function removeMemberFromCell(cellId: string, memberId: string) {
       } satisfies Prisma.CellsUpdateArgs;
       await prisma.cells.update(updateCellArgs);
     }
-    revalidateTag("cells", { expire: 0 });
+    revalidateTag('cells', { expire: 0 });
     return { success: true };
   } catch (error) {
-    console.error("Error removing member from cell:", error);
-    throw new Error("Failed to remove member from cell");
+    console.error('Error removing member from cell:', error);
+    throw new Error('Failed to remove member from cell');
   }
 }

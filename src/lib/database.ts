@@ -1,6 +1,6 @@
 import { PrismaClient } from '../../generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { getChurchSlugFromHost, isValidChurchSlug } from './church-context';
+import { isValidChurchSlug } from './church-context';
 
 // Cache for database connections
 const databaseConnections = new Map<string, PrismaClient>();

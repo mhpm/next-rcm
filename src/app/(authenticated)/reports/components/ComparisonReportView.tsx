@@ -18,8 +18,6 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ReportFields } from '@/generated/prisma/client';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { usePersistentFilters } from '@/hooks/usePersistentFilters';
 import AdvancedFilterModal, { FilterField } from './AdvancedFilterModal';
 import { Button } from '@/components/ui/button';
@@ -34,7 +32,7 @@ import {
   Row,
   useReportData,
 } from '@/app/(authenticated)/reports/hooks/useReportData';
-import { ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { ColumnVisibilityDropdown } from '@/components/ColumnVisibilityDropdown/ColumnVisibilityDropdown';
 
 // Custom hook for scoped column visibility
