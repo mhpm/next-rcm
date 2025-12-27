@@ -41,6 +41,7 @@ export async function getEvents(
         _count: {
           select: { attendances: true },
         },
+        phase: true,
       },
       orderBy: { [orderBy]: orderDirection },
       take: limit,
@@ -107,4 +108,52 @@ export async function deleteEvent(id: string) {
 
   revalidatePath("/events");
   return { success: true };
+}
+
+export async function getEventPhases() {
+  const prisma = await getChurchPrisma();
+  const churchId = await getChurchId();
+
+  // Seed/Sync default phases
+  const defaults = [
+    { name: "GANAR", color: "#eab308" }, // yellow-500
+    { name: "CONSOLIDAR", color: "#22c55e" }, // green-500
+    { name: "DISCIPULAR", color: "#3b82f6" }, // blue-500
+  ];
+
+  for (const d of defaults) {
+    const existing = await prisma.eventPhases.findFirst({
+      where: { name: d.name, church_id: null },
+    });
+
+    if (!existing) {
+      await prisma.eventPhases.create({
+        data: { name: d.name, color: d.color, church_id: null },
+      });
+    } else if (existing.color !== d.color) {
+      // Nota: Si el usuario PERSONALIZÓ el color vía override local, esta actualización global no le afectará visualmente,
+      // lo cual es correcto.
+      await prisma.eventPhases.update({
+        where: { id: existing.id },
+        data: { color: d.color },
+      });
+    }
+  }
+
+  const allPhases = await prisma.eventPhases.findMany({
+    where: {
+      OR: [{ church_id: churchId }, { church_id: null }],
+    },
+    orderBy: { createdAt: "asc" },
+  });
+
+   // Lógica de Override (Misma que en phases.actions.ts)
+  const phaseMap = new Map<string, typeof allPhases[0]>();
+  allPhases.filter(p => p.church_id === null).forEach(p => phaseMap.set(p.name, p));
+  allPhases.filter(p => p.church_id !== null).forEach(p => phaseMap.set(p.name, p));
+
+  const phases = Array.from(phaseMap.values());
+  phases.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+
+  return phases;
 }

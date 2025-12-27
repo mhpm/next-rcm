@@ -1,22 +1,22 @@
-"use server";
+'use server';
 
-import { Prisma, MemberRole } from "@/generated/prisma/client";
-import { z } from "zod";
-import { revalidateTag } from "next/cache";
-import { MemberFormData } from "@/types";
-import * as bcrypt from "bcryptjs";
-import { logger } from "@/lib/logger";
+import { Prisma, MemberRole } from '@/generated/prisma/client';
+import { z } from 'zod';
+import { revalidateTag } from 'next/cache';
+import { MemberFormData } from '@/types';
+import * as bcrypt from 'bcryptjs';
+import { logger } from '@/lib/logger';
 import {
   handlePrismaError,
   withErrorHandling,
   NotFoundError,
-} from "@/lib/error-handler";
-import { processImageUpload } from "@/lib/file-upload";
+} from '@/lib/error-handler';
+import { processImageUpload } from '@/lib/file-upload';
 import {
   updateMemberSchema,
   insertMemberFormSchema,
-} from "@/app/(authenticated)/members/schema/members.schema";
-import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
+} from '@/app/(authenticated)/members/schema/members.schema';
+import { getChurchPrisma, getChurchId } from '@/actions/churchContext';
 
 // Get all members with optional filtering and pagination
 // Zod validation for list options
@@ -25,8 +25,8 @@ const getAllMembersOptionsSchema = z.object({
   offset: z.number().int().min(0).optional(),
   search: z.string().optional(),
   role: z.nativeEnum(MemberRole).optional(),
-  orderBy: z.enum(["firstName", "lastName", "createdAt"]).optional(),
-  orderDirection: z.enum(["asc", "desc"]).optional(),
+  orderBy: z.enum(['firstName', 'lastName', 'createdAt']).optional(),
+  orderDirection: z.enum(['asc', 'desc']).optional(),
 });
 
 export async function getAllMembers(options?: {
@@ -34,8 +34,8 @@ export async function getAllMembers(options?: {
   offset?: number;
   search?: string;
   role?: MemberRole;
-  orderBy?: "firstName" | "lastName" | "createdAt";
-  orderDirection?: "asc" | "desc";
+  orderBy?: 'firstName' | 'lastName' | 'createdAt';
+  orderDirection?: 'asc' | 'desc';
 }) {
   try {
     const parsedOptions = getAllMembersOptionsSchema.parse(options ?? {});
@@ -44,8 +44,8 @@ export async function getAllMembers(options?: {
       offset = 0,
       search,
       role,
-      orderBy = "lastName",
-      orderDirection = "asc",
+      orderBy = 'lastName',
+      orderDirection = 'asc',
     } = parsedOptions;
 
     const prisma = await getChurchPrisma();
@@ -57,27 +57,27 @@ export async function getAllMembers(options?: {
       const parts = term.split(/\s+/).filter(Boolean);
 
       const orClauses: Prisma.MembersWhereInput[] = [
-        { firstName: { contains: term, mode: "insensitive" } },
-        { lastName: { contains: term, mode: "insensitive" } },
-        { email: { contains: term, mode: "insensitive" } },
+        { firstName: { contains: term, mode: 'insensitive' } },
+        { lastName: { contains: term, mode: 'insensitive' } },
+        { email: { contains: term, mode: 'insensitive' } },
       ];
 
       // If query includes two or more parts, support "First Last" matching in both orders
       if (parts.length >= 2) {
         const first = parts[0];
-        const last = parts.slice(1).join(" "); // support multi-word last names
+        const last = parts.slice(1).join(' '); // support multi-word last names
 
         orClauses.push(
           {
             AND: [
-              { firstName: { contains: first, mode: "insensitive" } },
-              { lastName: { contains: last, mode: "insensitive" } },
+              { firstName: { contains: first, mode: 'insensitive' } },
+              { lastName: { contains: last, mode: 'insensitive' } },
             ],
           },
           {
             AND: [
-              { firstName: { contains: last, mode: "insensitive" } },
-              { lastName: { contains: first, mode: "insensitive" } },
+              { firstName: { contains: last, mode: 'insensitive' } },
+              { lastName: { contains: first, mode: 'insensitive' } },
             ],
           }
         );
@@ -116,8 +116,8 @@ export async function getAllMembers(options?: {
       hasMore: offset + limit < total,
     };
   } catch (error) {
-    console.error("Error fetching members:", error);
-    throw new Error("Failed to fetch members");
+    console.error('Error fetching members:', error);
+    throw new Error('Failed to fetch members');
   }
 }
 
@@ -128,7 +128,7 @@ export async function getMembers(limit = 10) {
     const members = await prisma.members.findMany({
       take: limit,
       orderBy: {
-        lastName: "asc",
+        lastName: 'asc',
       },
       include: {
         ministries: {
@@ -141,14 +141,14 @@ export async function getMembers(limit = 10) {
 
     return members;
   } catch (error) {
-    console.error("Error fetching members:", error);
-    throw new Error("Failed to fetch members");
+    console.error('Error fetching members:', error);
+    throw new Error('Failed to fetch members');
   }
 }
 
 // Get member by specific field
 // Allowed fields for getMemberBy to prevent invalid queries
-const getMemberByFieldSchema = z.enum(["id", "email", "firstName", "lastName"]);
+const getMemberByFieldSchema = z.enum(['id', 'email', 'firstName', 'lastName']);
 const getMemberByValueSchema = z.union([z.string(), z.number()]);
 
 export async function getMemberBy(field: string, value: unknown) {
@@ -186,13 +186,13 @@ export async function getMemberById(id: string) {
     });
 
     if (!member) {
-      throw new Error("Member not found");
+      throw new Error('Member not found');
     }
 
     return member;
   } catch (error) {
-    console.error("Error fetching member by ID:", error);
-    throw new Error("Failed to fetch member");
+    console.error('Error fetching member by ID:', error);
+    throw new Error('Failed to fetch member');
   }
 }
 
@@ -205,7 +205,7 @@ export const createMember = withErrorHandling(async function createMember(
   try {
     // Debug: Log incoming data
     console.log(
-      "🚀 ~ createMember ~ incoming data:",
+      '🚀 ~ createMember ~ incoming data:',
       JSON.stringify(data, null, 2)
     );
 
@@ -215,7 +215,7 @@ export const createMember = withErrorHandling(async function createMember(
 
     // Debug: Log parsed data
     console.log(
-      "🚀 ~ createMember ~ parsed data:",
+      '🚀 ~ createMember ~ parsed data:',
       JSON.stringify(parsed, null, 2)
     );
     // Hash password if provided
@@ -230,8 +230,8 @@ export const createMember = withErrorHandling(async function createMember(
       try {
         pictureUrl = await processImageUpload(parsed.picture);
       } catch (uploadError) {
-        logger.error("Error uploading image", uploadError as Error, {
-          operation: "createMember",
+        logger.error('Error uploading image', uploadError as Error, {
+          operation: 'createMember',
           email: parsed.email,
         });
         // Continue without image if upload fails
@@ -284,31 +284,31 @@ export const createMember = withErrorHandling(async function createMember(
         data: memberMinistryData,
       });
 
-      logger.info("Member ministries created successfully", {
-        operation: "createMember",
+      logger.info('Member ministries created successfully', {
+        operation: 'createMember',
         memberId: member.id,
         ministriesCount: parsed.ministries.length,
       });
     }
 
-    logger.info("Member created successfully", {
-      operation: "createMember",
+    logger.info('Member created successfully', {
+      operation: 'createMember',
       memberId: member.id,
       email: member.email,
     });
 
     // Revalidate dashboard caches
-    revalidateTag("members", { expire: 0 });
-    revalidateTag("chart-growth", { expire: 0 });
+    revalidateTag('members', { expire: 0 });
+    revalidateTag('chart-growth', { expire: 0 });
     if (parsed.ministries && parsed.ministries.length > 0) {
-      revalidateTag("ministries", { expire: 0 });
+      revalidateTag('ministries', { expire: 0 });
     }
 
     return member;
   } catch (error) {
     // Log detallado del error para debugging
-    logger.error("Error creating member", error as Error, {
-      operation: "createMember",
+    logger.error('Error creating member', error as Error, {
+      operation: 'createMember',
       memberData: {
         email: (data as MemberFormData)?.email,
         firstName: (data as MemberFormData)?.firstName,
@@ -345,7 +345,7 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
       where: { id: parsed.id! },
     });
     if (!existingMember) {
-      throw new NotFoundError("Member not found");
+      throw new NotFoundError('Member not found');
     }
 
     const updateData: Prisma.MembersUpdateInput = {};
@@ -356,7 +356,9 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
     if (parsed.lastName !== undefined)
       updateData.lastName = parsed.lastName.trim();
     if (parsed.email !== undefined)
-      updateData.email = parsed.email ? parsed.email.trim().toLowerCase() : null;
+      updateData.email = parsed.email
+        ? parsed.email.trim().toLowerCase()
+        : null;
 
     // Optional strings
     if (parsed.phone !== undefined) updateData.phone = parsed.phone || null;
@@ -410,8 +412,8 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
           data: memberMinistryData,
         });
 
-        logger.info("Member ministries updated successfully", {
-          operation: "updateMember",
+        logger.info('Member ministries updated successfully', {
+          operation: 'updateMember',
           memberId: parsed.id!,
           ministriesCount: parsed.ministries.length,
         });
@@ -435,9 +437,9 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
       });
 
       logger.info(
-        "Only ministries updated in updateMember; returning member with updated ministries",
+        'Only ministries updated in updateMember; returning member with updated ministries',
         {
-          operation: "updateMember",
+          operation: 'updateMember',
           memberId: parsed.id!,
         }
       );
@@ -447,9 +449,9 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
     // Si no hay cambios en los datos ni en ministerios, devolver el miembro existente sin error
     if (Object.keys(updateData).length === 0) {
       logger.info(
-        "No changes detected in updateMember; returning existing member",
+        'No changes detected in updateMember; returning existing member',
         {
-          operation: "updateMember",
+          operation: 'updateMember',
           memberId: parsed.id!,
         }
       );
@@ -468,9 +470,9 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
       },
     });
     // Revalidate dashboard caches
-    revalidateTag("members", { expire: 0 });
+    revalidateTag('members', { expire: 0 });
     if (parsed.ministries !== undefined) {
-      revalidateTag("ministries", { expire: 0 });
+      revalidateTag('ministries', { expire: 0 });
     }
     return updatedMember;
   } catch (error) {
@@ -498,7 +500,7 @@ export async function deleteMember(id: string) {
     });
 
     if (!existingMember) {
-      throw new Error("Member not found");
+      throw new Error('Member not found');
     }
 
     // Before deleting the member, check if they are a leader of any ministry
@@ -513,16 +515,43 @@ export async function deleteMember(id: string) {
     });
 
     // Revalidate dashboard caches
-    revalidateTag("members", { expire: 0 });
-    revalidateTag("ministries", { expire: 0 });
+    revalidateTag('members', { expire: 0 });
+    revalidateTag('ministries', { expire: 0 });
 
-    return { success: true, message: "Member deleted successfully" };
+    return { success: true, message: 'Member deleted successfully' };
   } catch (error) {
-    console.error("Error deleting member:", error);
-    if (error instanceof Error && error.message.includes("Member not found")) {
+    console.error('Error deleting member:', error);
+    if (error instanceof Error && error.message.includes('Member not found')) {
       throw error;
     }
-    throw new Error("Failed to delete member");
+    throw new Error('Failed to delete member');
+  }
+}
+
+// Delete multiple members by IDs
+export async function deleteMembers(ids: string[]) {
+  try {
+    const prisma = await getChurchPrisma();
+
+    // Before deleting the members, check if they are leaders of any ministry
+    // and nullify the leader_id in those ministries.
+    await prisma.ministries.updateMany({
+      where: { leader_id: { in: ids } },
+      data: { leader_id: null },
+    });
+
+    await prisma.members.deleteMany({
+      where: { id: { in: ids } },
+    });
+
+    // Revalidate dashboard caches
+    revalidateTag('members', { expire: 0 });
+    revalidateTag('ministries', { expire: 0 });
+
+    return { success: true, message: 'Members deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting members:', error);
+    throw new Error('Failed to delete members');
   }
 }
 
@@ -540,12 +569,12 @@ export async function deactivateMember(id: string) {
       },
     });
 
-    revalidateTag("members", { expire: 0 });
+    revalidateTag('members', { expire: 0 });
 
     return updatedMember;
   } catch (error) {
-    console.error("Error deactivating member:", error);
-    throw new Error("Failed to deactivate member");
+    console.error('Error deactivating member:', error);
+    throw new Error('Failed to deactivate member');
   }
 }
 
@@ -568,7 +597,7 @@ export async function isEmailTaken(email: string, excludeId?: string) {
 
     return !!existingMember;
   } catch (error) {
-    console.error("Error checking email:", error);
+    console.error('Error checking email:', error);
     return false;
   }
 }
@@ -581,11 +610,11 @@ export async function getMemberStats() {
     const [total, byRole, byGender] = await Promise.all([
       prisma.members.count(),
       prisma.members.groupBy({
-        by: ["role"],
+        by: ['role'],
         _count: { role: true },
       }),
       prisma.members.groupBy({
-        by: ["gender"],
+        by: ['gender'],
         _count: { gender: true },
       }),
     ]);
@@ -602,7 +631,7 @@ export async function getMemberStats() {
       }, {} as Record<string, number>),
     };
   } catch (error) {
-    console.error("Error fetching member stats:", error);
-    throw new Error("Failed to fetch member statistics");
+    console.error('Error fetching member stats:', error);
+    throw new Error('Failed to fetch member statistics');
   }
 }

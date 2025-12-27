@@ -21,6 +21,7 @@ export const eventSchema = z.object({
     .min(0, 'La meta debe ser mayor o igual a 0')
     .optional()
     .nullable(),
+  phase_id: z.string().optional().nullable(),
 });
 
 export type EventFormValues = z.infer<typeof eventSchema>;

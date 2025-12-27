@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 
@@ -26,9 +26,10 @@ import {
 } from '@/components/ui/select';
 import { useNotificationStore } from '@/store/NotificationStore';
 
-import { createEvent, updateEvent } from '../actions/events.actions';
+import { createEvent, updateEvent, getEventPhases } from '../actions/events.actions';
 import { eventSchema, EventFormValues } from '../schema/events.schema';
 import { EventFormData } from '../types/events.d';
+import { EventPhases } from '@/generated/prisma/client';
 
 interface EventFormProps {
   initialData?: EventFormData;
@@ -44,6 +45,11 @@ export function EventForm({
   const router = useRouter();
   const { addNotification } = useNotificationStore();
   const [loading, setLoading] = useState(false);
+  const [phases, setPhases] = useState<EventPhases[]>([]);
+
+  useEffect(() => {
+    getEventPhases().then(setPhases);
+  }, []);
 
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema) as any,
@@ -53,6 +59,7 @@ export function EventForm({
       date: initialData?.date || new Date(),
       friendAttendanceGoal: initialData?.friendAttendanceGoal || undefined,
       memberAttendanceGoal: initialData?.memberAttendanceGoal || undefined,
+      phase_id: initialData?.phase_id || undefined,
     },
   });
 
@@ -207,6 +214,43 @@ export function EventForm({
                     value={field.value ?? ''}
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField<EventFormValues, 'phase_id'>
+            control={form.control as any}
+            name="phase_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Fase (Opcional)</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value || undefined}
+                  value={field.value || undefined}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona una fase" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {phases.map((phase) => (
+                      <SelectItem key={phase.id} value={phase.id}>
+                        <div className="flex items-center gap-2">
+                          {phase.color && (
+                            <div
+                              className="h-3 w-3 rounded-full"
+                              style={{ backgroundColor: phase.color }}
+                            />
+                          )}
+                          {phase.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

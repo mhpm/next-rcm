@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { RiAddLine, RiFilter3Line } from 'react-icons/ri';
+import { RiAddLine, RiFilter3Line, RiDeleteBinLine } from 'react-icons/ri';
 import { Breadcrumbs, DataTable, BackLink } from '@/components';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,10 @@ import {
   AddButtonConfig,
   MemberTableData,
 } from '@/types';
-import { useMembers } from '@/app/(authenticated)/members/hooks/useMembers';
+import {
+  useMembers,
+  useDeleteMembers,
+} from '@/app/(authenticated)/members/hooks/useMembers';
 import { useColumnVisibilityStore } from '@/components/ColumnVisibilityDropdown';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { useDeleteMember } from '@/app/(authenticated)/members/hooks/useMembers';
@@ -215,6 +218,34 @@ export default function MembersPage() {
     visibleColumns.has(String(column.key))
   );
 
+  // Estado para selección múltiple
+  const [selectedMembers, setSelectedMembers] = useState<MemberTableData[]>([]);
+  const deleteMembersMutation = useDeleteMembers();
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+
+  const handleSelectionChange = useCallback((selected: any[]) => {
+    setSelectedMembers(selected as MemberTableData[]);
+  }, []);
+
+  const handleConfirmBulkDelete = async () => {
+    if (selectedMembers.length === 0) return;
+
+    const idsToDelete = selectedMembers.map((m) => m.id);
+
+    deleteMembersMutation.mutate(idsToDelete, {
+      onSuccess: () => {
+        showSuccess(`${idsToDelete.length} miembros eliminados exitosamente`);
+        setIsBulkDeleteModalOpen(false);
+        setSelectedMembers([]);
+        refetch();
+      },
+      onError: (error) => {
+        showError('Error al eliminar miembros');
+        console.error('Error al eliminar miembros:', error);
+      },
+    });
+  };
+
   // Estado y lógica para el modal de confirmación de eliminado
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<MemberTableData | null>(
@@ -305,6 +336,7 @@ export default function MembersPage() {
       </div>
       <DataTable<MemberTableData>
         selectable={true}
+        onSelectionChange={handleSelectionChange}
         title="Miembros"
         subTitle={`Total de miembros en la iglesia: ${filteredMembers.length}`}
         data={filteredMembers}
@@ -323,32 +355,45 @@ export default function MembersPage() {
         showColumnVisibility={true}
         loading={loading}
         searchEndContent={
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="relative">
-                  <Button
-                    type="button"
-                    variant={
-                      Object.keys(activeFilters).length > 0
-                        ? 'default'
-                        : 'ghost'
-                    }
-                    size="sm"
-                    onClick={() => setIsFilterModalOpen(true)}
-                  >
-                    <RiFilter3Line className="w-5 h-5" />
-                  </Button>
-                  {Object.keys(activeFilters).length > 0 && (
-                    <Badge className="absolute -top-1 -right-1 px-1 py-0 text-[10px] animate-pulse">
-                      !
-                    </Badge>
-                  )}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>Filtros avanzados</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div className="flex items-center gap-2">
+            {selectedMembers.length > 0 && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => setIsBulkDeleteModalOpen(true)}
+                className="animate-in fade-in slide-in-from-right-5"
+              >
+                <RiDeleteBinLine className="w-4 h-4 mr-2" />
+                Eliminar ({selectedMembers.length})
+              </Button>
+            )}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="relative">
+                    <Button
+                      type="button"
+                      variant={
+                        Object.keys(activeFilters).length > 0
+                          ? 'default'
+                          : 'ghost'
+                      }
+                      size="sm"
+                      onClick={() => setIsFilterModalOpen(true)}
+                    >
+                      <RiFilter3Line className="w-5 h-5" />
+                    </Button>
+                    {Object.keys(activeFilters).length > 0 && (
+                      <Badge className="absolute -top-1 -right-1 px-1 py-0 text-[10px] animate-pulse">
+                        !
+                      </Badge>
+                    )}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Filtros avanzados</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         }
       />
 
@@ -370,6 +415,14 @@ export default function MembersPage() {
         onCancel={closeDeleteModal}
         onConfirm={handleConfirmDelete}
         isPending={deleteMemberMutation.isPending}
+      />
+
+      <DeleteConfirmationModal
+        open={isBulkDeleteModalOpen}
+        entityName={`${selectedMembers.length} miembros seleccionados`}
+        onCancel={() => setIsBulkDeleteModalOpen(false)}
+        onConfirm={handleConfirmBulkDelete}
+        isPending={deleteMembersMutation.isPending}
       />
     </div>
   );

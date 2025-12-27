@@ -68,7 +68,8 @@ export const ModelName = {
   MemberMinistry: 'MemberMinistry',
   Friends: 'Friends',
   Events: 'Events',
-  EventAttendances: 'EventAttendances'
+  EventAttendances: 'EventAttendances',
+  EventPhases: 'EventPhases'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -339,6 +340,7 @@ export const EventsScalarFieldEnum = {
   type: 'type',
   friendAttendanceGoal: 'friendAttendanceGoal',
   memberAttendanceGoal: 'memberAttendanceGoal',
+  phase_id: 'phase_id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -356,6 +358,18 @@ export const EventAttendancesScalarFieldEnum = {
 } as const
 
 export type EventAttendancesScalarFieldEnum = (typeof EventAttendancesScalarFieldEnum)[keyof typeof EventAttendancesScalarFieldEnum]
+
+
+export const EventPhasesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  color: 'color',
+  church_id: 'church_id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventPhasesScalarFieldEnum = (typeof EventPhasesScalarFieldEnum)[keyof typeof EventPhasesScalarFieldEnum]
 
 
 export const SortOrder = {

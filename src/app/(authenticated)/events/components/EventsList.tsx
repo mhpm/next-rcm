@@ -8,7 +8,8 @@ import { EventDialog } from './EventDialog';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, Settings } from 'lucide-react';
+import Link from 'next/link';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { deleteEvent } from '../actions/events.actions';
 import { useNotificationStore } from '@/store/NotificationStore';
@@ -134,6 +135,24 @@ export function EventsList({ events }: EventsListProps) {
       key: 'type',
       label: 'Tipo',
       sortable: true,
+    },
+    {
+      key: 'phase',
+      label: 'Fase',
+      render: (_, row: EventWithStats) =>
+        row.phase ? (
+          <div className="flex items-center gap-2">
+            {row.phase.color && (
+              <div
+                className="h-3 w-3 rounded-full"
+                style={{ backgroundColor: row.phase.color }}
+              />
+            )}
+            <span>{row.phase.name}</span>
+          </div>
+        ) : (
+          '-'
+        ),
     },
     {
       key: 'friendAttendanceGoal',
@@ -274,7 +293,8 @@ export function EventsList({ events }: EventsListProps) {
         pagination
         itemsPerPage={10}
         addButton={() => (
-          <EventDialog
+          <div className="flex gap-2">
+            <EventDialog
             trigger={
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
@@ -282,6 +302,13 @@ export function EventsList({ events }: EventsListProps) {
               </Button>
             }
           />
+          <Button variant="outline" asChild>
+            <Link href="/events/phases">
+              <Settings className="mr-2 h-4 w-4" />
+              Fases
+            </Link>
+          </Button>
+        </div>
         )}
         searchEndContent={filterControls}
       />

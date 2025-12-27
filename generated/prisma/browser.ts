@@ -107,3 +107,8 @@ export type Events = Prisma.EventsModel
  * 
  */
 export type EventAttendances = Prisma.EventAttendancesModel
+/**
+ * Model EventPhases
+ * 
+ */
+export type EventPhases = Prisma.EventPhasesModel

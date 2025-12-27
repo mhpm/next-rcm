@@ -24,6 +24,7 @@ model Churches {
   reportEntries    ReportEntries[]
   friends          Friends[]
   events           Events[]
+  eventPhases      EventPhases[]
   eventAttendances EventAttendances[]
   cellGoals        CellGoals[]
 
@@ -458,21 +459,24 @@ model Friends {
 }
 
 model Events {
-  id        String   @id @default(cuid())
-  church_id String
-  name      String
+  id                   String   @id @default(cuid())
+  church_id            String
+  name                 String
   date                 DateTime
   type                 String
-  friendAttendanceGoal Int?               @map("friend_attendance_goal")
-  memberAttendanceGoal Int?               @map("member_attendance_goal")
-  createdAt            DateTime           @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  friendAttendanceGoal Int?     @map("friend_attendance_goal")
+  memberAttendanceGoal Int?     @map("member_attendance_goal")
+  phase_id             String?
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
 
   church      Churches           @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  phase       EventPhases?       @relation(fields: [phase_id], references: [id], onDelete: SetNull)
   attendances EventAttendances[]
   goals       CellGoals[]
 
   @@index([church_id])
+  @@index([phase_id])
   @@map("events")
 }
 
@@ -493,4 +497,19 @@ model EventAttendances {
   @@index([friend_id])
   @@index([event_id])
   @@map("event_attendances")
+}
+
+model EventPhases {
+  id        String   @id @default(cuid())
+  name      String
+  color     String?
+  church_id String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  church Churches? @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  events Events[]
+
+  @@index([church_id])
+  @@map("event_phases")
 }

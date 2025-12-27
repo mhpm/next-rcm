@@ -2,13 +2,16 @@ import type {
   Events,
   EventAttendances,
   CellGoals,
+  EventPhases,
 } from '@/generated/prisma/client';
 
 export type EventWithStats = Events & {
+  phase?: EventPhases | null;
   _count: {
     attendances: number;
   };
 };
+
 
 export interface EventFormData {
   id?: string;
@@ -17,6 +20,7 @@ export interface EventFormData {
   type: string;
   friendAttendanceGoal?: number | null;
   memberAttendanceGoal?: number | null;
+  phase_id?: string | null;
 }
 
 export interface EventsQueryOptions {

@@ -401,7 +401,8 @@ export const ModelName = {
   MemberMinistry: 'MemberMinistry',
   Friends: 'Friends',
   Events: 'Events',
-  EventAttendances: 'EventAttendances'
+  EventAttendances: 'EventAttendances',
+  EventPhases: 'EventPhases'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "churches" | "members" | "ministries" | "cells" | "zones" | "sectors" | "subSectors" | "groups" | "groupFields" | "cellGoals" | "reports" | "reportFields" | "reportEntries" | "reportEntryValues" | "memberMinistry" | "friends" | "events" | "eventAttendances"
+    modelProps: "churches" | "members" | "ministries" | "cells" | "zones" | "sectors" | "subSectors" | "groups" | "groupFields" | "cellGoals" | "reports" | "reportFields" | "reportEntries" | "reportEntryValues" | "memberMinistry" | "friends" | "events" | "eventAttendances" | "eventPhases"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1753,6 +1754,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    EventPhases: {
+      payload: Prisma.$EventPhasesPayload<ExtArgs>
+      fields: Prisma.EventPhasesFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EventPhasesFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventPhasesPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EventPhasesFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventPhasesPayload>
+        }
+        findFirst: {
+          args: Prisma.EventPhasesFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventPhasesPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EventPhasesFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventPhasesPayload>
+        }
+        findMany: {
+          args: Prisma.EventPhasesFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventPhasesPayload>[]
+        }
+        create: {
+          args: Prisma.EventPhasesCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventPhasesPayload>
+        }
+        createMany: {
+          args: Prisma.EventPhasesCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EventPhasesCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventPhasesPayload>[]
+        }
+        delete: {
+          args: Prisma.EventPhasesDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventPhasesPayload>
+        }
+        update: {
+          args: Prisma.EventPhasesUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventPhasesPayload>
+        }
+        deleteMany: {
+          args: Prisma.EventPhasesDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EventPhasesUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EventPhasesUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventPhasesPayload>[]
+        }
+        upsert: {
+          args: Prisma.EventPhasesUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EventPhasesPayload>
+        }
+        aggregate: {
+          args: Prisma.EventPhasesAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEventPhases>
+        }
+        groupBy: {
+          args: Prisma.EventPhasesGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EventPhasesGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EventPhasesCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EventPhasesCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2044,6 +2119,7 @@ export const EventsScalarFieldEnum = {
   type: 'type',
   friendAttendanceGoal: 'friendAttendanceGoal',
   memberAttendanceGoal: 'memberAttendanceGoal',
+  phase_id: 'phase_id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -2061,6 +2137,18 @@ export const EventAttendancesScalarFieldEnum = {
 } as const
 
 export type EventAttendancesScalarFieldEnum = (typeof EventAttendancesScalarFieldEnum)[keyof typeof EventAttendancesScalarFieldEnum]
+
+
+export const EventPhasesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  color: 'color',
+  church_id: 'church_id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventPhasesScalarFieldEnum = (typeof EventPhasesScalarFieldEnum)[keyof typeof EventPhasesScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2383,6 +2471,7 @@ export type GlobalOmitConfig = {
   friends?: Prisma.FriendsOmit
   events?: Prisma.EventsOmit
   eventAttendances?: Prisma.EventAttendancesOmit
+  eventPhases?: Prisma.EventPhasesOmit
 }
 
 /* Types for Logging */
