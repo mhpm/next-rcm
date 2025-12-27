@@ -59,6 +59,7 @@ export function ColumnVisibilityDropdown<T = Record<string, unknown>>({
               key={columnKey}
               checked={isVisible}
               onCheckedChange={() => onToggleColumn(columnKey)}
+              onSelect={(e) => e.preventDefault()}
             >
               {column.label}
             </DropdownMenuCheckboxItem>

@@ -52,12 +52,34 @@ export default function NewReportForm() {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold">Crear Nuevo Reporte</h1>
-        <p className="text-muted-foreground">Diseña la estructura de tu reporte.</p>
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold">Crear Nuevo Reporte</h1>
+          <p className="text-muted-foreground">Diseña la estructura de tu reporte.</p>
+        </div>
+        <div className="flex gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            disabled={isSubmitting}
+          >
+            Cancelar
+          </Button>
+          <Button type="submit" form="new-report-form" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="animate-spin" />
+                Guardando...
+              </>
+            ) : (
+              "Guardar Reporte"
+            )}
+          </Button>
+        </div>
       </div>
 
-      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <form id="new-report-form" className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <ReportBuilder
           control={control}
           register={register}

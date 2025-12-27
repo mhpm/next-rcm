@@ -11,8 +11,10 @@ import {
   deleteReportEntriesAction,
 } from '@/app/(authenticated)/reports/actions/reports.actions';
 import { RiFilter3Line, RiDeleteBinLine } from 'react-icons/ri';
+import { RefreshCcw } from 'lucide-react';
 import AdvancedFilterModal, { FilterField } from './AdvancedFilterModal';
 import { usePersistentFilters } from '@/hooks/usePersistentFilters';
+import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -145,6 +147,9 @@ export default function ReportEntriesTable({
   fields = [],
 }: ReportEntriesTableProps) {
   const router = useRouter();
+
+  // Auto-refresh on window focus
+  useRefreshOnFocus();
 
   const { showSuccess, showError } = useNotificationStore();
 
@@ -552,7 +557,28 @@ export default function ReportEntriesTable({
                   <TooltipTrigger asChild>
                     <Button
                       type="button"
-                      variant={Object.keys(activeFilters).length > 0 ? 'default' : 'outline'}
+                      variant="outline"
+                      size="icon"
+                      className="h-9 w-9 shrink-0"
+                      onClick={() => router.refresh()}
+                    >
+                      <RefreshCcw className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Actualizar datos</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant={
+                        Object.keys(activeFilters).length > 0
+                          ? 'default'
+                          : 'outline'
+                      }
                       size="icon"
                       className="h-9 w-9 shrink-0"
                       onClick={() => setIsFilterModalOpen(true)}
@@ -564,18 +590,28 @@ export default function ReportEntriesTable({
                 </Tooltip>
               </TooltipProvider>
 
-              <Select value={String(selectedYear)} onValueChange={(v) => handleYearChange(Number(v))}>
+              <Select
+                value={String(selectedYear)}
+                onValueChange={(v) => handleYearChange(Number(v))}
+              >
                 <SelectTrigger className="h-9 w-20 text-xs sm:text-sm">
                   <SelectValue placeholder="Año" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map((year) => (
-                    <SelectItem key={year} value={String(year)}>{year}</SelectItem>
-                  ))}
+                  {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map(
+                    (year) => (
+                      <SelectItem key={year} value={String(year)}>
+                        {year}
+                      </SelectItem>
+                    )
+                  )}
                 </SelectContent>
               </Select>
 
-              <Select value={filterType} onValueChange={(v) => handleTypeChange(v as any)}>
+              <Select
+                value={filterType}
+                onValueChange={(v) => handleTypeChange(v as any)}
+              >
                 <SelectTrigger className="h-9 flex-1 min-w-[120px] text-xs sm:text-sm">
                   <SelectValue placeholder="Tipo" />
                 </SelectTrigger>
@@ -629,7 +665,9 @@ export default function ReportEntriesTable({
                   </SelectTrigger>
                   <SelectContent>
                     {months.map((m, i) => (
-                      <SelectItem key={i} value={String(i)}>{m}</SelectItem>
+                      <SelectItem key={i} value={String(i)}>
+                        {m}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

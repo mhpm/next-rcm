@@ -358,6 +358,9 @@ export default function PublicReportForm({
       // If success, the component will re-render to success view automatically.
       if (!success) {
         setIsConfirmOpen(false);
+      } else {
+        // If success, also close the modal so it's not there when user clicks "Enviar otro reporte"
+        setIsConfirmOpen(false);
       }
     }
   };

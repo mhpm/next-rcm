@@ -1,14 +1,14 @@
-"use server";
+'use server';
 
-import prisma from "@/lib/prisma";
-import { ReportScope, Prisma } from "@/generated/prisma/client";
-import { revalidatePath } from "next/cache";
+import prisma from '@/lib/prisma';
+import { ReportScope, Prisma } from '@/generated/prisma/client';
+import { revalidatePath } from 'next/cache';
 
 export async function getPublicReport(token: string) {
   const report = await prisma.reports.findUnique({
     where: { publicToken: token },
     include: {
-      fields: { orderBy: [{ order: "asc" }, { createdAt: "asc" }] },
+      fields: { orderBy: [{ order: 'asc' }, { createdAt: 'asc' }] },
       church: { select: { name: true } },
     },
   });
@@ -47,7 +47,7 @@ export async function getPublicEntities(token: string) {
         firstName: true,
         lastName: true,
       },
-      orderBy: { firstName: "asc" },
+      orderBy: { firstName: 'asc' },
     }),
   ]);
 
@@ -95,12 +95,12 @@ export async function getDraftReportEntry(
 
   const whereClause: Prisma.ReportEntriesWhereInput = {
     report_id: report.id,
-    status: "DRAFT",
+    status: 'DRAFT',
   };
 
-  if (scope === "CELL") whereClause.cell_id = entityId;
-  else if (scope === "GROUP") whereClause.group_id = entityId;
-  else if (scope === "SECTOR") whereClause.sector_id = entityId;
+  if (scope === 'CELL') whereClause.cell_id = entityId;
+  else if (scope === 'GROUP') whereClause.group_id = entityId;
+  else if (scope === 'SECTOR') whereClause.sector_id = entityId;
 
   const entry = await prisma.reportEntries.findFirst({
     where: whereClause,
@@ -111,7 +111,7 @@ export async function getDraftReportEntry(
         },
       },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
 
   return entry;
@@ -132,17 +132,24 @@ export async function saveDraftReportEntry(
 ) {
   const report = await prisma.reports.findUnique({
     where: { publicToken: input.token },
+    include: { fields: { select: { id: true } } },
   });
 
-  if (!report) throw new Error("Reporte no encontrado");
+  if (!report) throw new Error('Reporte no encontrado');
+
+  // Filter out values for fields that don't exist in the report
+  const validFieldIds = new Set(report.fields.map((f) => f.id));
+  const validValues = input.values.filter(
+    (v) => v.fieldId && validFieldIds.has(v.fieldId)
+  );
 
   const { scope, cellId, groupId, sectorId } = input;
   const connectByScope =
-    scope === "CELL"
+    scope === 'CELL'
       ? { cell: { connect: { id: cellId! } } }
-      : scope === "GROUP"
+      : scope === 'GROUP'
       ? { group: { connect: { id: groupId! } } }
-      : scope === "SECTOR"
+      : scope === 'SECTOR'
       ? { sector: { connect: { id: sectorId! } } }
       : {};
 
@@ -155,11 +162,11 @@ export async function saveDraftReportEntry(
       },
     });
 
-    for (const v of input.values) {
-      if (!v.fieldId) continue;
+    for (const v of validValues) {
+      // already filtered: if (!v.fieldId) continue;
 
       const val =
-        typeof v.value === "undefined"
+        typeof v.value === 'undefined'
           ? Prisma.JsonNull
           : (v.value as Prisma.InputJsonValue);
 
@@ -186,23 +193,24 @@ export async function saveDraftReportEntry(
         });
       }
     }
+
+    revalidatePath(`/reports/${report.id}/entries`);
+    revalidatePath('/reports');
     return { id: input.entryId };
   } else {
     // Create new draft
-    const valuesCreate = (input.values || [])
-      .filter((v) => v.fieldId)
-      .map((v) => ({
-        field: { connect: { id: v.fieldId } },
-        value:
-          typeof v.value !== "undefined"
-            ? (v.value as Prisma.InputJsonValue)
-            : Prisma.JsonNull,
-      }));
+    const valuesCreate = validValues.map((v) => ({
+      field: { connect: { id: v.fieldId } },
+      value:
+        typeof v.value !== 'undefined'
+          ? (v.value as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
+    }));
 
     const newEntry = await prisma.reportEntries.create({
       data: {
         scope,
-        status: "DRAFT",
+        status: 'DRAFT',
         church: { connect: { id: report.church_id } },
         report: { connect: { id: report.id } },
         ...connectByScope,
@@ -211,6 +219,9 @@ export async function saveDraftReportEntry(
         },
       },
     });
+
+    revalidatePath(`/reports/${report.id}/entries`);
+    revalidatePath('/reports');
     return { id: newEntry.id };
   }
 }
@@ -223,7 +234,7 @@ export async function submitPublicReportEntry(
   });
 
   if (!report) {
-    throw new Error("Reporte no encontrado");
+    throw new Error('Reporte no encontrado');
   }
 
   // If entryId provided, update existing
@@ -235,7 +246,7 @@ export async function submitPublicReportEntry(
       await prisma.reportEntries.update({
         where: { id: input.entryId },
         data: {
-          status: "SUBMITTED",
+          status: 'SUBMITTED',
         },
       });
       revalidatePath(`/reports/${report.id}/entries`);
@@ -252,7 +263,7 @@ export async function submitPublicReportEntry(
     await prisma.reportEntries.update({
       where: { id: result.id },
       data: {
-        status: "SUBMITTED",
+        status: 'SUBMITTED',
       },
     });
     revalidatePath(`/reports/${report.id}/entries`);
@@ -271,23 +282,23 @@ export async function getPublicReportEntityMembers(
     select: { church_id: true },
   });
 
-  if (!report) throw new Error("Reporte no encontrado");
+  if (!report) throw new Error('Reporte no encontrado');
 
   // Verify entity belongs to church
   let valid = false;
-  if (scope === "CELL") {
+  if (scope === 'CELL') {
     const cell = await prisma.cells.findFirst({
       where: { id: entityId, church_id: report.church_id },
       select: { id: true },
     });
     valid = !!cell;
-  } else if (scope === "GROUP") {
+  } else if (scope === 'GROUP') {
     const group = await prisma.groups.findFirst({
       where: { id: entityId, church_id: report.church_id },
       select: { id: true },
     });
     valid = !!group;
-  } else if (scope === "SECTOR") {
+  } else if (scope === 'SECTOR') {
     const sector = await prisma.sectors.findFirst({
       where: { id: entityId, church_id: report.church_id },
       select: { id: true },
@@ -295,25 +306,25 @@ export async function getPublicReportEntityMembers(
     valid = !!sector;
   }
 
-  if (!valid) throw new Error("Entidad no válida");
+  if (!valid) throw new Error('Entidad no válida');
 
-  if (scope === "CELL") {
+  if (scope === 'CELL') {
     return prisma.members.findMany({
       where: { cell_id: entityId },
       select: { id: true, firstName: true, lastName: true },
-      orderBy: { lastName: "asc" },
+      orderBy: { lastName: 'asc' },
     });
-  } else if (scope === "GROUP") {
+  } else if (scope === 'GROUP') {
     return prisma.members.findMany({
       where: { groups: { some: { id: entityId } } },
       select: { id: true, firstName: true, lastName: true },
-      orderBy: { lastName: "asc" },
+      orderBy: { lastName: 'asc' },
     });
-  } else if (scope === "SECTOR") {
+  } else if (scope === 'SECTOR') {
     return prisma.members.findMany({
       where: { sector_id: entityId },
       select: { id: true, firstName: true, lastName: true },
-      orderBy: { lastName: "asc" },
+      orderBy: { lastName: 'asc' },
     });
   }
 

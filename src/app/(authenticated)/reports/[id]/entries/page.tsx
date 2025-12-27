@@ -210,7 +210,7 @@ export default async function ReportEntriesPage({
       <Tabs defaultValue="list" className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="list">Lista Detallada</TabsTrigger>
-          <TabsTrigger value="consolidated">Vista Consolidada</TabsTrigger>
+          <TabsTrigger value="consolidated">Totales</TabsTrigger>
         </TabsList>
 
         <TabsContent value="list">

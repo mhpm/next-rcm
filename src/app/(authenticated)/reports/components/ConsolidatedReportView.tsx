@@ -345,8 +345,6 @@ export default function ConsolidatedReportView({
     { value: 'supervisor_sector', label: 'Supervisor de Sector' },
     { value: 'supervisor_subsector', label: 'Supervisor de Subsector' },
     { value: 'lider', label: 'Líder' },
-    { value: 'month', label: 'Mes' },
-    { value: 'week', label: 'Semana' },
   ];
 
   // Process data
@@ -460,13 +458,17 @@ export default function ConsolidatedReportView({
   return (
     <Card className="w-full border-0 sm:border shadow-none sm:shadow-sm">
       <CardHeader className="px-2 sm:px-6 py-3 sm:py-4 space-y-3">
-        <CardTitle className="text-base sm:text-xl font-bold">Vista Consolidada</CardTitle>
-        
+        <CardTitle className="text-base sm:text-xl font-bold">
+          Totales
+        </CardTitle>
+
         {/* Controls - Stacked on mobile */}
         <div className="space-y-2">
           {/* Row 1: Group By */}
           <div className="flex items-center gap-2">
-            <span className="text-xs sm:text-sm font-medium shrink-0 text-muted-foreground min-w-[60px]">Agrupar:</span>
+            <span className="text-xs sm:text-sm font-medium shrink-0 text-muted-foreground min-w-[60px]">
+              Agrupar:
+            </span>
             <Select value={groupBy} onValueChange={setGroupBy}>
               <SelectTrigger className="h-9 text-xs sm:text-sm">
                 <SelectValue placeholder="Seleccionar..." />
@@ -488,7 +490,11 @@ export default function ConsolidatedReportView({
                 <TooltipTrigger asChild>
                   <Button
                     type="button"
-                    variant={Object.keys(activeFilters).length > 0 ? 'default' : 'outline'}
+                    variant={
+                      Object.keys(activeFilters).length > 0
+                        ? 'default'
+                        : 'outline'
+                    }
                     size="icon"
                     className="h-9 w-9 shrink-0"
                     onClick={() => setIsFilterModalOpen(true)}
@@ -500,18 +506,28 @@ export default function ConsolidatedReportView({
               </Tooltip>
             </TooltipProvider>
 
-            <Select value={String(selectedYear)} onValueChange={(v) => handleYearChange(Number(v))}>
+            <Select
+              value={String(selectedYear)}
+              onValueChange={(v) => handleYearChange(Number(v))}
+            >
               <SelectTrigger className="h-9 w-20 text-xs sm:text-sm">
                 <SelectValue placeholder="Año" />
               </SelectTrigger>
               <SelectContent>
-                {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map((year) => (
-                  <SelectItem key={year} value={String(year)}>{year}</SelectItem>
-                ))}
+                {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map(
+                  (year) => (
+                    <SelectItem key={year} value={String(year)}>
+                      {year}
+                    </SelectItem>
+                  )
+                )}
               </SelectContent>
             </Select>
 
-            <Select value={filterType} onValueChange={(v) => handleTypeChange(v as any)}>
+            <Select
+              value={filterType}
+              onValueChange={(v) => handleTypeChange(v as any)}
+            >
               <SelectTrigger className="h-9 flex-1 min-w-[120px] text-xs sm:text-sm">
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
@@ -565,7 +581,9 @@ export default function ConsolidatedReportView({
                 </SelectTrigger>
                 <SelectContent>
                   {months.map((m, i) => (
-                    <SelectItem key={i} value={String(i)}>{m}</SelectItem>
+                    <SelectItem key={i} value={String(i)}>
+                      {m}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -578,8 +596,13 @@ export default function ConsolidatedReportView({
         {/* Mobile Cards View */}
         <div className="block md:hidden space-y-3">
           {consolidatedData.map((group: any) => (
-            <div key={group.key} className="border rounded-lg p-3 bg-card space-y-2">
-              <div className="font-bold text-sm border-b pb-2 mb-2">{group.label}</div>
+            <div
+              key={group.key}
+              className="border rounded-lg p-3 bg-card space-y-2"
+            >
+              <div className="font-bold text-sm border-b pb-2 mb-2">
+                {group.label}
+              </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
                   <span className="text-muted-foreground">Registros:</span>
@@ -588,22 +611,30 @@ export default function ConsolidatedReportView({
                 {numericFields.map((f) => (
                   <div key={f.id}>
                     <span className="text-muted-foreground">{f.label}:</span>
-                    <span className="ml-2 font-semibold">{group.values[f.id].toLocaleString()}</span>
+                    <span className="ml-2 font-semibold">
+                      {group.values[f.id].toLocaleString()}
+                    </span>
                   </div>
                 ))}
                 {booleanFields.map((f) => (
                   <div key={f.id}>
-                    <span className="text-muted-foreground">{f.label} (Sí):</span>
-                    <span className="ml-2 font-semibold">{group.values[f.id]}</span>
+                    <span className="text-muted-foreground">
+                      {f.label} (Sí):
+                    </span>
+                    <span className="ml-2 font-semibold">
+                      {group.values[f.id]}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
           ))}
-          
+
           {/* Totals Card */}
           <div className="border-2 border-primary rounded-lg p-3 bg-primary/5 space-y-2">
-            <div className="font-bold text-sm border-b border-primary/20 pb-2 mb-2">TOTAL</div>
+            <div className="font-bold text-sm border-b border-primary/20 pb-2 mb-2">
+              TOTAL
+            </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
                 <span className="text-muted-foreground">Registros:</span>
@@ -612,7 +643,9 @@ export default function ConsolidatedReportView({
               {numericFields.map((f) => (
                 <div key={f.id}>
                   <span className="text-muted-foreground">{f.label}:</span>
-                  <span className="ml-2 font-bold">{totals[f.id].toLocaleString()}</span>
+                  <span className="ml-2 font-bold">
+                    {totals[f.id].toLocaleString()}
+                  </span>
                 </div>
               ))}
               {booleanFields.map((f) => (
@@ -629,42 +662,62 @@ export default function ConsolidatedReportView({
         <div className="hidden md:block w-full overflow-hidden">
           <div className="overflow-x-auto rounded-md border max-w-full relative">
             <Table className="w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[200px] whitespace-nowrap">Grupo</TableHead>
-                <TableHead className="whitespace-nowrap">Registros</TableHead>
-                {numericFields.map((f) => (
-                  <TableHead key={f.id} className="whitespace-nowrap">{f.label || 'Campo'}</TableHead>
-                ))}
-                {booleanFields.map((f) => (
-                  <TableHead key={f.id} className="whitespace-nowrap">{f.label || 'Campo'} (Sí)</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {consolidatedData.map((group: any) => (
-                <TableRow key={group.key}>
-                  <TableCell className="font-medium whitespace-nowrap">{group.label}</TableCell>
-                  <TableCell className="whitespace-nowrap">{group.count}</TableCell>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[200px] whitespace-nowrap">
+                    Grupo
+                  </TableHead>
+                  <TableHead className="whitespace-nowrap">Registros</TableHead>
                   {numericFields.map((f) => (
-                    <TableCell key={f.id} className="whitespace-nowrap">{group.values[f.id].toLocaleString()}</TableCell>
+                    <TableHead key={f.id} className="whitespace-nowrap">
+                      {f.label || 'Campo'}
+                    </TableHead>
                   ))}
                   {booleanFields.map((f) => (
-                    <TableCell key={f.id} className="whitespace-nowrap">{group.values[f.id]}</TableCell>
+                    <TableHead key={f.id} className="whitespace-nowrap">
+                      {f.label || 'Campo'} (Sí)
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))}
-              <TableRow className="bg-muted/50 font-bold">
-                <TableCell className="whitespace-nowrap">TOTAL</TableCell>
-                <TableCell className="whitespace-nowrap">{totals.count}</TableCell>
-                {numericFields.map((f) => (
-                  <TableCell key={f.id} className="whitespace-nowrap">{totals[f.id].toLocaleString()}</TableCell>
+              </TableHeader>
+              <TableBody>
+                {consolidatedData.map((group: any) => (
+                  <TableRow key={group.key}>
+                    <TableCell className="font-medium whitespace-nowrap">
+                      {group.label}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap">
+                      {group.count}
+                    </TableCell>
+                    {numericFields.map((f) => (
+                      <TableCell key={f.id} className="whitespace-nowrap">
+                        {group.values[f.id].toLocaleString()}
+                      </TableCell>
+                    ))}
+                    {booleanFields.map((f) => (
+                      <TableCell key={f.id} className="whitespace-nowrap">
+                        {group.values[f.id]}
+                      </TableCell>
+                    ))}
+                  </TableRow>
                 ))}
-                {booleanFields.map((f) => (
-                  <TableCell key={f.id} className="whitespace-nowrap">{totals[f.id]}</TableCell>
-                ))}
-              </TableRow>
-            </TableBody>
+                <TableRow className="bg-muted/50 font-bold">
+                  <TableCell className="whitespace-nowrap">TOTAL</TableCell>
+                  <TableCell className="whitespace-nowrap">
+                    {totals.count}
+                  </TableCell>
+                  {numericFields.map((f) => (
+                    <TableCell key={f.id} className="whitespace-nowrap">
+                      {totals[f.id].toLocaleString()}
+                    </TableCell>
+                  ))}
+                  {booleanFields.map((f) => (
+                    <TableCell key={f.id} className="whitespace-nowrap">
+                      {totals[f.id]}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableBody>
             </Table>
           </div>
         </div>

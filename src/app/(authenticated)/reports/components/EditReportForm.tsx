@@ -95,22 +95,29 @@ export default function EditReportForm({
           <h1 className="text-2xl font-bold">Editar Reporte</h1>
           <p className="text-muted-foreground">Modifica la estructura de tu reporte.</p>
         </div>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => {
-            if (
-              confirm('¿Estás seguro? Se perderán los cambios no guardados.')
-            ) {
-              router.push('/reports');
-            }
-          }}
-        >
-          Cancelar
-        </Button>
+        <div className="flex gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            disabled={isSubmitting}
+          >
+            Volver
+          </Button>
+          <Button type="submit" form="edit-report-form" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="animate-spin" />
+                Guardando...
+              </>
+            ) : (
+              'Guardar Cambios'
+            )}
+          </Button>
+        </div>
       </div>
 
-      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <form id="edit-report-form" className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <ReportBuilder
           control={control}
           register={register}
