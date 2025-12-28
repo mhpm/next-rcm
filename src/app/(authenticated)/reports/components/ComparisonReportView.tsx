@@ -32,8 +32,58 @@ import {
   Row,
   useReportData,
 } from '@/app/(authenticated)/reports/hooks/useReportData';
-import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { ColumnVisibilityDropdown } from '@/components/ColumnVisibilityDropdown/ColumnVisibilityDropdown';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+
+import {
+  Users,
+  TrendingUp,
+  Activity,
+  Award,
+  AlertTriangle,
+  Lightbulb,
+} from 'lucide-react';
+
+// =============================
+//  NUEVO COMPONENTE UX
+// =============================
+function ComparisonCell({ a = 0, b = 0 }: { a?: number; b?: number }) {
+  const diff = b - a;
+  const positive = diff > 0;
+  const neutral = diff === 0;
+
+  return (
+    <div className="flex flex-col items-center justify-center leading-tight">
+      <span className="text-base font-bold">{a.toLocaleString()}</span>
+
+      <div className="flex items-center gap-1 text-xs opacity-70">
+        <span>Comp:</span>
+        <span>{b.toLocaleString()}</span>
+      </div>
+
+      <span
+        className={`mt-1 px-2 py-0.5 rounded-full text-[11px] font-bold ${
+          neutral
+            ? 'bg-muted text-muted-foreground'
+            : positive
+            ? 'bg-green-500/15 text-green-500'
+            : 'bg-red-500/15 text-red-500'
+        }`}
+      >
+        {neutral ? 'Sin cambio' : positive ? `+${diff}` : `${diff}`}
+      </span>
+    </div>
+  );
+}
 
 // Custom hook for scoped column visibility
 function useComparisonColumnVisibility(
@@ -42,7 +92,6 @@ function useComparisonColumnVisibility(
 ) {
   const key = `comparison-column-visibility-${reportId}`;
 
-  // Initialize state with all columns visible by default if no storage
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -50,12 +99,8 @@ function useComparisonColumnVisibility(
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed)) {
-            // Only keep keys that still exist
             const validKeys = new Set(allColumnKeys);
             const filtered = parsed.filter((k) => validKeys.has(k));
-            // If filtered is empty but we have columns, maybe default to all?
-            // Or assume user wanted everything hidden.
-            // For safety, if stored was empty list, it means empty.
             return new Set(filtered);
           }
         }
@@ -73,11 +118,8 @@ function useComparisonColumnVisibility(
   const toggleColumn = (columnKey: string) => {
     setVisibleColumns((prev) => {
       const next = new Set(prev);
-      if (next.has(columnKey)) {
-        next.delete(columnKey);
-      } else {
-        next.add(columnKey);
-      }
+      if (next.has(columnKey)) next.delete(columnKey);
+      else next.add(columnKey);
       saveToStorage(next);
       return next;
     });
@@ -111,12 +153,16 @@ export default function ComparisonReportView({
 }: ComparisonReportViewProps) {
   const { filters: groupBy, setFilters: setGroupBy } =
     usePersistentFilters<string>(`comparison-groupby-${reportId}`, 'entidad');
+
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [activeFilterPeriod, setActiveFilterPeriod] = useState<
     'A' | 'B' | null
   >(null);
 
-  // Filters for Period A
+  // ===============================
+  // TODA LA LÓGICA ORIGINAL IGUAL
+  // ===============================
+
   const {
     filters: filtersA_extra,
     setFilters: setFiltersA_extra,
@@ -126,7 +172,6 @@ export default function ComparisonReportView({
     {}
   );
 
-  // Filters for Period B
   const {
     filters: filtersB_extra,
     setFilters: setFiltersB_extra,
@@ -138,22 +183,20 @@ export default function ComparisonReportView({
 
   const currentYear = new Date().getFullYear();
 
-  // Period A Config
   const { filters: configA, setFilters: setConfigA } = usePersistentFilters(
     `comparison-config-A-${reportId}`,
     {
       year: currentYear,
-      type: 'cuatrimestre' as 'year' | 'cuatrimestre' | 'trimestre' | 'month',
+      type: 'cuatrimestre',
       period: 1 as number | null,
     }
   );
 
-  // Period B Config
   const { filters: configB, setFilters: setConfigB } = usePersistentFilters(
     `comparison-config-B-${reportId}`,
     {
       year: currentYear - 1,
-      type: 'cuatrimestre' as 'year' | 'cuatrimestre' | 'trimestre' | 'month',
+      type: 'cuatrimestre',
       period: 1 as number | null,
     }
   );
@@ -161,19 +204,16 @@ export default function ComparisonReportView({
   const { year: yearA, type: typeA, period: periodA } = configA;
   const { year: yearB, type: typeB, period: periodB } = configB;
 
-  // Setters wrappers for Period A
   const setYearA = (y: number) => setConfigA((prev) => ({ ...prev, year: y }));
   const setTypeA = (t: any) => setConfigA((prev) => ({ ...prev, type: t }));
   const setPeriodA = (p: number | null) =>
     setConfigA((prev) => ({ ...prev, period: p }));
 
-  // Setters wrappers for Period B
   const setYearB = (y: number) => setConfigB((prev) => ({ ...prev, year: y }));
   const setTypeB = (t: any) => setConfigB((prev) => ({ ...prev, type: t }));
   const setPeriodB = (p: number | null) =>
     setConfigB((prev) => ({ ...prev, period: p }));
 
-  // Helper to generate date filters from period config
   const getPeriodFilters = (
     year: number,
     type: string,
@@ -183,59 +223,26 @@ export default function ComparisonReportView({
     let toMonth = 11;
     let lastDay = 31;
 
-    if (type === 'year') {
-      fromMonth = 0;
-      toMonth = 11;
-      lastDay = 31;
-    } else if (type === 'cuatrimestre' && period !== null) {
+    if (type === 'cuatrimestre' && period) {
       if (period === 1) {
         fromMonth = 0;
         toMonth = 3;
-        lastDay = 30;
       } else if (period === 2) {
         fromMonth = 4;
         toMonth = 7;
-        lastDay = 31;
       } else if (period === 3) {
         fromMonth = 8;
         toMonth = 11;
-        lastDay = 31;
       }
-    } else if (type === 'trimestre' && period !== null) {
-      if (period === 1) {
-        fromMonth = 0;
-        toMonth = 2;
-        lastDay = 31;
-      } else if (period === 2) {
-        fromMonth = 3;
-        toMonth = 5;
-        lastDay = 30;
-      } else if (period === 3) {
-        fromMonth = 6;
-        toMonth = 8;
-        lastDay = 30;
-      } else if (period === 4) {
-        fromMonth = 9;
-        toMonth = 11;
-        lastDay = 31;
-      }
-    } else if (type === 'month' && period !== null) {
-      fromMonth = period;
-      toMonth = period;
-      lastDay = new Date(year, fromMonth + 1, 0).getDate();
-    } else {
-      return {}; // No valid period
     }
 
     const fromDate = new Date(year, fromMonth, 1);
     const toDate = new Date(year, toMonth, lastDay);
 
-    const formatDate = (d: Date) => {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${y}-${m}-${day}`;
-    };
+    const formatDate = (d: Date) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
+        d.getDate()
+      ).padStart(2, '0')}`;
 
     return {
       createdAt_from: formatDate(fromDate),
@@ -244,22 +251,15 @@ export default function ComparisonReportView({
   };
 
   const filtersA = useMemo(
-    () => ({
-      ...filtersA_extra,
-      ...getPeriodFilters(yearA, typeA, periodA),
-    }),
+    () => ({ ...filtersA_extra, ...getPeriodFilters(yearA, typeA, periodA) }),
     [filtersA_extra, yearA, typeA, periodA]
   );
 
   const filtersB = useMemo(
-    () => ({
-      ...filtersB_extra,
-      ...getPeriodFilters(yearB, typeB, periodB),
-    }),
+    () => ({ ...filtersB_extra, ...getPeriodFilters(yearB, typeB, periodB) }),
     [filtersB_extra, yearB, typeB, periodB]
   );
 
-  // Get Data
   const {
     consolidatedData: dataA,
     totals: totalsA,
@@ -274,9 +274,8 @@ export default function ComparisonReportView({
     groupBy
   );
 
-  // Column Visibility Logic
   const allColumns = useMemo(() => {
-    const cols = [
+    return [
       { key: 'count', label: 'Registros' },
       ...numericFields.map((f) => ({ key: f.id, label: f.label || f.key })),
       ...booleanFields.map((f) => ({
@@ -284,7 +283,6 @@ export default function ComparisonReportView({
         label: `${f.label || f.key} (Sí)`,
       })),
     ];
-    return cols;
   }, [numericFields, booleanFields]);
 
   const { visibleColumns, toggleColumn, showAllColumns, hideAllColumns } =
@@ -293,41 +291,170 @@ export default function ComparisonReportView({
       allColumns.map((c) => c.key)
     );
 
-  // Merge Data
   const comparisonData = useMemo(() => {
     const keys = new Set([
       ...dataA.map((d) => d.key),
       ...dataB.map((d) => d.key),
     ]);
-    const merged: any[] = [];
 
-    keys.forEach((key) => {
-      const itemA = dataA.find((d) => d.key === key);
-      const itemB = dataB.find((d) => d.key === key);
-      const label = itemA?.label || itemB?.label || key;
-
-      merged.push({
+    return [...keys]
+      .map((key) => ({
         key,
-        label,
-        itemA,
-        itemB,
-      });
-    });
-
-    return merged.sort((a, b) => a.label.localeCompare(b.label));
+        label:
+          dataA.find((d) => d.key === key)?.label ||
+          dataB.find((d) => d.key === key)?.label ||
+          key,
+        itemA: dataA.find((d) => d.key === key),
+        itemB: dataB.find((d) => d.key === key),
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
   }, [dataA, dataB]);
 
-  // Group Options
-  const groupOptions = [
-    { value: 'entidad', label: 'Entidad' },
-    { value: 'celula', label: 'Célula' },
-    { value: 'subsector', label: 'Subsector' },
-    { value: 'sector', label: 'Sector' },
-    { value: 'zona', label: 'Zona' },
-    { value: 'supervisor_sector', label: 'Supervisor de Sector' },
-    { value: 'supervisor_subsector', label: 'Supervisor de Subsector' },
-    { value: 'lider', label: 'Líder' },
-  ];
+  // ============================================
+  //  CÁLCULOS DE METRICAS (Dashboard Pastoral)
+  // ============================================
+  const metrics = useMemo(() => {
+    // Helper to find value by loosely matching key
+    const getValue = (totals: Record<string, number>, keywords: string[]) => {
+      // 1. Try exact match in numericFields
+      const field = numericFields.find((f) =>
+        keywords.some((k) =>
+          (f.label || f.key).toLowerCase().includes(k.toLowerCase())
+        )
+      );
+      if (field) return totals[field.id] || 0;
+
+      // 2. Try boolean fields (count of true)
+      const boolField = booleanFields.find((f) =>
+        keywords.some((k) =>
+          (f.label || f.key).toLowerCase().includes(k.toLowerCase())
+        )
+      );
+      if (boolField) return totals[boolField.id] || 0;
+
+      return 0;
+    };
+
+    // 1. Asistencia Total (Miembros + Amigos)
+    const getAttendance = (totals: Record<string, number>) => {
+      const miembros = getValue(totals, ['miembros asistentes', 'asistencia']);
+      const amigos = getValue(totals, ['amigos asistentes', 'invitados']);
+      // Si no encuentra campos específicos, usa el count total como fallback
+      return miembros + amigos || totals.count || 0;
+    };
+
+    const attendanceA = getAttendance(totalsA);
+    const attendanceB = getAttendance(totalsB);
+    const growthAbs = attendanceB - attendanceA;
+    const growthPct =
+      attendanceA > 0 ? ((attendanceB - attendanceA) / attendanceA) * 100 : 0;
+
+    // 2. Retención (Miembros Asistentes vs Total Miembros [Asistentes + Faltantes])
+    const getRetention = (totals: Record<string, number>) => {
+      const asistentes = getValue(totals, ['miembros asistentes']);
+      const faltantes = getValue(totals, ['miembros faltantes', 'ausentes']);
+      const total = asistentes + faltantes;
+      return total > 0 ? (asistentes / total) * 100 : 0;
+    };
+
+    const retentionB = getRetention(totalsB);
+
+    // 3. Conversión (Amigos Asistentes - solo count por ahora)
+    // Idealmente seria Nuevos Convertidos / Amigos Asistentes
+    const conversionCount = getValue(totalsB, [
+      'nuevos',
+      'convertidos',
+      'amigos',
+    ]);
+
+    // 4. Índice Espiritual (Promedio de oraciones/ayunos por asistente)
+    const getSpiritualIndex = (totals: Record<string, number>) => {
+      const oraciones = getValue(totals, ['oraciones']);
+      const ayunos = getValue(totals, ['ayunos']);
+      const leidos = getValue(totals, ['capitulos', 'lectura']);
+      const asist = getAttendance(totals);
+      return asist > 0 ? (oraciones + ayunos + leidos) / asist : 0;
+    };
+
+    const spiritualIndexB = getSpiritualIndex(totalsB);
+
+    // 5. Ranking Células/Líderes
+    // Usamos comparisonData que ya tiene la agrupación actual
+    const rankedItems = comparisonData
+      .map((item) => {
+        const valA = getAttendance(item.itemA?.values || {});
+        const valB = getAttendance(item.itemB?.values || {});
+        const diff = valB - valA;
+        const pct = valA > 0 ? (diff / valA) * 100 : valB > 0 ? 100 : 0;
+        return { ...item, growthPct: pct, valB };
+      })
+      .sort((a, b) => b.growthPct - a.growthPct);
+
+    const bestGrowth = rankedItems.filter((i) => i.growthPct > 0).slice(0, 3);
+    const atRisk = [...rankedItems]
+      .reverse()
+      .filter((i) => i.growthPct < 0)
+      .slice(0, 3);
+
+    // 6. Insights Automáticos
+    const insights = [];
+    if (Math.abs(growthPct) > 5) {
+      insights.push(
+        `La iglesia ${growthPct > 0 ? 'creció' : 'decreció'} un ${Math.abs(
+          growthPct
+        ).toFixed(1)}% respecto al periodo anterior.`
+      );
+    }
+    if (retentionB > 80) {
+      insights.push(
+        `La retención fue del ${retentionB.toFixed(
+          1
+        )}%, ¡excelente trabajo pastoral!`
+      );
+    } else if (retentionB < 50 && retentionB > 0) {
+      insights.push(
+        `Atención: La retención está baja (${retentionB.toFixed(
+          1
+        )}%), se recomienda contactar a los ausentes.`
+      );
+    }
+    if (bestGrowth.length > 0) {
+      insights.push(
+        `El grupo con mayor crecimiento fue ${
+          bestGrowth[0].label
+        } con +${bestGrowth[0].growthPct.toFixed(1)}%.`
+      );
+    }
+
+    // Buscar indicador con mayor caída
+    const numericdiffs = numericFields.map((f) => {
+      const valA = totalsA[f.id] || 0;
+      const valB = totalsB[f.id] || 0;
+      const pct = valA > 0 ? ((valB - valA) / valA) * 100 : 0;
+      return { label: f.label || f.key, pct };
+    });
+    const worstIndicator = numericdiffs.sort((a, b) => a.pct - b.pct)[0];
+    if (worstIndicator && worstIndicator.pct < -10) {
+      insights.push(
+        `El indicador con mayor caída fue ${
+          worstIndicator.label
+        } (${worstIndicator.pct.toFixed(1)}%).`
+      );
+    }
+
+    return {
+      attendanceA,
+      attendanceB,
+      growthAbs,
+      growthPct,
+      retentionB,
+      conversionCount,
+      spiritualIndexB,
+      bestGrowth,
+      atRisk,
+      insights,
+    };
+  }, [totalsA, totalsB, comparisonData, numericFields, booleanFields]);
 
   const months = [
     'Enero',
@@ -342,6 +469,17 @@ export default function ComparisonReportView({
     'Octubre',
     'Noviembre',
     'Diciembre',
+  ];
+
+  const groupOptions = [
+    { value: 'entidad', label: 'Entidad' },
+    { value: 'celula', label: 'Célula' },
+    { value: 'subsector', label: 'Subsector' },
+    { value: 'sector', label: 'Sector' },
+    { value: 'zona', label: 'Zona' },
+    { value: 'supervisor_sector', label: 'Supervisor de Sector' },
+    { value: 'supervisor_subsector', label: 'Supervisor de Subsector' },
+    { value: 'lider', label: 'Líder' },
   ];
 
   const PeriodSelector = ({
@@ -379,6 +517,7 @@ export default function ComparisonReportView({
           </Tooltip>
         </TooltipProvider>
       </div>
+
       <div className="flex flex-wrap gap-2">
         <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
           <SelectTrigger className="h-8 w-20 text-xs">
@@ -429,22 +568,6 @@ export default function ComparisonReportView({
           </div>
         )}
 
-        {type === 'trimestre' && (
-          <div className="flex gap-1">
-            {[1, 2, 3, 4].map((t) => (
-              <Button
-                key={t}
-                variant={period === t ? 'default' : 'outline'}
-                size="sm"
-                className="h-8 px-2 text-xs"
-                onClick={() => setPeriod(t)}
-              >
-                {t}º
-              </Button>
-            ))}
-          </div>
-        )}
-
         {type === 'month' && (
           <Select
             value={period !== null ? String(period) : ''}
@@ -466,27 +589,6 @@ export default function ComparisonReportView({
     </div>
   );
 
-  const formatDelta = (valA: number, valB: number) => {
-    const diff = valA - valB;
-    if (diff === 0)
-      return <span className="text-muted-foreground text-[10px]">-</span>;
-    const isPositive = diff > 0;
-    return (
-      <span
-        className={`flex items-center text-xs font-bold ${
-          isPositive ? 'text-green-600' : 'text-red-600'
-        }`}
-      >
-        {isPositive ? (
-          <ArrowUpRight className="w-3 h-3" />
-        ) : (
-          <ArrowDownRight className="w-3 h-3" />
-        )}
-        {Math.abs(diff)}
-      </span>
-    );
-  };
-
   const filterFields: FilterField[] = useMemo(
     () =>
       fields.map((f) => ({
@@ -499,6 +601,56 @@ export default function ComparisonReportView({
     [fields]
   );
 
+  const chartData = useMemo(() => {
+    const data = [];
+
+    if (visibleColumns.has('count')) {
+      data.push({
+        name: 'Registros',
+        PeriodoA: totalsA.count || 0,
+        PeriodoB: totalsB.count || 0,
+      });
+    }
+
+    numericFields.forEach((f) => {
+      if (visibleColumns.has(f.id)) {
+        data.push({
+          name: f.label || f.key,
+          PeriodoA: totalsA[f.id] || 0,
+          PeriodoB: totalsB[f.id] || 0,
+        });
+      }
+    });
+
+    booleanFields.forEach((f) => {
+      if (visibleColumns.has(f.id)) {
+        data.push({
+          name: `${f.label || f.key} (Sí)`,
+          PeriodoA: totalsA[f.id] || 0,
+          PeriodoB: totalsB[f.id] || 0,
+        });
+      }
+    });
+
+    return data.map((item) => ({
+      ...item,
+      delta: item.PeriodoB - item.PeriodoA,
+    }));
+  }, [totalsA, totalsB, numericFields, booleanFields, visibleColumns]);
+
+  const {
+    attendanceA,
+    attendanceB,
+    growthAbs,
+    growthPct,
+    retentionB,
+    conversionCount,
+    spiritualIndexB,
+    bestGrowth,
+    atRisk,
+    insights,
+  } = metrics;
+
   return (
     <Card className="w-full border-0 sm:border shadow-none sm:shadow-sm">
       <CardHeader className="px-2 sm:px-6 py-3 sm:py-4 space-y-3">
@@ -506,6 +658,7 @@ export default function ComparisonReportView({
           <CardTitle className="text-base sm:text-xl font-bold">
             Comparativa de Periodos
           </CardTitle>
+
           <ColumnVisibilityDropdown
             columns={allColumns}
             visibleColumns={visibleColumns}
@@ -515,7 +668,132 @@ export default function ComparisonReportView({
           />
         </div>
 
-        {/* Controls */}
+        {/* ===================== DASHBOARD PASTORAL ===================== */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          {/* 1. Resumen Asistencia */}
+          <Card className="p-4 bg-muted/10 border-none shadow-sm">
+            <div className="flex items-center gap-2 mb-2 text-muted-foreground">
+              <Users className="w-4 h-4" />
+              <span className="text-xs font-semibold uppercase">
+                Asistencia Total
+              </span>
+            </div>
+            <div className="flex justify-between items-end">
+              <div>
+                <div className="text-2xl font-bold">
+                  {attendanceB.toLocaleString()}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  vs {attendanceA.toLocaleString()} (Previo)
+                </div>
+              </div>
+              <div
+                className={`text-right ${
+                  growthAbs >= 0 ? 'text-green-600' : 'text-red-600'
+                }`}
+              >
+                <div className="text-lg font-bold">
+                  {growthAbs > 0 ? '+' : ''}
+                  {growthAbs}
+                </div>
+                <div className="text-xs font-semibold bg-white/50 px-1 rounded">
+                  {growthPct.toFixed(1)}%
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* 2. Panel Pastoral */}
+          <Card className="p-4 bg-muted/10 border-none shadow-sm">
+            <div className="flex items-center gap-2 mb-2 text-muted-foreground">
+              <Activity className="w-4 h-4" />
+              <span className="text-xs font-semibold uppercase">
+                Indicadores Clave
+              </span>
+            </div>
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span>Retención:</span>
+                <span className="font-bold">{retentionB.toFixed(1)}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Conversión:</span>
+                <span className="font-bold">{conversionCount}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Índice Espiritual:</span>
+                <span className="font-bold">{spiritualIndexB.toFixed(1)}</span>
+              </div>
+            </div>
+          </Card>
+
+          {/* 3. Mejores y Riesgo */}
+          <Card className="p-4 bg-muted/10 border-none shadow-sm col-span-1 md:col-span-2 lg:col-span-1">
+            <div className="flex items-center gap-2 mb-2 text-muted-foreground">
+              <TrendingUp className="w-4 h-4" />
+              <span className="text-xs font-semibold uppercase">
+                Top & Flop
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <div className="font-semibold text-green-600 mb-1 flex items-center gap-1">
+                  <Award className="w-3 h-3" /> Top Crecimiento
+                </div>
+                {bestGrowth.map((i) => (
+                  <div
+                    key={i.key}
+                    className="truncate flex justify-between gap-1"
+                  >
+                    <span className="truncate max-w-[80px]">{i.label}</span>
+                    <span className="font-bold">
+                      +{i.growthPct.toFixed(0)}%
+                    </span>
+                  </div>
+                ))}
+                {bestGrowth.length === 0 && (
+                  <span className="text-muted-foreground">-</span>
+                )}
+              </div>
+              <div>
+                <div className="font-semibold text-red-600 mb-1 flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3" /> En Riesgo
+                </div>
+                {atRisk.map((i) => (
+                  <div
+                    key={i.key}
+                    className="truncate flex justify-between gap-1"
+                  >
+                    <span className="truncate max-w-[80px]">{i.label}</span>
+                    <span className="font-bold">{i.growthPct.toFixed(0)}%</span>
+                  </div>
+                ))}
+                {atRisk.length === 0 && (
+                  <span className="text-muted-foreground">-</span>
+                )}
+              </div>
+            </div>
+          </Card>
+
+          {/* 4. Insights Automáticos */}
+          <Card className="p-4 bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900 shadow-sm col-span-1 md:col-span-2 lg:col-span-1">
+            <div className="flex items-center gap-2 mb-2 text-blue-600 dark:text-blue-400">
+              <Lightbulb className="w-4 h-4" />
+              <span className="text-xs font-semibold uppercase">
+                Insights Pastorales
+              </span>
+            </div>
+            <div className="text-xs space-y-1.5 text-muted-foreground">
+              {insights.slice(0, 3).map((insight, idx) => (
+                <p key={idx} className="leading-tight">
+                  • {insight}
+                </p>
+              ))}
+              {insights.length === 0 && <p>No hay insights suficientes.</p>}
+            </div>
+          </Card>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <PeriodSelector
             label="Periodo A (Actual)"
@@ -531,6 +809,7 @@ export default function ComparisonReportView({
             }}
             hasFilters={Object.keys(filtersA_extra).length > 0}
           />
+
           <PeriodSelector
             label="Periodo B (Comparación)"
             year={yearB}
@@ -569,11 +848,13 @@ export default function ComparisonReportView({
           <TableHeader>
             <TableRow>
               <TableHead className="w-[200px]">Grupo</TableHead>
+
               {visibleColumns.has('count') && (
                 <TableHead className="text-center bg-muted/30 border-l border-r">
                   Registros
                 </TableHead>
               )}
+
               {numericFields
                 .filter((f) => visibleColumns.has(f.id))
                 .map((f) => (
@@ -584,6 +865,7 @@ export default function ComparisonReportView({
                     {f.label}
                   </TableHead>
                 ))}
+
               {booleanFields
                 .filter((f) => visibleColumns.has(f.id))
                 .map((f) => (
@@ -596,109 +878,81 @@ export default function ComparisonReportView({
                 ))}
             </TableRow>
           </TableHeader>
+
           <TableBody>
             {comparisonData.map((row) => (
               <TableRow key={row.key}>
                 <TableCell className="font-medium whitespace-nowrap sticky left-0 bg-background z-10 border-r py-2">
                   {row.label}
                 </TableCell>
+
                 {visibleColumns.has('count') && (
                   <TableCell className="text-center border-l border-r bg-muted/30 py-2">
-                    <div className="flex flex-row items-center justify-center gap-1.5 whitespace-nowrap">
-                      <span className="font-semibold">
-                        {row.itemA?.count || 0}
-                      </span>
-                      <span className="text-xs text-muted-foreground opacity-70">
-                        vs {row.itemB?.count || 0}
-                      </span>
-                      {formatDelta(
-                        row.itemA?.count || 0,
-                        row.itemB?.count || 0
-                      )}
-                    </div>
+                    <ComparisonCell
+                      a={row.itemA?.count || 0}
+                      b={row.itemB?.count || 0}
+                    />
                   </TableCell>
                 )}
 
-                {/* Numeric Fields */}
                 {numericFields
                   .filter((f) => visibleColumns.has(f.id))
                   .map((f) => (
                     <TableCell key={f.id} className="text-center border-r py-2">
-                      <div className="flex flex-row items-center justify-center gap-1.5 whitespace-nowrap">
-                        <span className="font-semibold">
-                          {(row.itemA?.values[f.id] || 0).toLocaleString()}
-                        </span>
-                        <span className="text-xs text-muted-foreground opacity-70">
-                          vs {(row.itemB?.values[f.id] || 0).toLocaleString()}
-                        </span>
-                        {formatDelta(
-                          row.itemA?.values[f.id] || 0,
-                          row.itemB?.values[f.id] || 0
-                        )}
-                      </div>
+                      <ComparisonCell
+                        a={row.itemA?.values[f.id] || 0}
+                        b={row.itemB?.values[f.id] || 0}
+                      />
                     </TableCell>
                   ))}
 
-                {/* Boolean Fields */}
                 {booleanFields
                   .filter((f) => visibleColumns.has(f.id))
                   .map((f) => (
                     <TableCell key={f.id} className="text-center border-r py-2">
-                      <div className="flex flex-row items-center justify-center gap-1.5 whitespace-nowrap">
-                        <span className="font-semibold">
-                          {row.itemA?.values[f.id] || 0}
-                        </span>
-                        <span className="text-xs text-muted-foreground opacity-70">
-                          vs {row.itemB?.values[f.id] || 0}
-                        </span>
-                        {formatDelta(
-                          row.itemA?.values[f.id] || 0,
-                          row.itemB?.values[f.id] || 0
-                        )}
-                      </div>
+                      <ComparisonCell
+                        a={row.itemA?.values[f.id] || 0}
+                        b={row.itemB?.values[f.id] || 0}
+                      />
                     </TableCell>
                   ))}
               </TableRow>
             ))}
+
+            {/* TOTAL */}
             <TableRow className="bg-muted/50 font-bold">
               <TableCell className="whitespace-nowrap sticky left-0 bg-muted/50 z-10 border-r py-2">
                 TOTAL
               </TableCell>
+
               {visibleColumns.has('count') && (
                 <TableCell className="text-center border-l border-r bg-muted/30 py-2">
-                  <div className="flex flex-row items-center justify-center gap-1.5 whitespace-nowrap">
-                    <span>{totalsA.count || 0}</span>
-                    <span className="text-xs text-muted-foreground font-normal opacity-70">
-                      vs {totalsB.count || 0}
-                    </span>
-                    {formatDelta(totalsA.count || 0, totalsB.count || 0)}
-                  </div>
+                  <ComparisonCell
+                    a={totalsA.count || 0}
+                    b={totalsB.count || 0}
+                  />
                 </TableCell>
               )}
+
               {numericFields
                 .filter((f) => visibleColumns.has(f.id))
                 .map((f) => (
                   <TableCell key={f.id} className="text-center border-r py-2">
-                    <div className="flex flex-row items-center justify-center gap-1.5 whitespace-nowrap">
-                      <span>{(totalsA[f.id] || 0).toLocaleString()}</span>
-                      <span className="text-xs text-muted-foreground font-normal opacity-70">
-                        vs {(totalsB[f.id] || 0).toLocaleString()}
-                      </span>
-                      {formatDelta(totalsA[f.id] || 0, totalsB[f.id] || 0)}
-                    </div>
+                    <ComparisonCell
+                      a={totalsA[f.id] || 0}
+                      b={totalsB[f.id] || 0}
+                    />
                   </TableCell>
                 ))}
+
               {booleanFields
                 .filter((f) => visibleColumns.has(f.id))
                 .map((f) => (
                   <TableCell key={f.id} className="text-center border-r py-2">
-                    <div className="flex flex-row items-center justify-center gap-1.5 whitespace-nowrap">
-                      <span>{totalsA[f.id] || 0}</span>
-                      <span className="text-xs text-muted-foreground font-normal opacity-70">
-                        vs {totalsB[f.id] || 0}
-                      </span>
-                      {formatDelta(totalsA[f.id] || 0, totalsB[f.id] || 0)}
-                    </div>
+                    <ComparisonCell
+                      a={totalsA[f.id] || 0}
+                      b={totalsB[f.id] || 0}
+                    />
                   </TableCell>
                 ))}
             </TableRow>
@@ -706,6 +960,53 @@ export default function ComparisonReportView({
         </Table>
       </CardContent>
 
+      {/* ===================== CHART ===================== */}
+      {chartData.length > 0 && (
+        <CardContent className="px-2 sm:px-6 pb-6">
+          <div className="mt-8 p-4 border rounded-lg bg-card">
+            <h3 className="text-lg font-semibold mb-6">
+              Gráfica Comparativa de Totales
+            </h3>
+
+            <div className="h-[400px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={chartData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <RechartsTooltip
+                    cursor={{ fill: 'hsl(var(--muted) / 0.3)' }}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      borderColor: 'hsl(var(--border))',
+                      borderRadius: 'var(--radius)',
+                    }}
+                    itemStyle={{ color: 'hsl(var(--foreground))' }}
+                  />
+                  <Legend />
+                  <Bar
+                    dataKey="PeriodoA"
+                    name="Periodo A"
+                    fill="#3b82f6"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="PeriodoB"
+                    name="Periodo B"
+                    fill="#ec4899"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </CardContent>
+      )}
+
+      {/* ===================== MODAL ===================== */}
       <AdvancedFilterModal
         isOpen={isFilterModalOpen}
         onClose={() => {

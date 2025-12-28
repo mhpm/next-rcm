@@ -455,7 +455,7 @@ export default function ConsolidatedReportView({
             <Table className="w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[200px] whitespace-nowrap py-2">
+                  <TableHead className="w-[200px] whitespace-nowrap py-2 sticky left-0 bg-background z-20 border-r">
                     Grupo
                   </TableHead>
                   <TableHead className="whitespace-nowrap py-2">
@@ -476,7 +476,7 @@ export default function ConsolidatedReportView({
               <TableBody>
                 {consolidatedData.map((group: any) => (
                   <TableRow key={group.key}>
-                    <TableCell className="font-medium whitespace-nowrap py-2">
+                    <TableCell className="font-medium whitespace-nowrap py-2 sticky left-0 bg-background z-10 border-r">
                       {group.label}
                     </TableCell>
                     <TableCell className="whitespace-nowrap py-2">
@@ -495,7 +495,7 @@ export default function ConsolidatedReportView({
                   </TableRow>
                 ))}
                 <TableRow className="bg-muted/50 font-bold">
-                  <TableCell className="whitespace-nowrap py-2">
+                  <TableCell className="whitespace-nowrap py-2 sticky left-0 bg-muted/50 z-10 border-r">
                     TOTAL
                   </TableCell>
                   <TableCell className="whitespace-nowrap py-2">
