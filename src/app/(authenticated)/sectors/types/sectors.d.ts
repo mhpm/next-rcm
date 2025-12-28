@@ -1,4 +1,4 @@
-import type { Sectors, Members } from "@prisma/client";
+import type { Sectors, Members } from '@prisma/client';
 
 // ============ TYPES ============
 
@@ -21,8 +21,8 @@ export interface SectorsQueryOptions {
   limit?: number;
   offset?: number;
   search?: string;
-  orderBy?: "name" | "createdAt";
-  orderDirection?: "asc" | "desc";
+  orderBy?: 'name' | 'createdAt';
+  orderDirection?: 'asc' | 'desc';
 }
 
 export interface SectorFormData {
@@ -61,12 +61,13 @@ export interface CellNode {
   hostName: string;
   assistantName: string;
   membersCount: number;
+  accessCode?: string | null;
 }
 
 export interface SectorNode {
   id: string;
   name: string;
-  type: "SECTOR" | "SUB_SECTOR";
+  type: 'SECTOR' | 'SUB_SECTOR';
   supervisorName?: string;
   supervisorId?: string | null;
   membersCount: number;

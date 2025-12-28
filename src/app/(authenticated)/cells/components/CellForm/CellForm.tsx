@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import React, { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useQuery } from "@tanstack/react-query";
-import { InputField, SelectField } from "@/components/FormControls";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
-import { getMembersByCell, getAllSectors } from "../../actions/cells.actions";
-import { cellFormSchema } from "../../schema/cells.schema";
-import type { CellFormInput } from "../../schema/cells.schema";
+import React, { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useQuery } from '@tanstack/react-query';
+import { InputField, SelectField } from '@/components/FormControls';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
+import { getMembersByCell, getAllSectors } from '../../actions/cells.actions';
+import { cellFormSchema } from '../../schema/cells.schema';
+import type { CellFormInput } from '../../schema/cells.schema';
 
 interface CellFormProps {
   initialData?: Partial<CellFormInput> & { id?: string };
@@ -39,15 +39,15 @@ const CellForm: React.FC<CellFormProps> = ({
   } = useForm<z.infer<typeof cellFormSchema>>({
     resolver: zodResolver(cellFormSchema),
     defaultValues: {
-      name: initialData?.name ?? "",
-      sectorId: initialData?.sectorId ?? "",
-      subSectorId: initialData?.subSectorId ?? "",
-      leaderId: initialData?.leaderId ?? "",
-      hostId: initialData?.hostId ?? "",
-      assistantId: initialData?.assistantId ?? "",
+      name: initialData?.name ?? '',
+      sectorId: initialData?.sectorId ?? '',
+      subSectorId: initialData?.subSectorId ?? '',
+      leaderId: initialData?.leaderId ?? '',
+      hostId: initialData?.hostId ?? '',
+      assistantId: initialData?.assistantId ?? '',
       id: initialData?.id,
     },
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   const prevInitialDataRef = useRef<string | null>(null);
@@ -57,12 +57,13 @@ const CellForm: React.FC<CellFormProps> = ({
     prevInitialDataRef.current = json;
     if (initialData) {
       reset({
-        name: initialData.name ?? "",
-        sectorId: initialData.sectorId ?? "",
-        subSectorId: initialData.subSectorId ?? "",
-        leaderId: initialData.leaderId ?? "",
-        hostId: initialData.hostId ?? "",
-        assistantId: initialData.assistantId ?? "",
+        name: initialData.name ?? '',
+        sectorId: initialData.sectorId ?? '',
+        subSectorId: initialData.subSectorId ?? '',
+        leaderId: initialData.leaderId ?? '',
+        hostId: initialData.hostId ?? '',
+        assistantId: initialData.assistantId ?? '',
+        accessCode: initialData.accessCode ?? '',
         id: initialData.id,
       });
     }
@@ -74,22 +75,22 @@ const CellForm: React.FC<CellFormProps> = ({
       reset(data);
       prevInitialDataRef.current = JSON.stringify(data ?? {});
     } catch (error) {
-      console.error("Error al enviar el formulario", error);
+      console.error('Error al enviar el formulario', error);
       if (
         error instanceof Error &&
-        error.message === "La clave de acceso ya existe. Por favor, elige otra."
+        error.message === 'La clave de acceso ya existe. Por favor, elige otra.'
       ) {
-        setError("accessCode", {
-          type: "manual",
+        setError('accessCode', {
+          type: 'manual',
           message: error.message,
         });
       }
     }
   };
 
-  const cellId = initialData?.id || "";
+  const cellId = initialData?.id || '';
   const { data: members, isLoading: loadingMembers } = useQuery({
-    queryKey: ["cell", "members", cellId],
+    queryKey: ['cell', 'members', cellId],
     queryFn: () => getMembersByCell(cellId),
     enabled: !!cellId,
     staleTime: 5 * 60 * 1000,
@@ -97,14 +98,14 @@ const CellForm: React.FC<CellFormProps> = ({
   });
 
   const { data: sectorsData } = useQuery({
-    queryKey: ["cells", "sectors"],
+    queryKey: ['cells', 'sectors'],
     queryFn: () => getAllSectors(),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 
   const sectors = Array.isArray(sectorsData) ? sectorsData : [];
-  const selectedSectorId = watch("sectorId");
+  const selectedSectorId = watch('sectorId');
 
   // Reset sub-sector when parent sector changes
   // useEffect(() => {
@@ -121,7 +122,7 @@ const CellForm: React.FC<CellFormProps> = ({
     label: s.name,
   }));
   const sectorSelectOptions = [
-    { value: "", label: "Selecciona un sector" },
+    { value: '', label: 'Selecciona un sector' },
   ].concat(parentSectorOptions);
 
   const selectedSector = Array.isArray(sectors)
@@ -129,7 +130,7 @@ const CellForm: React.FC<CellFormProps> = ({
     : null;
   const subSectorsList = selectedSector?.subSectors || [];
   const subSectorOptions = [
-    { value: "", label: "Selecciona un sub-sector" },
+    { value: '', label: 'Selecciona un sub-sector' },
   ].concat(
     subSectorsList.map((s: any) => ({
       value: s.id,
@@ -141,19 +142,19 @@ const CellForm: React.FC<CellFormProps> = ({
 
   const memberOptions = (members || []).map((m) => ({
     value: m.id,
-    label: `${m.firstName} ${m.lastName}` + (m.email ? ` - ${m.email}` : ""),
+    label: `${m.firstName} ${m.lastName}` + (m.email ? ` - ${m.email}` : ''),
   }));
   const memberPlaceholder = [
-    { value: "", label: "Selecciona un miembro de la célula" },
+    { value: '', label: 'Selecciona un miembro de la célula' },
   ];
   const memberSelectOptions = memberPlaceholder.concat(memberOptions);
 
   useEffect(() => {
     if (cellId && members) {
-      if (initialData?.leaderId) setValue("leaderId", initialData.leaderId);
-      if (initialData?.hostId) setValue("hostId", initialData.hostId);
+      if (initialData?.leaderId) setValue('leaderId', initialData.leaderId);
+      if (initialData?.hostId) setValue('hostId', initialData.hostId);
       if (initialData?.assistantId)
-        setValue("assistantId", initialData.assistantId);
+        setValue('assistantId', initialData.assistantId);
     }
   }, [
     cellId,
@@ -182,7 +183,7 @@ const CellForm: React.FC<CellFormProps> = ({
               name="name"
               label="Nombre de la Célula"
               control={control}
-              rules={{ required: "El nombre es requerido" }}
+              rules={{ required: 'El nombre es requerido' }}
               defaultValue={initialData?.name}
               error={errors.name?.message}
             />
@@ -205,7 +206,7 @@ const CellForm: React.FC<CellFormProps> = ({
               error={errors.leaderId?.message}
               options={memberSelectOptions}
               className="w-full"
-              defaultValue={initialData?.leaderId || ""}
+              defaultValue={initialData?.leaderId || ''}
             />
             <SelectField<CellFormInput>
               name="hostId"
@@ -215,7 +216,7 @@ const CellForm: React.FC<CellFormProps> = ({
               error={errors.hostId?.message}
               options={memberSelectOptions}
               className="w-full"
-              defaultValue={initialData?.hostId || ""}
+              defaultValue={initialData?.hostId || ''}
             />
             <SelectField<CellFormInput>
               name="assistantId"
@@ -225,7 +226,7 @@ const CellForm: React.FC<CellFormProps> = ({
               error={errors.assistantId?.message}
               options={memberSelectOptions}
               className="w-full"
-              defaultValue={initialData?.assistantId || ""}
+              defaultValue={initialData?.assistantId || ''}
             />
             {!cellId && (
               <p className="text-sm text-muted-foreground md:col-span-2">
@@ -249,7 +250,7 @@ const CellForm: React.FC<CellFormProps> = ({
               error={errors.sectorId?.message}
               options={sectorSelectOptions}
               className="w-full"
-              defaultValue={initialData?.sectorId || ""}
+              defaultValue={initialData?.sectorId || ''}
             />
             <SelectField<z.infer<typeof cellFormSchema>>
               name="subSectorId"
@@ -259,7 +260,7 @@ const CellForm: React.FC<CellFormProps> = ({
               error={errors.subSectorId?.message}
               options={subSectorOptions}
               className="w-full"
-              defaultValue={initialData?.subSectorId || ""}
+              defaultValue={initialData?.subSectorId || ''}
               disabled={!selectedSectorId || subSectorsList.length === 0}
             />
           </div>
@@ -270,7 +271,7 @@ const CellForm: React.FC<CellFormProps> = ({
         <Button
           type="button"
           variant="ghost"
-          onClick={() => router.push("/cells")}
+          onClick={() => router.push('/cells')}
           disabled={isSubmitting}
         >
           Cancelar
@@ -279,12 +280,12 @@ const CellForm: React.FC<CellFormProps> = ({
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {isEditMode ? "Actualizando..." : "Guardando..."}
+              {isEditMode ? 'Actualizando...' : 'Guardando...'}
             </>
           ) : isEditMode ? (
-            "Actualizar Célula"
+            'Actualizar Célula'
           ) : (
-            "Crear Célula"
+            'Crear Célula'
           )}
         </Button>
       </div>

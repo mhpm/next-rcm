@@ -1,17 +1,19 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 import {
   useSectorHierarchy,
   useDeleteSector,
   useDeleteSubSector,
-} from "../hooks/useSectors";
-import type { SectorNode, CellNode } from "../types/sectors";
-import CreateSectorModal from "./CreateSectorModal";
-import CreateCellModal from "@/app/(authenticated)/cells/components/CreateCellModal";
-import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
-import { useNotificationStore } from "@/store/NotificationStore";
-import Link from "next/link";
+} from '../hooks/useSectors';
+import { updateCell } from '../../cells/actions/cells.actions';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { SectorNode, CellNode } from '../types/sectors';
+import CreateSectorModal from './CreateSectorModal';
+import CreateCellModal from '@/app/(authenticated)/cells/components/CreateCellModal';
+import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
+import { useNotificationStore } from '@/store/NotificationStore';
+import Link from 'next/link';
 import {
   MoreHorizontal,
   Edit2,
@@ -23,38 +25,47 @@ import {
   ChevronDown,
   ExternalLink,
   Loader2,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/dropdown-menu';
+import { useRouter } from 'next/navigation';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/collapsible';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 function toNodes(
   data: any[],
-  type: "SECTOR" | "SUB_SECTOR" = "SECTOR"
+  type: 'SECTOR' | 'SUB_SECTOR' = 'SECTOR'
 ): SectorNode[] {
   return (data || []).map((s) => {
-    const isSector = type === "SECTOR";
+    const isSector = type === 'SECTOR';
     const childrenData = isSector ? s.subSectors || [] : [];
-    const children = toNodes(childrenData, "SUB_SECTOR");
+    const children = toNodes(childrenData, 'SUB_SECTOR');
 
     let cellsCount = 0;
     if (isSector) {
@@ -84,14 +95,15 @@ function toNodes(
             name: c.name,
             leaderName: c.leader
               ? `${c.leader.firstName} ${c.leader.lastName}`
-              : "Sin líder",
+              : 'Sin líder',
             hostName: c.host
               ? `${c.host.firstName} ${c.host.lastName}`
-              : "Sin anfitrión",
+              : 'Sin anfitrión',
             assistantName: c.assistant
               ? `${c.assistant.firstName} ${c.assistant.lastName}`
-              : "Sin asistente",
+              : 'Sin asistente',
             membersCount: c._count?.members ?? 0,
+            accessCode: c.accessCode,
           }))
         : undefined;
 
@@ -101,7 +113,7 @@ function toNodes(
       type,
       supervisorName: s.supervisor
         ? `${s.supervisor.firstName} ${s.supervisor.lastName}`
-        : "Sin supervisor",
+        : 'Sin supervisor',
       supervisorId: s.supervisor?.id ?? null,
       membersCount,
       cellsCount,
@@ -132,9 +144,34 @@ export default function SectorHierarchy() {
   const [deleteTarget, setDeleteTarget] = React.useState<{
     id: string;
     name: string;
-    type: "SECTOR" | "SUB_SECTOR";
+    type: 'SECTOR' | 'SUB_SECTOR';
   } | null>(null);
   const nodes = toNodes(data || []);
+
+  const queryClient = useQueryClient();
+  const [editingAccessCode, setEditingAccessCode] = React.useState<{
+    id: string;
+    code: string;
+  } | null>(null);
+
+  const updateCellMutation = useMutation({
+    mutationFn: (data: { id: string; accessCode: string }) =>
+      updateCell(data.id, { accessCode: data.accessCode }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
+      queryClient.invalidateQueries({ queryKey: ['cell', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['cells'] });
+      setEditingAccessCode(null);
+      showSuccess('Clave de acceso actualizada');
+    },
+    onError: (error) => {
+      showError(
+        error instanceof Error
+          ? error.message
+          : 'Error al actualizar la clave de acceso'
+      );
+    },
+  });
 
   // State for expansion
   const [expandedIds, setExpandedIds] = React.useState<Set<string>>(new Set());
@@ -264,11 +301,62 @@ export default function SectorHierarchy() {
                   setTargetSubSector({ id: subSectorId, sectorId });
                   setCreateCellOpen(true);
                 }}
+                onEditAccessCode={(id: string, code: string) =>
+                  setEditingAccessCode({ id, code })
+                }
               />
             ))}
           </div>
         )}
       </CardContent>
+
+      <Dialog
+        open={!!editingAccessCode}
+        onOpenChange={(open) => !open && setEditingAccessCode(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Clave de Acceso</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="accessCode">Clave de la célula</Label>
+            <Input
+              id="accessCode"
+              value={editingAccessCode?.code || ''}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setEditingAccessCode((prev) =>
+                  prev ? { ...prev, code: e.target.value } : null
+                )
+              }
+              placeholder="Ingrese la clave"
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setEditingAccessCode(null)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => {
+                if (editingAccessCode) {
+                  updateCellMutation.mutate({
+                    id: editingAccessCode.id,
+                    accessCode: editingAccessCode.code,
+                  });
+                }
+              }}
+              disabled={updateCellMutation.isPending}
+            >
+              {updateCellMutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <CreateSectorModal
         open={createOpen}
@@ -297,7 +385,7 @@ export default function SectorHierarchy() {
       <DeleteConfirmationModal
         open={deleteOpen}
         title={`Eliminar ${
-          deleteTarget?.type === "SECTOR" ? "Sector" : "Subsector"
+          deleteTarget?.type === 'SECTOR' ? 'Sector' : 'Subsector'
         }`}
         entityName={deleteTarget?.name}
         description="Esta acción no se puede deshacer."
@@ -308,14 +396,14 @@ export default function SectorHierarchy() {
         onConfirm={async () => {
           if (!deleteTarget) return;
           try {
-            if (deleteTarget.type === "SECTOR") {
+            if (deleteTarget.type === 'SECTOR') {
               await deleteSectorMutation.mutateAsync(deleteTarget.id);
             } else {
               await deleteSubSectorMutation.mutateAsync(deleteTarget.id);
             }
             showSuccess(
               `${
-                deleteTarget.type === "SECTOR" ? "Sector" : "Subsector"
+                deleteTarget.type === 'SECTOR' ? 'Sector' : 'Subsector'
               } eliminado`
             );
             setDeleteOpen(false);
@@ -324,7 +412,7 @@ export default function SectorHierarchy() {
           } catch (e) {
             showError(
               `Error al eliminar el ${
-                deleteTarget.type === "SECTOR" ? "sector" : "subsector"
+                deleteTarget.type === 'SECTOR' ? 'sector' : 'subsector'
               }`
             );
           }
@@ -347,6 +435,7 @@ function SectorItem({
   onAddMembers,
   onAddCell,
   parentSectorId,
+  onEditAccessCode,
 }: {
   node: SectorNode;
   expandedIds: Set<string>;
@@ -357,6 +446,7 @@ function SectorItem({
   onAddMembers: (sectorId: string) => void;
   onAddCell: (subSectorId: string, sectorId: string) => void;
   parentSectorId?: string;
+  onEditAccessCode: (id: string, code: string) => void;
 }) {
   const isOpen = expandedIds.has(node.id);
 
@@ -374,14 +464,14 @@ function SectorItem({
           >
             <ChevronDown
               className={cn(
-                "h-5 w-5 transition-transform duration-200 text-muted-foreground",
-                isOpen ? "" : "-rotate-90"
+                'h-5 w-5 transition-transform duration-200 text-muted-foreground',
+                isOpen ? '' : '-rotate-90'
               )}
             />
             <span
               className={cn(
-                "text-foreground",
-                node.type === "SUB_SECTOR" && "text-sm sm:text-base"
+                'text-foreground',
+                node.type === 'SUB_SECTOR' && 'text-sm sm:text-base'
               )}
             >
               {node.name}
@@ -392,7 +482,7 @@ function SectorItem({
         <div className="flex items-center gap-2 sm:gap-4">
           <div className="hidden md:flex items-center text-sm text-muted-foreground">
             {node.supervisorName &&
-              node.supervisorName !== "Sin supervisor" && (
+              node.supervisorName !== 'Sin supervisor' && (
                 <>
                   <span className="mr-2">Supervisor:</span>
                   <span className="font-medium text-foreground max-w-[150px] truncate">
@@ -403,7 +493,7 @@ function SectorItem({
           </div>
 
           <div className="hidden sm:flex items-center gap-2">
-            {node.type === "SECTOR" && (
+            {node.type === 'SECTOR' && (
               <Badge variant="secondary" className="font-normal">
                 {node.subSectorsCount} subsectores
               </Badge>
@@ -429,13 +519,13 @@ function SectorItem({
                   <Edit2 className="mr-2 h-4 w-4" /> Editar
                 </DropdownMenuItem>
 
-                {node.type === "SECTOR" && (
+                {node.type === 'SECTOR' && (
                   <DropdownMenuItem onClick={() => onAddChild(node.id)}>
                     <Plus className="mr-2 h-4 w-4" /> Agregar Subsector
                   </DropdownMenuItem>
                 )}
 
-                {node.type === "SUB_SECTOR" && parentSectorId && (
+                {node.type === 'SUB_SECTOR' && parentSectorId && (
                   <DropdownMenuItem
                     onClick={() => onAddCell(node.id, parentSectorId)}
                   >
@@ -460,7 +550,7 @@ function SectorItem({
           {/* Mobile stats */}
           <div className="flex sm:hidden flex-col gap-3 pb-2 text-sm text-muted-foreground">
             {node.supervisorName &&
-              node.supervisorName !== "Sin supervisor" && (
+              node.supervisorName !== 'Sin supervisor' && (
                 <div className="flex flex-col gap-1">
                   <span className="text-xs font-medium uppercase tracking-wider opacity-70">
                     Supervisor
@@ -471,7 +561,7 @@ function SectorItem({
                 </div>
               )}
             <div className="flex flex-wrap gap-2">
-              {node.type === "SECTOR" && (
+              {node.type === 'SECTOR' && (
                 <Badge variant="outline" className="text-xs">
                   {node.subSectorsCount} subsectores
                 </Badge>
@@ -498,7 +588,8 @@ function SectorItem({
                   onDelete={onDelete}
                   onAddMembers={onAddMembers}
                   onAddCell={onAddCell}
-                  parentSectorId={node.type === "SECTOR" ? node.id : undefined}
+                  parentSectorId={node.type === 'SECTOR' ? node.id : undefined}
+                  onEditAccessCode={onEditAccessCode}
                 />
               ))}
             </div>
@@ -518,9 +609,28 @@ function SectorItem({
                         {cell.name}
                         <ExternalLink className="h-3 w-3 opacity-50" />
                       </Link>
-                      <Badge variant="secondary" className="ml-auto text-xs">
-                        {cell.membersCount} miembros
-                      </Badge>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1 text-xs sm:text-sm">
+                          <span className="text-muted-foreground">Clave:</span>
+                          <span className="font-mono">
+                            {cell.accessCode || '---'}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 ml-1"
+                            onClick={() =>
+                              onEditAccessCode(cell.id, cell.accessCode || '')
+                            }
+                            title="Editar clave de acceso"
+                          >
+                            <Edit2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">
+                          {cell.membersCount} miembros
+                        </Badge>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent className="p-3 pt-0 text-sm">
@@ -556,9 +666,9 @@ function SectorItem({
             </div>
           ) : (
             <div className="text-sm text-muted-foreground italic py-2 pl-2">
-              {node.type === "SECTOR"
-                ? "No hay subsectores registrados"
-                : "No hay células registradas"}
+              {node.type === 'SECTOR'
+                ? 'No hay subsectores registrados'
+                : 'No hay células registradas'}
             </div>
           )}
         </div>

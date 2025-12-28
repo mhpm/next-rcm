@@ -77,6 +77,7 @@ export default function EditCellPage({
                   hostId: cellData?.host?.id || cellData?.host_id || "",
                   assistantId:
                     cellData?.assistant?.id || cellData?.assistant_id || "",
+                  accessCode: cellData?.accessCode || "",
                   id: cellData?.id,
                 }}
                 onSubmit={handleSubmit}
