@@ -601,15 +601,15 @@ function SectorItem({
                   className="bg-card/50 hover:bg-card transition-colors border-dashed"
                 >
                   <CardHeader className="p-3 pb-2">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <Link
                         href={`/cells/edit/${cell.id}`}
-                        className="font-medium hover:underline flex items-center gap-2 text-primary"
+                        className="font-medium hover:underline flex items-center gap-2 text-primary w-full sm:w-auto"
                       >
-                        {cell.name}
-                        <ExternalLink className="h-3 w-3 opacity-50" />
+                        <span className="truncate">{cell.name}</span>
+                        <ExternalLink className="h-3 w-3 opacity-50 flex-shrink-0" />
                       </Link>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-3">
                         <div className="flex items-center gap-1 text-xs sm:text-sm">
                           <span className="text-muted-foreground">Clave:</span>
                           <span className="font-mono">
@@ -627,7 +627,10 @@ function SectorItem({
                             <Edit2 className="h-3 w-3" />
                           </Button>
                         </div>
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge
+                          variant="secondary"
+                          className="text-xs flex-shrink-0"
+                        >
                           {cell.membersCount} miembros
                         </Badge>
                       </div>
