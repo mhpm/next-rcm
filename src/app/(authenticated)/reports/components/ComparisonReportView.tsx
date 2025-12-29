@@ -42,6 +42,7 @@ import {
   Tooltip as RechartsTooltip,
   Legend,
   ResponsiveContainer,
+  TooltipProps,
 } from 'recharts';
 
 import {
@@ -52,6 +53,47 @@ import {
   AlertTriangle,
   Lightbulb,
 } from 'lucide-react';
+
+// =============================
+//  CUSTOM TOOLTIP
+// =============================
+export const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipProps<number, string>) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-lg border bg-background p-2 shadow-sm min-w-[150px]">
+        <div className="mb-2 border-b pb-1">
+          <p className="font-semibold text-sm">{label}</p>
+        </div>
+        <div className="grid gap-1">
+          {payload.map((entry, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between gap-2"
+            >
+              <div className="flex items-center gap-2">
+                <div
+                  className="h-2 w-2 rounded-[2px]"
+                  style={{ backgroundColor: entry.color }}
+                />
+                <span className="text-xs text-muted-foreground capitalize">
+                  {entry.name}
+                </span>
+              </div>
+              <span className="font-mono text-xs font-medium">
+                {entry.value?.toLocaleString()}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
 
 // =============================
 //  NUEVO COMPONENTE UX

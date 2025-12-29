@@ -72,7 +72,7 @@ export default function AdvancedFilterModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[800px]">
+      <DialogContent className="sm:max-w-[800px] flex flex-col max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <RiFilter3Line className="text-primary" />
@@ -80,8 +80,11 @@ export default function AdvancedFilterModal({
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="max-h-[60vh] pr-4 overflow-y-auto">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6 flex-1 flex flex-col min-h-0"
+        >
+          <div className="flex-1 overflow-y-auto pr-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
               {/* Campos fijos */}
               <InputField

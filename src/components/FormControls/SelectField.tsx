@@ -67,14 +67,16 @@ export function SelectField<T extends FieldValues>({
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
-              {options.map((opt) => {
-                const val = opt.value === "" ? "__EMPTY__" : opt.value;
-                return (
-                  <SelectItem key={val} value={val}>
-                    {opt.label}
-                  </SelectItem>
-                );
-              })}
+              <div className="max-h-[200px] overflow-y-auto">
+                {options.map((opt) => {
+                  const val = opt.value === "" ? "__EMPTY__" : opt.value;
+                  return (
+                    <SelectItem key={val} value={val}>
+                      {opt.label}
+                    </SelectItem>
+                  );
+                })}
+              </div>
             </SelectContent>
           </Select>
         )}
