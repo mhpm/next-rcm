@@ -5,10 +5,11 @@ import { DataTable } from '@/components';
 import { TableColumn, TableAction } from '@/types';
 import { EventWithStats, EventFormData } from '../types/events.d';
 import { EventDialog } from './EventDialog';
+import { AttendanceDialog } from './AttendanceDialog';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
-import { Plus, Settings } from 'lucide-react';
+import { Plus, Settings, Users } from 'lucide-react';
 import Link from 'next/link';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { deleteEvent } from '../actions/events.actions';
@@ -36,6 +37,11 @@ export function EventsList({ events }: EventsListProps) {
   );
   const [isDeleting, setIsDeleting] = useState(false);
   const { showSuccess, showError } = useNotificationStore();
+
+  const [isAttendanceOpen, setIsAttendanceOpen] = useState(false);
+  const [attendanceEvent, setAttendanceEvent] = useState<EventWithStats | null>(
+    null
+  );
 
   // Filter states
   const currentYear = new Date().getFullYear();
@@ -171,6 +177,26 @@ export function EventsList({ events }: EventsListProps) {
       label: 'Asistentes',
       render: (_, row) => row._count.attendances,
     },
+    {
+      key: 'createdAt',
+      label: 'Asistencia',
+      render: (_, row) => (
+        <Button
+          key={row.id}
+          variant="secondary"
+          size="sm"
+          className="h-8"
+          onClick={(e) => {
+            e.stopPropagation();
+            setAttendanceEvent(row);
+            setIsAttendanceOpen(true);
+          }}
+        >
+          <Users className="w-4 h-4 mr-2" />
+          Gestionar
+        </Button>
+      ),
+    },
   ];
 
   const actions: TableAction<EventWithStats>[] = [
@@ -295,20 +321,20 @@ export function EventsList({ events }: EventsListProps) {
         addButton={() => (
           <div className="flex gap-2">
             <EventDialog
-            trigger={
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Nuevo Evento
-              </Button>
-            }
-          />
-          <Button variant="outline" asChild>
-            <Link href="/events/phases">
-              <Settings className="mr-2 h-4 w-4" />
-              Fases
-            </Link>
-          </Button>
-        </div>
+              trigger={
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nuevo Evento
+                </Button>
+              }
+            />
+            <Button variant="outline" asChild>
+              <Link href="/events/phases">
+                <Settings className="mr-2 h-4 w-4" />
+                Fases
+              </Link>
+            </Button>
+          </div>
         )}
         searchEndContent={filterControls}
       />
@@ -321,6 +347,16 @@ export function EventsList({ events }: EventsListProps) {
         }}
         initialData={selectedEvent}
         title="Editar Evento"
+      />
+
+      <AttendanceDialog
+        open={isAttendanceOpen}
+        onOpenChange={(open) => {
+          setIsAttendanceOpen(open);
+          if (!open) setAttendanceEvent(null);
+        }}
+        eventId={attendanceEvent?.id || ''}
+        eventName={attendanceEvent?.name || ''}
       />
 
       <DeleteConfirmationModal
