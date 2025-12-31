@@ -441,10 +441,10 @@ export async function removeMemberFromMinistry(
 }
 
 // Get ministry stats
-export async function getMinistryStats() {
+export async function getMinistryStats(churchSlug?: string) {
   try {
-    const prisma = await getChurchPrisma();
-    const churchId = await getChurchId();
+    const prisma = await getChurchPrisma(churchSlug);
+    const churchId = await getChurchId(churchSlug);
 
     const [total, membershipsByMinistry] = await Promise.all([
       prisma.ministries.count({ where: { church_id: churchId } }),

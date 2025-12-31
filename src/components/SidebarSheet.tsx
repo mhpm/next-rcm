@@ -1,10 +1,14 @@
-"use client";
-import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { AppSidebar } from "@/components/AppSidebar";
+'use client';
+import { Menu } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { AppSidebar } from '@/components/AppSidebar';
 
-export function SidebarSheet() {
+interface SidebarSheetProps {
+  churchName?: string | null;
+}
+
+export function SidebarSheet({ churchName }: SidebarSheetProps) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -14,7 +18,7 @@ export function SidebarSheet() {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="sm:max-w-xs p-0">
-        <AppSidebar className="w-full border-none" />
+        <AppSidebar className="w-full border-none" churchName={churchName} />
       </SheetContent>
     </Sheet>
   );

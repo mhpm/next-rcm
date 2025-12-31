@@ -603,9 +603,9 @@ export async function isEmailTaken(email: string, excludeId?: string) {
 }
 
 // Get member statistics
-export async function getMemberStats() {
+export async function getMemberStats(churchSlug?: string) {
   try {
-    const prisma = await getChurchPrisma();
+    const prisma = await getChurchPrisma(churchSlug);
 
     const [total, byRole, byGender] = await Promise.all([
       prisma.members.count(),

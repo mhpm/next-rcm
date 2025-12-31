@@ -1872,7 +1872,8 @@ export const ChurchesScalarFieldEnum = {
   name: 'name',
   slug: 'slug',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  owner_id: 'owner_id'
 } as const
 
 export type ChurchesScalarFieldEnum = (typeof ChurchesScalarFieldEnum)[keyof typeof ChurchesScalarFieldEnum]

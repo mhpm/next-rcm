@@ -17,23 +17,33 @@ import { getMemberGrowthStats } from './actions/dashboard.actions';
 import GrowthChart from './components/GrowthChart';
 import { buttonVariants } from '@/components/ui/button';
 
+import {
+  getUserChurchSlug,
+  getChurchSlugFromSources,
+} from '@/actions/churchContext';
+
 export default async function Dashboard() {
-  async function ChartCard() {
+  const userChurchSlug = await getUserChurchSlug();
+  const churchSlug = await getChurchSlugFromSources(
+    userChurchSlug ?? undefined
+  );
+
+  async function ChartCard({ slug }: { slug: string }) {
     'use cache';
     cacheLife({ stale: 600, revalidate: 3600, expire: 86400 });
     cacheTag('chart-growth');
-    const data = await getMemberGrowthStats();
-    return <GrowthChart data={data} />;
+    const data = await getMemberGrowthStats('month', slug);
+    return <GrowthChart data={data} slug={slug} />;
   }
 
-  async function MinistriesCard() {
+  async function MinistriesCard({ slug }: { slug: string }) {
     'use cache';
 
     cacheLife({ stale: 600, revalidate: 1800, expire: 86400 });
     cacheTag('ministries');
-    const ministryStats = await getMinistryStats();
+    const ministryStats = await getMinistryStats(slug);
     const totalMinistries = String(ministryStats?.total ?? 0);
-    const totalMembers = String((await getMemberStats())?.total ?? 0);
+    const totalMembers = String((await getMemberStats(slug))?.total ?? 0);
     const membersInAnyMinistry = String(
       ministryStats?.membersInAnyMinistry ?? 0
     );
@@ -73,12 +83,12 @@ export default async function Dashboard() {
     );
   }
 
-  async function CellsCard() {
+  async function CellsCard({ slug }: { slug: string }) {
     'use cache';
 
     cacheLife({ stale: 600, revalidate: 1800, expire: 86400 });
     cacheTag('cells');
-    const cellStats = await getCellStats();
+    const cellStats = await getCellStats(slug);
     const totalCells = String(cellStats?.total ?? 0);
     const membersInCells = String(cellStats?.membersInCells ?? 0);
     const membersWithoutCell = String(cellStats?.membersWithoutCell ?? 0);
@@ -112,12 +122,12 @@ export default async function Dashboard() {
     );
   }
 
-  async function MembersCard() {
+  async function MembersCard({ slug }: { slug: string }) {
     'use cache';
 
     cacheLife({ stale: 600, revalidate: 1800, expire: 86400 });
     cacheTag('members');
-    const stats = await getMemberStats();
+    const stats = await getMemberStats(slug);
     const totalMembers = String(stats?.total ?? 0);
     return (
       <StatCard
@@ -144,11 +154,11 @@ export default async function Dashboard() {
     );
   }
 
-  async function SectorsCard() {
+  async function SectorsCard({ slug }: { slug: string }) {
     'use cache';
     cacheLife({ stale: 600, revalidate: 1800, expire: 86400 });
     cacheTag('sectors');
-    const stats = await getSectorStats();
+    const stats = await getSectorStats(slug);
 
     const extraStats = [
       { label: 'Sub-sectores:', value: String(stats.totalSubSectors) },
@@ -189,11 +199,11 @@ export default async function Dashboard() {
         <Breadcrumbs />
       </div>
       <DashboardGrid
-        ministriesCard={<MinistriesCard />}
-        cellsCard={<CellsCard />}
-        membersCard={<MembersCard />}
-        sectorsCard={<SectorsCard />}
-        chartCard={<ChartCard />}
+        ministriesCard={<MinistriesCard slug={churchSlug} />}
+        cellsCard={<CellsCard slug={churchSlug} />}
+        membersCard={<MembersCard slug={churchSlug} />}
+        sectorsCard={<SectorsCard slug={churchSlug} />}
+        chartCard={<ChartCard slug={churchSlug} />}
       />
     </div>
   );

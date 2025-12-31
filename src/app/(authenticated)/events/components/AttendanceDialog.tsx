@@ -1,18 +1,22 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Loader2 } from "lucide-react";
-import { useNotificationStore } from "@/store/NotificationStore";
-import { getEventAttendance, toggleAttendance, FriendAttendance } from "../actions/attendance.actions";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Search, Loader2 } from 'lucide-react';
+import { useNotificationStore } from '@/store/NotificationStore';
+import {
+  getEventAttendance,
+  toggleAttendance,
+  FriendAttendance,
+} from '../actions/attendance.actions';
 
 interface AttendanceDialogProps {
   eventId: string;
@@ -29,7 +33,7 @@ export function AttendanceDialog({
 }: AttendanceDialogProps) {
   const [friends, setFriends] = useState<FriendAttendance[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const { showError } = useNotificationStore();
 
   useEffect(() => {
@@ -44,8 +48,8 @@ export function AttendanceDialog({
       const data = await getEventAttendance(eventId);
       setFriends(data);
     } catch (error) {
-      console.error("Error loading attendance:", error);
-      showError("Error al cargar la lista de asistencia");
+      console.error('Error loading attendance:', error);
+      showError('Error al cargar la lista de asistencia');
     } finally {
       setIsLoading(false);
     }
@@ -62,8 +66,8 @@ export function AttendanceDialog({
     try {
       await toggleAttendance(eventId, friendId, !currentStatus);
     } catch (error) {
-      console.error("Error updating attendance:", error);
-      showError("Error al actualizar la asistencia");
+      console.error('Error updating attendance:', error);
+      showError('Error al actualizar la asistencia');
       // Revert optimistic update
       setFriends((prev) =>
         prev.map((f) =>
@@ -79,7 +83,7 @@ export function AttendanceDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] max-h-[80vh] flex flex-col">
+      <DialogContent className="sm:max-w-125 max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Asistencia - {eventName}</DialogTitle>
           <DialogDescription>
@@ -104,7 +108,9 @@ export function AttendanceDialog({
             </div>
           ) : filteredFriends.length === 0 ? (
             <div className="text-center text-muted-foreground py-8">
-              {search ? "No se encontraron amigos con ese nombre" : "No hay amigos registrados"}
+              {search
+                ? 'No se encontraron amigos con ese nombre'
+                : 'No hay amigos registrados'}
             </div>
           ) : (
             <div className="space-y-2">
@@ -116,7 +122,9 @@ export function AttendanceDialog({
                   <Checkbox
                     id={friend.id}
                     checked={friend.attended}
-                    onCheckedChange={() => handleToggle(friend.id, friend.attended)}
+                    onCheckedChange={() =>
+                      handleToggle(friend.id, friend.attended)
+                    }
                   />
                   <label
                     htmlFor={friend.id}

@@ -67,7 +67,7 @@ export function SelectField<T extends FieldValues>({
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
-              <div className="max-h-[200px] overflow-y-auto">
+              <div className="max-h-50 overflow-y-auto">
                 {options.map((opt) => {
                   const val = opt.value === "" ? "__EMPTY__" : opt.value;
                   return (

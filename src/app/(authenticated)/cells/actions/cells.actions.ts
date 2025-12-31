@@ -372,10 +372,10 @@ export async function getMembersByCell(cellId: string) {
   }
 }
 
-export async function getCellStats() {
+export async function getCellStats(churchSlug?: string) {
   try {
-    const prisma = await getChurchPrisma();
-    const churchId = await getChurchId();
+    const prisma = await getChurchPrisma(churchSlug);
+    const churchId = await getChurchId(churchSlug);
 
     const [total, membersInCells, membersWithoutCell] = await Promise.all([
       prisma.cells.count({ where: { church_id: churchId } }),

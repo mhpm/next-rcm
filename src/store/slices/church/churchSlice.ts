@@ -69,6 +69,7 @@ const churchSlice = createSlice({
           slug: churchSlug,
           createdAt: now,
           updatedAt: now,
+          owner_id: null,
         };
       }
     },

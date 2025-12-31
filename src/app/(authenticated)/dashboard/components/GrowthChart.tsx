@@ -44,7 +44,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function GrowthChart({ data }: GrowthChartProps) {
+export default function GrowthChart({ data, slug }: GrowthChartProps & { slug?: string }) {
   const { growthChartPeriod, setGrowthChartPeriod } = useDashboardStore();
   const [period, setPeriod] = useState<PeriodType>('month');
   const [mounted, setMounted] = useState(false);
@@ -70,7 +70,7 @@ export default function GrowthChart({ data }: GrowthChartProps) {
       } else {
         setLoading(true);
         try {
-          const newData = await getMemberGrowthStats(period);
+          const newData = await getMemberGrowthStats(period, slug);
           setChartData(newData);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -81,7 +81,7 @@ export default function GrowthChart({ data }: GrowthChartProps) {
     };
 
     fetchData();
-  }, [period, mounted, data]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [period, mounted, data, slug]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handlePeriodChange = (value: string) => {
     const newPeriod = value as PeriodType;

@@ -10,9 +10,10 @@ export type ChartDataPoint = {
 export type PeriodType = "month" | "quarter" | "four-month" | "year";
 
 export async function getMemberGrowthStats(
-  period: PeriodType = "month"
+  period: PeriodType = "month",
+  churchSlug?: string
 ): Promise<ChartDataPoint[]> {
-  const prisma = await getChurchPrisma();
+  const prisma = await getChurchPrisma(churchSlug);
   const now = new Date();
 
   // Logic for different periods

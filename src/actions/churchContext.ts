@@ -1,5 +1,5 @@
-import prisma from "@/lib/prisma";
-import { Prisma } from "@/generated/prisma/client";
+import prisma from '@/lib/prisma';
+import { Prisma } from '@/generated/prisma/client';
 
 // Tipos para operaciones de creación
 type MemberCreateManyData = Prisma.MembersCreateManyInput;
@@ -570,22 +570,54 @@ export function createChurchPrisma(churchId: string) {
   return churchPrisma;
 }
 
+import { stackServerApp } from '@/stack/server';
+
 /**
  * Obtiene el slug de la iglesia desde las credenciales del usuario autenticado.
  *
- * NOTA: Este es un stub temporal hasta que exista login.
- * En el futuro, aquí se integrará con tu proveedor de autenticación (p. ej. NextAuth)
- * para extraer el church/iglesia del usuario autenticado.
- *
- * Por ahora, siempre retorna "demo" para utilizar esa iglesia como default.
+ * Busca una iglesia donde owner_id coincida con el ID del usuario actual.
  */
-export async function getChurchSlugFromAuth(): Promise<string | null> {
-  // TODO: Integrar con autenticación (NextAuth / JWT / sesión propia) para obtener el slug de la iglesia.
-  // Ejemplo a futuro:
-  // const session = await auth();
-  // return session?.user?.churchSlug ?? null;
-  return "iafcj-tecolutilla";
+export async function getUserChurchSlug(): Promise<string | null> {
+  try {
+    const user = await stackServerApp.getUser();
+    if (!user) return null;
+
+    // Buscar iglesia asociada al usuario
+    const church = await prisma.churches.findFirst({
+      where: {
+        OR: [{ owner_id: user.id }, { owner_id: user.primaryEmail }],
+      },
+      select: { slug: true },
+    });
+
+    return church?.slug ?? null;
+  } catch (error) {
+    console.error('Error getting user church slug:', error);
+    return null;
+  }
 }
+
+export async function getUserChurchName(): Promise<string | null> {
+  try {
+    const user = await stackServerApp.getUser();
+    if (!user) return null;
+
+    // Buscar iglesia asociada al usuario
+    const church = await prisma.churches.findFirst({
+      where: {
+        OR: [{ owner_id: user.id }, { owner_id: user.primaryEmail }],
+      },
+      select: { name: true },
+    });
+
+    return church?.name ?? null;
+  } catch (error) {
+    console.error('Error getting user church name:', error);
+    return null;
+  }
+}
+
+export const getChurchSlugFromAuth = getUserChurchSlug;
 
 /**
  * Helper para obtener el church_id desde headers en server actions
@@ -604,14 +636,24 @@ export async function getChurchSlugFromAuth(): Promise<string | null> {
  * Se deja de lado headers/cookies según la solicitud.
  * Por ahora, siempre retorna "demo" hasta que exista login.
  */
-export async function getChurchSlugFromSources(): Promise<string> {
-  if (typeof window !== "undefined") {
+export async function getChurchSlugFromSources(
+  churchSlug?: string
+): Promise<string> {
+  if (typeof window !== 'undefined') {
     throw new Error(
-      "getChurchSlugFromSources should only be called on the server"
+      'getChurchSlugFromSources should only be called on the server'
     );
   }
 
   try {
+    // If a slug is explicitly provided (and not empty), use it directly.
+    // This allows bypassing the auth check which might use cookies (dynamic data)
+    // inside cached scopes.
+    if (churchSlug && churchSlug.trim().length > 0) {
+      console.log(`[getChurchSlug] Using provided slug: ${churchSlug}`);
+      return churchSlug;
+    }
+
     const fromAuth = await getChurchSlugFromAuth();
     if (fromAuth) {
       console.log(`[getChurchSlug] Found slug in auth: ${fromAuth}`);
@@ -620,11 +662,11 @@ export async function getChurchSlugFromSources(): Promise<string> {
 
     // 3. Default final solo si todo lo demás falla
     console.log("[getChurchSlug] No slug found, using default 'demo'");
-    return "demo";
+    return 'demo';
   } catch (error) {
-    console.error("Error getting church slug from sources", error);
+    console.error('Error getting church slug from sources', error);
     // Default de seguridad
-    return "demo";
+    return 'demo';
   }
 }
 
@@ -632,20 +674,20 @@ export async function getChurchSlugFromSources(): Promise<string> {
  * Helper principal para obtener el church_id en server actions
  * Usa el método basado en auth/default
  */
-export async function getChurchId(): Promise<string> {
+export async function getChurchId(churchSlug?: string): Promise<string> {
   try {
     // Ensure database connection is alive (helps with occasional Closed connection errors)
     try {
       await prisma.$connect();
     } catch (e) {
-      console.warn("Prisma connect warning:", e);
+      console.warn('Prisma connect warning:', e);
     }
 
-    const churchSlug = await getChurchSlugFromSources();
+    const slug = await getChurchSlugFromSources(churchSlug);
 
     // Convertir slug a church ID
     const church = await prisma.churches.findUnique({
-      where: { slug: churchSlug },
+      where: { slug: slug },
       select: { id: true },
     });
 
@@ -653,21 +695,21 @@ export async function getChurchId(): Promise<string> {
       // Sin fallback: queremos usar exclusivamente la iglesia "demo"..
       // Si no existe, lanzamos error claro para que sea creada (seed o manualmente).
       throw new Error(
-        `Church not found for slug '${churchSlug}'. Ensure a church with slug '${churchSlug}' exists.`
+        `Church not found for slug '${slug}'. Ensure a church with slug '${slug}' exists.`
       );
     }
 
     return church.id;
   } catch (error) {
-    console.error("Error getting church ID:", error);
-    throw new Error("Failed to get church context");
+    console.error('Error getting church ID:', error);
+    throw new Error('Failed to get church context');
   }
 }
 
 /**
  * Helper para crear un cliente Prisma con church automático en server actions
  */
-export async function getChurchPrisma() {
-  const churchId = await getChurchId();
+export async function getChurchPrisma(churchSlug?: string) {
+  const churchId = await getChurchId(churchSlug);
   return createChurchPrisma(churchId);
 }

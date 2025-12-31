@@ -13,6 +13,13 @@ model Churches {
   slug             String             @unique
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        DateTime           @updatedAt @map("updated_at")
+  
+  // Relación con usuario autenticado (admin/pastor)
+  // Un usuario de Neon puede administrar una o varias iglesias
+  // O una iglesia puede tener un "owner" principal
+  // Vamos a permitir que una iglesia tenga un owner_id opcional por ahora
+  owner_id         String?            @map("owner_id") 
+
   memberMinistries MemberMinistry[]
   members          Members[]
   ministries       Ministries[]

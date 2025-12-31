@@ -378,9 +378,9 @@ export async function deleteSubSector(id: string) {
   }
 }
 
-export async function getSectorStats() {
-  const prisma = await getChurchPrisma();
-  const churchId = await getChurchId();
+export async function getSectorStats(churchSlug?: string) {
+  const prisma = await getChurchPrisma(churchSlug);
+  const churchId = await getChurchId(churchSlug);
 
   const [totalSectors, totalSubSectors, totalCells] = await Promise.all([
     prisma.sectors.count({

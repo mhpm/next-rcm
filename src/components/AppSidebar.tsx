@@ -48,6 +48,7 @@ const sidebarItems = [
 interface AppSidebarProps {
   className?: string;
   collapsed?: boolean;
+  churchName?: string | null;
 }
 
 export function AppSidebar({ className, collapsed = false }: AppSidebarProps) {
@@ -72,9 +73,11 @@ export function AppSidebar({ className, collapsed = false }: AppSidebarProps) {
             >
               <div className="h-6 w-6 rounded-full bg-primary shrink-0" />
               {!collapsed && (
-                <h2 className="text-lg font-semibold tracking-tight truncate">
-                  RCM Admin
-                </h2>
+                <div className="flex flex-col overflow-hidden">
+                  <h2 className="text-lg font-semibold tracking-tight truncate">
+                    RCM Admin
+                  </h2>
+                </div>
               )}
             </div>
           </div>
