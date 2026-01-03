@@ -14,9 +14,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useUser } from '@stackframe/stack';
+import { usePersistentFilters } from '@/hooks/usePersistentFilters';
 
 export default function AuthenticatedLayoutClient({
   children,
@@ -26,7 +26,8 @@ export default function AuthenticatedLayoutClient({
   churchName: string | null;
 }) {
   const { setTheme, resolvedTheme } = useTheme();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { filters: isSidebarOpen, setFilters: setIsSidebarOpen } =
+    usePersistentFilters<boolean>('sidebar-open', true);
   const user = useUser();
 
   return (

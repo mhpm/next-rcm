@@ -75,6 +75,7 @@ export default function EditReportForm({
             // value is optional in schema, send if present
             ...(f.value !== undefined ? { value: f.value } : {}),
             options: f.options?.map((o) => o.value),
+            visibilityRules: f.visibilityRules,
             width: 12, // Default width
             order: index, // Send order just in case we add it later
           };

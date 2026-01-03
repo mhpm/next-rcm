@@ -12,6 +12,7 @@ export type ReportFieldInput = {
   type: ReportFieldType;
   value?: unknown;
   options?: string[]; // Add options
+  visibilityRules?: any;
   required?: boolean;
 };
 
@@ -62,6 +63,10 @@ export async function createReport(input: CreateReportInput) {
     }
     if (f.options && Array.isArray(f.options)) {
       (base as any).options = f.options as Prisma.InputJsonValue;
+    }
+    if (f.visibilityRules) {
+      (base as any).visibilityRules =
+        f.visibilityRules as Prisma.InputJsonValue;
     }
 
     return base;
@@ -218,6 +223,10 @@ export async function updateReportWithFields(input: UpdateReportInput) {
         if (f.options && Array.isArray(f.options)) {
           (base as any).options = f.options as Prisma.InputJsonValue;
         }
+        if (f.visibilityRules) {
+          (base as any).visibilityRules =
+            f.visibilityRules as Prisma.InputJsonValue;
+        }
 
         await tx.reportFields.update({
           where: { id: f.id! },
@@ -240,6 +249,10 @@ export async function updateReportWithFields(input: UpdateReportInput) {
         }
         if (f.options && Array.isArray(f.options)) {
           (createData as any).options = f.options as Prisma.InputJsonValue;
+        }
+        if (f.visibilityRules) {
+          (createData as any).visibilityRules =
+            f.visibilityRules as Prisma.InputJsonValue;
         }
         await tx.reportFields.create({ data: createData });
       }

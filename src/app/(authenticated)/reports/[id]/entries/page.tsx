@@ -5,7 +5,8 @@ import ReportEntriesTable from '@/app/(authenticated)/reports/components/ReportE
 import ConsolidatedReportView from '@/app/(authenticated)/reports/components/ConsolidatedReportView';
 import ComparisonReportView from '@/app/(authenticated)/reports/components/ComparisonReportView';
 import { BackLink, Breadcrumbs } from '@/components';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TabsContent } from '@/components/ui/tabs';
+import ReportTabsClient from '@/app/(authenticated)/reports/components/ReportTabsClient';
 import { connection } from 'next/server';
 
 export default async function ReportEntriesPage({
@@ -208,13 +209,7 @@ export default async function ReportEntriesPage({
         <Breadcrumbs />
       </div>
 
-      <Tabs defaultValue="list" className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="list">Lista Detallada</TabsTrigger>
-          <TabsTrigger value="consolidated">Totales</TabsTrigger>
-          <TabsTrigger value="comparison">Comparativa</TabsTrigger>
-        </TabsList>
-
+      <ReportTabsClient reportId={id}>
         <TabsContent value="list">
           <ReportEntriesTable
             rows={rows}
@@ -251,7 +246,7 @@ export default async function ReportEntriesPage({
             reportId={id}
           />
         </TabsContent>
-      </Tabs>
+      </ReportTabsClient>
     </div>
   );
 }

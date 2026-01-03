@@ -1,4 +1,4 @@
-import type { ReportFieldType, ReportScope } from "@/generated/prisma/client";
+import type { ReportFieldType, ReportScope } from '@/generated/prisma/client';
 
 export type FieldItem = {
   id?: string;
@@ -10,6 +10,13 @@ export type FieldItem = {
   value?: unknown;
   options?: { value: string }[];
   required?: boolean;
+  visibilityRules?: VisibilityRule[];
+};
+
+export type VisibilityRule = {
+  fieldKey: string;
+  operator: 'equals' | 'notEquals' | 'contains' | 'gt' | 'lt';
+  value: string;
 };
 
 export type GroupItem = {

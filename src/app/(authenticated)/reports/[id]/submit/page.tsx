@@ -99,6 +99,7 @@ export default async function SubmitReportPage({
             options: Array.isArray(f.options)
               ? (f.options as string[])
               : undefined,
+            visibilityRules: f.visibilityRules as any,
           }))}
           cells={cellOptions}
           groups={groupOptions}

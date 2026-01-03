@@ -1,8 +1,14 @@
 import React from 'react';
-import { Control, Controller, UseFormRegister, UseFormSetValue } from 'react-hook-form';
+import {
+  Control,
+  Controller,
+  UseFormRegister,
+  UseFormSetValue,
+} from 'react-hook-form';
 import { FaCopy, FaTrash } from 'react-icons/fa6';
 import { InputField } from '@/components/FormControls';
 import { OptionsEditor } from './OptionsEditor';
+import { LogicEditor } from './LogicEditor';
 import { slugify } from './utils';
 import { ReportFormValues, FieldItem } from './types';
 import { Badge } from '@/components/ui/badge';
@@ -49,7 +55,10 @@ export const FieldEditor = React.memo(function FieldEditor({
     <div className="p-4 border rounded-lg bg-muted/30 hover:shadow-sm transition-all group">
       {/* Field Header / Actions */}
       <div className="flex items-center justify-between mb-3 pb-2 border-b border-border">
-        <Badge variant="outline" className="gap-1 cursor-grab active:cursor-grabbing">
+        <Badge
+          variant="outline"
+          className="gap-1 cursor-grab active:cursor-grabbing"
+        >
           <span className="opacity-70">☰</span>
           <span className="text-xs font-medium text-muted-foreground">
             {field.type === 'TEXT' && 'Texto'}
@@ -116,7 +125,9 @@ export const FieldEditor = React.memo(function FieldEditor({
                   render={({ field: rhfField }) => (
                     <Checkbox
                       checked={!!rhfField.value}
-                      onCheckedChange={(checked) => rhfField.onChange(!!checked)}
+                      onCheckedChange={(checked) =>
+                        rhfField.onChange(!!checked)
+                      }
                     />
                   )}
                 />
@@ -136,41 +147,52 @@ export const FieldEditor = React.memo(function FieldEditor({
           />
         )}
 
-        {field.type !== 'SECTION' && (
-          <Collapsible
-            open={advancedExpanded}
-            onOpenChange={(open) => {
-              if (open !== advancedExpanded) onToggleUi(id, 'advanced');
-            }}
-            className="rounded-md border bg-card"
-          >
-            <CollapsibleTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full justify-between px-3 py-2 text-xs font-medium text-muted-foreground"
-              >
-                Opciones avanzadas
-                <ChevronDown
-                  className={`transition-transform ${advancedExpanded ? 'rotate-180' : ''}`}
-                />
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="px-3 pb-3 text-sm">
-              <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InputField
-                  name={`fields.${index}.key`}
-                  label="ID de base de datos (slug)"
-                  register={register}
-                  rules={{ required: 'Requerido' }}
-                  placeholder={field.fieldId ? 'Bloqueado' : 'Autogenerado...'}
-                  disabled={!!field.fieldId}
-                  tabIndex={field.fieldId ? -1 : undefined}
-                />
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        )}
+        {/* Allow LogicEditor for SECTION type too, but maybe hide key editing if needed, or allow it.
+            Currently the block is hidden for SECTION. Let's remove the check for SECTION or make it conditional inside.
+        */}
+        <Collapsible
+          open={advancedExpanded}
+          onOpenChange={(open) => {
+            if (open !== advancedExpanded) onToggleUi(id, 'advanced');
+          }}
+          className="rounded-md border bg-card"
+        >
+          <CollapsibleTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full justify-between px-3 py-2 text-xs font-medium text-muted-foreground"
+            >
+              Opciones avanzadas
+              <ChevronDown
+                className={`transition-transform ${
+                  advancedExpanded ? 'rotate-180' : ''
+                }`}
+              />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="px-3 pb-3 text-sm">
+            <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <InputField
+                name={`fields.${index}.key`}
+                label="ID de base de datos (slug)"
+                register={register}
+                rules={{ required: 'Requerido' }}
+                placeholder={field.fieldId ? 'Bloqueado' : 'Autogenerado...'}
+                disabled={!!field.fieldId}
+                tabIndex={field.fieldId ? -1 : undefined}
+              />
+            </div>
+
+            <div className="pt-4 border-t mt-4">
+              <LogicEditor
+                fieldIndex={index}
+                control={control}
+                register={register}
+              />
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     </div>
   );

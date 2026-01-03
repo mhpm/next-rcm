@@ -32,6 +32,12 @@ import { ChevronDown, Loader2, Check } from 'lucide-react';
 
 type Option = { value: string; label: string };
 
+type VisibilityRule = {
+  fieldKey: string;
+  operator: 'equals' | 'notEquals' | 'contains' | 'gt' | 'lt';
+  value: string;
+};
+
 type FieldDef = {
   id: string;
   key: string;
@@ -40,6 +46,7 @@ type FieldDef = {
   required?: boolean;
   options?: string[];
   value?: any;
+  visibilityRules?: VisibilityRule[];
 };
 
 type FormValues = {
@@ -104,28 +111,72 @@ export default function PublicReportForm({
     defaultValues: { scope },
   });
 
+  const setSectionOpen = (sectionId: string, open: boolean) => {
+    setOpenSections((prev) => ({ ...prev, [sectionId]: open }));
+  };
+
+  const watchedValues = watch('values') || {};
+
+  const isFieldVisible = (field: FieldDef) => {
+    if (!field.visibilityRules || field.visibilityRules.length === 0)
+      return true;
+
+    return field.visibilityRules.every((rule) => {
+      // Find the field that controls visibility by key (slug)
+      const controlField = fields.find((f) => f.key === rule.fieldKey);
+      // If we can't find the field, assume visible (or handle error)
+      if (!controlField) return true;
+
+      const fieldValue = watchedValues[controlField.id];
+      const val =
+        fieldValue === undefined || fieldValue === null
+          ? ''
+          : String(fieldValue);
+      const target = rule.value;
+
+      switch (rule.operator) {
+        case 'equals':
+          return val == target;
+        case 'notEquals':
+          return val != target;
+        case 'contains':
+          return val.toLowerCase().includes(target.toLowerCase());
+        case 'gt':
+          return Number(val) > Number(target);
+        case 'lt':
+          return Number(val) < Number(target);
+        default:
+          return true;
+      }
+    });
+  };
+
   // Helper to group fields by section
-  const groupedFields = (fields || []).reduce((groups, f) => {
-    const lastGroup = groups[groups.length - 1];
-    if (f.type === 'SECTION') {
-      if (f.value === 'SECTION_BREAK') {
-        // Break section: start a new root group if not already there
-        // Or if the last group is a section, we just ensure next items go to a root group
-        if (!lastGroup || lastGroup.section) {
-          groups.push({ section: null, fields: [] });
+  const [groupedFields] = useState(() => {
+    // This is static, but we can memoize if fields change (they don't in this component)
+    const groups: { section: FieldDef | null; fields: FieldDef[] }[] = [];
+    (fields || []).forEach((f) => {
+      const lastGroup = groups[groups.length - 1];
+      if (f.type === 'SECTION') {
+        if (f.value === 'SECTION_BREAK') {
+          // Break section: start a new root group if not already there
+          // Or if the last group is a section, we just ensure next items go to a root group
+          if (!lastGroup || lastGroup.section) {
+            groups.push({ section: null, fields: [] });
+          }
+          return;
         }
-        return groups;
-      }
-      groups.push({ section: f, fields: [] });
-    } else {
-      if (!lastGroup) {
-        groups.push({ section: null, fields: [f] });
+        groups.push({ section: f, fields: [] });
       } else {
-        lastGroup.fields.push(f);
+        if (!lastGroup) {
+          groups.push({ section: null, fields: [f] });
+        } else {
+          lastGroup.fields.push(f);
+        }
       }
-    }
+    });
     return groups;
-  }, [] as { section: FieldDef | null; fields: FieldDef[] }[]);
+  });
 
   const renderField = (f: FieldDef) => {
     const baseName = `values.${f.id}` as const;
@@ -576,6 +627,8 @@ export default function PublicReportForm({
                 <div className="space-y-4">
                   {groupedFields.map((group, i) => {
                     if (group.section) {
+                      if (!isFieldVisible(group.section)) return null;
+
                       const sectionKey = String(group.section.id || i);
                       const isOpen = openSections[sectionKey] ?? true;
                       return (
@@ -583,10 +636,7 @@ export default function PublicReportForm({
                           key={sectionKey}
                           open={isOpen}
                           onOpenChange={(open) =>
-                            setOpenSections((prev) => ({
-                              ...prev,
-                              [sectionKey]: open,
-                            }))
+                            setSectionOpen(sectionKey, open)
                           }
                           className="rounded-lg border"
                         >
@@ -608,7 +658,10 @@ export default function PublicReportForm({
                           </CollapsibleTrigger>
                           <CollapsibleContent className="px-4 pb-4 overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
                             <div className="grid grid-cols-1 gap-4 pt-2">
-                              {group.fields.map((f) => renderField(f))}
+                              {group.fields.map((f) => {
+                                if (!isFieldVisible(f)) return null;
+                                return renderField(f);
+                              })}
                             </div>
                           </CollapsibleContent>
                         </Collapsible>
@@ -619,7 +672,10 @@ export default function PublicReportForm({
                         key={`group-${i}`}
                         className="grid grid-cols-1 gap-4"
                       >
-                        {group.fields.map((f) => renderField(f))}
+                        {group.fields.map((f) => {
+                          if (!isFieldVisible(f)) return null;
+                          return renderField(f);
+                        })}
                       </div>
                     );
                   })}

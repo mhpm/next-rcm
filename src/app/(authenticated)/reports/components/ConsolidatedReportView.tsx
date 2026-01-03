@@ -44,7 +44,33 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { useReportData } from '@/app/(authenticated)/reports/hooks/useReportData';
+import {
+  useReportData,
+  useReportInsights,
+  InsightConfig,
+} from '@/app/(authenticated)/reports/hooks/useReportData';
+import {
+  Lightbulb,
+  TrendingUp,
+  AlertTriangle,
+  Award,
+  BookOpen,
+  DollarSign,
+  Flame,
+  HandHeart,
+  MoreVertical,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  Trash2,
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ConsolidatedReportViewProps {
   rows: Row[];
@@ -57,7 +83,8 @@ export default function ConsolidatedReportView({
   fields,
   reportId,
 }: ConsolidatedReportViewProps) {
-  const [groupBy, setGroupBy] = useState<string>('entidad');
+  const { filters: groupBy, setFilters: setGroupBy } =
+    usePersistentFilters<string>(`report-groupby-${reportId}`, 'entidad');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   const {
@@ -242,9 +269,63 @@ export default function ConsolidatedReportView({
     { value: 'lider', label: 'Líder' },
   ];
 
+  const { filters: insightConfig, setFilters: setInsightConfig } =
+    usePersistentFilters<InsightConfig[]>(`report-insights-${reportId}`, []);
+
+  // Initial load of defaults based on keywords (one-time)
+  React.useEffect(() => {
+    if (insightConfig.length > 0) return; // Already have saved config
+
+    const defaults: InsightConfig[] = [
+      { fieldId: 'count', type: 'max', enabled: true },
+    ];
+    const keywords = ['oracion', 'ayuno', 'capitulos', 'ofrenda'];
+
+    fields.forEach((f) => {
+      const keyLower = f.key.toLowerCase();
+      const labelLower = (f.label || '').toLowerCase();
+      if (
+        keywords.some((k) => keyLower.includes(k) || labelLower.includes(k))
+      ) {
+        defaults.push({ fieldId: f.id, type: 'max', enabled: true });
+      }
+    });
+
+    setInsightConfig(defaults);
+  }, [fields, insightConfig.length, setInsightConfig]);
+
   // Use shared hook for data processing
   const { consolidatedData, totals, numericFields, booleanFields } =
     useReportData(rows, fields, activeFilters, groupBy);
+
+  const insights = useReportInsights(
+    consolidatedData,
+    numericFields,
+    insightConfig
+  );
+
+  const toggleInsight = (fieldId: string, type: 'max' | 'min') => {
+    setInsightConfig((prev) => {
+      const existingIndex = prev.findIndex(
+        (c) => c.fieldId === fieldId && c.type === type
+      );
+      if (existingIndex >= 0) {
+        // Remove/Toggle off
+        const next = [...prev];
+        next.splice(existingIndex, 1);
+        return next;
+      } else {
+        // Add
+        return [...prev, { fieldId, type, enabled: true }];
+      }
+    });
+  };
+
+  const isInsightActive = (fieldId: string, type: 'max' | 'min') => {
+    return insightConfig.some(
+      (c) => c.fieldId === fieldId && c.type === type && c.enabled
+    );
+  };
 
   return (
     <Card className="w-full border-0 sm:border shadow-none sm:shadow-sm">
@@ -449,6 +530,65 @@ export default function ConsolidatedReportView({
           </div>
         </div>
 
+        {/* Insights Section */}
+        {insights.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {insights.map((insight, idx) => (
+              <div
+                key={idx}
+                className={`p-4 rounded-lg border flex items-start gap-3 transition-all duration-200 hover:shadow-md ${
+                  insight.type === 'success'
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-900 dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:text-emerald-400'
+                    : insight.type === 'warning'
+                    ? 'bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-500/10 dark:border-amber-500/20 dark:text-amber-400'
+                    : 'bg-sky-50 border-sky-200 text-sky-900 dark:bg-sky-500/10 dark:border-sky-500/20 dark:text-sky-400'
+                }`}
+              >
+                <div
+                  className={`mt-0.5 shrink-0 ${
+                    insight.type === 'success'
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : insight.type === 'warning'
+                      ? 'text-amber-600 dark:text-amber-400'
+                      : 'text-sky-600 dark:text-sky-400'
+                  }`}
+                >
+                  {insight.type === 'success' && <Award className="w-5 h-5" />}
+                  {insight.type === 'warning' && (
+                    <AlertTriangle className="w-5 h-5" />
+                  )}
+                  {insight.type === 'info' && !insight.iconType && (
+                    <Lightbulb className="w-5 h-5" />
+                  )}
+                  {insight.iconType === 'prayer' && (
+                    <HandHeart className="w-5 h-5" />
+                  )}
+                  {insight.iconType === 'fasting' && (
+                    <Flame className="w-5 h-5" />
+                  )}
+                  {insight.iconType === 'bible' && (
+                    <BookOpen className="w-5 h-5" />
+                  )}
+                  {insight.iconType === 'offering' && (
+                    <DollarSign className="w-5 h-5" />
+                  )}
+                  {insight.iconType === 'activity' && (
+                    <TrendingUp className="w-5 h-5" />
+                  )}
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm leading-tight">
+                    {insight.title}
+                  </h4>
+                  <p className="text-xs mt-1.5 font-medium leading-normal opacity-100">
+                    {insight.message}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Desktop Table View */}
         <div className="hidden md:block w-full overflow-hidden">
           <div className="overflow-x-auto rounded-md border max-w-full relative">
@@ -458,12 +598,137 @@ export default function ConsolidatedReportView({
                   <TableHead className="w-[200px] whitespace-nowrap py-2 sticky left-0 bg-background z-20 border-r">
                     Grupo
                   </TableHead>
-                  <TableHead className="whitespace-nowrap py-2">
-                    Registros
+                  <TableHead className="whitespace-nowrap py-2 group">
+                    <div className="flex items-center gap-1">
+                      Registros
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <MoreVertical className="h-3 w-3" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                          <DropdownMenuLabel>Insights</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => toggleInsight('count', 'max')}
+                          >
+                            <div className="flex items-center gap-2 w-full">
+                              {isInsightActive('count', 'max') ? (
+                                <Trash2 className="h-3 w-3 text-red-500" />
+                              ) : (
+                                <ArrowUpCircle className="h-3 w-3 text-green-500" />
+                              )}
+                              <span
+                                className={
+                                  isInsightActive('count', 'max')
+                                    ? 'text-red-500'
+                                    : ''
+                                }
+                              >
+                                {isInsightActive('count', 'max')
+                                  ? 'Quitar Mayor'
+                                  : 'Destacar Mayor'}
+                              </span>
+                            </div>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => toggleInsight('count', 'min')}
+                          >
+                            <div className="flex items-center gap-2 w-full">
+                              {isInsightActive('count', 'min') ? (
+                                <Trash2 className="h-3 w-3 text-red-500" />
+                              ) : (
+                                <ArrowDownCircle className="h-3 w-3 text-yellow-500" />
+                              )}
+                              <span
+                                className={
+                                  isInsightActive('count', 'min')
+                                    ? 'text-red-500'
+                                    : ''
+                                }
+                              >
+                                {isInsightActive('count', 'min')
+                                  ? 'Quitar Menor'
+                                  : 'Destacar Menor'}
+                              </span>
+                            </div>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </TableHead>
                   {numericFields.map((f) => (
-                    <TableHead key={f.id} className="whitespace-nowrap py-2">
-                      {f.label || 'Campo'}
+                    <TableHead
+                      key={f.id}
+                      className="whitespace-nowrap py-2 group"
+                    >
+                      <div className="flex items-center gap-1">
+                        {f.label || 'Campo'}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <MoreVertical className="h-3 w-3" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start">
+                            <DropdownMenuLabel>Insights</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => toggleInsight(f.id, 'max')}
+                            >
+                              <div className="flex items-center gap-2 w-full">
+                                {isInsightActive(f.id, 'max') ? (
+                                  <Trash2 className="h-3 w-3 text-red-500" />
+                                ) : (
+                                  <ArrowUpCircle className="h-3 w-3 text-green-500" />
+                                )}
+                                <span
+                                  className={
+                                    isInsightActive(f.id, 'max')
+                                      ? 'text-red-500'
+                                      : ''
+                                  }
+                                >
+                                  {isInsightActive(f.id, 'max')
+                                    ? 'Quitar Mayor'
+                                    : 'Destacar Mayor'}
+                                </span>
+                              </div>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => toggleInsight(f.id, 'min')}
+                            >
+                              <div className="flex items-center gap-2 w-full">
+                                {isInsightActive(f.id, 'min') ? (
+                                  <Trash2 className="h-3 w-3 text-red-500" />
+                                ) : (
+                                  <ArrowDownCircle className="h-3 w-3 text-yellow-500" />
+                                )}
+                                <span
+                                  className={
+                                    isInsightActive(f.id, 'min')
+                                      ? 'text-red-500'
+                                      : ''
+                                  }
+                                >
+                                  {isInsightActive(f.id, 'min')
+                                    ? 'Quitar Menor'
+                                    : 'Destacar Menor'}
+                                </span>
+                              </div>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </TableHead>
                   ))}
                   {booleanFields.map((f) => (

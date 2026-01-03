@@ -2045,6 +2045,7 @@ export const ReportFieldsScalarFieldEnum = {
   type: 'type',
   value: 'value',
   options: 'options',
+  visibilityRules: 'visibilityRules',
   required: 'required',
   order: 'order',
   createdAt: 'createdAt',

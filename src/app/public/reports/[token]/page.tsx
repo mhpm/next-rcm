@@ -40,6 +40,7 @@ export default async function PublicReportPage({
             options: Array.isArray(f.options)
               ? (f.options as string[])
               : undefined,
+            visibilityRules: f.visibilityRules as any,
           }))}
           groups={entities.groups.map((g) => ({
             value: g.id,

@@ -241,5 +241,126 @@ export function useReportData(
     return total;
   }, [consolidatedData, numericFields, booleanFields]);
 
-  return { consolidatedData, totals, filteredRows, numericFields, booleanFields };
+  return {
+    consolidatedData,
+    totals,
+    filteredRows,
+    numericFields,
+    booleanFields,
+  };
+}
+
+export type InsightConfig = {
+  fieldId: string;
+  type: 'max' | 'min';
+  enabled: boolean;
+};
+
+export function useReportInsights(
+  currentData: any[],
+  numericFields: ReportFields[],
+  config: InsightConfig[] = []
+) {
+  // Simple insights for now based on current data distribution
+  // In a real scenario, we would compare with previousData
+
+  const insights = useMemo(() => {
+    if (currentData.length === 0) return [];
+
+    const result = [];
+
+    // 2. Configured Insights
+    config
+      .filter((c) => c.enabled)
+      .forEach((conf) => {
+        let fieldLabel = '';
+        let iconType = 'info';
+        let targetValue = 0;
+        let targetLabel = '';
+
+        if (conf.fieldId === 'count') {
+          fieldLabel = 'Registros';
+          iconType = 'activity';
+          const sorted = [...currentData].sort((a, b) => {
+            const valA = a.count || 0;
+            const valB = b.count || 0;
+            return conf.type === 'max' ? valB - valA : valA - valB;
+          });
+          const target = sorted[0];
+          if (target) {
+            targetLabel = target.label;
+            targetValue = target.count;
+          }
+        } else {
+          const field = numericFields.find((f) => f.id === conf.fieldId);
+          if (!field) return;
+
+          fieldLabel = field.label || 'Valor';
+          // Sort data
+          const sorted = [...currentData].sort((a, b) => {
+            const valA = a.values[field.id] || 0;
+            const valB = b.values[field.id] || 0;
+            return conf.type === 'max' ? valB - valA : valA - valB;
+          });
+
+          const target = sorted[0];
+          if (target) {
+            targetLabel = target.label;
+            targetValue = target.values[field.id] || 0;
+
+            // Determine icon based on keywords (simple heuristic)
+            const labelLower = (field.label || '').toLowerCase();
+            const keyLower = field.key.toLowerCase();
+            if (labelLower.includes('oracion') || keyLower.includes('oracion'))
+              iconType = 'prayer';
+            else if (labelLower.includes('ayuno') || keyLower.includes('ayuno'))
+              iconType = 'fasting';
+            else if (
+              labelLower.includes('capitulo') ||
+              keyLower.includes('bible')
+            )
+              iconType = 'bible';
+            else if (
+              labelLower.includes('ofrenda') ||
+              keyLower.includes('money')
+            )
+              iconType = 'offering';
+            else if (conf.type === 'min') iconType = 'warning';
+          }
+        }
+
+        // Filter out if value is 0 for max (unless all are 0)
+        if (conf.type === 'max' && targetValue === 0) return;
+
+        if (targetLabel) {
+          result.push({
+            type: conf.type === 'max' ? 'info' : 'warning',
+            title: `${conf.type === 'max' ? 'Mayor' : 'Menor'} ${fieldLabel}`,
+            message: `${targetLabel} tiene ${
+              conf.type === 'max' ? 'el mayor' : 'el menor'
+            } registro con ${targetValue.toLocaleString()}.`,
+            iconType,
+          });
+        }
+      });
+
+    // 3. Legacy/Default behavior if config is empty (for backward compatibility or initial state)
+    // If no config is provided, we might want to default to the "smart" selection we implemented before
+    // BUT, the user wants to control it. So let's provide a "default config" generator instead of hardcoding logic here.
+
+    // 4. Underperformers (Risk) - e.g. bottom 10% or zero activity
+    const inactive = currentData.filter((d) => d.count === 0);
+    if (inactive.length > 0) {
+      result.push({
+        type: 'warning',
+        title: 'Sin Actividad',
+        message: `${inactive.length} grupos no han reportado actividad en este periodo.`,
+        iconType: 'inactive',
+      });
+    }
+
+    return result;
+  }, [currentData, numericFields, config]);
+
+  return insights;
 }
