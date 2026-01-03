@@ -1,139 +1,140 @@
-import { z } from "zod";
-import { MemberRole, Gender } from "@/generated/prisma/enums";
+import { z } from 'zod';
+import { MemberRole, Gender } from '@/generated/prisma/enums';
 
 // Enum schemas from Prisma enums (source of truth)
 const MemberRoleSchema = z.enum(MemberRole);
 const GenderSchema = z.enum(Gender);
 
 // Main member validation schema for form data
-export const memberSchema = z
-  .object({
-    // Optional fields
-    id: z.string().optional(),
-    // Required fields
-    firstName: z
-      .string()
-      .min(1, "El nombre es requerido")
-      .min(2, "El nombre debe tener al menos 2 caracteres")
-      .max(50, "El nombre no puede exceder 50 caracteres")
-      .regex(
-        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
-        "El nombre solo puede contener letras y espacios"
-      ),
+const baseMemberSchema = z.object({
+  // Optional fields
+  id: z.string().optional(),
+  // Required fields
+  firstName: z
+    .string()
+    .min(1, 'El nombre es requerido')
+    .min(2, 'El nombre debe tener al menos 2 caracteres')
+    .max(50, 'El nombre no puede exceder 50 caracteres')
+    .regex(
+      /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
+      'El nombre solo puede contener letras y espacios'
+    ),
 
-    lastName: z
-      .string()
-      .min(1, "El apellido es requerido")
-      .min(2, "El apellido debe tener al menos 2 caracteres")
-      .max(50, "El apellido no puede exceder 50 caracteres")
-      .regex(
-        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
-        "El apellido solo puede contener letras y espacios"
-      ),
+  lastName: z
+    .string()
+    .min(1, 'El apellido es requerido')
+    .min(2, 'El apellido debe tener al menos 2 caracteres')
+    .max(50, 'El apellido no puede exceder 50 caracteres')
+    .regex(
+      /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
+      'El apellido solo puede contener letras y espacios'
+    ),
 
-    email: z
-      .union([
-        z.string().email({ message: "Formato de email inválido" }),
-        z.literal(""),
-        z.null(),
-      ])
-      .optional()
-      .transform((v) => {
-        if (v === undefined) return undefined;
-        if (v === "" || v === null) return null;
-        return v.toLowerCase();
-      }),
+  email: z
+    .union([
+      z.string().email({ message: 'Formato de email inválido' }),
+      z.literal(''),
+      z.null(),
+    ])
+    .optional()
+    .transform((v) => {
+      if (v === undefined) return undefined;
+      if (v === '' || v === null) return null;
+      return v.toLowerCase();
+    }),
 
-    role: MemberRoleSchema,
+  role: MemberRoleSchema,
 
-    gender: GenderSchema,
+  gender: GenderSchema,
 
-    // Optional fields with validation
-    phone: z
-      .string()
-      .optional()
-      .refine((val) => !val || /^[\d\s\-\+\(\)]+$/.test(val), {
-        message: "Formato de teléfono inválido",
-      }),
+  // Optional fields with validation
+  phone: z
+    .string()
+    .optional()
+    .refine((val) => !val || /^[\d\s\-\+\(\)]+$/.test(val), {
+      message: 'Formato de teléfono inválido',
+    }),
 
-    age: z
-      .union([z.string(), z.number()])
-      .optional()
-      .transform((val) => {
-        if (val === "" || val === undefined || val === null) return undefined;
-        const num = typeof val === "string" ? parseInt(val, 10) : val;
-        return isNaN(num) ? undefined : num;
-      })
-      .refine((val) => val === undefined || (val >= 1 && val <= 120), {
-        message: "La edad debe estar entre 1 y 120 años",
-      }),
+  age: z
+    .union([z.string(), z.number()])
+    .optional()
+    .transform((val) => {
+      if (val === '' || val === undefined || val === null) return undefined;
+      const num = typeof val === 'string' ? parseInt(val, 10) : val;
+      return isNaN(num) ? undefined : num;
+    })
+    .refine((val) => val === undefined || (val >= 1 && val <= 120), {
+      message: 'La edad debe estar entre 1 y 120 años',
+    }),
 
-    // Address fields
-    street: z
-      .string()
-      .max(100, "La dirección no puede exceder 100 caracteres")
-      .optional(),
+  // Address fields
+  street: z
+    .string()
+    .max(100, 'La dirección no puede exceder 100 caracteres')
+    .optional(),
 
-    city: z
-      .string()
-      .max(50, "La ciudad no puede exceder 50 caracteres")
-      .optional(),
+  city: z
+    .string()
+    .max(50, 'La ciudad no puede exceder 50 caracteres')
+    .optional(),
 
-    state: z
-      .string()
-      .max(50, "El estado no puede exceder 50 caracteres")
-      .optional(),
+  state: z
+    .string()
+    .max(50, 'El estado no puede exceder 50 caracteres')
+    .optional(),
 
-    zip: z
-      .string()
-      .max(20, "El código postal no puede exceder 20 caracteres")
-      .optional(),
+  zip: z
+    .string()
+    .max(20, 'El código postal no puede exceder 20 caracteres')
+    .optional(),
 
-    country: z
-      .string()
-      .max(50, "El país no puede exceder 50 caracteres")
-      .optional(),
+  country: z
+    .string()
+    .max(50, 'El país no puede exceder 50 caracteres')
+    .optional(),
 
-    // Date fields
-    birthDate: z
-      .date()
-      .max(new Date(), "La fecha de nacimiento no puede ser futura")
-      .optional(),
+  // Date fields
+  birthDate: z
+    .date()
+    .max(new Date(), 'La fecha de nacimiento no puede ser futura')
+    .optional(),
 
-    baptismDate: z.date().optional(),
+  baptismDate: z.date().optional(),
 
-    // Church-specific fields
-    ministries: z
-      .array(z.string())
-      .max(10, "No se pueden asignar más de 10 ministerios")
-      .optional(),
+  // Church-specific fields
+  ministries: z
+    .array(z.string())
+    .max(10, 'No se pueden asignar más de 10 ministerios')
+    .optional(),
 
-    notes: z
-      .string()
-      .max(500, "Las notas no pueden exceder 500 caracteres")
-      .optional(),
+  notes: z
+    .string()
+    .max(500, 'Las notas no pueden exceder 500 caracteres')
+    .optional(),
 
-    // Password fields for new members
-    password: z
-      .string()
-      .min(8, "La contraseña debe tener al menos 8 caracteres")
-      .max(100, "La contraseña no puede exceder 100 caracteres")
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        "La contraseña debe contener al menos una mayúscula, una minúscula y un número"
-      )
-      .optional(),
+  // Password fields for new members
+  password: z
+    .string()
+    .min(8, 'La contraseña debe tener al menos 8 caracteres')
+    .max(100, 'La contraseña no puede exceder 100 caracteres')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      'La contraseña debe contener al menos una mayúscula, una minúscula y un número'
+    )
+    .optional(),
 
-    confirmPassword: z.string().optional(),
+  confirmPassword: z.string().optional(),
 
-    // File upload field
-    picture: z
-      .array(z.instanceof(File))
-      .max(1, "Solo se puede subir una imagen")
-      .optional(),
-    createdAt: z.date().optional(),
-    updatedAt: z.date().optional(),
-  })
+  // File upload field
+  picture: z
+    .array(z.instanceof(File))
+    .max(1, 'Solo se puede subir una imagen')
+    .optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
+
+export const memberSchema = baseMemberSchema
   .refine(
     (data) => {
       // Custom validation: if password is provided, confirmPassword must match
@@ -143,8 +144,8 @@ export const memberSchema = z
       return true;
     },
     {
-      message: "Las contraseñas no coinciden",
-      path: ["confirmPassword"],
+      message: 'Las contraseñas no coinciden',
+      path: ['confirmPassword'],
     }
   )
   .refine(
@@ -157,14 +158,14 @@ export const memberSchema = z
     },
     {
       message:
-        "La fecha de bautismo debe ser posterior a la fecha de nacimiento",
-      path: ["baptismDate"],
+        'La fecha de bautismo debe ser posterior a la fecha de nacimiento',
+      path: ['baptismDate'],
     }
   );
 
 // Schema for updating members (all fields optional except id)
-export const updateMemberSchema = memberSchema.partial().safeExtend({
-  id: z.string().min(1, "ID es requerido"),
+export const updateMemberSchema = baseMemberSchema.partial().extend({
+  id: z.string().min(1, 'ID es requerido'),
 });
 
 // Schema for member search/filtering
@@ -186,22 +187,22 @@ const memberFormBase = z
     // Required fields
     firstName: z
       .string()
-      .min(1, "El nombre es requerido")
-      .min(2, "El nombre debe tener al menos 2 caracteres")
-      .max(50, "El nombre no puede exceder 50 caracteres")
+      .min(1, 'El nombre es requerido')
+      .min(2, 'El nombre debe tener al menos 2 caracteres')
+      .max(50, 'El nombre no puede exceder 50 caracteres')
       .regex(
         /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
-        "El nombre solo puede contener letras y espacios"
+        'El nombre solo puede contener letras y espacios'
       ),
 
     lastName: z
       .string()
-      .min(1, "El apellido es requerido")
-      .min(2, "El apellido debe tener al menos 2 caracteres")
-      .max(50, "El apellido no puede exceder 50 caracteres")
+      .min(1, 'El apellido es requerido')
+      .min(2, 'El apellido debe tener al menos 2 caracteres')
+      .max(50, 'El apellido no puede exceder 50 caracteres')
       .regex(
         /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
-        "El apellido solo puede contener letras y espacios"
+        'El apellido solo puede contener letras y espacios'
       ),
 
     email: z
@@ -219,10 +220,10 @@ const memberFormBase = z
           val === undefined ||
           val === null ||
           /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
-        { message: "Formato de email inválido" }
+        { message: 'Formato de email inválido' }
       )
       .refine((val) => val === undefined || val === null || val.length <= 100, {
-        message: "El email no puede exceder 100 caracteres",
+        message: 'El email no puede exceder 100 caracteres',
       }),
 
     role: MemberRoleSchema,
@@ -233,45 +234,45 @@ const memberFormBase = z
       .string()
       .optional()
       .refine((val) => !val || /^[\d\s\-\+\(\)]+$/.test(val), {
-        message: "Formato de teléfono inválido",
+        message: 'Formato de teléfono inválido',
       }),
 
     age: z
       .union([z.string(), z.number()])
       .optional()
       .transform((val) => {
-        if (val === "" || val === undefined || val === null) return undefined;
-        const num = typeof val === "string" ? parseInt(val, 10) : val;
+        if (val === '' || val === undefined || val === null) return undefined;
+        const num = typeof val === 'string' ? parseInt(val, 10) : val;
         return isNaN(num) ? undefined : num;
       })
       .refine((val) => val === undefined || (val >= 1 && val <= 120), {
-        message: "La edad debe estar entre 1 y 120 años",
+        message: 'La edad debe estar entre 1 y 120 años',
       }),
 
     // Address fields
     street: z
       .string()
-      .max(100, "La dirección no puede exceder 100 caracteres")
+      .max(100, 'La dirección no puede exceder 100 caracteres')
       .optional(),
 
     city: z
       .string()
-      .max(50, "La ciudad no puede exceder 50 caracteres")
+      .max(50, 'La ciudad no puede exceder 50 caracteres')
       .optional(),
 
     state: z
       .string()
-      .max(50, "El estado no puede exceder 50 caracteres")
+      .max(50, 'El estado no puede exceder 50 caracteres')
       .optional(),
 
     zip: z
       .string()
-      .max(20, "El código postal no puede exceder 20 caracteres")
+      .max(20, 'El código postal no puede exceder 20 caracteres')
       .optional(),
 
     country: z
       .string()
-      .max(50, "El país no puede exceder 50 caracteres")
+      .max(50, 'El país no puede exceder 50 caracteres')
       .optional(),
 
     // Date fields as strings for form inputs
@@ -285,7 +286,7 @@ const memberFormBase = z
           return !isNaN(date.getTime()) && date <= new Date();
         },
         {
-          message: "La fecha de nacimiento no puede ser futura",
+          message: 'La fecha de nacimiento no puede ser futura',
         }
       ),
 
@@ -299,29 +300,29 @@ const memberFormBase = z
           return !isNaN(date.getTime());
         },
         {
-          message: "Formato de fecha inválido",
+          message: 'Formato de fecha inválido',
         }
       ),
 
     // Church-specific fields
     ministries: z
       .array(z.string())
-      .max(10, "No se pueden asignar más de 10 ministerios")
+      .max(10, 'No se pueden asignar más de 10 ministerios')
       .optional(),
 
     notes: z
       .string()
-      .max(500, "Las notas no pueden exceder 500 caracteres")
+      .max(500, 'Las notas no pueden exceder 500 caracteres')
       .optional(),
 
     // Password fields for new members
     password: z
       .string()
-      .min(8, "La contraseña debe tener al menos 8 caracteres")
-      .max(100, "La contraseña no puede exceder 100 caracteres")
+      .min(8, 'La contraseña debe tener al menos 8 caracteres')
+      .max(100, 'La contraseña no puede exceder 100 caracteres')
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        "La contraseña debe contener al menos una mayúscula, una minúscula y un número"
+        'La contraseña debe contener al menos una mayúscula, una minúscula y un número'
       )
       .optional(),
 
@@ -330,7 +331,7 @@ const memberFormBase = z
     // File upload field
     picture: z
       .array(z.instanceof(File))
-      .max(1, "Solo se puede subir una imagen")
+      .max(1, 'Solo se puede subir una imagen')
       .optional(),
 
     pictureUrl: z.string().optional(),
@@ -346,8 +347,8 @@ const memberFormBase = z
       return true;
     },
     {
-      message: "Las contraseñas no coinciden",
-      path: ["confirmPassword"],
+      message: 'Las contraseñas no coinciden',
+      path: ['confirmPassword'],
     }
   )
   .refine(
@@ -362,29 +363,29 @@ const memberFormBase = z
     },
     {
       message:
-        "La fecha de bautismo debe ser posterior a la fecha de nacimiento",
-      path: ["baptismDate"],
+        'La fecha de bautismo debe ser posterior a la fecha de nacimiento',
+      path: ['baptismDate'],
     }
   );
 
 // Create: requiere contraseña para roles de liderazgo
 export const memberFormSchema = memberFormBase.superRefine((data, ctx) => {
-  const requiresPassword = ["PASTOR", "LIDER", "SUPERVISOR"].includes(
+  const requiresPassword = ['PASTOR', 'LIDER', 'SUPERVISOR'].includes(
     String(data.role)
   );
   if (requiresPassword) {
     if (!data.password || data.password.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["password"],
-        message: "La contraseña es requerida para este rol",
+        path: ['password'],
+        message: 'La contraseña es requerida para este rol',
       });
     }
     if (!data.confirmPassword || data.confirmPassword.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["confirmPassword"],
-        message: "Confirma la contraseña",
+        path: ['confirmPassword'],
+        message: 'Confirma la contraseña',
       });
     }
   }
@@ -397,25 +398,25 @@ export const memberFormSchemaEdit = memberFormBase.superRefine((data, ctx) => {
     if (!data.password || data.password.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["password"],
-        message: "La contraseña es requerida",
+        path: ['password'],
+        message: 'La contraseña es requerida',
       });
     }
     if (!data.confirmPassword || data.confirmPassword.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["confirmPassword"],
-        message: "Confirma la contraseña",
+        path: ['confirmPassword'],
+        message: 'Confirma la contraseña',
       });
     }
   }
 });
 
 // Form-specific schema for client-side validation (dates as strings)
-export const insertMemberFormSchema = memberSchema
-  // Avoid overriding existing keys with safeExtend; omit then add back as strings
+export const insertMemberFormSchema = baseMemberSchema
+  // Avoid overriding existing keys with extend; omit then add back as strings
   .omit({ birthDate: true, baptismDate: true, age: true, gender: true })
-  .safeExtend({
+  .extend({
     birthDate: z
       .union([z.string(), z.date()])
       .optional()
@@ -426,7 +427,7 @@ export const insertMemberFormSchema = memberSchema
         return isNaN(parsed.getTime()) ? undefined : parsed;
       })
       .refine((val) => !val || val <= new Date(), {
-        message: "La fecha de nacimiento no puede ser futura",
+        message: 'La fecha de nacimiento no puede ser futura',
       }),
 
     baptismDate: z
@@ -439,27 +440,27 @@ export const insertMemberFormSchema = memberSchema
         return isNaN(parsed.getTime()) ? undefined : parsed;
       })
       .refine((val) => !val || !isNaN(val.getTime()), {
-        message: "Formato de fecha inválido",
+        message: 'Formato de fecha inválido',
       }),
 
     age: z
       .union([z.string(), z.number()])
       .optional()
       .transform((val) => {
-        if (val === "" || val === undefined || val === null) return undefined;
-        const num = typeof val === "string" ? parseInt(val, 10) : val;
+        if (val === '' || val === undefined || val === null) return undefined;
+        const num = typeof val === 'string' ? parseInt(val, 10) : val;
         return isNaN(num) ? undefined : num;
       })
       .refine((val) => val === undefined || (val >= 1 && val <= 120), {
-        message: "La edad debe estar entre 1 y 120 años",
+        message: 'La edad debe estar entre 1 y 120 años',
       }),
 
     gender: z
-      .union([z.string(), z.enum(["MASCULINO", "FEMENINO"])])
-      .refine((val) => val !== "undefined" && val !== "" && val !== undefined, {
-        message: "El género es requerido",
+      .union([z.string(), z.enum(['MASCULINO', 'FEMENINO'])])
+      .refine((val) => val !== 'undefined' && val !== '' && val !== undefined, {
+        message: 'El género es requerido',
       })
-      .transform((val) => val as "MASCULINO" | "FEMENINO")
+      .transform((val) => val as 'MASCULINO' | 'FEMENINO')
       .pipe(GenderSchema),
   })
   // Ensure password confirmation matches when either field is provided
@@ -471,8 +472,8 @@ export const insertMemberFormSchema = memberSchema
       return true;
     },
     {
-      message: "Las contraseñas no coinciden",
-      path: ["confirmPassword"],
+      message: 'Las contraseñas no coinciden',
+      path: ['confirmPassword'],
     }
   )
   .refine(
@@ -486,27 +487,27 @@ export const insertMemberFormSchema = memberSchema
     },
     {
       message:
-        "La fecha de bautismo debe ser posterior a la fecha de nacimiento",
-      path: ["baptismDate"],
+        'La fecha de bautismo debe ser posterior a la fecha de nacimiento',
+      path: ['baptismDate'],
     }
   )
   .superRefine((data, ctx) => {
-    const requiresPassword = ["PASTOR", "LIDER", "SUPERVISOR"].includes(
+    const requiresPassword = ['PASTOR', 'LIDER', 'SUPERVISOR'].includes(
       String(data.role)
     );
     if (requiresPassword) {
       if (!data.password || data.password.length === 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["password"],
-          message: "La contraseña es requerida para este rol",
+          path: ['password'],
+          message: 'La contraseña es requerida para este rol',
         });
       }
       if (!data.confirmPassword || data.confirmPassword.length === 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["confirmPassword"],
-          message: "Confirma la contraseña",
+          path: ['confirmPassword'],
+          message: 'Confirma la contraseña',
         });
       }
     }

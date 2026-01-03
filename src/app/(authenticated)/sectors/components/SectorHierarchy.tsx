@@ -90,21 +90,25 @@ function toNodes(
 
     const cells: CellNode[] | undefined =
       !isSector && s.cells
-        ? s.cells.map((c: any) => ({
-            id: c.id,
-            name: c.name,
-            leaderName: c.leader
-              ? `${c.leader.firstName} ${c.leader.lastName}`
-              : 'Sin líder',
-            hostName: c.host
-              ? `${c.host.firstName} ${c.host.lastName}`
-              : 'Sin anfitrión',
-            assistantName: c.assistant
-              ? `${c.assistant.firstName} ${c.assistant.lastName}`
-              : 'Sin asistente',
-            membersCount: c._count?.members ?? 0,
-            accessCode: c.accessCode,
-          }))
+        ? s.cells
+            .map((c: any) => ({
+              id: c.id,
+              name: c.name,
+              leaderName: c.leader
+                ? `${c.leader.firstName} ${c.leader.lastName}`
+                : 'Sin líder',
+              hostName: c.host
+                ? `${c.host.firstName} ${c.host.lastName}`
+                : 'Sin anfitrión',
+              assistantName: c.assistant
+                ? `${c.assistant.firstName} ${c.assistant.lastName}`
+                : 'Sin asistente',
+              membersCount: c._count?.members ?? 0,
+              accessCode: c.accessCode,
+            }))
+            .sort((a: CellNode, b: CellNode) =>
+              a.name.localeCompare(b.name, undefined, { numeric: true })
+            )
         : undefined;
 
     return {
@@ -328,6 +332,15 @@ export default function SectorHierarchy() {
                   prev ? { ...prev, code: e.target.value } : null
                 )
               }
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && editingAccessCode) {
+                  e.preventDefault();
+                  updateCellMutation.mutate({
+                    id: editingAccessCode.id,
+                    accessCode: editingAccessCode.code,
+                  });
+                }
+              }}
               placeholder="Ingrese la clave"
             />
           </div>
