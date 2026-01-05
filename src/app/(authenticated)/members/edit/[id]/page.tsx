@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { use, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { SubmitHandler } from "react-hook-form";
+import { use, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { SubmitHandler } from 'react-hook-form';
 import {
   BackLink,
   Breadcrumbs,
   Alert,
   MinimalLoader,
   MemberForm,
-} from "@/components";
+} from '@/components';
 import {
   useMember,
   useUpdateMember,
-} from "@/app/(authenticated)/members/hooks/useMembers";
-import { MemberFormInput } from "@/app/(authenticated)/members/schema/members.schema";
-import { MemberFormData } from "@/app/(authenticated)/members/types/member";
-import { MemberRole, Gender } from "@/generated/prisma/enums";
-import { MemberMinistry, Ministries } from "@/generated/prisma/browser";
-import { useNotificationStore } from "@/store/NotificationStore";
+} from '@/app/(authenticated)/members/hooks/useMembers';
+import { MemberFormInput } from '@/app/(authenticated)/members/schema/members.schema';
+import { MemberFormData } from '@/app/(authenticated)/members/types/member';
+import { MemberRole, Gender } from '@/generated/prisma/enums';
+import { MemberMinistry, Ministries } from '@/generated/prisma/browser';
+import { useNotificationStore } from '@/store/NotificationStore';
 
 type FormValues = MemberFormInput;
 
@@ -58,22 +58,23 @@ export default function EditMemberPage({
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        phone: data.phone || "",
+        phone: data.phone || '',
         age:
-          typeof data.age === "string"
+          typeof data.age === 'string'
             ? parseInt(data.age, 10) || undefined
             : data.age || undefined,
-        street: data.street || "",
-        city: data.city || "",
-        state: data.state || "",
-        zip: data.zip || "",
-        country: data.country || "",
+        street: data.street || '',
+        city: data.city || '',
+        state: data.state || '',
+        zip: data.zip || '',
+        country: data.country || '',
         birthDate: data.birthDate ? new Date(data.birthDate) : undefined,
         baptismDate: data.baptismDate ? new Date(data.baptismDate) : undefined,
         role: (data.role as MemberRole) || MemberRole.MIEMBRO,
         gender: (data.gender as Gender) || Gender.MASCULINO,
         pictureUrl: data.pictureUrl || null,
-        notes: data.notes || "",
+        notes: data.notes || '',
+        network_id: data.network_id || undefined,
         ministries: data.ministries || [],
       };
 
@@ -82,11 +83,11 @@ export default function EditMemberPage({
         data: memberData,
       });
 
-      showSuccess("Miembro actualizado exitosamente");
-      router.push("/members");
+      showSuccess('Miembro actualizado exitosamente');
+      router.push('/members');
     } catch (err) {
-      console.error("Error updating member:", err);
-      const message = err instanceof Error ? err.message : "Error desconocido";
+      console.error('Error updating member:', err);
+      const message = err instanceof Error ? err.message : 'Error desconocido';
       setErrorMessage(message);
       showError(`Error al actualizar miembro: ${message}`);
     }
@@ -107,7 +108,7 @@ export default function EditMemberPage({
           type="error"
           title="Error"
           message={
-            error?.message || "No se pudo cargar la información del miembro"
+            error?.message || 'No se pudo cargar la información del miembro'
           }
         />
       </div>
@@ -118,23 +119,24 @@ export default function EditMemberPage({
     firstName: member.firstName,
     lastName: member.lastName,
     email: member.email,
-    phone: member.phone || "",
+    phone: member.phone || '',
     age: member.age || 0,
-    street: member.street || "",
-    city: member.city || "",
-    state: member.state || "",
-    zip: member.zip || "",
-    country: member.country || "",
+    street: member.street || '',
+    city: member.city || '',
+    state: member.state || '',
+    zip: member.zip || '',
+    country: member.country || '',
     birthDate: member.birthDate
-      ? member.birthDate.toISOString().split("T")[0]
-      : "",
+      ? member.birthDate.toISOString().split('T')[0]
+      : '',
     baptismDate: member.baptismDate
-      ? member.baptismDate.toISOString().split("T")[0]
-      : "",
+      ? member.baptismDate.toISOString().split('T')[0]
+      : '',
     role: member.role,
     gender: member.gender,
-    pictureUrl: member.pictureUrl || "",
-    notes: member.notes || "",
+    pictureUrl: member.pictureUrl || '',
+    notes: member.notes || '',
+    network_id: member.network_id || undefined,
     ministries:
       member.ministries?.map(
         (mm: MemberMinistry & { ministry: Ministries }) => mm.ministry.id

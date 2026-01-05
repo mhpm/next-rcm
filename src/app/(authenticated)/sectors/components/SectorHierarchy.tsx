@@ -10,6 +10,7 @@ import { updateCell } from '../../cells/actions/cells.actions';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { SectorNode, CellNode } from '../types/sectors';
 import CreateSectorModal from './CreateSectorModal';
+import EditSectorModal from './EditSectorModal';
 import CreateCellModal from '@/app/(authenticated)/cells/components/CreateCellModal';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { useNotificationStore } from '@/store/NotificationStore';
@@ -60,12 +61,13 @@ import { cn } from '@/lib/utils';
 
 function toNodes(
   data: any[],
-  type: 'SECTOR' | 'SUB_SECTOR' = 'SECTOR'
+  type: 'SECTOR' | 'SUB_SECTOR' = 'SECTOR',
+  parentId: string | null = null
 ): SectorNode[] {
   return (data || []).map((s) => {
     const isSector = type === 'SECTOR';
     const childrenData = isSector ? s.subSectors || [] : [];
-    const children = toNodes(childrenData, 'SUB_SECTOR');
+    const children = toNodes(childrenData, 'SUB_SECTOR', s.id);
 
     let cellsCount = 0;
     if (isSector) {
@@ -119,6 +121,8 @@ function toNodes(
         ? `${s.supervisor.firstName} ${s.supervisor.lastName}`
         : 'Sin supervisor',
       supervisorId: s.supervisor?.id ?? null,
+      parentId: parentId,
+      zoneId: s.zone_id ?? null,
       membersCount,
       cellsCount,
       subSectorsCount: isSector ? children.length : 0,
@@ -143,6 +147,9 @@ export default function SectorHierarchy() {
     id: string;
     sectorId: string;
   } | null>(null);
+
+  const [editOpen, setEditOpen] = React.useState(false);
+  const [editNode, setEditNode] = React.useState<SectorNode | null>(null);
 
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [deleteTarget, setDeleteTarget] = React.useState<{
@@ -291,8 +298,9 @@ export default function SectorHierarchy() {
                   setCreateParentId(parentId);
                   setCreateOpen(true);
                 }}
-                onEdit={(s: { id: string; name: string }) => {
-                  router.push(`/sectors/edit/${s.id}`);
+                onEdit={(node: SectorNode) => {
+                  setEditNode(node);
+                  setEditOpen(true);
                 }}
                 onDelete={(s: { id: string; name: string }) => {
                   setDeleteTarget({ id: s.id, name: s.name, type: node.type });
@@ -378,6 +386,16 @@ export default function SectorHierarchy() {
         initialParentId={createParentId}
       />
 
+      <EditSectorModal
+        open={editOpen}
+        onClose={() => {
+          setEditOpen(false);
+          setEditNode(null);
+        }}
+        onUpdated={() => refetch()}
+        node={editNode}
+      />
+
       <CreateCellModal
         open={createCellOpen}
         onClose={() => {
@@ -454,7 +472,7 @@ function SectorItem({
   expandedIds: Set<string>;
   onToggle: (id: string) => void;
   onAddChild: (parentId: string) => void;
-  onEdit: (s: { id: string; name: string }) => void;
+  onEdit: (node: SectorNode) => void;
   onDelete: (s: { id: string; name: string }) => void;
   onAddMembers: (sectorId: string) => void;
   onAddCell: (subSectorId: string, sectorId: string) => void;

@@ -131,34 +131,19 @@ const baseMemberSchema = z.object({
   updatedAt: z.date().optional(),
 });
 
-export const memberSchema = baseMemberSchema
-  .refine(
-    (data) => {
-      // Custom validation: if password is provided, confirmPassword must match
-      if (data.password && data.confirmPassword) {
-        return data.password === data.confirmPassword;
-      }
-      return true;
-    },
-    {
-      message: 'Las contraseñas no coinciden',
-      path: ['confirmPassword'],
+export const memberSchema = baseMemberSchema.refine(
+  (data) => {
+    // Custom validation: baptism date should be after birth date
+    if (data.birthDate && data.baptismDate) {
+      return data.baptismDate > data.birthDate;
     }
-  )
-  .refine(
-    (data) => {
-      // Custom validation: baptism date should be after birth date
-      if (data.birthDate && data.baptismDate) {
-        return data.baptismDate > data.birthDate;
-      }
-      return true;
-    },
-    {
-      message:
-        'La fecha de bautismo debe ser posterior a la fecha de nacimiento',
-      path: ['baptismDate'],
-    }
-  );
+    return true;
+  },
+  {
+    message: 'La fecha de bautismo debe ser posterior a la fecha de nacimiento',
+    path: ['baptismDate'],
+  }
+);
 
 // Schema for updating members (all fields optional except id)
 export const updateMemberSchema = baseMemberSchema.partial().extend({
@@ -313,19 +298,6 @@ const memberFormBase = z
       .max(500, 'Las notas no pueden exceder 500 caracteres')
       .optional(),
 
-    // Password fields for new members
-    password: z
-      .string()
-      .min(8, 'La contraseña debe tener al menos 8 caracteres')
-      .max(100, 'La contraseña no puede exceder 100 caracteres')
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        'La contraseña debe contener al menos una mayúscula, una minúscula y un número'
-      )
-      .optional(),
-
-    confirmPassword: z.string().optional(),
-
     // File upload field
     picture: z
       .array(z.instanceof(File))
@@ -336,19 +308,6 @@ const memberFormBase = z
     createdAt: z.date().optional(),
     updatedAt: z.date().optional(),
   })
-  .refine(
-    (data) => {
-      // Custom validation: if password is provided, confirmPassword must match
-      if (data.password && data.confirmPassword) {
-        return data.password === data.confirmPassword;
-      }
-      return true;
-    },
-    {
-      message: 'Las contraseñas no coinciden',
-      path: ['confirmPassword'],
-    }
-  )
   .refine(
     (data) => {
       // Custom validation: baptism date should be after birth date
@@ -366,48 +325,14 @@ const memberFormBase = z
     }
   );
 
-// Create: requiere contraseña para roles de liderazgo
-export const memberFormSchema = memberFormBase.superRefine((data, ctx) => {
-  const requiresPassword = ['PASTOR', 'LIDER', 'SUPERVISOR'].includes(
-    String(data.role)
-  );
-  if (requiresPassword) {
-    if (!data.password || data.password.length === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['password'],
-        message: 'La contraseña es requerida para este rol',
-      });
-    }
-    if (!data.confirmPassword || data.confirmPassword.length === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['confirmPassword'],
-        message: 'Confirma la contraseña',
-      });
-    }
-  }
+// Create: export base schema directly
+export const memberFormSchema = memberFormBase.superRefine(() => {
+  // No password validation needed
 });
 
-// Edit: valida contraseña solo si el usuario decide cambiarla
-export const memberFormSchemaEdit = memberFormBase.superRefine((data, ctx) => {
-  const intendsChange = Boolean(data.password || data.confirmPassword);
-  if (intendsChange) {
-    if (!data.password || data.password.length === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['password'],
-        message: 'La contraseña es requerida',
-      });
-    }
-    if (!data.confirmPassword || data.confirmPassword.length === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['confirmPassword'],
-        message: 'Confirma la contraseña',
-      });
-    }
-  }
+// Edit: export base schema directly
+export const memberFormSchemaEdit = memberFormBase.superRefine(() => {
+  // No password validation needed
 });
 
 // Form-specific schema for client-side validation (dates as strings)
@@ -461,19 +386,6 @@ export const insertMemberFormSchema = baseMemberSchema
       .transform((val) => val as 'MASCULINO' | 'FEMENINO')
       .pipe(GenderSchema),
   })
-  // Ensure password confirmation matches when either field is provided
-  .refine(
-    (data) => {
-      if (data.password || data.confirmPassword) {
-        return data.password === data.confirmPassword;
-      }
-      return true;
-    },
-    {
-      message: 'Las contraseñas no coinciden',
-      path: ['confirmPassword'],
-    }
-  )
   .refine(
     (data) => {
       // Custom validation: baptism date should be after birth date
@@ -488,28 +400,7 @@ export const insertMemberFormSchema = baseMemberSchema
         'La fecha de bautismo debe ser posterior a la fecha de nacimiento',
       path: ['baptismDate'],
     }
-  )
-  .superRefine((data, ctx) => {
-    const requiresPassword = ['PASTOR', 'LIDER', 'SUPERVISOR'].includes(
-      String(data.role)
-    );
-    if (requiresPassword) {
-      if (!data.password || data.password.length === 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['password'],
-          message: 'La contraseña es requerida para este rol',
-        });
-      }
-      if (!data.confirmPassword || data.confirmPassword.length === 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['confirmPassword'],
-          message: 'Confirma la contraseña',
-        });
-      }
-    }
-  });
+  );
 
 // Export types for use in components
 export type MemberSchema = z.infer<typeof memberSchema>;

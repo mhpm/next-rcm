@@ -70,6 +70,8 @@ export interface SectorNode {
   type: 'SECTOR' | 'SUB_SECTOR';
   supervisorName?: string;
   supervisorId?: string | null;
+  parentId?: string | null; // Add parentId
+  zoneId?: string | null; // Add zoneId
   membersCount: number;
   cellsCount: number;
   subSectorsCount: number;

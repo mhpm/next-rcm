@@ -4,7 +4,7 @@ import { Prisma, MemberRole } from '@/generated/prisma/client';
 import { z } from 'zod';
 import { revalidateTag } from 'next/cache';
 import { MemberFormData } from '@/types';
-import * as bcrypt from 'bcryptjs';
+// bcrypt removed as password hashing is no longer needed
 import { logger } from '@/lib/logger';
 import {
   handlePrismaError,
@@ -219,11 +219,8 @@ export const createMember = withErrorHandling(async function createMember(
       '🚀 ~ createMember ~ parsed data:',
       JSON.stringify(parsed, null, 2)
     );
-    // Hash password if provided
-    let passwordHash = null;
-    if (parsed.password) {
-      passwordHash = await bcrypt.hash(parsed.password, 12);
-    }
+    // Password hashing removed as requested
+    const passwordHash = null;
 
     // Process image upload if provided
     let pictureUrl = null;
@@ -244,7 +241,7 @@ export const createMember = withErrorHandling(async function createMember(
     const churchId = await getChurchId();
 
     // Prepare member data with explicit church_id
-    const memberData = {
+    const memberData: any = {
       firstName: parsed.firstName,
       lastName: parsed.lastName,
       ...(parsed.email !== undefined ? { email: parsed.email } : {}),
@@ -262,9 +259,14 @@ export const createMember = withErrorHandling(async function createMember(
       notes: parsed.notes || null,
       passwordHash,
       pictureUrl, // Now includes the uploaded image URL
-      network_id: parsed.network_id || null, // Add network_id
-      church_id: churchId,
     };
+
+    // Handle network relation
+    if (parsed.network_id) {
+      memberData.network = {
+        connect: { id: parsed.network_id },
+      };
+    }
 
     const member = await prisma.members.create({
       data: memberData,
@@ -386,11 +388,7 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
     if (parsed.network_id !== undefined)
       updateData.network_id = parsed.network_id || null; // Update network_id
 
-    // Arrays
-    if (parsed.password) {
-      // Password
-      updateData.passwordHash = await bcrypt.hash(parsed.password, 12);
-    }
+    // Password updates removed
 
     // Handle ministries update if provided
     if (parsed.ministries !== undefined) {

@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useMemo, useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { FaLink } from 'react-icons/fa6';
 import {
@@ -25,7 +25,6 @@ import {
   InputField,
   SelectField,
   RadioGroupField,
-  PasswordField,
   EmailField,
   MultiSelectField,
 } from '@/components/FormControls';
@@ -65,7 +64,6 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     handleSubmit,
     control,
     watch,
-    trigger,
     setValue,
     reset,
     clearErrors,
@@ -115,19 +113,9 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     }
   }, [initialData?.ministries, setValue]);
 
-  // En edición, asegúrate de que el toggle de cambiar contraseña esté apagado
-  // y los campos de contraseña estén limpios al montar o al cambiar initialData
   useEffect(() => {
     if (isEditMode) {
-      setChangePassword(false);
-      setValue('password', '', { shouldValidate: false, shouldDirty: false });
-      setValue('confirmPassword', '', {
-        shouldValidate: false,
-        shouldDirty: false,
-      });
-      clearErrors(['password', 'confirmPassword']);
-      unregister('password');
-      unregister('confirmPassword');
+      // Logic for edit mode initialization if needed in future
     }
   }, [isEditMode, initialData, setValue, clearErrors, unregister]);
 
@@ -138,49 +126,12 @@ export const MemberForm: React.FC<MemberFormProps> = ({
 
   const { data: networksData, isLoading: isLoadingNetworks } = useNetworks();
 
-  const password = watch('password');
+  // Debug: log networks data
+  useEffect(() => {
+    console.log('Networks Data:', networksData);
+  }, [networksData]);
+
   const emailValue = watch('email');
-  const roleValue = watch('role');
-
-  // Toggle to show password fields only when needed
-  const [changePassword, setChangePassword] = useState(!isEditMode);
-
-  const requiresPassword = useMemo(() => {
-    return (
-      roleValue === 'PASTOR' ||
-      roleValue === 'LIDER' ||
-      roleValue === 'SUPERVISOR'
-    );
-  }, [roleValue]);
-
-  const showPasswordCard = isEditMode ? true : requiresPassword;
-
-  // Trigger immediate re-validation of confirmPassword when password changes
-  useEffect(() => {
-    trigger('confirmPassword');
-  }, [password, trigger]);
-
-  // Cuando el rol deja de requerir contraseña, limpia y desregistra los campos
-  useEffect(() => {
-    const fieldsVisible = isEditMode ? changePassword : requiresPassword;
-    if (!fieldsVisible) {
-      setValue('password', '', { shouldValidate: false, shouldDirty: false });
-      setValue('confirmPassword', '', {
-        shouldValidate: false,
-        shouldDirty: false,
-      });
-      clearErrors(['password', 'confirmPassword']);
-      unregister('password');
-      unregister('confirmPassword');
-    }
-  }, [
-    requiresPassword,
-    changePassword,
-    isEditMode,
-    setValue,
-    clearErrors,
-    unregister,
-  ]);
 
   // Debounce email value to avoid excessive API calls
   const debouncedEmail = useDebounce(emailValue, 500);
@@ -250,7 +201,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
 
   // Preparar opciones de redes
   const networkOptions = useMemo(() => {
-    if (!networksData) return [];
+    if (!networksData || !Array.isArray(networksData)) return [];
     return networksData.map((network) => ({
       value: network.id,
       label: network.name,
@@ -472,63 +423,6 @@ export const MemberForm: React.FC<MemberFormProps> = ({
               </div>
             </CardContent>
           </Card>
-
-          {showPasswordCard && (
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>
-                  {isEditMode ? 'Cambiar Contraseña' : 'Crear Contraseña'}
-                </CardTitle>
-                {isEditMode && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setChangePassword((v) => !v)}
-                  >
-                    {changePassword ? 'Editar: ON' : 'Editar: OFF'}
-                  </Button>
-                )}
-              </CardHeader>
-              <CardContent>
-                {(isEditMode ? changePassword : requiresPassword) && (
-                  <div className="space-y-4">
-                    <PasswordField<FormValues>
-                      name="password"
-                      label={isEditMode ? 'Nueva Contraseña' : 'Contraseña'}
-                      register={register}
-                      rules={{
-                        required: requiresPassword
-                          ? 'La contraseña es requerida para este rol'
-                          : false,
-                      }}
-                      error={errors.password?.message}
-                      placeholder="Contraseña"
-                    />
-                    <PasswordField<FormValues>
-                      name="confirmPassword"
-                      label="Confirmar Contraseña"
-                      register={register}
-                      rules={{
-                        validate: (value) => {
-                          const shouldValidate = isEditMode
-                            ? changePassword
-                            : requiresPassword;
-                          if (!shouldValidate) return true;
-                          if (requiresPassword && !value)
-                            return 'Confirma la contraseña';
-                          return (
-                            value === password || 'Las contraseñas no coinciden'
-                          );
-                        },
-                      }}
-                      error={errors.confirmPassword?.message}
-                      placeholder="Confirmar Contraseña"
-                    />
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
 

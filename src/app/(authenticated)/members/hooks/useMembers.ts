@@ -423,7 +423,7 @@ export const useNetworks = () => {
   return useQuery({
     queryKey: ['networks'],
     queryFn: getNetworks,
-    staleTime: 60 * 60 * 1000, // 1 hour
+    staleTime: 5000, // 5 seconds to allow quick updates during seeding/debugging
   });
 };
 

@@ -378,6 +378,23 @@ export async function deleteSubSector(id: string) {
   }
 }
 
+export async function getAllZones() {
+  try {
+    const prisma = await getChurchPrisma();
+    const churchId = await getChurchId();
+    
+    return prisma.zones.findMany({
+      where: { church_id: churchId },
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true }
+    });
+  } catch (error) {
+    console.error('Error fetching zones:', error);
+    return [];
+  }
+}
+
+// Get sector stats
 export async function getSectorStats(churchSlug?: string) {
   const prisma = await getChurchPrisma(churchSlug);
   const churchId = await getChurchId(churchSlug);
