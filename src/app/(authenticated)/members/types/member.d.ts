@@ -39,6 +39,7 @@ export interface MemberFormData {
   pictureUrl?: string | null; // URL of uploaded picture
   notes?: string;
   ministries?: string[]; // Array of ministry IDs
+  network_id?: string | null; // ID of the network
   password?: string;
   confirmPassword?: string;
   picture?: File[]; // For file uploads

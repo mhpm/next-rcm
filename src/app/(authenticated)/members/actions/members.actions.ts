@@ -261,11 +261,8 @@ export const createMember = withErrorHandling(async function createMember(
       notes: parsed.notes || null,
       passwordHash,
       pictureUrl, // Now includes the uploaded image URL
-      church: {
-        connect: {
-          id: churchId,
-        },
-      },
+      network_id: parsed.network_id || null, // Add network_id
+      church_id: churchId,
     };
 
     const member = await prisma.members.create({
@@ -348,7 +345,7 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
       throw new NotFoundError('Member not found');
     }
 
-    const updateData: Prisma.MembersUpdateInput = {};
+    const updateData: Prisma.MembersUncheckedUpdateInput = {};
 
     // Strings and required-like fields
     if (parsed.firstName !== undefined)
@@ -385,6 +382,8 @@ export async function updateMember(id: string, data: Partial<MemberFormData>) {
     // Enums
     if (parsed.role !== undefined) updateData.role = parsed.role;
     if (parsed.gender !== undefined) updateData.gender = parsed.gender;
+    if (parsed.network_id !== undefined)
+      updateData.network_id = parsed.network_id || null; // Update network_id
 
     // Arrays
     if (parsed.password) {

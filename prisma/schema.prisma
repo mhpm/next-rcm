@@ -34,8 +34,24 @@ model Churches {
   eventPhases      EventPhases[]
   eventAttendances EventAttendances[]
   cellGoals        CellGoals[]
+  networks         Networks[]
 
   @@map("churches")
+}
+
+model Networks {
+  id        String   @id @default(cuid())
+  name      String
+  church_id String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  church  Churches  @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  members Members[]
+
+  @@unique([name, church_id])
+  @@index([church_id])
+  @@map("networks")
 }
 
 model Members {
@@ -62,11 +78,13 @@ model Members {
   sector_id     String?
   sub_sector_id String?
   cell_id       String?
+  network_id    String?          @map("network_id")
   createdAt     DateTime         @default(now()) @map("created_at")
   updatedAt     DateTime         @updatedAt @map("updated_at")
   ministries    MemberMinistry[]
 
   church           Churches     @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  network          Networks?    @relation(fields: [network_id], references: [id], onDelete: SetNull)
   ledMinistries    Ministries[] @relation("MinistryLeader")
   cells            Cells[]      @relation("CellLeader")
   hostedCells      Cells[]      @relation("CellHost")
@@ -88,6 +106,7 @@ model Members {
   @@index([createdAt])
   @@index([church_id])
   @@index([cell_id])
+  @@index([network_id])
   @@index([zone_id])
   @@index([sector_id])
   @@index([sub_sector_id])

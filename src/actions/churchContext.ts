@@ -4,7 +4,6 @@ import { Prisma } from '@/generated/prisma/client';
 // Tipos para operaciones de creación
 type MemberCreateManyData = Prisma.MembersCreateManyInput;
 type MinistryCreateManyData = Prisma.MinistriesCreateManyInput;
-type MemberMinistryCreateManyData = Prisma.MemberMinistryCreateManyInput;
 
 /**
  * Helper para crear un cliente Prisma con filtrado automático por church_id
@@ -502,28 +501,24 @@ export function createChurchPrisma(churchId: string) {
           args.where = { ...args.where, church_id: churchId };
           return query(args);
         },
+        async deleteMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+      },
+      networks: {
+        async findMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
         async findFirst({ args, query }) {
           args.where = { ...args.where, church_id: churchId };
           return query(args);
         },
-        async findUnique({ args, query }) {
-          // No modificar findUnique con church_id para evitar romper filtros únicos usados por connect/findUnique
-          return query(args);
-        },
-        async count({ args, query }) {
-          args.where = { ...args.where, church_id: churchId };
-          return query(args);
-        },
         async create({ args, query }) {
-          const data = args.data as Prisma.MemberMinistryCreateInput;
-          if (
-            !data.church &&
-            !data.member &&
-            !data.ministry &&
-            !data.member &&
-            !data.ministry
-          ) {
-            (args.data as Prisma.MemberMinistryCreateInput).church = {
+          const data = args.data as Prisma.NetworksCreateInput;
+          if (!data.church) {
+            (args.data as Prisma.NetworksCreateInput).church = {
               connect: { id: churchId },
             };
           }
@@ -531,32 +526,24 @@ export function createChurchPrisma(churchId: string) {
         },
         async createMany({ args, query }) {
           if (Array.isArray(args.data)) {
-            args.data = args.data.map((item: MemberMinistryCreateManyData) => {
-              // Solo agregar church_id si no hay IDs directos ya proporcionados
-              if (!item.memberId && !item.ministryId) {
-                return { ...item, church_id: churchId };
-              }
-              return item;
-            });
+            args.data = args.data.map(
+              (item: Prisma.NetworksCreateManyInput) => ({
+                ...item,
+                church_id: item.church_id || churchId,
+              })
+            );
           } else {
-            // Solo agregar church_id si no hay IDs directos ya proporcionados
-            const data = args.data as MemberMinistryCreateManyData;
-            if (!data.memberId && !data.ministryId) {
-              args.data = { ...args.data, church_id: churchId };
-            }
+            args.data = {
+              ...args.data,
+              church_id:
+                (args.data as Prisma.NetworksCreateManyInput).church_id ||
+                churchId,
+            };
           }
-          return query(args);
-        },
-        async update({ args, query }) {
-          // No forzar church_id en update de un registro único (where por id)
           return query(args);
         },
         async updateMany({ args, query }) {
           args.where = { ...args.where, church_id: churchId };
-          return query(args);
-        },
-        async delete({ args, query }) {
-          // No forzar church_id en delete de un registro único (where por id)
           return query(args);
         },
         async deleteMany({ args, query }) {
@@ -585,7 +572,15 @@ export async function getUserChurchSlug(): Promise<string | null> {
     // Buscar iglesia asociada al usuario
     const church = await prisma.churches.findFirst({
       where: {
-        OR: [{ owner_id: user.id }, { owner_id: user.primaryEmail }],
+        OR: [
+          { owner_id: user.id },
+          {
+            owner_id: {
+              equals: user.primaryEmail,
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
       select: { slug: true },
     });
@@ -605,7 +600,15 @@ export async function getUserChurchName(): Promise<string | null> {
     // Buscar iglesia asociada al usuario
     const church = await prisma.churches.findFirst({
       where: {
-        OR: [{ owner_id: user.id }, { owner_id: user.primaryEmail }],
+        OR: [
+          { owner_id: user.id },
+          {
+            owner_id: {
+              equals: user.primaryEmail,
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
       select: { name: true },
     });

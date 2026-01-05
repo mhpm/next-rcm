@@ -1,17 +1,26 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { useMemo, useEffect } from "react";
-import Link from "next/link";
-import { FaLink } from "react-icons/fa6";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import React, { useState } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { useMemo, useEffect } from 'react';
+import Link from 'next/link';
+import { FaLink } from 'react-icons/fa6';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 
-import { useEmailAvailability } from "@/app/(authenticated)/members/hooks/useMembers";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useMinistries } from "@/app/(authenticated)/ministries/hooks/useMinistries";
+import {
+  useEmailAvailability,
+  useNetworks,
+} from '@/app/(authenticated)/members/hooks/useMembers';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useMinistries } from '@/app/(authenticated)/ministries/hooks/useMinistries';
 import {
   InputField,
   SelectField,
@@ -19,13 +28,13 @@ import {
   PasswordField,
   EmailField,
   MultiSelectField,
-} from "@/components/FormControls";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '@/components/FormControls';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   memberFormSchema,
   memberFormSchemaEdit,
   MemberFormInput,
-} from "@/app/(authenticated)/members/schema/members.schema";
+} from '@/app/(authenticated)/members/schema/members.schema';
 
 // Usamos el tipo de entrada del esquema (antes de transformaciones)
 export type FormValues = MemberFormInput;
@@ -64,12 +73,12 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
-      gender: "MASCULINO",
-      role: "MIEMBRO",
+      gender: 'MASCULINO',
+      role: 'MIEMBRO',
       ...(initialData || {}),
     },
-    mode: "onChange",
-    reValidateMode: "onChange",
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     resolver: zodResolver(isEditMode ? memberFormSchemaEdit : memberFormSchema),
     shouldUnregister: true,
   });
@@ -77,24 +86,24 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   // Reset form when initialData changes (for async data loading)
   useEffect(() => {
     if (initialData) {
-      reset({ gender: "MASCULINO", ...initialData });
+      reset({ gender: 'MASCULINO', ...initialData });
     } else {
       reset({
-        gender: "MASCULINO",
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        street: "",
-        city: "",
-        state: "",
-        zip: "",
-        country: "",
-        birthDate: "",
-        baptismDate: "",
-        role: "MIEMBRO",
+        gender: 'MASCULINO',
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        street: '',
+        city: '',
+        state: '',
+        zip: '',
+        country: '',
+        birthDate: '',
+        baptismDate: '',
+        role: 'MIEMBRO',
         ministries: [],
-        notes: "",
+        notes: '',
       });
     }
   }, [initialData, reset]);
@@ -102,7 +111,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   // Asegurar que los ministerios iniciales queden en el estado del formulario
   useEffect(() => {
     if (initialData?.ministries && initialData.ministries.length > 0) {
-      setValue("ministries", initialData.ministries, { shouldValidate: false });
+      setValue('ministries', initialData.ministries, { shouldValidate: false });
     }
   }, [initialData?.ministries, setValue]);
 
@@ -111,14 +120,14 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   useEffect(() => {
     if (isEditMode) {
       setChangePassword(false);
-      setValue("password", "", { shouldValidate: false, shouldDirty: false });
-      setValue("confirmPassword", "", {
+      setValue('password', '', { shouldValidate: false, shouldDirty: false });
+      setValue('confirmPassword', '', {
         shouldValidate: false,
         shouldDirty: false,
       });
-      clearErrors(["password", "confirmPassword"]);
-      unregister("password");
-      unregister("confirmPassword");
+      clearErrors(['password', 'confirmPassword']);
+      unregister('password');
+      unregister('confirmPassword');
     }
   }, [isEditMode, initialData, setValue, clearErrors, unregister]);
 
@@ -127,18 +136,20 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   const { data: ministriesData, isLoading: isLoadingMinistries } =
     useMinistries({ limit: 1000, offset: 0 });
 
-  const password = watch("password");
-  const emailValue = watch("email");
-  const roleValue = watch("role");
+  const { data: networksData, isLoading: isLoadingNetworks } = useNetworks();
+
+  const password = watch('password');
+  const emailValue = watch('email');
+  const roleValue = watch('role');
 
   // Toggle to show password fields only when needed
   const [changePassword, setChangePassword] = useState(!isEditMode);
 
   const requiresPassword = useMemo(() => {
     return (
-      roleValue === "PASTOR" ||
-      roleValue === "LIDER" ||
-      roleValue === "SUPERVISOR"
+      roleValue === 'PASTOR' ||
+      roleValue === 'LIDER' ||
+      roleValue === 'SUPERVISOR'
     );
   }, [roleValue]);
 
@@ -146,21 +157,21 @@ export const MemberForm: React.FC<MemberFormProps> = ({
 
   // Trigger immediate re-validation of confirmPassword when password changes
   useEffect(() => {
-    trigger("confirmPassword");
+    trigger('confirmPassword');
   }, [password, trigger]);
 
   // Cuando el rol deja de requerir contraseña, limpia y desregistra los campos
   useEffect(() => {
     const fieldsVisible = isEditMode ? changePassword : requiresPassword;
     if (!fieldsVisible) {
-      setValue("password", "", { shouldValidate: false, shouldDirty: false });
-      setValue("confirmPassword", "", {
+      setValue('password', '', { shouldValidate: false, shouldDirty: false });
+      setValue('confirmPassword', '', {
         shouldValidate: false,
         shouldDirty: false,
       });
-      clearErrors(["password", "confirmPassword"]);
-      unregister("password");
-      unregister("confirmPassword");
+      clearErrors(['password', 'confirmPassword']);
+      unregister('password');
+      unregister('confirmPassword');
     }
   }, [
     requiresPassword,
@@ -183,7 +194,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     isLoading: isCheckingEmail,
     error: emailCheckError,
   } = useEmailAvailability(
-    debouncedEmail || "",
+    debouncedEmail || '',
     isEditMode ? currentMemberId : undefined
   );
 
@@ -194,11 +205,11 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     }
 
     if (isCheckingEmail) {
-      return "checking";
+      return 'checking';
     }
 
     if (emailCheckError) {
-      return "error";
+      return 'error';
     }
 
     // En modo edición, si el email es el mismo que el original, no mostrar validación
@@ -211,11 +222,11 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     }
 
     if (isEmailAvailable === true) {
-      return "available";
+      return 'available';
     }
 
     if (isEmailAvailable === false) {
-      return "taken";
+      return 'taken';
     }
 
     return null;
@@ -237,19 +248,28 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     }));
   }, [ministriesData]);
 
+  // Preparar opciones de redes
+  const networkOptions = useMemo(() => {
+    if (!networksData) return [];
+    return networksData.map((network) => ({
+      value: network.id,
+      label: network.name,
+    }));
+  }, [networksData]);
+
   // Obtener valor actual de ministerios
-  const currentMinistries = watch("ministries") || [];
+  const currentMinistries = watch('ministries') || [];
 
   // Función para manejar cambios en ministerios
   const handleMinistriesChange = (values: string[]) => {
-    setValue("ministries", values, { shouldValidate: true });
+    setValue('ministries', values, { shouldValidate: true });
   };
 
   const onInternalSubmit = async (values: FormValues) => {
     try {
       await onSubmit(values);
       if (!isEditMode && resetAfterSubmit) {
-        reset({ gender: "MASCULINO" });
+        reset({ gender: 'MASCULINO' });
         clearErrors();
       }
     } catch {
@@ -274,14 +294,14 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   name="firstName"
                   label="Nombre"
                   register={register}
-                  rules={{ required: "El nombre es requerido" }}
+                  rules={{ required: 'El nombre es requerido' }}
                   error={errors.firstName?.message}
                 />
                 <InputField<FormValues>
                   name="lastName"
                   label="Apellido"
                   register={register}
-                  rules={{ required: "El apellido es requerido" }}
+                  rules={{ required: 'El apellido es requerido' }}
                   error={errors.lastName?.message}
                 />
                 <EmailField<FormValues>
@@ -290,11 +310,11 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   register={register}
                   rules={{
                     validate: (value) => {
-                      const v = typeof value === "string" ? value : "";
+                      const v = typeof value === 'string' ? value : '';
                       if (!v) return true;
                       const ok =
                         /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(v);
-                      if (!ok) return "Formato de correo inválido";
+                      if (!ok) return 'Formato de correo inválido';
                       if (
                         isEditMode &&
                         initialData?.email &&
@@ -302,8 +322,8 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                       ) {
                         return true;
                       }
-                      if (emailValidationStatus === "taken") {
-                        return "Este correo ya está en uso";
+                      if (emailValidationStatus === 'taken') {
+                        return 'Este correo ya está en uso';
                       }
                       return true;
                     },
@@ -342,11 +362,11 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   name="gender"
                   label="Género"
                   options={[
-                    { label: "Masculino", value: "MASCULINO" },
-                    { label: "Femenino", value: "FEMENINO" },
+                    { label: 'Masculino', value: 'MASCULINO' },
+                    { label: 'Femenino', value: 'FEMENINO' },
                   ]}
                   register={register}
-                  rules={{ required: "Seleccione un género" }}
+                  rules={{ required: 'Seleccione un género' }}
                   error={errors.gender?.message}
                 />
               </div>
@@ -414,16 +434,24 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                 name="role"
                 label="Rol"
                 control={control}
-                rules={{ required: "El rol es requerido" }}
+                rules={{ required: 'El rol es requerido' }}
                 error={errors.role?.message}
                 options={[
-                  { value: "MIEMBRO", label: "Miembro" },
-                  { value: "SUPERVISOR", label: "Supervisor" },
-                  { value: "LIDER", label: "Líder" },
-                  { value: "ANFITRION", label: "Anfitrión" },
-                  { value: "PASTOR", label: "Pastor" },
-                  { value: "TESORERO", label: "Tesorero" },
+                  { value: 'MIEMBRO', label: 'Miembro' },
+                  { value: 'SUPERVISOR', label: 'Supervisor' },
+                  { value: 'LIDER', label: 'Líder' },
+                  { value: 'ANFITRION', label: 'Anfitrión' },
+                  { value: 'PASTOR', label: 'Pastor' },
+                  { value: 'TESORERO', label: 'Tesorero' },
                 ]}
+              />
+              <SelectField
+                name="network_id"
+                control={control}
+                label="Red"
+                options={networkOptions}
+                placeholder="Selecciona una red"
+                disabled={isLoadingNetworks}
               />
               <MultiSelectField
                 label="Ministerios"
@@ -449,7 +477,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>
-                  {isEditMode ? "Cambiar Contraseña" : "Crear Contraseña"}
+                  {isEditMode ? 'Cambiar Contraseña' : 'Crear Contraseña'}
                 </CardTitle>
                 {isEditMode && (
                   <Button
@@ -457,7 +485,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                     variant="outline"
                     onClick={() => setChangePassword((v) => !v)}
                   >
-                    {changePassword ? "Editar: ON" : "Editar: OFF"}
+                    {changePassword ? 'Editar: ON' : 'Editar: OFF'}
                   </Button>
                 )}
               </CardHeader>
@@ -466,11 +494,11 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   <div className="space-y-4">
                     <PasswordField<FormValues>
                       name="password"
-                      label={isEditMode ? "Nueva Contraseña" : "Contraseña"}
+                      label={isEditMode ? 'Nueva Contraseña' : 'Contraseña'}
                       register={register}
                       rules={{
                         required: requiresPassword
-                          ? "La contraseña es requerida para este rol"
+                          ? 'La contraseña es requerida para este rol'
                           : false,
                       }}
                       error={errors.password?.message}
@@ -487,9 +515,9 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                             : requiresPassword;
                           if (!shouldValidate) return true;
                           if (requiresPassword && !value)
-                            return "Confirma la contraseña";
+                            return 'Confirma la contraseña';
                           return (
-                            value === password || "Las contraseñas no coinciden"
+                            value === password || 'Las contraseñas no coinciden'
                           );
                         },
                       }}
@@ -512,12 +540,12 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {isEditMode ? "Actualizando..." : "Guardando..."}
+              {isEditMode ? 'Actualizando...' : 'Guardando...'}
             </>
           ) : isEditMode ? (
-            "Actualizar Miembro"
+            'Actualizar Miembro'
           ) : (
-            "Guardar Cambios"
+            'Guardar Cambios'
           )}
         </Button>
       </div>

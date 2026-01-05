@@ -1,7 +1,7 @@
-import "dotenv/config";
-import { PrismaClient, Prisma, $Enums } from "../generated/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { mockData } from "../src/mock";
+import 'dotenv/config';
+import { PrismaClient, Prisma, $Enums } from '../generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { mockData } from '../src/mock';
 
 // Create the adapter for PostgreSQL
 const adapter = new PrismaPg({
@@ -14,21 +14,22 @@ const prisma = new PrismaClient({
 });
 
 export async function main() {
-  console.log("🌱 Starting database seeding...");
+  console.log('🌱 Starting database seeding...');
 
   // Clear existing data in reverse order of dependencies
-  console.log("🧹 Clearing existing data...");
-  await prisma.groupFields.deleteMany();
-  await prisma.groups.deleteMany();
-  await prisma.cells.deleteMany();
-  await prisma.sectors.deleteMany();
-  await prisma.memberMinistry.deleteMany();
-  await prisma.members.deleteMany();
-  await prisma.ministries.deleteMany();
-  await prisma.churches.deleteMany();
+  console.log('🧹 Clearing existing data...');
+  // await prisma.groupFields.deleteMany();
+  // await prisma.groups.deleteMany();
+  // await prisma.cells.deleteMany();
+  // await prisma.sectors.deleteMany();
+  // await prisma.memberMinistry.deleteMany();
+  // await prisma.members.deleteMany();
+  // await prisma.networks.deleteMany();
+  // await prisma.ministries.deleteMany();
+  // await prisma.churches.deleteMany();
 
   // Seed Churches
-  console.log("⛪ Seeding churches...");
+  console.log('⛪ Seeding churches...');
   for (const church of mockData.churches) {
     const churchData: Prisma.ChurchesCreateInput = {
       id: church.id,
@@ -44,8 +45,38 @@ export async function main() {
   }
   console.log(`✅ Created ${mockData.churches.length} churches`);
 
+  // Seed Networks
+  console.log('🌐 Seeding networks...');
+  const defaultNetworks = [
+    'Varones',
+    'Damas',
+    'Jóvenes',
+    'Señoritas',
+    'DNA Adolescentes',
+    'DNA Niños',
+  ];
+
+  for (const church of mockData.churches) {
+    for (const name of defaultNetworks) {
+      await prisma.networks.upsert({
+        where: {
+          name_church_id: {
+            name,
+            church_id: church.id,
+          },
+        },
+        update: {},
+        create: {
+          name,
+          church_id: church.id,
+        },
+      });
+    }
+  }
+  console.log(`✅ Created networks for ${mockData.churches.length} churches`);
+
   // Seed Members
-  console.log("👥 Seeding members...");
+  console.log('👥 Seeding members...');
   for (const member of mockData.members) {
     const memberData: Prisma.MembersUncheckedCreateInput = {
       id: member.id,
@@ -78,7 +109,7 @@ export async function main() {
   console.log(`✅ Created ${mockData.members.length} members`);
 
   // Seed Ministries
-  console.log("🙏 Seeding ministries...");
+  console.log('🙏 Seeding ministries...');
   for (const ministry of mockData.ministries) {
     const ministryData: Prisma.MinistriesUncheckedCreateInput = {
       id: ministry.id,
@@ -95,12 +126,12 @@ export async function main() {
   }
   console.log(`✅ Created ${mockData.ministries.length} ministries`);
 
-  console.log("👥 Seeding groups...");
-  const demoChurchForGroups = mockData.churches.find((c) => c.slug === "demo");
+  console.log('👥 Seeding groups...');
+  const demoChurchForGroups = mockData.churches.find((c) => c.slug === 'demo');
   if (demoChurchForGroups) {
     const churchMembers = await prisma.members.findMany({
       where: { church_id: demoChurchForGroups.id },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: 'asc' },
     });
     let cursor = 0;
     const takeNext = (n: number) => {
@@ -129,7 +160,7 @@ export async function main() {
 
     const g1 = await prisma.groups.create({
       data: {
-        name: "Grupo Visión",
+        name: 'Grupo Visión',
         church_id: demoChurchForGroups.id,
         leader_id:
           pickLeader([$Enums.MemberRole.LIDER, $Enums.MemberRole.SUPERVISOR])
@@ -138,7 +169,7 @@ export async function main() {
     });
     const g2 = await prisma.groups.create({
       data: {
-        name: "Grupo Jóvenes",
+        name: 'Grupo Jóvenes',
         church_id: demoChurchForGroups.id,
         leader_id:
           pickLeader([$Enums.MemberRole.LIDER, $Enums.MemberRole.SUPERVISOR])
@@ -147,7 +178,7 @@ export async function main() {
     });
     const g3 = await prisma.groups.create({
       data: {
-        name: "Grupo Familias",
+        name: 'Grupo Familias',
         church_id: demoChurchForGroups.id,
         leader_id:
           pickLeader([$Enums.MemberRole.LIDER, $Enums.MemberRole.SUPERVISOR])
@@ -156,7 +187,7 @@ export async function main() {
     });
     const g4 = await prisma.groups.create({
       data: {
-        name: "Grupo Oración",
+        name: 'Grupo Oración',
         church_id: demoChurchForGroups.id,
         leader_id:
           pickLeader([$Enums.MemberRole.LIDER, $Enums.MemberRole.SUPERVISOR])
@@ -166,28 +197,28 @@ export async function main() {
 
     const g1a = await prisma.groups.create({
       data: {
-        name: "Visión Norte",
+        name: 'Visión Norte',
         church_id: demoChurchForGroups.id,
         parent_id: g1.id,
       } as Prisma.GroupsUncheckedCreateInput,
     });
     const g1b = await prisma.groups.create({
       data: {
-        name: "Visión Sur",
+        name: 'Visión Sur',
         church_id: demoChurchForGroups.id,
         parent_id: g1.id,
       } as Prisma.GroupsUncheckedCreateInput,
     });
     const g2a = await prisma.groups.create({
       data: {
-        name: "Jóvenes Alfa",
+        name: 'Jóvenes Alfa',
         church_id: demoChurchForGroups.id,
         parent_id: g2.id,
       } as Prisma.GroupsUncheckedCreateInput,
     });
     const g3a = await prisma.groups.create({
       data: {
-        name: "Familias Centro",
+        name: 'Familias Centro',
         church_id: demoChurchForGroups.id,
         parent_id: g3.id,
       } as Prisma.GroupsUncheckedCreateInput,
@@ -197,98 +228,98 @@ export async function main() {
       data: [
         {
           group_id: g1.id,
-          key: "direccion",
-          label: "Dirección",
+          key: 'direccion',
+          label: 'Dirección',
           type: $Enums.GroupFieldType.TEXT,
-          value: "Av. Reforma 123",
+          value: 'Av. Reforma 123',
         },
         {
           group_id: g1.id,
-          key: "anfitrion",
-          label: "Anfitrión",
+          key: 'anfitrion',
+          label: 'Anfitrión',
           type: $Enums.GroupFieldType.TEXT,
-          value: "Carlos Pérez",
+          value: 'Carlos Pérez',
         },
         {
           group_id: g1.id,
-          key: "activo",
-          label: "Activo",
+          key: 'activo',
+          label: 'Activo',
           type: $Enums.GroupFieldType.BOOLEAN,
           value: true,
         },
 
         {
           group_id: g2.id,
-          key: "dias",
-          label: "Días de reunión",
+          key: 'dias',
+          label: 'Días de reunión',
           type: $Enums.GroupFieldType.TEXT,
-          value: "Viernes",
+          value: 'Viernes',
         },
         {
           group_id: g2.id,
-          key: "edad_minima",
-          label: "Edad mínima",
+          key: 'edad_minima',
+          label: 'Edad mínima',
           type: $Enums.GroupFieldType.NUMBER,
           value: 15,
         },
 
         {
           group_id: g3.id,
-          key: "contacto",
-          label: "Contacto",
+          key: 'contacto',
+          label: 'Contacto',
           type: $Enums.GroupFieldType.TEXT,
-          value: "familias@demo.org",
+          value: 'familias@demo.org',
         },
         {
           group_id: g3.id,
-          key: "capacidad",
-          label: "Capacidad",
+          key: 'capacidad',
+          label: 'Capacidad',
           type: $Enums.GroupFieldType.NUMBER,
           value: 30,
         },
 
         {
           group_id: g4.id,
-          key: "hora",
-          label: "Hora",
+          key: 'hora',
+          label: 'Hora',
           type: $Enums.GroupFieldType.TEXT,
-          value: "6:00 AM",
+          value: '6:00 AM',
         },
         {
           group_id: g4.id,
-          key: "frecuencia",
-          label: "Frecuencia",
+          key: 'frecuencia',
+          label: 'Frecuencia',
           type: $Enums.GroupFieldType.TEXT,
-          value: "Diaria",
+          value: 'Diaria',
         },
 
         {
           group_id: g1a.id,
-          key: "direccion",
-          label: "Dirección",
+          key: 'direccion',
+          label: 'Dirección',
           type: $Enums.GroupFieldType.TEXT,
-          value: "Calle Norte 45",
+          value: 'Calle Norte 45',
         },
         {
           group_id: g1b.id,
-          key: "direccion",
-          label: "Dirección",
+          key: 'direccion',
+          label: 'Dirección',
           type: $Enums.GroupFieldType.TEXT,
-          value: "Calle Sur 78",
+          value: 'Calle Sur 78',
         },
         {
           group_id: g2a.id,
-          key: "anfitrion",
-          label: "Anfitrión",
+          key: 'anfitrion',
+          label: 'Anfitrión',
           type: $Enums.GroupFieldType.TEXT,
-          value: "María López",
+          value: 'María López',
         },
         {
           group_id: g3a.id,
-          key: "nota",
-          label: "Nota",
+          key: 'nota',
+          label: 'Nota',
           type: $Enums.GroupFieldType.TEXT,
-          value: "Reunión familiar mensual",
+          value: 'Reunión familiar mensual',
         },
       ],
     });
@@ -304,17 +335,17 @@ export async function main() {
     await connectMembersToGroup(g3a.id, 4);
 
     console.log(
-      "✅ Created 4 groups with subgroups, optional fields, and assigned members for demo"
+      '✅ Created 4 groups with subgroups, optional fields, and assigned members for demo'
     );
   } else {
-    console.log("⚠️ Demo church not found; skipping groups.");
+    console.log('⚠️ Demo church not found; skipping groups.');
   }
 
   // Seed 3 sectors for demo church explicitly
-  console.log("🏘️ Seeding demo sectors...");
-  const demoChurch = mockData.churches.find((c) => c.slug === "demo");
+  console.log('🏘️ Seeding demo sectors...');
+  const demoChurch = mockData.churches.find((c) => c.slug === 'demo');
   if (demoChurch) {
-    const demoSectorNames = ["Sector Norte", "Sector Centro", "Sector Sur"];
+    const demoSectorNames = ['Sector Norte', 'Sector Centro', 'Sector Sur'];
     for (const name of demoSectorNames) {
       await prisma.sectors.create({
         data: {
@@ -327,15 +358,15 @@ export async function main() {
     console.log(`✅ Created ${demoSectorNames.length} sectors for demo`);
   } else {
     console.log(
-      "⚠️ Demo church not found in mock data; skipping demo sectors."
+      '⚠️ Demo church not found in mock data; skipping demo sectors.'
     );
   }
 
-  console.log("🏘️ Seeding sectors and cells...");
+  console.log('🏘️ Seeding sectors and cells...');
   for (const church of mockData.churches) {
     const churchMembers = await prisma.members.findMany({
       where: { church_id: church.id },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: 'asc' },
     });
 
     if (churchMembers.length === 0) {
@@ -399,7 +430,7 @@ export async function main() {
 
       const sectorMembers = await prisma.members.findMany({
         where: { church_id: church.id, sector_id: sector.id },
-        orderBy: { createdAt: "asc" },
+        orderBy: { createdAt: 'asc' },
       });
 
       if (sectorMembers.length === 0) {
@@ -454,7 +485,7 @@ export async function main() {
   }
 
   // Seed Member-Ministry relationships
-  console.log("🔗 Seeding member-ministry relationships...");
+  console.log('🔗 Seeding member-ministry relationships...');
   for (const memberMinistry of mockData.memberMinistries) {
     const memberMinistryData: Prisma.MemberMinistryUncheckedCreateInput = {
       id: memberMinistry.id,
@@ -474,8 +505,8 @@ export async function main() {
   );
 
   // Display summary statistics
-  console.log("\n📊 Database seeding completed! Summary:");
-  console.log("==========================================");
+  console.log('\n📊 Database seeding completed! Summary:');
+  console.log('==========================================');
 
   for (const church of mockData.churches) {
     const members = mockData.members.filter((m) => m.church_id === church.id);
@@ -505,13 +536,13 @@ export async function main() {
       return acc;
     }, {} as Record<string, number>);
 
-    console.log("   📋 Roles:");
+    console.log('   📋 Roles:');
     Object.entries(roleBreakdown).forEach(([role, count]) => {
       console.log(`      ${role}: ${count}`);
     });
   }
 
-  console.log("\n🎉 Seeding completed successfully!");
+  console.log('\n🎉 Seeding completed successfully!');
 }
 
 main();

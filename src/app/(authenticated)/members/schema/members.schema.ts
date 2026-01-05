@@ -56,15 +56,15 @@ const baseMemberSchema = z.object({
     }),
 
   age: z
-    .union([z.string(), z.number()])
+    .union([z.string(), z.number(), z.null()])
     .optional()
     .transform((val) => {
       if (val === '' || val === undefined || val === null) return undefined;
       const num = typeof val === 'string' ? parseInt(val, 10) : val;
       return isNaN(num) ? undefined : num;
     })
-    .refine((val) => val === undefined || (val >= 1 && val <= 120), {
-      message: 'La edad debe estar entre 1 y 120 años',
+    .refine((val) => val === undefined || (val >= 0 && val <= 120), {
+      message: 'La edad debe estar entre 0 y 120 años',
     }),
 
   // Address fields
@@ -102,11 +102,8 @@ const baseMemberSchema = z.object({
   baptismDate: z.date().optional(),
 
   // Church-specific fields
-  ministries: z
-    .array(z.string())
-    .max(10, 'No se pueden asignar más de 10 ministerios')
-    .optional(),
-
+  network_id: z.string().optional().nullable(),
+  ministries: z.array(z.string()).optional(),
   notes: z
     .string()
     .max(500, 'Las notas no pueden exceder 500 caracteres')
@@ -238,15 +235,15 @@ const memberFormBase = z
       }),
 
     age: z
-      .union([z.string(), z.number()])
+      .union([z.string(), z.number(), z.null()])
       .optional()
       .transform((val) => {
         if (val === '' || val === undefined || val === null) return undefined;
         const num = typeof val === 'string' ? parseInt(val, 10) : val;
         return isNaN(num) ? undefined : num;
       })
-      .refine((val) => val === undefined || (val >= 1 && val <= 120), {
-        message: 'La edad debe estar entre 1 y 120 años',
+      .refine((val) => val === undefined || (val >= 0 && val <= 120), {
+        message: 'La edad debe estar entre 0 y 120 años',
       }),
 
     // Address fields
@@ -305,6 +302,7 @@ const memberFormBase = z
       ),
 
     // Church-specific fields
+    network_id: z.string().optional().nullable(),
     ministries: z
       .array(z.string())
       .max(10, 'No se pueden asignar más de 10 ministerios')
@@ -444,15 +442,15 @@ export const insertMemberFormSchema = baseMemberSchema
       }),
 
     age: z
-      .union([z.string(), z.number()])
+      .union([z.string(), z.number(), z.null()])
       .optional()
       .transform((val) => {
         if (val === '' || val === undefined || val === null) return undefined;
         const num = typeof val === 'string' ? parseInt(val, 10) : val;
         return isNaN(num) ? undefined : num;
       })
-      .refine((val) => val === undefined || (val >= 1 && val <= 120), {
-        message: 'La edad debe estar entre 1 y 120 años',
+      .refine((val) => val === undefined || (val >= 0 && val <= 120), {
+        message: 'La edad debe estar entre 0 y 120 años',
       }),
 
     gender: z

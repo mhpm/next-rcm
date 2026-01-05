@@ -17,6 +17,7 @@ import {
   isEmailTaken,
   getMemberStats,
 } from '../actions/members.actions';
+import { getNetworks } from '../actions/networks.actions';
 
 // ============ TYPES ============
 
@@ -416,6 +417,14 @@ export const usePrefetchMember = () => {
       staleTime: 5 * 60 * 1000,
     });
   };
+};
+
+export const useNetworks = () => {
+  return useQuery({
+    queryKey: ['networks'],
+    queryFn: getNetworks,
+    staleTime: 60 * 60 * 1000, // 1 hour
+  });
 };
 
 // Export types for use in components

@@ -58,6 +58,7 @@ export type MembersMinAggregateOutputType = {
   sector_id: string | null
   sub_sector_id: string | null
   cell_id: string | null
+  network_id: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -86,6 +87,7 @@ export type MembersMaxAggregateOutputType = {
   sector_id: string | null
   sub_sector_id: string | null
   cell_id: string | null
+  network_id: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -114,6 +116,7 @@ export type MembersCountAggregateOutputType = {
   sector_id: number
   sub_sector_id: number
   cell_id: number
+  network_id: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -152,6 +155,7 @@ export type MembersMinAggregateInputType = {
   sector_id?: true
   sub_sector_id?: true
   cell_id?: true
+  network_id?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -180,6 +184,7 @@ export type MembersMaxAggregateInputType = {
   sector_id?: true
   sub_sector_id?: true
   cell_id?: true
+  network_id?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -208,6 +213,7 @@ export type MembersCountAggregateInputType = {
   sector_id?: true
   sub_sector_id?: true
   cell_id?: true
+  network_id?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -323,6 +329,7 @@ export type MembersGroupByOutputType = {
   sector_id: string | null
   sub_sector_id: string | null
   cell_id: string | null
+  network_id: string | null
   createdAt: Date
   updatedAt: Date
   _count: MembersCountAggregateOutputType | null
@@ -374,10 +381,12 @@ export type MembersWhereInput = {
   sector_id?: Prisma.StringNullableFilter<"Members"> | string | null
   sub_sector_id?: Prisma.StringNullableFilter<"Members"> | string | null
   cell_id?: Prisma.StringNullableFilter<"Members"> | string | null
+  network_id?: Prisma.StringNullableFilter<"Members"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Members"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Members"> | Date | string
   ministries?: Prisma.MemberMinistryListRelationFilter
   church?: Prisma.XOR<Prisma.ChurchesScalarRelationFilter, Prisma.ChurchesWhereInput>
+  network?: Prisma.XOR<Prisma.NetworksNullableScalarRelationFilter, Prisma.NetworksWhereInput> | null
   ledMinistries?: Prisma.MinistriesListRelationFilter
   cells?: Prisma.CellsListRelationFilter
   hostedCells?: Prisma.CellsListRelationFilter
@@ -419,10 +428,12 @@ export type MembersOrderByWithRelationInput = {
   sector_id?: Prisma.SortOrderInput | Prisma.SortOrder
   sub_sector_id?: Prisma.SortOrderInput | Prisma.SortOrder
   cell_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  network_id?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   ministries?: Prisma.MemberMinistryOrderByRelationAggregateInput
   church?: Prisma.ChurchesOrderByWithRelationInput
+  network?: Prisma.NetworksOrderByWithRelationInput
   ledMinistries?: Prisma.MinistriesOrderByRelationAggregateInput
   cells?: Prisma.CellsOrderByRelationAggregateInput
   hostedCells?: Prisma.CellsOrderByRelationAggregateInput
@@ -467,10 +478,12 @@ export type MembersWhereUniqueInput = Prisma.AtLeast<{
   sector_id?: Prisma.StringNullableFilter<"Members"> | string | null
   sub_sector_id?: Prisma.StringNullableFilter<"Members"> | string | null
   cell_id?: Prisma.StringNullableFilter<"Members"> | string | null
+  network_id?: Prisma.StringNullableFilter<"Members"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Members"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Members"> | Date | string
   ministries?: Prisma.MemberMinistryListRelationFilter
   church?: Prisma.XOR<Prisma.ChurchesScalarRelationFilter, Prisma.ChurchesWhereInput>
+  network?: Prisma.XOR<Prisma.NetworksNullableScalarRelationFilter, Prisma.NetworksWhereInput> | null
   ledMinistries?: Prisma.MinistriesListRelationFilter
   cells?: Prisma.CellsListRelationFilter
   hostedCells?: Prisma.CellsListRelationFilter
@@ -512,6 +525,7 @@ export type MembersOrderByWithAggregationInput = {
   sector_id?: Prisma.SortOrderInput | Prisma.SortOrder
   sub_sector_id?: Prisma.SortOrderInput | Prisma.SortOrder
   cell_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  network_id?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.MembersCountOrderByAggregateInput
@@ -548,6 +562,7 @@ export type MembersScalarWhereWithAggregatesInput = {
   sector_id?: Prisma.StringNullableWithAggregatesFilter<"Members"> | string | null
   sub_sector_id?: Prisma.StringNullableWithAggregatesFilter<"Members"> | string | null
   cell_id?: Prisma.StringNullableWithAggregatesFilter<"Members"> | string | null
+  network_id?: Prisma.StringNullableWithAggregatesFilter<"Members"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Members"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Members"> | Date | string
 }
@@ -575,6 +590,7 @@ export type MembersCreateInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -616,6 +632,7 @@ export type MembersUncheckedCreateInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -655,6 +672,7 @@ export type MembersUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -696,6 +714,7 @@ export type MembersUncheckedUpdateInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -736,6 +755,7 @@ export type MembersCreateManyInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -787,6 +807,7 @@ export type MembersUncheckedUpdateManyInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -825,6 +846,7 @@ export type MembersCountOrderByAggregateInput = {
   sector_id?: Prisma.SortOrder
   sub_sector_id?: Prisma.SortOrder
   cell_id?: Prisma.SortOrder
+  network_id?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -857,6 +879,7 @@ export type MembersMaxOrderByAggregateInput = {
   sector_id?: Prisma.SortOrder
   sub_sector_id?: Prisma.SortOrder
   cell_id?: Prisma.SortOrder
+  network_id?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -885,6 +908,7 @@ export type MembersMinOrderByAggregateInput = {
   sector_id?: Prisma.SortOrder
   sub_sector_id?: Prisma.SortOrder
   cell_id?: Prisma.SortOrder
+  network_id?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -942,6 +966,48 @@ export type MembersUncheckedUpdateManyWithoutChurchNestedInput = {
   connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
   update?: Prisma.MembersUpdateWithWhereUniqueWithoutChurchInput | Prisma.MembersUpdateWithWhereUniqueWithoutChurchInput[]
   updateMany?: Prisma.MembersUpdateManyWithWhereWithoutChurchInput | Prisma.MembersUpdateManyWithWhereWithoutChurchInput[]
+  deleteMany?: Prisma.MembersScalarWhereInput | Prisma.MembersScalarWhereInput[]
+}
+
+export type MembersCreateNestedManyWithoutNetworkInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutNetworkInput, Prisma.MembersUncheckedCreateWithoutNetworkInput> | Prisma.MembersCreateWithoutNetworkInput[] | Prisma.MembersUncheckedCreateWithoutNetworkInput[]
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutNetworkInput | Prisma.MembersCreateOrConnectWithoutNetworkInput[]
+  createMany?: Prisma.MembersCreateManyNetworkInputEnvelope
+  connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+}
+
+export type MembersUncheckedCreateNestedManyWithoutNetworkInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutNetworkInput, Prisma.MembersUncheckedCreateWithoutNetworkInput> | Prisma.MembersCreateWithoutNetworkInput[] | Prisma.MembersUncheckedCreateWithoutNetworkInput[]
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutNetworkInput | Prisma.MembersCreateOrConnectWithoutNetworkInput[]
+  createMany?: Prisma.MembersCreateManyNetworkInputEnvelope
+  connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+}
+
+export type MembersUpdateManyWithoutNetworkNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutNetworkInput, Prisma.MembersUncheckedCreateWithoutNetworkInput> | Prisma.MembersCreateWithoutNetworkInput[] | Prisma.MembersUncheckedCreateWithoutNetworkInput[]
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutNetworkInput | Prisma.MembersCreateOrConnectWithoutNetworkInput[]
+  upsert?: Prisma.MembersUpsertWithWhereUniqueWithoutNetworkInput | Prisma.MembersUpsertWithWhereUniqueWithoutNetworkInput[]
+  createMany?: Prisma.MembersCreateManyNetworkInputEnvelope
+  set?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  disconnect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  delete?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  update?: Prisma.MembersUpdateWithWhereUniqueWithoutNetworkInput | Prisma.MembersUpdateWithWhereUniqueWithoutNetworkInput[]
+  updateMany?: Prisma.MembersUpdateManyWithWhereWithoutNetworkInput | Prisma.MembersUpdateManyWithWhereWithoutNetworkInput[]
+  deleteMany?: Prisma.MembersScalarWhereInput | Prisma.MembersScalarWhereInput[]
+}
+
+export type MembersUncheckedUpdateManyWithoutNetworkNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutNetworkInput, Prisma.MembersUncheckedCreateWithoutNetworkInput> | Prisma.MembersCreateWithoutNetworkInput[] | Prisma.MembersUncheckedCreateWithoutNetworkInput[]
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutNetworkInput | Prisma.MembersCreateOrConnectWithoutNetworkInput[]
+  upsert?: Prisma.MembersUpsertWithWhereUniqueWithoutNetworkInput | Prisma.MembersUpsertWithWhereUniqueWithoutNetworkInput[]
+  createMany?: Prisma.MembersCreateManyNetworkInputEnvelope
+  set?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  disconnect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  delete?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
+  update?: Prisma.MembersUpdateWithWhereUniqueWithoutNetworkInput | Prisma.MembersUpdateWithWhereUniqueWithoutNetworkInput[]
+  updateMany?: Prisma.MembersUpdateManyWithWhereWithoutNetworkInput | Prisma.MembersUpdateManyWithWhereWithoutNetworkInput[]
   deleteMany?: Prisma.MembersScalarWhereInput | Prisma.MembersScalarWhereInput[]
 }
 
@@ -1365,6 +1431,7 @@ export type MembersCreateWithoutChurchInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -1405,6 +1472,7 @@ export type MembersUncheckedCreateWithoutChurchInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -1474,8 +1542,115 @@ export type MembersScalarWhereInput = {
   sector_id?: Prisma.StringNullableFilter<"Members"> | string | null
   sub_sector_id?: Prisma.StringNullableFilter<"Members"> | string | null
   cell_id?: Prisma.StringNullableFilter<"Members"> | string | null
+  network_id?: Prisma.StringNullableFilter<"Members"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Members"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Members"> | Date | string
+}
+
+export type MembersCreateWithoutNetworkInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email?: string | null
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
+  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
+  subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
+  ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+}
+
+export type MembersUncheckedCreateWithoutNetworkInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email?: string | null
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  zone_id?: string | null
+  sector_id?: string | null
+  sub_sector_id?: string | null
+  cell_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
+  spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+}
+
+export type MembersCreateOrConnectWithoutNetworkInput = {
+  where: Prisma.MembersWhereUniqueInput
+  create: Prisma.XOR<Prisma.MembersCreateWithoutNetworkInput, Prisma.MembersUncheckedCreateWithoutNetworkInput>
+}
+
+export type MembersCreateManyNetworkInputEnvelope = {
+  data: Prisma.MembersCreateManyNetworkInput | Prisma.MembersCreateManyNetworkInput[]
+  skipDuplicates?: boolean
+}
+
+export type MembersUpsertWithWhereUniqueWithoutNetworkInput = {
+  where: Prisma.MembersWhereUniqueInput
+  update: Prisma.XOR<Prisma.MembersUpdateWithoutNetworkInput, Prisma.MembersUncheckedUpdateWithoutNetworkInput>
+  create: Prisma.XOR<Prisma.MembersCreateWithoutNetworkInput, Prisma.MembersUncheckedCreateWithoutNetworkInput>
+}
+
+export type MembersUpdateWithWhereUniqueWithoutNetworkInput = {
+  where: Prisma.MembersWhereUniqueInput
+  data: Prisma.XOR<Prisma.MembersUpdateWithoutNetworkInput, Prisma.MembersUncheckedUpdateWithoutNetworkInput>
+}
+
+export type MembersUpdateManyWithWhereWithoutNetworkInput = {
+  where: Prisma.MembersScalarWhereInput
+  data: Prisma.XOR<Prisma.MembersUpdateManyMutationInput, Prisma.MembersUncheckedUpdateManyWithoutNetworkInput>
 }
 
 export type MembersCreateWithoutLedMinistriesInput = {
@@ -1501,6 +1676,7 @@ export type MembersCreateWithoutLedMinistriesInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
@@ -1541,6 +1717,7 @@ export type MembersUncheckedCreateWithoutLedMinistriesInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -1595,6 +1772,7 @@ export type MembersUpdateWithoutLedMinistriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
@@ -1635,6 +1813,7 @@ export type MembersUncheckedUpdateWithoutLedMinistriesInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -1673,6 +1852,7 @@ export type MembersCreateWithoutCellsInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
@@ -1713,6 +1893,7 @@ export type MembersUncheckedCreateWithoutCellsInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -1756,6 +1937,7 @@ export type MembersCreateWithoutHostedCellsInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
@@ -1796,6 +1978,7 @@ export type MembersUncheckedCreateWithoutHostedCellsInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -1839,6 +2022,7 @@ export type MembersCreateWithoutAssistedCellsInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -1879,6 +2063,7 @@ export type MembersUncheckedCreateWithoutAssistedCellsInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -1922,6 +2107,7 @@ export type MembersCreateWithoutCellInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -1961,6 +2147,7 @@ export type MembersUncheckedCreateWithoutCellInput = {
   zone_id?: string | null
   sector_id?: string | null
   sub_sector_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -2021,6 +2208,7 @@ export type MembersUpdateWithoutCellsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
@@ -2061,6 +2249,7 @@ export type MembersUncheckedUpdateWithoutCellsInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -2110,6 +2299,7 @@ export type MembersUpdateWithoutHostedCellsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
@@ -2150,6 +2340,7 @@ export type MembersUncheckedUpdateWithoutHostedCellsInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -2199,6 +2390,7 @@ export type MembersUpdateWithoutAssistedCellsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -2239,6 +2431,7 @@ export type MembersUncheckedUpdateWithoutAssistedCellsInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -2293,6 +2486,7 @@ export type MembersCreateWithoutLedZonesInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -2333,6 +2527,7 @@ export type MembersUncheckedCreateWithoutLedZonesInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -2376,6 +2571,7 @@ export type MembersCreateWithoutZoneInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -2415,6 +2611,7 @@ export type MembersUncheckedCreateWithoutZoneInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -2475,6 +2672,7 @@ export type MembersUpdateWithoutLedZonesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -2515,6 +2713,7 @@ export type MembersUncheckedUpdateWithoutLedZonesInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -2569,6 +2768,7 @@ export type MembersCreateWithoutLedSectorsInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -2609,6 +2809,7 @@ export type MembersUncheckedCreateWithoutLedSectorsInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -2652,6 +2853,7 @@ export type MembersCreateWithoutSectorInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -2691,6 +2893,7 @@ export type MembersUncheckedCreateWithoutSectorInput = {
   zone_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -2751,6 +2954,7 @@ export type MembersUpdateWithoutLedSectorsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -2791,6 +2995,7 @@ export type MembersUncheckedUpdateWithoutLedSectorsInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -2845,6 +3050,7 @@ export type MembersCreateWithoutLedSubSectorsInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -2885,6 +3091,7 @@ export type MembersUncheckedCreateWithoutLedSubSectorsInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -2928,6 +3135,7 @@ export type MembersCreateWithoutSubSectorInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -2967,6 +3175,7 @@ export type MembersUncheckedCreateWithoutSubSectorInput = {
   zone_id?: string | null
   sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -3027,6 +3236,7 @@ export type MembersUpdateWithoutLedSubSectorsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -3067,6 +3277,7 @@ export type MembersUncheckedUpdateWithoutLedSubSectorsInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -3121,6 +3332,7 @@ export type MembersCreateWithoutLedGroupsInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -3161,6 +3373,7 @@ export type MembersUncheckedCreateWithoutLedGroupsInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -3204,6 +3417,7 @@ export type MembersCreateWithoutGroupsInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -3244,6 +3458,7 @@ export type MembersUncheckedCreateWithoutGroupsInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -3298,6 +3513,7 @@ export type MembersUpdateWithoutLedGroupsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -3338,6 +3554,7 @@ export type MembersUncheckedUpdateWithoutLedGroupsInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -3391,6 +3608,7 @@ export type MembersCreateWithoutMinistriesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -3432,6 +3650,7 @@ export type MembersUncheckedCreateWithoutMinistriesInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
@@ -3485,6 +3704,7 @@ export type MembersUpdateWithoutMinistriesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -3526,6 +3746,7 @@ export type MembersUncheckedUpdateWithoutMinistriesInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
@@ -3564,6 +3785,7 @@ export type MembersCreateWithoutInvitedFriendsInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -3604,6 +3826,7 @@ export type MembersUncheckedCreateWithoutInvitedFriendsInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -3647,6 +3870,7 @@ export type MembersCreateWithoutSpiritualFriendsInput = {
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
@@ -3687,6 +3911,7 @@ export type MembersUncheckedCreateWithoutSpiritualFriendsInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
@@ -3741,6 +3966,7 @@ export type MembersUpdateWithoutInvitedFriendsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -3781,6 +4007,7 @@ export type MembersUncheckedUpdateWithoutInvitedFriendsInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -3830,6 +4057,7 @@ export type MembersUpdateWithoutSpiritualFriendsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -3870,6 +4098,7 @@ export type MembersUncheckedUpdateWithoutSpiritualFriendsInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -3908,6 +4137,7 @@ export type MembersCreateManyChurchInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -3934,6 +4164,7 @@ export type MembersUpdateWithoutChurchInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -3974,6 +4205,7 @@ export type MembersUncheckedUpdateWithoutChurchInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -4013,6 +4245,143 @@ export type MembersUncheckedUpdateManyWithoutChurchInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MembersCreateManyNetworkInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email?: string | null
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  zone_id?: string | null
+  sector_id?: string | null
+  sub_sector_id?: string | null
+  cell_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MembersUpdateWithoutNetworkInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
+  spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
+  subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
+  ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+}
+
+export type MembersUncheckedUpdateWithoutNetworkInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  zone_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
+  spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+}
+
+export type MembersUncheckedUpdateManyWithoutNetworkInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  zone_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -4040,6 +4409,7 @@ export type MembersCreateManyCellInput = {
   zone_id?: string | null
   sector_id?: string | null
   sub_sector_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -4067,6 +4437,7 @@ export type MembersUpdateWithoutCellInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -4106,6 +4477,7 @@ export type MembersUncheckedUpdateWithoutCellInput = {
   zone_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -4145,6 +4517,7 @@ export type MembersUncheckedUpdateManyWithoutCellInput = {
   zone_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -4172,6 +4545,7 @@ export type MembersCreateManyZoneInput = {
   sector_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -4199,6 +4573,7 @@ export type MembersUpdateWithoutZoneInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -4238,6 +4613,7 @@ export type MembersUncheckedUpdateWithoutZoneInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -4277,6 +4653,7 @@ export type MembersUncheckedUpdateManyWithoutZoneInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -4304,6 +4681,7 @@ export type MembersCreateManySectorInput = {
   zone_id?: string | null
   sub_sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -4331,6 +4709,7 @@ export type MembersUpdateWithoutSectorInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -4370,6 +4749,7 @@ export type MembersUncheckedUpdateWithoutSectorInput = {
   zone_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -4409,6 +4789,7 @@ export type MembersUncheckedUpdateManyWithoutSectorInput = {
   zone_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -4436,6 +4817,7 @@ export type MembersCreateManySubSectorInput = {
   zone_id?: string | null
   sector_id?: string | null
   cell_id?: string | null
+  network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -4463,6 +4845,7 @@ export type MembersUpdateWithoutSubSectorInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -4502,6 +4885,7 @@ export type MembersUncheckedUpdateWithoutSubSectorInput = {
   zone_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -4541,6 +4925,7 @@ export type MembersUncheckedUpdateManyWithoutSubSectorInput = {
   zone_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -4568,6 +4953,7 @@ export type MembersUpdateWithoutGroupsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
@@ -4608,6 +4994,7 @@ export type MembersUncheckedUpdateWithoutGroupsInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
@@ -4647,6 +5034,7 @@ export type MembersUncheckedUpdateManyWithoutGroupsInput = {
   sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -4805,10 +5193,12 @@ export type MembersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   sector_id?: boolean
   sub_sector_id?: boolean
   cell_id?: boolean
+  network_id?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   ministries?: boolean | Prisma.Members$ministriesArgs<ExtArgs>
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
+  network?: boolean | Prisma.Members$networkArgs<ExtArgs>
   ledMinistries?: boolean | Prisma.Members$ledMinistriesArgs<ExtArgs>
   cells?: boolean | Prisma.Members$cellsArgs<ExtArgs>
   hostedCells?: boolean | Prisma.Members$hostedCellsArgs<ExtArgs>
@@ -4851,9 +5241,11 @@ export type MembersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   sector_id?: boolean
   sub_sector_id?: boolean
   cell_id?: boolean
+  network_id?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
+  network?: boolean | Prisma.Members$networkArgs<ExtArgs>
   cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
   zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
   sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
@@ -4884,9 +5276,11 @@ export type MembersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   sector_id?: boolean
   sub_sector_id?: boolean
   cell_id?: boolean
+  network_id?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
+  network?: boolean | Prisma.Members$networkArgs<ExtArgs>
   cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
   zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
   sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
@@ -4917,14 +5311,16 @@ export type MembersSelectScalar = {
   sector_id?: boolean
   sub_sector_id?: boolean
   cell_id?: boolean
+  network_id?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type MembersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "age" | "street" | "city" | "state" | "zip" | "country" | "birthDate" | "baptismDate" | "role" | "gender" | "pictureUrl" | "notes" | "passwordHash" | "church_id" | "zone_id" | "sector_id" | "sub_sector_id" | "cell_id" | "createdAt" | "updatedAt", ExtArgs["result"]["members"]>
+export type MembersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "age" | "street" | "city" | "state" | "zip" | "country" | "birthDate" | "baptismDate" | "role" | "gender" | "pictureUrl" | "notes" | "passwordHash" | "church_id" | "zone_id" | "sector_id" | "sub_sector_id" | "cell_id" | "network_id" | "createdAt" | "updatedAt", ExtArgs["result"]["members"]>
 export type MembersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ministries?: boolean | Prisma.Members$ministriesArgs<ExtArgs>
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
+  network?: boolean | Prisma.Members$networkArgs<ExtArgs>
   ledMinistries?: boolean | Prisma.Members$ledMinistriesArgs<ExtArgs>
   cells?: boolean | Prisma.Members$cellsArgs<ExtArgs>
   hostedCells?: boolean | Prisma.Members$hostedCellsArgs<ExtArgs>
@@ -4944,6 +5340,7 @@ export type MembersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
 }
 export type MembersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
+  network?: boolean | Prisma.Members$networkArgs<ExtArgs>
   cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
   zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
   sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
@@ -4951,6 +5348,7 @@ export type MembersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
 }
 export type MembersIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
+  network?: boolean | Prisma.Members$networkArgs<ExtArgs>
   cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
   zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
   sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
@@ -4962,6 +5360,7 @@ export type $MembersPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     ministries: Prisma.$MemberMinistryPayload<ExtArgs>[]
     church: Prisma.$ChurchesPayload<ExtArgs>
+    network: Prisma.$NetworksPayload<ExtArgs> | null
     ledMinistries: Prisma.$MinistriesPayload<ExtArgs>[]
     cells: Prisma.$CellsPayload<ExtArgs>[]
     hostedCells: Prisma.$CellsPayload<ExtArgs>[]
@@ -5002,6 +5401,7 @@ export type $MembersPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     sector_id: string | null
     sub_sector_id: string | null
     cell_id: string | null
+    network_id: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["members"]>
@@ -5400,6 +5800,7 @@ export interface Prisma__MembersClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   ministries<T extends Prisma.Members$ministriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ministriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberMinistryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   church<T extends Prisma.ChurchesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChurchesDefaultArgs<ExtArgs>>): Prisma.Prisma__ChurchesClient<runtime.Types.Result.GetResult<Prisma.$ChurchesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  network<T extends Prisma.Members$networkArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$networkArgs<ExtArgs>>): Prisma.Prisma__NetworksClient<runtime.Types.Result.GetResult<Prisma.$NetworksPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   ledMinistries<T extends Prisma.Members$ledMinistriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ledMinistriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MinistriesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cells<T extends Prisma.Members$cellsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$cellsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CellsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   hostedCells<T extends Prisma.Members$hostedCellsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$hostedCellsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CellsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5467,6 +5868,7 @@ export interface MembersFieldRefs {
   readonly sector_id: Prisma.FieldRef<"Members", 'String'>
   readonly sub_sector_id: Prisma.FieldRef<"Members", 'String'>
   readonly cell_id: Prisma.FieldRef<"Members", 'String'>
+  readonly network_id: Prisma.FieldRef<"Members", 'String'>
   readonly createdAt: Prisma.FieldRef<"Members", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Members", 'DateTime'>
 }
@@ -5886,6 +6288,25 @@ export type Members$ministriesArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.MemberMinistryScalarFieldEnum | Prisma.MemberMinistryScalarFieldEnum[]
+}
+
+/**
+ * Members.network
+ */
+export type Members$networkArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Networks
+   */
+  select?: Prisma.NetworksSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Networks
+   */
+  omit?: Prisma.NetworksOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NetworksInclude<ExtArgs> | null
+  where?: Prisma.NetworksWhereInput
 }
 
 /**

@@ -1,8 +1,8 @@
-import "dotenv/config";
-import { PrismaClient, $Enums } from "../generated/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import * as XLSX from "xlsx";
-import fs from "fs";
+import 'dotenv/config';
+import { PrismaClient, $Enums } from '../generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import * as XLSX from 'xlsx';
+import fs from 'fs';
 
 // Create the adapter for PostgreSQL
 const adapter = new PrismaPg({
@@ -39,8 +39,8 @@ async function importMembers(filePath: string, churchId: string) {
 
   console.log(`📊 Found ${data.length} rows in the first sheet.`);
   if (data.length > 0) {
-    console.log("🔍 First row keys (headers):", Object.keys(data[0]));
-    console.log("🔍 First row data:", data[0]);
+    console.log('🔍 First row keys (headers):', Object.keys(data[0]));
+    console.log('🔍 First row data:', data[0]);
   }
 
   let successCount = 0;
@@ -51,49 +51,57 @@ async function importMembers(filePath: string, churchId: string) {
       // Map row to Member data
       // Accepted headers (case insensitive logic can be added if needed, but here we check common ones)
 
+      // Try to get separate first names first
+      const name1 = row['nombre 1'] || row['Nombre 1'] || row['NOMBRE 1'] || '';
+
+      const name2 = row['nombre 2'] || row['Nombre 2'] || row['NOMBRE 2'] || '';
+
+      const combinedName = `${name1} ${name2}`.trim();
+
       const firstName =
-        row["firstName"] ||
-        row["firstname"] ||
-        row["Nombre"] ||
-        row["nombre"] ||
-        row["First Name"] ||
-        row["NOMBRES"] ||
-        row["NOMBRE"];
+        combinedName ||
+        row['firstName'] ||
+        row['firstname'] ||
+        row['Nombre'] ||
+        row['nombre'] ||
+        row['First Name'] ||
+        row['NOMBRES'] ||
+        row['NOMBRE'];
 
       // Combine Last Names
       const lastName1 =
-        row["APELLIDO PATERNO"] ||
-        row["Apellido Paterno"] ||
-        row["apellido paterno"] ||
-        "";
+        row['APELLIDO PATERNO'] ||
+        row['Apellido Paterno'] ||
+        row['apellido paterno'] ||
+        '';
       const lastName2 =
-        row["APELLIDO MATERNO"] ||
-        row["Apellido Materno"] ||
-        row["apellido materno"] ||
-        "";
+        row['APELLIDO MATERNO'] ||
+        row['Apellido Materno'] ||
+        row['apellido materno'] ||
+        '';
       const lastName =
         `${lastName1} ${lastName2}`.trim() ||
-        row["lastName"] ||
-        row["lastname"] ||
-        row["Apellido"] ||
-        row["apellido"] ||
-        row["Last Name"];
+        row['lastName'] ||
+        row['lastname'] ||
+        row['Apellido'] ||
+        row['apellido'] ||
+        row['Last Name'];
 
       const email =
-        row["email"] ||
-        row["Email"] ||
-        row["Correo"] ||
-        row["correo"] ||
-        row["CORREO"];
+        row['email'] ||
+        row['Email'] ||
+        row['Correo'] ||
+        row['correo'] ||
+        row['CORREO'];
 
       // Phone: convert to string
       let phone =
-        row["phone"] ||
-        row["Phone"] ||
-        row["Telefono"] ||
-        row["telefono"] ||
-        row["Celular"] ||
-        row["celular"];
+        row['phone'] ||
+        row['Phone'] ||
+        row['Telefono'] ||
+        row['telefono'] ||
+        row['Celular'] ||
+        row['celular'];
       if (phone) phone = String(phone);
 
       const memberData: any = {
@@ -119,21 +127,22 @@ async function importMembers(filePath: string, churchId: string) {
 
       // Handle Gender
       const genderRaw =
-        row["gender"] ||
-        row["Gender"] ||
-        row["Genero"] ||
-        row["genero"] ||
-        row["sexo"] ||
-        row["SEXO"];
+        row['gender'] ||
+        row['Gender'] ||
+        row['Genero'] ||
+        row['Género'] ||
+        row['genero'] ||
+        row['sexo'] ||
+        row['SEXO'];
       if (genderRaw) {
         const g = String(genderRaw).toUpperCase();
-        if (g.includes("FEM") || g === "F" || g === "MUJER") {
+        if (g.includes('FEM') || g === 'F' || g === 'MUJER') {
           memberData.gender = $Enums.Gender.FEMENINO;
         }
       }
 
       // Handle Age
-      const ageRaw = row["age"] || row["Age"] || row["Edad"] || row["edad"];
+      const ageRaw = row['age'] || row['Age'] || row['Edad'] || row['edad'];
       if (ageRaw) memberData.age = Number(ageRaw);
 
       // Upsert by email if present
@@ -172,11 +181,11 @@ async function importMembers(filePath: string, churchId: string) {
 const args = process.argv.slice(2);
 if (args.length < 2) {
   console.log(
-    "\nUsage: npx tsx scripts/import-members.ts <file_path.xlsx> <church_id>"
+    '\nUsage: npx tsx scripts/import-members.ts <file_path.xlsx> <church_id>'
   );
-  console.log("\nExample:");
+  console.log('\nExample:');
   console.log(
-    "  npx tsx scripts/import-members.ts ./data/members.xlsx cm12345678"
+    '  npx tsx scripts/import-members.ts ./data/members.xlsx cm12345678'
   );
   process.exit(0);
 }

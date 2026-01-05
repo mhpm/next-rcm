@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   Churches: 'Churches',
+  Networks: 'Networks',
   Members: 'Members',
   Ministries: 'Ministries',
   Cells: 'Cells',
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "churches" | "members" | "ministries" | "cells" | "zones" | "sectors" | "subSectors" | "groups" | "groupFields" | "cellGoals" | "reports" | "reportFields" | "reportEntries" | "reportEntryValues" | "memberMinistry" | "friends" | "events" | "eventAttendances" | "eventPhases"
+    modelProps: "churches" | "networks" | "members" | "ministries" | "cells" | "zones" | "sectors" | "subSectors" | "groups" | "groupFields" | "cellGoals" | "reports" | "reportFields" | "reportEntries" | "reportEntryValues" | "memberMinistry" | "friends" | "events" | "eventAttendances" | "eventPhases"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -493,6 +494,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ChurchesCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ChurchesCountAggregateOutputType> | number
+        }
+      }
+    }
+    Networks: {
+      payload: Prisma.$NetworksPayload<ExtArgs>
+      fields: Prisma.NetworksFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NetworksFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NetworksPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NetworksFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NetworksPayload>
+        }
+        findFirst: {
+          args: Prisma.NetworksFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NetworksPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NetworksFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NetworksPayload>
+        }
+        findMany: {
+          args: Prisma.NetworksFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NetworksPayload>[]
+        }
+        create: {
+          args: Prisma.NetworksCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NetworksPayload>
+        }
+        createMany: {
+          args: Prisma.NetworksCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NetworksCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NetworksPayload>[]
+        }
+        delete: {
+          args: Prisma.NetworksDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NetworksPayload>
+        }
+        update: {
+          args: Prisma.NetworksUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NetworksPayload>
+        }
+        deleteMany: {
+          args: Prisma.NetworksDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NetworksUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NetworksUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NetworksPayload>[]
+        }
+        upsert: {
+          args: Prisma.NetworksUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NetworksPayload>
+        }
+        aggregate: {
+          args: Prisma.NetworksAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNetworks>
+        }
+        groupBy: {
+          args: Prisma.NetworksGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NetworksGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NetworksCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NetworksCountAggregateOutputType> | number
         }
       }
     }
@@ -1879,6 +1954,17 @@ export const ChurchesScalarFieldEnum = {
 export type ChurchesScalarFieldEnum = (typeof ChurchesScalarFieldEnum)[keyof typeof ChurchesScalarFieldEnum]
 
 
+export const NetworksScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  church_id: 'church_id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NetworksScalarFieldEnum = (typeof NetworksScalarFieldEnum)[keyof typeof NetworksScalarFieldEnum]
+
+
 export const MembersScalarFieldEnum = {
   id: 'id',
   firstName: 'firstName',
@@ -1903,6 +1989,7 @@ export const MembersScalarFieldEnum = {
   sector_id: 'sector_id',
   sub_sector_id: 'sub_sector_id',
   cell_id: 'cell_id',
+  network_id: 'network_id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -2456,6 +2543,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   churches?: Prisma.ChurchesOmit
+  networks?: Prisma.NetworksOmit
   members?: Prisma.MembersOmit
   ministries?: Prisma.MinistriesOmit
   cells?: Prisma.CellsOmit

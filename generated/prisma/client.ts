@@ -45,6 +45,11 @@ export { Prisma }
  */
 export type Churches = Prisma.ChurchesModel
 /**
+ * Model Networks
+ * 
+ */
+export type Networks = Prisma.NetworksModel
+/**
  * Model Members
  * 
  */

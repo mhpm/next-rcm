@@ -204,6 +204,7 @@ export type ChurchesWhereInput = {
   eventPhases?: Prisma.EventPhasesListRelationFilter
   eventAttendances?: Prisma.EventAttendancesListRelationFilter
   cellGoals?: Prisma.CellGoalsListRelationFilter
+  networks?: Prisma.NetworksListRelationFilter
 }
 
 export type ChurchesOrderByWithRelationInput = {
@@ -227,6 +228,7 @@ export type ChurchesOrderByWithRelationInput = {
   eventPhases?: Prisma.EventPhasesOrderByRelationAggregateInput
   eventAttendances?: Prisma.EventAttendancesOrderByRelationAggregateInput
   cellGoals?: Prisma.CellGoalsOrderByRelationAggregateInput
+  networks?: Prisma.NetworksOrderByRelationAggregateInput
 }
 
 export type ChurchesWhereUniqueInput = Prisma.AtLeast<{
@@ -253,6 +255,7 @@ export type ChurchesWhereUniqueInput = Prisma.AtLeast<{
   eventPhases?: Prisma.EventPhasesListRelationFilter
   eventAttendances?: Prisma.EventAttendancesListRelationFilter
   cellGoals?: Prisma.CellGoalsListRelationFilter
+  networks?: Prisma.NetworksListRelationFilter
 }, "id" | "slug">
 
 export type ChurchesOrderByWithAggregationInput = {
@@ -300,6 +303,7 @@ export type ChurchesCreateInput = {
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateInput = {
@@ -323,6 +327,7 @@ export type ChurchesUncheckedCreateInput = {
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUpdateInput = {
@@ -346,6 +351,7 @@ export type ChurchesUpdateInput = {
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateInput = {
@@ -369,6 +375,7 @@ export type ChurchesUncheckedUpdateInput = {
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateManyInput = {
@@ -445,6 +452,20 @@ export type DateTimeFieldUpdateOperationsInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type ChurchesCreateNestedOneWithoutNetworksInput = {
+  create?: Prisma.XOR<Prisma.ChurchesCreateWithoutNetworksInput, Prisma.ChurchesUncheckedCreateWithoutNetworksInput>
+  connectOrCreate?: Prisma.ChurchesCreateOrConnectWithoutNetworksInput
+  connect?: Prisma.ChurchesWhereUniqueInput
+}
+
+export type ChurchesUpdateOneRequiredWithoutNetworksNestedInput = {
+  create?: Prisma.XOR<Prisma.ChurchesCreateWithoutNetworksInput, Prisma.ChurchesUncheckedCreateWithoutNetworksInput>
+  connectOrCreate?: Prisma.ChurchesCreateOrConnectWithoutNetworksInput
+  upsert?: Prisma.ChurchesUpsertWithoutNetworksInput
+  connect?: Prisma.ChurchesWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChurchesUpdateToOneWithWhereWithoutNetworksInput, Prisma.ChurchesUpdateWithoutNetworksInput>, Prisma.ChurchesUncheckedUpdateWithoutNetworksInput>
 }
 
 export type ChurchesCreateNestedOneWithoutMembersInput = {
@@ -645,6 +666,114 @@ export type ChurchesUpdateOneWithoutEventPhasesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ChurchesUpdateToOneWithWhereWithoutEventPhasesInput, Prisma.ChurchesUpdateWithoutEventPhasesInput>, Prisma.ChurchesUncheckedUpdateWithoutEventPhasesInput>
 }
 
+export type ChurchesCreateWithoutNetworksInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  owner_id?: string | null
+  memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
+  members?: Prisma.MembersCreateNestedManyWithoutChurchInput
+  ministries?: Prisma.MinistriesCreateNestedManyWithoutChurchInput
+  cells?: Prisma.CellsCreateNestedManyWithoutChurchInput
+  zones?: Prisma.ZonesCreateNestedManyWithoutChurchInput
+  sectors?: Prisma.SectorsCreateNestedManyWithoutChurchInput
+  groups?: Prisma.GroupsCreateNestedManyWithoutChurchInput
+  reports?: Prisma.ReportsCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutChurchInput
+  friends?: Prisma.FriendsCreateNestedManyWithoutChurchInput
+  events?: Prisma.EventsCreateNestedManyWithoutChurchInput
+  eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
+  eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
+  cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+}
+
+export type ChurchesUncheckedCreateWithoutNetworksInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  owner_id?: string | null
+  memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
+  members?: Prisma.MembersUncheckedCreateNestedManyWithoutChurchInput
+  ministries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutChurchInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutChurchInput
+  zones?: Prisma.ZonesUncheckedCreateNestedManyWithoutChurchInput
+  sectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutChurchInput
+  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutChurchInput
+  reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutChurchInput
+  friends?: Prisma.FriendsUncheckedCreateNestedManyWithoutChurchInput
+  events?: Prisma.EventsUncheckedCreateNestedManyWithoutChurchInput
+  eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
+  eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
+  cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+}
+
+export type ChurchesCreateOrConnectWithoutNetworksInput = {
+  where: Prisma.ChurchesWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChurchesCreateWithoutNetworksInput, Prisma.ChurchesUncheckedCreateWithoutNetworksInput>
+}
+
+export type ChurchesUpsertWithoutNetworksInput = {
+  update: Prisma.XOR<Prisma.ChurchesUpdateWithoutNetworksInput, Prisma.ChurchesUncheckedUpdateWithoutNetworksInput>
+  create: Prisma.XOR<Prisma.ChurchesCreateWithoutNetworksInput, Prisma.ChurchesUncheckedCreateWithoutNetworksInput>
+  where?: Prisma.ChurchesWhereInput
+}
+
+export type ChurchesUpdateToOneWithWhereWithoutNetworksInput = {
+  where?: Prisma.ChurchesWhereInput
+  data: Prisma.XOR<Prisma.ChurchesUpdateWithoutNetworksInput, Prisma.ChurchesUncheckedUpdateWithoutNetworksInput>
+}
+
+export type ChurchesUpdateWithoutNetworksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
+  members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
+  ministries?: Prisma.MinistriesUpdateManyWithoutChurchNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutChurchNestedInput
+  zones?: Prisma.ZonesUpdateManyWithoutChurchNestedInput
+  sectors?: Prisma.SectorsUpdateManyWithoutChurchNestedInput
+  groups?: Prisma.GroupsUpdateManyWithoutChurchNestedInput
+  reports?: Prisma.ReportsUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUpdateManyWithoutChurchNestedInput
+  friends?: Prisma.FriendsUpdateManyWithoutChurchNestedInput
+  events?: Prisma.EventsUpdateManyWithoutChurchNestedInput
+  eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
+  eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
+  cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+}
+
+export type ChurchesUncheckedUpdateWithoutNetworksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
+  members?: Prisma.MembersUncheckedUpdateManyWithoutChurchNestedInput
+  ministries?: Prisma.MinistriesUncheckedUpdateManyWithoutChurchNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutChurchNestedInput
+  zones?: Prisma.ZonesUncheckedUpdateManyWithoutChurchNestedInput
+  sectors?: Prisma.SectorsUncheckedUpdateManyWithoutChurchNestedInput
+  groups?: Prisma.GroupsUncheckedUpdateManyWithoutChurchNestedInput
+  reports?: Prisma.ReportsUncheckedUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutChurchNestedInput
+  friends?: Prisma.FriendsUncheckedUpdateManyWithoutChurchNestedInput
+  events?: Prisma.EventsUncheckedUpdateManyWithoutChurchNestedInput
+  eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
+  eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
+  cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+}
+
 export type ChurchesCreateWithoutMembersInput = {
   id?: string
   name: string
@@ -665,6 +794,7 @@ export type ChurchesCreateWithoutMembersInput = {
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutMembersInput = {
@@ -687,6 +817,7 @@ export type ChurchesUncheckedCreateWithoutMembersInput = {
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutMembersInput = {
@@ -725,6 +856,7 @@ export type ChurchesUpdateWithoutMembersInput = {
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutMembersInput = {
@@ -747,6 +879,7 @@ export type ChurchesUncheckedUpdateWithoutMembersInput = {
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutMinistriesInput = {
@@ -769,6 +902,7 @@ export type ChurchesCreateWithoutMinistriesInput = {
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutMinistriesInput = {
@@ -791,6 +925,7 @@ export type ChurchesUncheckedCreateWithoutMinistriesInput = {
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutMinistriesInput = {
@@ -829,6 +964,7 @@ export type ChurchesUpdateWithoutMinistriesInput = {
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutMinistriesInput = {
@@ -851,6 +987,7 @@ export type ChurchesUncheckedUpdateWithoutMinistriesInput = {
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutCellsInput = {
@@ -873,6 +1010,7 @@ export type ChurchesCreateWithoutCellsInput = {
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutCellsInput = {
@@ -895,6 +1033,7 @@ export type ChurchesUncheckedCreateWithoutCellsInput = {
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutCellsInput = {
@@ -933,6 +1072,7 @@ export type ChurchesUpdateWithoutCellsInput = {
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutCellsInput = {
@@ -955,6 +1095,7 @@ export type ChurchesUncheckedUpdateWithoutCellsInput = {
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutZonesInput = {
@@ -977,6 +1118,7 @@ export type ChurchesCreateWithoutZonesInput = {
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutZonesInput = {
@@ -999,6 +1141,7 @@ export type ChurchesUncheckedCreateWithoutZonesInput = {
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutZonesInput = {
@@ -1037,6 +1180,7 @@ export type ChurchesUpdateWithoutZonesInput = {
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutZonesInput = {
@@ -1059,6 +1203,7 @@ export type ChurchesUncheckedUpdateWithoutZonesInput = {
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutSectorsInput = {
@@ -1081,6 +1226,7 @@ export type ChurchesCreateWithoutSectorsInput = {
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutSectorsInput = {
@@ -1103,6 +1249,7 @@ export type ChurchesUncheckedCreateWithoutSectorsInput = {
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutSectorsInput = {
@@ -1141,6 +1288,7 @@ export type ChurchesUpdateWithoutSectorsInput = {
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutSectorsInput = {
@@ -1163,6 +1311,7 @@ export type ChurchesUncheckedUpdateWithoutSectorsInput = {
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutGroupsInput = {
@@ -1185,6 +1334,7 @@ export type ChurchesCreateWithoutGroupsInput = {
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutGroupsInput = {
@@ -1207,6 +1357,7 @@ export type ChurchesUncheckedCreateWithoutGroupsInput = {
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutGroupsInput = {
@@ -1245,6 +1396,7 @@ export type ChurchesUpdateWithoutGroupsInput = {
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutGroupsInput = {
@@ -1267,6 +1419,7 @@ export type ChurchesUncheckedUpdateWithoutGroupsInput = {
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutCellGoalsInput = {
@@ -1289,6 +1442,7 @@ export type ChurchesCreateWithoutCellGoalsInput = {
   events?: Prisma.EventsCreateNestedManyWithoutChurchInput
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutCellGoalsInput = {
@@ -1311,6 +1465,7 @@ export type ChurchesUncheckedCreateWithoutCellGoalsInput = {
   events?: Prisma.EventsUncheckedCreateNestedManyWithoutChurchInput
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutCellGoalsInput = {
@@ -1349,6 +1504,7 @@ export type ChurchesUpdateWithoutCellGoalsInput = {
   events?: Prisma.EventsUpdateManyWithoutChurchNestedInput
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutCellGoalsInput = {
@@ -1371,6 +1527,7 @@ export type ChurchesUncheckedUpdateWithoutCellGoalsInput = {
   events?: Prisma.EventsUncheckedUpdateManyWithoutChurchNestedInput
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutReportsInput = {
@@ -1393,6 +1550,7 @@ export type ChurchesCreateWithoutReportsInput = {
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutReportsInput = {
@@ -1415,6 +1573,7 @@ export type ChurchesUncheckedCreateWithoutReportsInput = {
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutReportsInput = {
@@ -1453,6 +1612,7 @@ export type ChurchesUpdateWithoutReportsInput = {
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutReportsInput = {
@@ -1475,6 +1635,7 @@ export type ChurchesUncheckedUpdateWithoutReportsInput = {
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutReportEntriesInput = {
@@ -1497,6 +1658,7 @@ export type ChurchesCreateWithoutReportEntriesInput = {
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutReportEntriesInput = {
@@ -1519,6 +1681,7 @@ export type ChurchesUncheckedCreateWithoutReportEntriesInput = {
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutReportEntriesInput = {
@@ -1557,6 +1720,7 @@ export type ChurchesUpdateWithoutReportEntriesInput = {
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutReportEntriesInput = {
@@ -1579,6 +1743,7 @@ export type ChurchesUncheckedUpdateWithoutReportEntriesInput = {
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutMemberMinistriesInput = {
@@ -1601,6 +1766,7 @@ export type ChurchesCreateWithoutMemberMinistriesInput = {
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutMemberMinistriesInput = {
@@ -1623,6 +1789,7 @@ export type ChurchesUncheckedCreateWithoutMemberMinistriesInput = {
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutMemberMinistriesInput = {
@@ -1661,6 +1828,7 @@ export type ChurchesUpdateWithoutMemberMinistriesInput = {
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutMemberMinistriesInput = {
@@ -1683,6 +1851,7 @@ export type ChurchesUncheckedUpdateWithoutMemberMinistriesInput = {
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutFriendsInput = {
@@ -1705,6 +1874,7 @@ export type ChurchesCreateWithoutFriendsInput = {
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutFriendsInput = {
@@ -1727,6 +1897,7 @@ export type ChurchesUncheckedCreateWithoutFriendsInput = {
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutFriendsInput = {
@@ -1765,6 +1936,7 @@ export type ChurchesUpdateWithoutFriendsInput = {
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutFriendsInput = {
@@ -1787,6 +1959,7 @@ export type ChurchesUncheckedUpdateWithoutFriendsInput = {
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutEventsInput = {
@@ -1809,6 +1982,7 @@ export type ChurchesCreateWithoutEventsInput = {
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutEventsInput = {
@@ -1831,6 +2005,7 @@ export type ChurchesUncheckedCreateWithoutEventsInput = {
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutEventsInput = {
@@ -1869,6 +2044,7 @@ export type ChurchesUpdateWithoutEventsInput = {
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutEventsInput = {
@@ -1891,6 +2067,7 @@ export type ChurchesUncheckedUpdateWithoutEventsInput = {
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutEventAttendancesInput = {
@@ -1913,6 +2090,7 @@ export type ChurchesCreateWithoutEventAttendancesInput = {
   events?: Prisma.EventsCreateNestedManyWithoutChurchInput
   eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutEventAttendancesInput = {
@@ -1935,6 +2113,7 @@ export type ChurchesUncheckedCreateWithoutEventAttendancesInput = {
   events?: Prisma.EventsUncheckedCreateNestedManyWithoutChurchInput
   eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutEventAttendancesInput = {
@@ -1973,6 +2152,7 @@ export type ChurchesUpdateWithoutEventAttendancesInput = {
   events?: Prisma.EventsUpdateManyWithoutChurchNestedInput
   eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutEventAttendancesInput = {
@@ -1995,6 +2175,7 @@ export type ChurchesUncheckedUpdateWithoutEventAttendancesInput = {
   events?: Prisma.EventsUncheckedUpdateManyWithoutChurchNestedInput
   eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesCreateWithoutEventPhasesInput = {
@@ -2017,6 +2198,7 @@ export type ChurchesCreateWithoutEventPhasesInput = {
   events?: Prisma.EventsCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesUncheckedCreateWithoutEventPhasesInput = {
@@ -2039,6 +2221,7 @@ export type ChurchesUncheckedCreateWithoutEventPhasesInput = {
   events?: Prisma.EventsUncheckedCreateNestedManyWithoutChurchInput
   eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
   cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
 }
 
 export type ChurchesCreateOrConnectWithoutEventPhasesInput = {
@@ -2077,6 +2260,7 @@ export type ChurchesUpdateWithoutEventPhasesInput = {
   events?: Prisma.EventsUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
 }
 
 export type ChurchesUncheckedUpdateWithoutEventPhasesInput = {
@@ -2099,6 +2283,7 @@ export type ChurchesUncheckedUpdateWithoutEventPhasesInput = {
   events?: Prisma.EventsUncheckedUpdateManyWithoutChurchNestedInput
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
 
@@ -2121,6 +2306,7 @@ export type ChurchesCountOutputType = {
   eventPhases: number
   eventAttendances: number
   cellGoals: number
+  networks: number
 }
 
 export type ChurchesCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2138,6 +2324,7 @@ export type ChurchesCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   eventPhases?: boolean | ChurchesCountOutputTypeCountEventPhasesArgs
   eventAttendances?: boolean | ChurchesCountOutputTypeCountEventAttendancesArgs
   cellGoals?: boolean | ChurchesCountOutputTypeCountCellGoalsArgs
+  networks?: boolean | ChurchesCountOutputTypeCountNetworksArgs
 }
 
 /**
@@ -2248,6 +2435,13 @@ export type ChurchesCountOutputTypeCountCellGoalsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.CellGoalsWhereInput
 }
 
+/**
+ * ChurchesCountOutputType without action
+ */
+export type ChurchesCountOutputTypeCountNetworksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NetworksWhereInput
+}
+
 
 export type ChurchesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2270,6 +2464,7 @@ export type ChurchesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   eventPhases?: boolean | Prisma.Churches$eventPhasesArgs<ExtArgs>
   eventAttendances?: boolean | Prisma.Churches$eventAttendancesArgs<ExtArgs>
   cellGoals?: boolean | Prisma.Churches$cellGoalsArgs<ExtArgs>
+  networks?: boolean | Prisma.Churches$networksArgs<ExtArgs>
   _count?: boolean | Prisma.ChurchesCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["churches"]>
 
@@ -2316,6 +2511,7 @@ export type ChurchesInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   eventPhases?: boolean | Prisma.Churches$eventPhasesArgs<ExtArgs>
   eventAttendances?: boolean | Prisma.Churches$eventAttendancesArgs<ExtArgs>
   cellGoals?: boolean | Prisma.Churches$cellGoalsArgs<ExtArgs>
+  networks?: boolean | Prisma.Churches$networksArgs<ExtArgs>
   _count?: boolean | Prisma.ChurchesCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ChurchesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2338,6 +2534,7 @@ export type $ChurchesPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     eventPhases: Prisma.$EventPhasesPayload<ExtArgs>[]
     eventAttendances: Prisma.$EventAttendancesPayload<ExtArgs>[]
     cellGoals: Prisma.$CellGoalsPayload<ExtArgs>[]
+    networks: Prisma.$NetworksPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2754,6 +2951,7 @@ export interface Prisma__ChurchesClient<T, Null = never, ExtArgs extends runtime
   eventPhases<T extends Prisma.Churches$eventPhasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Churches$eventPhasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventPhasesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   eventAttendances<T extends Prisma.Churches$eventAttendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Churches$eventAttendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventAttendancesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cellGoals<T extends Prisma.Churches$cellGoalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Churches$cellGoalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CellGoalsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  networks<T extends Prisma.Churches$networksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Churches$networksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NetworksPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3510,6 +3708,30 @@ export type Churches$cellGoalsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.CellGoalsScalarFieldEnum | Prisma.CellGoalsScalarFieldEnum[]
+}
+
+/**
+ * Churches.networks
+ */
+export type Churches$networksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Networks
+   */
+  select?: Prisma.NetworksSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Networks
+   */
+  omit?: Prisma.NetworksOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NetworksInclude<ExtArgs> | null
+  where?: Prisma.NetworksWhereInput
+  orderBy?: Prisma.NetworksOrderByWithRelationInput | Prisma.NetworksOrderByWithRelationInput[]
+  cursor?: Prisma.NetworksWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NetworksScalarFieldEnum | Prisma.NetworksScalarFieldEnum[]
 }
 
 /**
