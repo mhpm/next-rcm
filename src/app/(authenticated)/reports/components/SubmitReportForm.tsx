@@ -8,6 +8,7 @@ import {
   createReportEntry,
   updateReportEntry,
   getReportEntityMembers,
+  getReportEntityInfo,
 } from '@/app/(authenticated)/reports/actions/reports.actions';
 import { useRouter } from 'next/navigation';
 import { useNotificationStore } from '@/store/NotificationStore';
@@ -87,6 +88,17 @@ export default function SubmitReportForm({
     { id: string; firstName: string; lastName: string }[]
   >([]);
 
+  const [entityInfo, setEntityInfo] = React.useState<{
+    sector: string;
+    subSector: string;
+    leader: string;
+    assistant: string;
+    host: string;
+    membersCount: number;
+  } | null>(null);
+
+  const [isLoadingInfo, setIsLoadingInfo] = React.useState(false);
+
   const watchedCellId = watch('cellId');
   const watchedGroupId = watch('groupId');
   const watchedSectorId = watch('sectorId');
@@ -145,15 +157,27 @@ export default function SubmitReportForm({
       if (scope === 'SECTOR') entityId = watchedSectorId;
 
       if (entityId) {
+        setIsLoadingInfo(true);
         try {
-          const data = await getReportEntityMembers(scope, entityId);
-          setMembers(data);
+          // Parallel fetch: members + info
+          const [membersData, infoData] = await Promise.all([
+            getReportEntityMembers(scope, entityId),
+            getReportEntityInfo(scope, entityId),
+          ]);
+
+          setMembers(membersData);
+          setEntityInfo(infoData);
         } catch (e) {
           console.error(e);
           setMembers([]);
+          setEntityInfo(null);
+        } finally {
+          setIsLoadingInfo(false);
         }
       } else {
         setMembers([]);
+        setEntityInfo(null);
+        setIsLoadingInfo(false);
       }
     };
     fetchMembers();
@@ -353,16 +377,76 @@ export default function SubmitReportForm({
         </div>
         <div className="md:col-span-1">
           {scope === 'CELL' && (
-            <SelectField
-              name="cellId"
-              label="Célula"
-              control={control}
-              options={[
-                { value: '', label: 'Selecciona una célula' },
-                ...cells,
-              ]}
-              rules={{ required: 'Selecciona una célula' }}
-            />
+            <div className="space-y-4">
+              <SelectField
+                name="cellId"
+                label="Célula"
+                control={control}
+                options={[
+                  { value: '', label: 'Selecciona una célula' },
+                  ...cells,
+                ]}
+                rules={{ required: 'Selecciona una célula' }}
+              />
+
+              {isLoadingInfo ? (
+                <Card className="bg-muted/50 border-none shadow-none">
+                  <CardContent className="p-8 flex flex-col items-center justify-center text-muted-foreground gap-2">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                    <span className="text-sm">Cargando información...</span>
+                  </CardContent>
+                </Card>
+              ) : entityInfo ? (
+                <Card className="bg-muted/50 border-none shadow-none">
+                  <CardContent className="p-4 space-y-3 text-sm">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <span className="text-muted-foreground block text-xs">
+                          Sector
+                        </span>
+                        <span className="font-medium">{entityInfo.sector}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground block text-xs">
+                          Sub-sector
+                        </span>
+                        <span className="font-medium">
+                          {entityInfo.subSector}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground block text-xs">
+                          Líder
+                        </span>
+                        <span className="font-medium">{entityInfo.leader}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground block text-xs">
+                          Miembros
+                        </span>
+                        <span className="font-medium">
+                          {entityInfo.membersCount}
+                        </span>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="text-muted-foreground block text-xs">
+                          Anfitrión
+                        </span>
+                        <span className="font-medium">{entityInfo.host}</span>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="text-muted-foreground block text-xs">
+                          Asistente
+                        </span>
+                        <span className="font-medium">
+                          {entityInfo.assistant}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : null}
+            </div>
           )}
 
           {scope === 'GROUP' && (

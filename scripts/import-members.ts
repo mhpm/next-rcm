@@ -43,6 +43,18 @@ async function importMembers(filePath: string, churchId: string) {
     console.log('🔍 First row data:', data[0]);
   }
 
+  // Cache for networks: name -> id
+  const networkCache = new Map<string, string>();
+
+  // Pre-load existing networks
+  const existingNetworks = await prisma.networks.findMany({
+    where: { church_id: churchId },
+  });
+  for (const network of existingNetworks) {
+    networkCache.set(network.name.toUpperCase(), network.id);
+  }
+  console.log(`🌐 Loaded ${networkCache.size} existing networks.`);
+
   let successCount = 0;
   let errorCount = 0;
 
@@ -144,6 +156,36 @@ async function importMembers(filePath: string, churchId: string) {
       // Handle Age
       const ageRaw = row['age'] || row['Age'] || row['Edad'] || row['edad'];
       if (ageRaw) memberData.age = Number(ageRaw);
+
+      // Handle Network (RED)
+      const networkRaw =
+        row['RED'] ||
+        row['red'] ||
+        row['Red'] ||
+        row['Network'] ||
+        row['network'];
+      if (networkRaw) {
+        const networkName = String(networkRaw).trim();
+        const networkNameUpper = networkName.toUpperCase();
+
+        if (networkName) {
+          let networkId = networkCache.get(networkNameUpper);
+
+          if (!networkId) {
+            console.log(`\n🆕 Creating new network: "${networkName}"`);
+            const newNetwork = await prisma.networks.create({
+              data: {
+                name: networkName,
+                church_id: churchId,
+              },
+            });
+            networkId = newNetwork.id;
+            networkCache.set(networkNameUpper, networkId);
+          }
+
+          memberData.network_id = networkId;
+        }
+      }
 
       // Upsert by email if present
       if (memberData.email) {

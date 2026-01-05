@@ -100,6 +100,15 @@ export default function MembersPage() {
         )
           return false;
 
+        // Network
+        if (
+          activeFilters.network &&
+          !member.network
+            .toLowerCase()
+            .includes(activeFilters.network.toLowerCase())
+        )
+          return false;
+
         // Address
         if (
           activeFilters.address &&

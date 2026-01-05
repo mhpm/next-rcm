@@ -1,19 +1,21 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useForm } from "react-hook-form";
-import { RiFilter3Line } from "react-icons/ri";
-import { MemberRole } from "@/generated/prisma/enums";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { RiFilter3Line } from 'react-icons/ri';
+import { MemberRole } from '@/generated/prisma/enums';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { InputField, SelectField } from "@/components/FormControls";
-import { useMinistries } from "@/app/(authenticated)/ministries/hooks/useMinistries";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { InputField, SelectField } from '@/components/FormControls';
+import { useMinistries } from '@/app/(authenticated)/ministries/hooks/useMinistries';
+import { getNetworks } from '../actions/networks.actions';
+import { useQuery } from '@tanstack/react-query';
 // ScrollArea no está disponible; usamos un contenedor con overflow
 
 type MembersFilterModalProps = {
@@ -40,16 +42,32 @@ export default function MembersFilterModal({
       limit: 100, // Cargar suficientes ministerios
     });
 
+  const { data: networksData, isLoading: isLoadingNetworks } = useQuery({
+    queryKey: ['networks'],
+    queryFn: () => getNetworks(),
+  });
+
   const ministryOptions = React.useMemo(() => {
-    if (!ministriesData?.ministries) return [{ value: "", label: "Todos" }];
+    if (!ministriesData?.ministries) return [{ value: '', label: 'Todos' }];
     return [
-      { value: "", label: "Todos" },
+      { value: '', label: 'Todos' },
       ...ministriesData.ministries.map((ministry) => ({
         value: ministry.name, // Usamos el nombre para filtrar por nombre como estaba antes, o ID si el filtro lo requiere
         label: ministry.name,
       })),
     ];
   }, [ministriesData]);
+
+  const networkOptions = React.useMemo(() => {
+    if (!networksData) return [{ value: '', label: 'Todas' }];
+    return [
+      { value: '', label: 'Todas' },
+      ...networksData.map((network) => ({
+        value: network.name,
+        label: network.name,
+      })),
+    ];
+  }, [networksData]);
 
   // Update form when activeFilters change (e.g. when opening)
   React.useEffect(() => {
@@ -59,7 +77,7 @@ export default function MembersFilterModal({
   const onSubmit = (data: Record<string, any>) => {
     // Filter out empty values
     const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
-      if (value !== "" && value !== null && value !== undefined) {
+      if (value !== '' && value !== null && value !== undefined) {
         acc[key] = value;
       }
       return acc;
@@ -94,7 +112,7 @@ export default function MembersFilterModal({
                 label="Rol"
                 control={control}
                 options={[
-                  { value: "", label: "Todos" },
+                  { value: '', label: 'Todos' },
                   ...Object.values(MemberRole).map((role) => ({
                     value: role,
                     label: role,
@@ -110,6 +128,16 @@ export default function MembersFilterModal({
                 options={ministryOptions}
                 placeholder="Seleccionar ministerio..."
                 disabled={isLoadingMinistries}
+              />
+
+              {/* Red */}
+              <SelectField
+                name="network"
+                label="Red"
+                control={control}
+                options={networkOptions}
+                placeholder="Seleccionar red..."
+                disabled={isLoadingNetworks}
               />
 
               {/* Dirección */}

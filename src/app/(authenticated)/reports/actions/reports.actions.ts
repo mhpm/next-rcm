@@ -445,6 +445,46 @@ export async function getReportEntityMembers(
   return [];
 }
 
+export async function getReportEntityInfo(
+    scope: ReportScope,
+    entityId: string
+  ) {
+    const prisma = await getChurchPrisma();
+  
+    if (scope === 'CELL') {
+      const cell = await prisma.cells.findUnique({
+        where: { id: entityId },
+        select: {
+          id: true,
+          name: true,
+          subSector: { 
+            select: { 
+              name: true,
+              sector: { select: { name: true } }
+            } 
+          },
+          leader: { select: { firstName: true, lastName: true } },
+          host: { select: { firstName: true, lastName: true } },
+          assistant: { select: { firstName: true, lastName: true } },
+          _count: { select: { members: true } },
+        },
+      });
+
+      if (!cell) return null;
+
+      return {
+        sector: cell.subSector?.sector?.name || 'N/A',
+        subSector: cell.subSector?.name || 'N/A',
+        leader: cell.leader ? `${cell.leader.firstName} ${cell.leader.lastName}` : 'N/A',
+        host: cell.host ? `${cell.host.firstName} ${cell.host.lastName}` : 'N/A',
+        assistant: cell.assistant ? `${cell.assistant.firstName} ${cell.assistant.lastName}` : 'N/A',
+        membersCount: cell._count.members,
+      };
+    }
+    
+    return null;
+  }
+
 function slugify(text: string) {
   return text
     .toString()
