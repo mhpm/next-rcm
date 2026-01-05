@@ -57,7 +57,7 @@ export default function NewReportForm() {
     } catch (error) {
       console.error(error);
       alert(
-        'Error al crear el reporte. Por favor revisa los campos e intenta de nuevo.'
+        'Error al crear el formulario. Por favor revisa los campos e intenta de nuevo.'
       );
     }
   };
@@ -66,9 +66,9 @@ export default function NewReportForm() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold">Crear Nuevo Reporte</h1>
+          <h1 className="text-2xl font-bold">Crear Nuevo Formulario</h1>
           <p className="text-muted-foreground">
-            Diseña la estructura de tu reporte.
+            Diseña la estructura de tu formulario.
           </p>
         </div>
         <div className="flex gap-4">
@@ -87,7 +87,7 @@ export default function NewReportForm() {
                 Guardando...
               </>
             ) : (
-              'Guardar Reporte'
+              'Guardar Formulario'
             )}
           </Button>
         </div>

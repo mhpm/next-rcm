@@ -55,7 +55,7 @@ export function ReportBuilder({
       {/* Left Column: Form Builder */}
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Constructor de Reporte</h2>
+          <h2 className="text-2xl font-bold">Constructor de Formulario</h2>
           {activeTab === 'fields' && <AddFieldMenu onAdd={addField} />}
         </div>
 
@@ -68,7 +68,7 @@ export function ReportBuilder({
           <div className="w-full overflow-x-auto pb-2">
             <TabsList className="w-full min-w-max justify-start">
               <TabsTrigger value="settings">Configuración General</TabsTrigger>
-              <TabsTrigger value="fields">Campos del Reporte</TabsTrigger>
+              <TabsTrigger value="fields">Campos del Formulario</TabsTrigger>
               <TabsTrigger value="preview" className="lg:hidden">
                 Vista Previa
               </TabsTrigger>

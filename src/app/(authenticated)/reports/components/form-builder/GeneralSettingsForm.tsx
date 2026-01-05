@@ -35,7 +35,7 @@ export function GeneralSettingsForm({
         <div className="space-y-4">
           <InputField
             name="title"
-            label="Título del Reporte"
+            label="Título del Formulario"
             register={register}
             rules={{ required: 'Requerido' }}
             placeholder="ej. Reporte Semanal de Célula"
@@ -44,7 +44,7 @@ export function GeneralSettingsForm({
             name="description"
             label="Descripción (Opcional)"
             register={register}
-            placeholder="Instrucciones para llenar el reporte..."
+            placeholder="Instrucciones para llenar el formulario..."
           />
           <SelectField
             name="scope"

@@ -41,7 +41,7 @@ const sidebarItems = [
   },
   {
     title: 'Documents',
-    items: [{ title: 'Reportes', href: '/reports', icon: FileText }],
+    items: [{ title: 'Formularios', href: '/reports', icon: FileText }],
   },
 ];
 

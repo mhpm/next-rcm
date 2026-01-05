@@ -30,15 +30,15 @@ export default async function ReportsPage() {
         <Breadcrumbs />
       </div>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Reportes</h1>
+        <h1 className="text-2xl font-semibold">Formularios</h1>
         <Button asChild>
-          <Link href="/reports/new">Crear reporte</Link>
+          <Link href="/reports/new">Crear formulario</Link>
         </Button>
       </div>
       {reports.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="py-16 text-center">
-            <p className="text-muted-foreground">Aún no tienes reportes</p>
+            <p className="text-muted-foreground">Aún no tienes formularios</p>
           </CardContent>
         </Card>
       ) : (

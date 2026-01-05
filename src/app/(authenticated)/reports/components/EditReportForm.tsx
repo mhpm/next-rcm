@@ -81,11 +81,11 @@ export default function EditReportForm({
           };
         }),
       });
-      showSuccess('Reporte actualizado correctamente');
+      showSuccess('Formulario actualizado correctamente');
       router.refresh();
     } catch (error) {
       console.error(error);
-      showError('Error al actualizar el reporte');
+      showError('Error al actualizar el formulario');
     }
   };
 
@@ -93,8 +93,10 @@ export default function EditReportForm({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold">Editar Reporte</h1>
-          <p className="text-muted-foreground">Modifica la estructura de tu reporte.</p>
+          <h1 className="text-2xl font-bold">Editar Formulario</h1>
+          <p className="text-muted-foreground">
+            Modifica la estructura de tu formulario.
+          </p>
         </div>
         <div className="flex gap-4">
           <Button
@@ -103,7 +105,7 @@ export default function EditReportForm({
             onClick={() => router.back()}
             disabled={isSubmitting}
           >
-            Volver
+            Cancelar
           </Button>
           <Button type="submit" form="edit-report-form" disabled={isSubmitting}>
             {isSubmitting ? (
@@ -118,7 +120,11 @@ export default function EditReportForm({
         </div>
       </div>
 
-      <form id="edit-report-form" className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        id="edit-report-form"
+        className="space-y-6"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <ReportBuilder
           control={control}
           register={register}
