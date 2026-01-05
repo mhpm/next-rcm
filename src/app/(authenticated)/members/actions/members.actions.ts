@@ -263,9 +263,7 @@ export const createMember = withErrorHandling(async function createMember(
 
     // Handle network relation
     if (parsed.network_id) {
-      memberData.network = {
-        connect: { id: parsed.network_id },
-      };
+      memberData.network_id = parsed.network_id;
     }
 
     const member = await prisma.members.create({

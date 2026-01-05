@@ -3,7 +3,17 @@
 import { getChurchPrisma, getChurchId } from '@/actions/churchContext';
 import { Networks } from '@/generated/prisma/client';
 
-export async function getNetworks(): Promise<Networks[]> {
+import { revalidateTag } from 'next/cache';
+import { logger } from '@/lib/logger';
+import { handlePrismaError, withErrorHandling } from '@/lib/error-handler';
+
+export type NetworkWithCount = Networks & {
+  _count?: {
+    members: number;
+  };
+};
+
+export async function getNetworks(): Promise<NetworkWithCount[]> {
   console.log('Fetching networks...');
   try {
     const prisma = await getChurchPrisma();
@@ -15,6 +25,11 @@ export async function getNetworks(): Promise<Networks[]> {
     const networks = await prisma.networks.findMany({
       orderBy: {
         name: 'asc',
+      },
+      include: {
+        _count: {
+          select: { members: true },
+        },
       },
     });
     console.log('Found networks:', networks.length);
@@ -53,6 +68,11 @@ export async function getNetworks(): Promise<Networks[]> {
             name,
             church_id: churchId,
           },
+          include: {
+            _count: {
+              select: { members: true },
+            },
+          },
         });
         newNetworks.push(network);
       } catch (error) {
@@ -69,3 +89,72 @@ export async function getNetworks(): Promise<Networks[]> {
     return [];
   }
 }
+
+export const createNetwork = withErrorHandling(async (name: string) => {
+  try {
+    const prisma = await getChurchPrisma();
+    const churchId = await getChurchId();
+
+    const network = await prisma.networks.create({
+      data: {
+        name,
+        church_id: churchId,
+      },
+    });
+
+    logger.info('Network created successfully', {
+      operation: 'createNetwork',
+      networkId: network.id,
+      name: network.name,
+    });
+
+    revalidateTag('networks', { expire: 0 });
+    return network;
+  } catch (error) {
+    throw handlePrismaError(error);
+  }
+});
+
+export const updateNetwork = withErrorHandling(
+  async (id: string, name: string) => {
+    try {
+      const prisma = await getChurchPrisma();
+
+      const network = await prisma.networks.update({
+        where: { id },
+        data: { name },
+      });
+
+      logger.info('Network updated successfully', {
+        operation: 'updateNetwork',
+        networkId: network.id,
+        name: network.name,
+      });
+
+      revalidateTag('networks', { expire: 0 });
+      return network;
+    } catch (error) {
+      throw handlePrismaError(error);
+    }
+  }
+);
+
+export const deleteNetwork = withErrorHandling(async (id: string) => {
+  try {
+    const prisma = await getChurchPrisma();
+
+    await prisma.networks.delete({
+      where: { id },
+    });
+
+    logger.info('Network deleted successfully', {
+      operation: 'deleteNetwork',
+      networkId: id,
+    });
+
+    revalidateTag('networks', { expire: 0 });
+    return { success: true };
+  } catch (error) {
+    throw handlePrismaError(error);
+  }
+});

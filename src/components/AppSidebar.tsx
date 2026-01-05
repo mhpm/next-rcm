@@ -9,6 +9,7 @@ import {
   MapPin,
   BookOpen,
   FileText,
+  Network,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -29,6 +30,7 @@ const sidebarItems = [
       { title: 'Celulas', href: '/cells', icon: Home },
       { title: 'Sectores', href: '/sectors', icon: MapPin },
       { title: 'Ministerios', href: '/ministries', icon: BookOpen },
+      { title: 'Redes', href: '/networks', icon: Network },
     ],
   },
   {
