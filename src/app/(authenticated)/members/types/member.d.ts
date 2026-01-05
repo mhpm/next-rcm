@@ -5,7 +5,8 @@ import type {
   Gender,
   Ministry,
   MemberMinistry,
-} from "@/generated/prisma/client";
+  Networks,
+} from '@/generated/prisma/client';
 export type Member = PrismaMember;
 export type { MemberRole, Gender };
 
@@ -14,6 +15,7 @@ export type MemberWithMinistries = Member & {
   ministries: (MemberMinistry & {
     ministry: Ministry;
   })[];
+  network?: Networks | null;
 };
 
 // Main Member interface matching Prisma schema
@@ -47,7 +49,7 @@ export interface MemberFormData {
 
 // Form values type for member forms (dates as strings for form inputs)
 export interface MemberFormValues
-  extends Omit<MemberFormData, "birthDate" | "baptismDate"> {
+  extends Omit<MemberFormData, 'birthDate' | 'baptismDate'> {
   birthDate?: string;
   baptismDate?: string;
 }
@@ -55,39 +57,40 @@ export interface MemberFormValues
 // Type for creating a new member (without ID and system fields)
 export type CreateMemberData = Omit<
   Member,
-  "id" | "createdAt" | "updatedAt" | "passwordHash"
+  'id' | 'createdAt' | 'updatedAt' | 'passwordHash'
 >;
 
 // Type for updating a member (all fields optional except system fields)
 export type UpdateMemberData = Partial<
-  Omit<Member, "id" | "createdAt" | "updatedAt" | "passwordHash">
+  Omit<Member, 'id' | 'createdAt' | 'updatedAt' | 'passwordHash'>
 >;
 
 // Tipo para los datos transformados de la tabla
 export type MemberTableData = Omit<
   MemberWithMinistries,
-  | "gender"
-  | "birthDate"
-  | "baptismDate"
-  | "createdAt"
-  | "updatedAt"
-  | "passwordHash"
-  | "pictureUrl"
-  | "age"
-  | "street"
-  | "city"
-  | "state"
-  | "zip"
-  | "country"
-  | "phone"
-  | "church_id"
-  | "ministries"
+  | 'birthDate'
+  | 'baptismDate'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'passwordHash'
+  | 'pictureUrl'
+  | 'age'
+  | 'street'
+  | 'city'
+  | 'state'
+  | 'zip'
+  | 'country'
+  | 'phone'
+  | 'church_id'
+  | 'ministries'
+  | 'network'
 > & {
   birthDate: string;
   baptismDate: string;
   address: string;
   phone: string;
   ministries: string;
+  network: string;
   raw_birthDate?: Date | null;
   raw_baptismDate?: Date | null;
 };

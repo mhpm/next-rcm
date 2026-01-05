@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { createReport } from '../actions/reports.actions';
 import { useRouter } from 'next/navigation';
@@ -15,10 +16,22 @@ export default function NewReportForm() {
     watch,
     setValue,
     handleSubmit,
+    reset,
     formState: { isSubmitting },
   } = useForm<ReportFormValues>({
     defaultValues: { scope: 'CELL', fields: [], color: '#3b82f6' },
   });
+
+  // Reset form on mount to ensure fresh state
+  useEffect(() => {
+    reset({
+      title: '',
+      description: '',
+      scope: 'CELL',
+      fields: [],
+      color: '#3b82f6',
+    });
+  }, [reset]);
 
   const onSubmit = async (data: ReportFormValues) => {
     try {

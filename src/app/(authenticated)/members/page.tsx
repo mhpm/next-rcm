@@ -59,6 +59,8 @@ export default function MembersPage() {
       'email',
       'phone',
       'role',
+      'gender',
+      'network',
       'ministries',
       'birthDate',
       'baptismDate',
@@ -189,6 +191,16 @@ export default function MembersPage() {
     {
       key: 'role',
       label: 'Rol',
+      sortable: true,
+    },
+    {
+      key: 'gender',
+      label: 'Género',
+      sortable: true,
+    },
+    {
+      key: 'network',
+      label: 'RED',
       sortable: true,
     },
     {

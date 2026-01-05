@@ -105,6 +105,7 @@ export async function getAllMembers(options?: {
               ministry: true,
             },
           },
+          network: true,
         },
       }),
       prisma.members.count({ where: whereClause }),
