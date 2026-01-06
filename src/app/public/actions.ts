@@ -293,15 +293,27 @@ export async function submitPublicReportEntry(
               friend.lastName.trim()
             ) {
               try {
-                await prisma.friends.create({
-                  data: {
-                    name: `${friend.firstName.trim()} ${friend.lastName.trim()}`,
-                    phone: friend.phone?.trim() || null,
-                    church_id: report.church_id,
+                const fullName = `${friend.firstName.trim()} ${friend.lastName.trim()}`;
+
+                const existingFriend = await prisma.friends.findFirst({
+                  where: {
+                    name: { equals: fullName, mode: 'insensitive' },
                     cell_id: input.cellId,
-                    // spiritual_father_id is optional now
+                    church_id: report.church_id,
                   },
                 });
+
+                if (!existingFriend) {
+                  await prisma.friends.create({
+                    data: {
+                      name: fullName,
+                      phone: friend.phone?.trim() || null,
+                      church_id: report.church_id,
+                      cell_id: input.cellId,
+                      // spiritual_father_id is optional now
+                    },
+                  });
+                }
               } catch (e) {
                 console.error('Error creating friend from public report:', e);
                 // Continue with other friends even if one fails

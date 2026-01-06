@@ -24,6 +24,7 @@ async function backup() {
 
   const data = {
     churches: await prisma.churches.findMany(),
+    networks: await prisma.networks.findMany(),
     members: await prisma.members.findMany(),
     ministries: await prisma.ministries.findMany(),
     memberMinistries: await prisma.memberMinistry.findMany(),
@@ -35,6 +36,7 @@ async function backup() {
     groupFields: await prisma.groupFields.findMany(),
     friends: await prisma.friends.findMany(),
     events: await prisma.events.findMany(),
+    eventPhases: await prisma.eventPhases.findMany(),
     eventAttendances: await prisma.eventAttendances.findMany(),
     cellGoals: await prisma.cellGoals.findMany(),
     reports: await prisma.reports.findMany(),
@@ -48,6 +50,7 @@ async function backup() {
 
   console.log(`✅ Backup created successfully at: ${backupPath}`);
   console.log(`   Churches: ${data.churches.length}`);
+  console.log(`   Networks: ${data.networks.length}`);
   console.log(`   Members: ${data.members.length}`);
   console.log(`   Ministries: ${data.ministries.length}`);
   console.log(`   MemberMinistries: ${data.memberMinistries.length}`);
@@ -59,6 +62,7 @@ async function backup() {
   console.log(`   GroupFields: ${data.groupFields.length}`);
   console.log(`   Friends: ${data.friends.length}`);
   console.log(`   Events: ${data.events.length}`);
+  console.log(`   EventPhases: ${data.eventPhases.length}`);
   console.log(`   EventAttendances: ${data.eventAttendances.length}`);
   console.log(`   CellGoals: ${data.cellGoals.length}`);
   console.log(`   Reports: ${data.reports.length}`);
