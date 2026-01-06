@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { DataTable } from '@/components';
+import { DataTable, PeriodFilter, FilterType } from '@/components';
 import { TableColumn, TableAction } from '@/types';
 import { EventWithStats, EventFormData } from '../types/events.d';
 import { EventDialog } from './EventDialog';
@@ -14,13 +14,6 @@ import Link from 'next/link';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { deleteEvent } from '../actions/events.actions';
 import { useNotificationStore } from '@/store/NotificationStore';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 interface EventsListProps {
   events: EventWithStats[];
@@ -46,10 +39,13 @@ export function EventsList({ events }: EventsListProps) {
   // Filter states
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
-  const [filterType, setFilterType] = useState<
-    'year' | 'cuatrimestre' | 'trimestre' | 'month'
-  >('year');
+  const [filterType, setFilterType] = useState<FilterType>('year');
   const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null);
+
+  const handleTypeChange = (type: FilterType) => {
+    setFilterType(type);
+    setSelectedPeriod(null);
+  };
 
   const handleDeleteClick = (event: EventWithStats) => {
     setEventToDelete(event);
@@ -108,21 +104,6 @@ export function EventsList({ events }: EventsListProps) {
   const handlePeriodClick = (period: number) => {
     setSelectedPeriod(period === selectedPeriod ? null : period);
   };
-
-  const months = [
-    'Enero',
-    'Febrero',
-    'Marzo',
-    'Abril',
-    'Mayo',
-    'Junio',
-    'Julio',
-    'Agosto',
-    'Septiembre',
-    'Octubre',
-    'Noviembre',
-    'Diciembre',
-  ];
 
   const columns: TableColumn<EventWithStats>[] = [
     {
@@ -215,95 +196,14 @@ export function EventsList({ events }: EventsListProps) {
   ];
 
   const filterControls = (
-    <div className="flex items-center gap-2">
-      <Select
-        value={String(selectedYear)}
-        onValueChange={(v) => setSelectedYear(Number(v))}
-      >
-        <SelectTrigger className="w-24">
-          <SelectValue placeholder="Año" />
-        </SelectTrigger>
-        <SelectContent>
-          {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map(
-            (year) => (
-              <SelectItem key={year} value={String(year)}>
-                {year}
-              </SelectItem>
-            )
-          )}
-        </SelectContent>
-      </Select>
-
-      <Select
-        value={filterType}
-        onValueChange={(v: any) => {
-          setFilterType(v);
-          setSelectedPeriod(null);
-        }}
-      >
-        <SelectTrigger className="w-40">
-          <SelectValue placeholder="Tipo" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="year">Todo el año</SelectItem>
-          <SelectItem value="cuatrimestre">Por Cuatrimestre</SelectItem>
-          <SelectItem value="trimestre">Por Trimestre</SelectItem>
-          <SelectItem value="month">Por Mes</SelectItem>
-        </SelectContent>
-      </Select>
-
-      {filterType === 'cuatrimestre' && (
-        <div className="flex">
-          {[1, 2, 3].map((q) => (
-            <Button
-              key={q}
-              variant={selectedPeriod === q ? 'default' : 'outline'}
-              className={`h-10 rounded-none ${q === 1 ? 'rounded-l-md' : ''} ${
-                q === 3 ? 'rounded-r-md' : ''
-              }`}
-              onClick={() => handlePeriodClick(q)}
-            >
-              {q}º C
-            </Button>
-          ))}
-        </div>
-      )}
-
-      {filterType === 'trimestre' && (
-        <div className="flex">
-          {[1, 2, 3, 4].map((t) => (
-            <Button
-              key={t}
-              variant={selectedPeriod === t ? 'default' : 'outline'}
-              className={`h-10 rounded-none ${t === 1 ? 'rounded-l-md' : ''} ${
-                t === 4 ? 'rounded-r-md' : ''
-              }`}
-              onClick={() => handlePeriodClick(t)}
-            >
-              {t}º T
-            </Button>
-          ))}
-        </div>
-      )}
-
-      {filterType === 'month' && (
-        <Select
-          value={selectedPeriod !== null ? String(selectedPeriod) : ''}
-          onValueChange={(v) => handlePeriodClick(Number(v))}
-        >
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Seleccionar mes" />
-          </SelectTrigger>
-          <SelectContent>
-            {months.map((m, i) => (
-              <SelectItem key={i} value={String(i)}>
-                {m}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
-    </div>
+    <PeriodFilter
+      selectedYear={selectedYear}
+      onYearChange={setSelectedYear}
+      filterType={filterType}
+      onTypeChange={handleTypeChange}
+      selectedPeriod={selectedPeriod}
+      onPeriodChange={handlePeriodClick}
+    />
   );
 
   return (

@@ -17,6 +17,16 @@ export async function getCellsForSelect() {
           lastName: true,
         },
       },
+      subSector: {
+        select: {
+          name: true,
+          sector: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
     },
     orderBy: { name: 'asc' },
   });
@@ -27,6 +37,8 @@ export async function getCellsForSelect() {
     leaderName: cell.leader
       ? `${cell.leader.firstName} ${cell.leader.lastName}`
       : 'Sin líder',
+    sector: cell.subSector?.sector?.name || 'N/A',
+    subSector: cell.subSector?.name || 'N/A',
   }));
 }
 

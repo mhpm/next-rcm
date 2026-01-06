@@ -50,7 +50,13 @@ export function FriendForm() {
   const router = useRouter();
   const { addNotification } = useNotificationStore();
   const [cells, setCells] = useState<
-    { id: string; name: string; leaderName: string }[]
+    {
+      id: string;
+      name: string;
+      leaderName: string;
+      sector: string;
+      subSector: string;
+    }[]
   >([]);
   const [members, setMembers] = useState<
     { id: string; name: string; cell_id: string | null }[]
@@ -209,10 +215,14 @@ export function FriendForm() {
                                   : 'opacity-0'
                               )}
                             />
-                            {cell.name}{' '}
-                            <span className="ml-2 text-muted-foreground">
-                              ({cell.leaderName})
-                            </span>
+                            <div className="flex flex-col">
+                              <span>
+                                {cell.name} ({cell.leaderName})
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {cell.sector} - {cell.subSector}
+                              </span>
+                            </div>
                           </CommandItem>
                         ))}
                       </CommandGroup>

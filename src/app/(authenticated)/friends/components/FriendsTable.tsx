@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { DataTable } from '@/components';
+import { DataTable, PeriodFilter, FilterType } from '@/components';
 import { TableColumn, TableAction } from '@/types';
 import { FriendWithRelations } from '../types/friends.d';
 import { deleteFriend } from '../actions/friends.actions';
@@ -38,8 +38,123 @@ export function FriendsTable({ friends }: FriendsTableProps) {
   const [selectedLeader, setSelectedLeader] = useState<string>('all');
   const [selectedBaptized, setSelectedBaptized] = useState<string>('all');
 
+  // Period Filter State
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [filterType, setFilterType] = useState<
+    'year' | 'cuatrimestre' | 'trimestre' | 'month'
+  >('year');
+  const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null);
+
+  const calculateDateRange = (
+    year: number,
+    type: string,
+    period: number | null
+  ) => {
+    let fromMonth = 0,
+      toMonth = 11,
+      lastDay = 31;
+
+    if (type === 'year') {
+      fromMonth = 0;
+      toMonth = 11;
+      lastDay = 31;
+    } else if (type === 'cuatrimestre' && period !== null) {
+      if (period === 1) {
+        fromMonth = 0;
+        toMonth = 3;
+        lastDay = 30;
+      } else if (period === 2) {
+        fromMonth = 4;
+        toMonth = 7;
+        lastDay = 31;
+      } else if (period === 3) {
+        fromMonth = 8;
+        toMonth = 11;
+        lastDay = 31;
+      }
+    } else if (type === 'trimestre' && period !== null) {
+      if (period === 1) {
+        fromMonth = 0;
+        toMonth = 2;
+        lastDay = 31;
+      } else if (period === 2) {
+        fromMonth = 3;
+        toMonth = 5;
+        lastDay = 30;
+      } else if (period === 3) {
+        fromMonth = 6;
+        toMonth = 8;
+        lastDay = 30;
+      } else if (period === 4) {
+        fromMonth = 9;
+        toMonth = 11;
+        lastDay = 31;
+      }
+    } else if (type === 'month' && period !== null) {
+      fromMonth = period;
+      toMonth = period;
+      lastDay = new Date(year, fromMonth + 1, 0).getDate();
+    } else {
+      return null;
+    }
+
+    const fromDate = new Date(year, fromMonth, 1);
+    const toDate = new Date(year, toMonth, lastDay);
+    toDate.setHours(23, 59, 59, 999); // End of day
+
+    return { from: fromDate, to: toDate };
+  };
+
+  const [dateRange, setDateRange] = useState<{ from: Date; to: Date } | null>(
+    () => calculateDateRange(currentYear, 'year', null)
+  );
+
+  const applyPeriodFilter = (
+    year: number,
+    type: string,
+    period: number | null
+  ) => {
+    const range = calculateDateRange(year, type, period);
+    setDateRange(range);
+    setSelectedPeriod(period);
+  };
+
+  const handleYearChange = (year: number) => {
+    setSelectedYear(year);
+    applyPeriodFilter(year, filterType, selectedPeriod);
+  };
+
+  const handleTypeChange = (type: FilterType) => {
+    setFilterType(type);
+    setSelectedPeriod(null);
+    if (type === 'year') {
+      applyPeriodFilter(selectedYear, 'year', null);
+    } else {
+      setDateRange(null); // Clear range until period selected
+    }
+  };
+
+  const handlePeriodClick = (period: number) => {
+    const newPeriod = period === selectedPeriod ? null : period;
+    applyPeriodFilter(selectedYear, filterType, newPeriod);
+  };
+
   // Filter Logic
   const filteredFriends = friends.filter((friend) => {
+    // Date Filter
+    if (dateRange) {
+      const friendDate = new Date(friend.createdAt);
+      if (friendDate < dateRange.from || friendDate > dateRange.to) {
+        return false;
+      }
+    } else if (filterType !== 'year') {
+      // If type is selected but no period, show nothing or all?
+      // Let's show nothing to prompt selection, or keep all if desired.
+      // Based on logic above, if dateRange is null, we skip date check?
+      // Let's skip date check if no range is set (e.g. initial 'year' sets it)
+    }
+
     // Zone Filter
     if (
       selectedZone !== 'all' &&
@@ -193,6 +308,17 @@ export function FriendsTable({ friends }: FriendsTableProps) {
     }
   };
 
+  const filterControls = (
+    <PeriodFilter
+      selectedYear={selectedYear}
+      onYearChange={handleYearChange}
+      filterType={filterType}
+      onTypeChange={handleTypeChange}
+      selectedPeriod={selectedPeriod}
+      onPeriodChange={handlePeriodClick}
+    />
+  );
+
   return (
     <>
       <div className="flex flex-wrap items-center gap-4 mb-4 p-4 border rounded-lg bg-card shadow-sm">
@@ -312,6 +438,7 @@ export function FriendsTable({ friends }: FriendsTableProps) {
         pagination={true}
         itemsPerPage={10}
         emptyMessage="No hay amigos registrados"
+        searchEndContent={filterControls}
       />
 
       <DeleteConfirmationModal
