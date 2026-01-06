@@ -1,8 +1,8 @@
-"use server";
+'use server';
 
-import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
-import { Prisma } from "@/generated/prisma/client";
-import { revalidateTag } from "next/cache";
+import { getChurchPrisma, getChurchId } from '@/actions/churchContext';
+import { Prisma } from '@/generated/prisma/client';
+import { revalidateTag } from 'next/cache';
 // Removed generated Zod schemas; rely on Prisma types directly and normal Zod for forms
 
 // Get all ministries for the current church
@@ -10,16 +10,16 @@ export async function getAllMinistries(options?: {
   limit?: number;
   offset?: number;
   search?: string;
-  orderBy?: "name" | "createdAt";
-  orderDirection?: "asc" | "desc";
+  orderBy?: 'name' | 'createdAt';
+  orderDirection?: 'asc' | 'desc';
 }) {
   try {
     const {
       limit = 50,
       offset = 0,
       search,
-      orderBy = "name",
-      orderDirection = "asc",
+      orderBy = 'name',
+      orderDirection = 'asc',
     } = options || {};
 
     const prisma = await getChurchPrisma();
@@ -29,8 +29,8 @@ export async function getAllMinistries(options?: {
     // Add search filter
     if (search) {
       whereClause.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
       ];
     }
 
@@ -66,8 +66,8 @@ export async function getAllMinistries(options?: {
       hasMore: offset + limit < total,
     };
   } catch (error) {
-    console.error("Error fetching ministries:", error);
-    throw new Error("Failed to fetch ministries");
+    console.error('Error fetching ministries:', error);
+    throw new Error('Failed to fetch ministries');
   }
 }
 
@@ -87,13 +87,13 @@ export async function getMinistryById(id: string) {
     const ministry = await prisma.ministries.findUnique(findUniqueArgs);
 
     if (!ministry || ministry.church_id !== churchId) {
-      throw new Error("Ministry not found");
+      throw new Error('Ministry not found');
     }
 
     return ministry;
   } catch (error) {
-    console.error("Error fetching ministry:", error);
-    throw new Error("Failed to fetch ministry");
+    console.error('Error fetching ministry:', error);
+    throw new Error('Failed to fetch ministry');
   }
 }
 
@@ -112,14 +112,14 @@ export async function createMinistry(data: {
       name: data.name,
       description: data.description,
       church: { connect: { id: churchId } },
-      ...(data.leaderId && data.leaderId !== ""
+      ...(data.leaderId && data.leaderId !== ''
         ? { leader: { connect: { id: data.leaderId } } }
         : {}),
     };
     const ministry = await prisma.ministries.create({ data: prismaData });
 
     // Si se asignó líder al crear el ministerio, asegurar que pertenezca al ministerio
-    if (data.leaderId && data.leaderId !== "") {
+    if (data.leaderId && data.leaderId !== '') {
       const existingMembership = await prisma.memberMinistry.findFirst({
         where: { ministryId: ministry.id, memberId: data.leaderId },
       });
@@ -135,7 +135,7 @@ export async function createMinistry(data: {
         } catch (e) {
           if (
             e instanceof Prisma.PrismaClientKnownRequestError &&
-            e.code === "P2002"
+            e.code === 'P2002'
           ) {
             // ya existe la relación (única por memberId+ministryId)
           } else {
@@ -145,12 +145,12 @@ export async function createMinistry(data: {
       }
     }
 
-    revalidateTag("ministries", { expire: 0 });
+    revalidateTag('ministries', { expire: 0 });
 
     return ministry;
   } catch (error) {
-    console.error("Error creating ministry:", error);
-    throw new Error("Failed to create ministry");
+    console.error('Error creating ministry:', error);
+    throw new Error('Failed to create ministry');
   }
 }
 
@@ -175,12 +175,12 @@ export async function updateMinistry(
     });
     if (!existingMinistry || existingMinistry.church_id !== churchId) {
       throw new Error(
-        "El ministerio no existe en esta iglesia o el ID es inválido."
+        'El ministerio no existe en esta iglesia o el ID es inválido.'
       );
     }
 
     // Pre-validación del líder (si se envió leaderId): debe existir en la iglesia actual
-    if (Object.prototype.hasOwnProperty.call(data, "leaderId")) {
+    if (Object.prototype.hasOwnProperty.call(data, 'leaderId')) {
       const leaderIdValue = data.leaderId ?? null;
       if (leaderIdValue) {
         const existingLeader = await prisma.members.findFirst({
@@ -189,7 +189,7 @@ export async function updateMinistry(
         });
         if (!existingLeader) {
           throw new Error(
-            "No se pudo asignar el líder: el miembro seleccionado no pertenece a esta iglesia."
+            'No se pudo asignar el líder: el miembro seleccionado no pertenece a esta iglesia.'
           );
         }
       }
@@ -203,9 +203,9 @@ export async function updateMinistry(
     };
 
     // Manejar explícitamente la conexión/desconexión del líder SIN usar any
-    if (Object.prototype.hasOwnProperty.call(data, "leaderId")) {
+    if (Object.prototype.hasOwnProperty.call(data, 'leaderId')) {
       updateData.leader =
-        data.leaderId && data.leaderId !== ""
+        data.leaderId && data.leaderId !== ''
           ? { connect: { id: data.leaderId } }
           : { disconnect: true };
     }
@@ -233,16 +233,16 @@ export async function updateMinistry(
               ministry: { connect: { id } },
             },
           });
-          console.log("[updateMinistry:memberAdded]", {
+          console.log('[updateMinistry:memberAdded]', {
             ministryId: id,
             memberId: data.leaderId,
           });
         } catch (e) {
           if (
             e instanceof Prisma.PrismaClientKnownRequestError &&
-            e.code === "P2002"
+            e.code === 'P2002'
           ) {
-            console.warn("[updateMinistry:memberExists]", {
+            console.warn('[updateMinistry:memberExists]', {
               ministryId: id,
               memberId: data.leaderId,
             });
@@ -254,24 +254,24 @@ export async function updateMinistry(
     }
 
     // Log de éxito para inspección en producción
-    console.log("[updateMinistry:success]", {
-      operation: "updateMinistry",
+    console.log('[updateMinistry:success]', {
+      operation: 'updateMinistry',
       ministryId: id,
-      leaderIdAttempted: Object.prototype.hasOwnProperty.call(data, "leaderId")
-        ? (data.leaderId ?? null)
-        : "not-provided",
+      leaderIdAttempted: Object.prototype.hasOwnProperty.call(data, 'leaderId')
+        ? data.leaderId ?? null
+        : 'not-provided',
       churchId,
       resultLeaderId: ministry.leader_id ?? null,
     });
 
-    revalidateTag("ministries", { expire: 0 });
+    revalidateTag('ministries', { expire: 0 });
     return ministry;
   } catch (error) {
     // Log detallado para diagnosticar fallas de conexión de líder en producción
-    console.error("Error updating ministry:", {
+    console.error('Error updating ministry:', {
       error,
       context: {
-        operation: "updateMinistry",
+        operation: 'updateMinistry',
         ministryId: id,
         leaderId: data?.leaderId ?? null,
         churchId,
@@ -280,9 +280,9 @@ export async function updateMinistry(
 
     // Si es un error conocido de Prisma (por ejemplo, P2025 al intentar conectar líder que no existe en la iglesia)
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2025") {
+      if (error.code === 'P2025') {
         throw new Error(
-          "No se pudo asignar el líder: el miembro seleccionado no se encontró en esta iglesia. Verifica que el líder pertenezca a la misma iglesia."
+          'No se pudo asignar el líder: el miembro seleccionado no se encontró en esta iglesia. Verifica que el líder pertenezca a la misma iglesia.'
         );
       }
       throw new Error(
@@ -291,7 +291,7 @@ export async function updateMinistry(
     }
 
     const message =
-      error instanceof Error ? error.message : "Failed to update ministry";
+      error instanceof Error ? error.message : 'Failed to update ministry';
     throw new Error(message);
   }
 }
@@ -306,11 +306,11 @@ export async function deleteMinistry(id: string) {
 
     await prisma.ministries.delete({ where: { id } });
 
-    revalidateTag("ministries", { expire: 0 });
+    revalidateTag('ministries', { expire: 0 });
     return { success: true };
   } catch (error) {
-    console.error("Error deleting ministry:", error);
-    throw new Error("Failed to delete ministry");
+    console.error('Error deleting ministry:', error);
+    throw new Error('Failed to delete ministry');
   }
 }
 
@@ -324,13 +324,13 @@ export async function getMembersByMinistry(ministryId: string) {
     const memberships = await prisma.memberMinistry.findMany({
       where: { ministryId },
       include: { member: true },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: 'asc' },
     });
 
     return memberships;
   } catch (error) {
-    console.error("Error fetching ministry members:", error);
-    throw new Error("Failed to fetch ministry members");
+    console.error('Error fetching ministry members:', error);
+    throw new Error('Failed to fetch ministry members');
   }
 }
 
@@ -353,21 +353,21 @@ export async function addMemberToMinistry(
       include: { member: true, ministry: true },
     });
 
-    revalidateTag("ministries", { expire: 0 });
-    revalidateTag("members", { expire: 0 });
+    revalidateTag('ministries', { expire: 0 });
+    revalidateTag('members', { expire: 0 });
 
     return membership;
   } catch (error: unknown) {
     // Manejo seguro del error sin usar 'any'
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
+      error.code === 'P2002'
     ) {
       // Violación de restricción única (memberId, ministryId)
-      throw new Error("El miembro ya pertenece a este ministerio");
+      throw new Error('El miembro ya pertenece a este ministerio');
     }
-    console.error("Error adding member to ministry:", error);
-    throw new Error("Failed to add member to ministry");
+    console.error('Error adding member to ministry:', error);
+    throw new Error('Failed to add member to ministry');
   }
 }
 
@@ -394,13 +394,13 @@ export async function addMembersToMinistry(
       skipDuplicates: true,
     });
 
-    revalidateTag("ministries", { expire: 0 });
-    revalidateTag("members", { expire: 0 });
+    revalidateTag('ministries', { expire: 0 });
+    revalidateTag('members', { expire: 0 });
 
     return { count: result.count };
   } catch (error: unknown) {
-    console.error("Error adding members to ministry:", error);
-    throw new Error("Failed to add members to ministry");
+    console.error('Error adding members to ministry:', error);
+    throw new Error('Failed to add members to ministry');
   }
 }
 
@@ -419,7 +419,7 @@ export async function removeMemberFromMinistry(
     });
 
     if (!membership) {
-      throw new Error("La relación miembro-ministerio no existe");
+      throw new Error('La relación miembro-ministerio no existe');
     }
 
     // Eliminar la relación miembro-ministerio
@@ -431,12 +431,12 @@ export async function removeMemberFromMinistry(
       data: { leader_id: null },
     });
 
-    revalidateTag("ministries", { expire: 0 });
-    revalidateTag("members", { expire: 0 });
+    revalidateTag('ministries', { expire: 0 });
+    revalidateTag('members', { expire: 0 });
     return { success: true };
   } catch (error) {
-    console.error("Error removing member from ministry:", error);
-    throw new Error("Failed to remove member from ministry");
+    console.error('Error removing member from ministry:', error);
+    throw new Error('Failed to remove member from ministry');
   }
 }
 
@@ -450,7 +450,7 @@ export async function getMinistryStats(churchSlug?: string) {
       prisma.ministries.count({ where: { church_id: churchId } }),
       prisma.memberMinistry.groupBy({
         where: { church_id: churchId },
-        by: ["ministryId"],
+        by: ['ministryId'],
         _count: { ministryId: true },
       }),
     ]);
@@ -464,18 +464,15 @@ export async function getMinistryStats(churchSlug?: string) {
       : [];
     const nameMap = new Map(ministries.map((m) => [m.id, m.name]));
 
-    const byMinistry = membershipsByMinistry.reduce(
-      (acc, item) => {
-        const name = nameMap.get(item.ministryId) ?? item.ministryId;
-        acc[name] = item._count.ministryId;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
+    const byMinistry = membershipsByMinistry.reduce((acc, item) => {
+      const name = nameMap.get(item.ministryId) ?? item.ministryId;
+      acc[name] = item._count.ministryId;
+      return acc;
+    }, {} as Record<string, number>);
 
     const distinctMembers = await prisma.memberMinistry.findMany({
       where: { church_id: churchId },
-      distinct: ["memberId"],
+      distinct: ['memberId'],
       select: { memberId: true },
     });
     const membersInAnyMinistry = distinctMembers.length;
@@ -486,7 +483,7 @@ export async function getMinistryStats(churchSlug?: string) {
       byMinistry,
     };
   } catch (error) {
-    console.error("Error fetching ministry stats:", error);
-    throw new Error("Failed to fetch ministry statistics");
+    console.error('Error fetching ministry stats:', error);
+    throw new Error('Failed to fetch ministry statistics');
   }
 }

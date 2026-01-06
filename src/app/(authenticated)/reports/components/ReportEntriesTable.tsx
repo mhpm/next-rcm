@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 
 // Custom hook for scoped column visibility
 function useReportColumnVisibility(
@@ -194,10 +195,70 @@ export default function ReportEntriesTable({
   // NOTE: Removed global store usage to prevent state conflicts between tables
   // and incorrect column counts (e.g. 13/8).
 
+  // Enhance columns with custom renderers based on field types
+  const enhancedColumns = useMemo(() => {
+    return columns.map((col) => {
+      const fieldDef = fields.find((f) => f.id === col.key);
+
+      if (fieldDef?.type === 'FRIEND_REGISTRATION') {
+        return {
+          ...col,
+          render: (value: any) => {
+            if (!Array.isArray(value) || value.length === 0) {
+              return <span className="text-muted-foreground">-</span>;
+            }
+
+            return (
+              <TooltipProvider>
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <Badge
+                      variant="secondary"
+                      className="cursor-help whitespace-nowrap"
+                    >
+                      {value.length} amigo{value.length !== 1 ? 's' : ''}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="p-0">
+                    <div className="flex flex-col max-h-[300px] overflow-y-auto min-w-[200px]">
+                      <div className="bg-muted/50 px-3 py-2 text-xs font-medium border-b">
+                        Amigos Registrados
+                      </div>
+                      <div className="p-2 space-y-2">
+                        {value.map((friend: any, i: number) => (
+                          <div
+                            key={i}
+                            className="text-sm border-b last:border-0 pb-2 last:pb-0"
+                          >
+                            <div className="font-medium">
+                              {friend.firstName} {friend.lastName}
+                            </div>
+                            {friend.phone && (
+                              <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                <span>📱</span> {friend.phone}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            );
+          },
+        };
+      }
+      return col;
+    });
+  }, [columns, fields]);
+
   // Filter columns based on visibility
   const visibleColumnsArray = useMemo(() => {
-    return columns.filter((column) => visibleColumns.has(String(column.key)));
-  }, [columns, visibleColumns]);
+    return enhancedColumns.filter((column) =>
+      visibleColumns.has(String(column.key))
+    );
+  }, [enhancedColumns, visibleColumns]);
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {

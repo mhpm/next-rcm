@@ -1,9 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { InputField, SelectField } from '@/components/FormControls';
 import type { ReportFieldType, ReportScope } from '@/generated/prisma/client';
+import {
+  FriendRegistrationField,
+  FriendRegistrationValue,
+} from '@/app/(authenticated)/reports/components/FriendRegistrationField';
 import {
   submitPublicReportEntry,
   verifyCellAccess,
@@ -261,6 +265,23 @@ export default function PublicReportForm({
               ...members,
             ]}
             rules={f.required ? { required: 'Requerido' } : undefined}
+          />
+        );
+      }
+      if (f.type === 'FRIEND_REGISTRATION') {
+        return (
+          <Controller
+            key={f.id}
+            name={baseName}
+            control={control}
+            rules={f.required ? { required: 'Requerido' } : undefined}
+            render={({ field }) => (
+              <FriendRegistrationField
+                value={(field.value as FriendRegistrationValue[]) || []}
+                onChange={field.onChange}
+                label={f.label || f.key}
+              />
+            )}
           />
         );
       }

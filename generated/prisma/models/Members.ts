@@ -1401,10 +1401,12 @@ export type MembersUpdateOneWithoutInvitedFriendsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutInvitedFriendsInput, Prisma.MembersUpdateWithoutInvitedFriendsInput>, Prisma.MembersUncheckedUpdateWithoutInvitedFriendsInput>
 }
 
-export type MembersUpdateOneRequiredWithoutSpiritualFriendsNestedInput = {
+export type MembersUpdateOneWithoutSpiritualFriendsNestedInput = {
   create?: Prisma.XOR<Prisma.MembersCreateWithoutSpiritualFriendsInput, Prisma.MembersUncheckedCreateWithoutSpiritualFriendsInput>
   connectOrCreate?: Prisma.MembersCreateOrConnectWithoutSpiritualFriendsInput
   upsert?: Prisma.MembersUpsertWithoutSpiritualFriendsInput
+  disconnect?: Prisma.MembersWhereInput | boolean
+  delete?: Prisma.MembersWhereInput | boolean
   connect?: Prisma.MembersWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutSpiritualFriendsInput, Prisma.MembersUpdateWithoutSpiritualFriendsInput>, Prisma.MembersUncheckedUpdateWithoutSpiritualFriendsInput>
 }

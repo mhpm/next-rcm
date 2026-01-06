@@ -42,7 +42,20 @@ export async function getFriends(
     prisma.friends.findMany({
       where,
       include: {
-        cell: true,
+        cell: {
+          include: {
+            leader: true,
+            subSector: {
+              include: {
+                sector: {
+                  include: {
+                    zone: true,
+                  },
+                },
+              },
+            },
+          },
+        },
         invitedBy: true,
         spiritualFather: true,
       },

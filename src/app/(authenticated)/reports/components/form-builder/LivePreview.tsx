@@ -13,11 +13,15 @@ import {
 } from '@/components/ui/collapsible';
 import { ChevronDown } from 'lucide-react';
 
-export function LivePreview({ control }: { control: Control<ReportFormValues> }) {
+export function LivePreview({
+  control,
+}: {
+  control: Control<ReportFormValues>;
+}) {
   const values = useWatch({ control });
-  const [openSections, setOpenSections] = React.useState<Record<string, boolean>>(
-    {}
-  );
+  const [openSections, setOpenSections] = React.useState<
+    Record<string, boolean>
+  >({});
 
   const groupedFields = React.useMemo(() => {
     const fields = values.fields || [];
@@ -57,7 +61,12 @@ export function LivePreview({ control }: { control: Control<ReportFormValues> })
         </div>
 
         {field.type === 'TEXT' && (
-          <Input type="text" placeholder="Tu respuesta" disabled className="mt-2" />
+          <Input
+            type="text"
+            placeholder="Tu respuesta"
+            disabled
+            className="mt-2"
+          />
         )}
 
         {field.type === 'NUMBER' && (
@@ -73,12 +82,40 @@ export function LivePreview({ control }: { control: Control<ReportFormValues> })
           </div>
         )}
 
-        {field.type === 'DATE' && <Input type="date" disabled className="mt-2" />}
+        {field.type === 'DATE' && (
+          <Input type="date" disabled className="mt-2" />
+        )}
 
         {(field.type === 'BOOLEAN' ||
           field.type === 'SELECT' ||
           field.type === 'MEMBER_SELECT') && (
-          <Input disabled className="mt-2" placeholder="Selecciona una opción" />
+          <Input
+            disabled
+            className="mt-2"
+            placeholder="Selecciona una opción"
+          />
+        )}
+
+        {field.type === 'FRIEND_REGISTRATION' && (
+          <div className="mt-2 space-y-3 p-3 border rounded-md bg-muted/20">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label className="text-xs">Nombre(s)</Label>
+                <Input disabled placeholder="Ej. Juan" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Apellidos</Label>
+                <Input disabled placeholder="Ej. Pérez" />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Teléfono</Label>
+              <Input disabled placeholder="Ej. 55 1234 5678" />
+            </div>
+            <Button disabled variant="outline" size="sm" className="w-full">
+              + Agregar Amigo
+            </Button>
+          </div>
         )}
       </div>
     );
@@ -97,9 +134,13 @@ export function LivePreview({ control }: { control: Control<ReportFormValues> })
                 {values.title || 'Título del Reporte'}
               </h2>
               {values.description ? (
-                <p className="text-muted-foreground mt-2">{values.description}</p>
+                <p className="text-muted-foreground mt-2">
+                  {values.description}
+                </p>
               ) : (
-                <p className="text-muted-foreground/70 italic mt-2">Sin descripción</p>
+                <p className="text-muted-foreground/70 italic mt-2">
+                  Sin descripción
+                </p>
               )}
             </div>
 
@@ -108,7 +149,9 @@ export function LivePreview({ control }: { control: Control<ReportFormValues> })
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-3">
                     <Label>Célula</Label>
-                    <span className="text-destructive text-sm leading-none">*</span>
+                    <span className="text-destructive text-sm leading-none">
+                      *
+                    </span>
                   </div>
                   <Input disabled placeholder="Selecciona una célula" />
                 </div>
@@ -117,7 +160,9 @@ export function LivePreview({ control }: { control: Control<ReportFormValues> })
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-3">
                     <Label>Grupo</Label>
-                    <span className="text-destructive text-sm leading-none">*</span>
+                    <span className="text-destructive text-sm leading-none">
+                      *
+                    </span>
                   </div>
                   <Input disabled placeholder="Selecciona un grupo" />
                 </div>
@@ -126,7 +171,9 @@ export function LivePreview({ control }: { control: Control<ReportFormValues> })
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-3">
                     <Label>Sector</Label>
-                    <span className="text-destructive text-sm leading-none">*</span>
+                    <span className="text-destructive text-sm leading-none">
+                      *
+                    </span>
                   </div>
                   <Input disabled placeholder="Selecciona un sector" />
                 </div>
@@ -135,7 +182,10 @@ export function LivePreview({ control }: { control: Control<ReportFormValues> })
               {groupedFields.map((group, i) => {
                 if (group.section) {
                   const sectionKey = String(
-                    group.section.key || group.section.tempId || group.section.id || i
+                    group.section.key ||
+                      group.section.tempId ||
+                      group.section.id ||
+                      i
                   );
                   const isOpen = openSections[sectionKey] ?? true;
                   return (
@@ -143,7 +193,10 @@ export function LivePreview({ control }: { control: Control<ReportFormValues> })
                       key={sectionKey}
                       open={isOpen}
                       onOpenChange={(open) =>
-                        setOpenSections((prev) => ({ ...prev, [sectionKey]: open }))
+                        setOpenSections((prev) => ({
+                          ...prev,
+                          [sectionKey]: open,
+                        }))
                       }
                       className="rounded-lg border"
                     >
@@ -157,7 +210,9 @@ export function LivePreview({ control }: { control: Control<ReportFormValues> })
                             {group.section.label || 'Sección'}
                           </span>
                           <ChevronDown
-                            className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                            className={`transition-transform ${
+                              isOpen ? 'rotate-180' : ''
+                            }`}
                           />
                         </Button>
                       </CollapsibleTrigger>

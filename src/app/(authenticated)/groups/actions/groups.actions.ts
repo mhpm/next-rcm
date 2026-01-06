@@ -1,16 +1,16 @@
-"use server";
+'use server';
 
-import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
-import { Prisma, GroupFieldType } from "@/generated/prisma/client";
-import type { Groups, Members } from "@/generated/prisma/client";
-import { revalidateTag } from "next/cache";
+import { getChurchPrisma, getChurchId } from '@/actions/churchContext';
+import { Prisma, GroupFieldType } from '@/generated/prisma/client';
+import type { Groups, Members } from '@/generated/prisma/client';
+import { revalidateTag } from 'next/cache';
 
 export async function getAllGroups(options?: {
   limit?: number;
   offset?: number;
   search?: string;
-  orderBy?: "name" | "createdAt";
-  orderDirection?: "asc" | "desc";
+  orderBy?: 'name' | 'createdAt';
+  orderDirection?: 'asc' | 'desc';
 }): Promise<{
   groups: (Groups & { leader: Members | null; _count: { members: number } })[];
   total: number;
@@ -20,8 +20,8 @@ export async function getAllGroups(options?: {
     limit = 50,
     offset = 0,
     search,
-    orderBy = "name",
-    orderDirection = "asc",
+    orderBy = 'name',
+    orderDirection = 'asc',
   } = options || {};
 
   const prisma = await getChurchPrisma();
@@ -29,7 +29,7 @@ export async function getAllGroups(options?: {
 
   const whereClause: Prisma.GroupsWhereInput = { church_id: churchId };
   if (search && search.trim().length > 0) {
-    whereClause.OR = [{ name: { contains: search, mode: "insensitive" } }];
+    whereClause.OR = [{ name: { contains: search, mode: 'insensitive' } }];
   }
 
   const findArgs = {
@@ -56,9 +56,9 @@ export async function searchGroups(term: string) {
   const groups = await prisma.groups.findMany({
     where: {
       church_id: churchId,
-      name: { contains: term, mode: "insensitive" },
+      name: { contains: term, mode: 'insensitive' },
     },
-    orderBy: { name: "asc" },
+    orderBy: { name: 'asc' },
     take: 10,
     select: { id: true, name: true },
   });
@@ -72,7 +72,7 @@ export async function getGroupsList(excludeId?: string) {
   if (excludeId) where.id = { not: excludeId };
   const groups = await prisma.groups.findMany({
     where,
-    orderBy: { name: "asc" },
+    orderBy: { name: 'asc' },
     select: { id: true, name: true },
   });
   return groups;
@@ -105,10 +105,10 @@ export async function createGroup(data: {
     const prismaData: Prisma.GroupsCreateInput = {
       name: data.name,
       church: { connect: { id: churchId } },
-      ...(data.leaderId && data.leaderId !== ""
+      ...(data.leaderId && data.leaderId !== ''
         ? { leader: { connect: { id: data.leaderId } } }
         : {}),
-      ...(data.parentId && data.parentId !== ""
+      ...(data.parentId && data.parentId !== ''
         ? { parent: { connect: { id: data.parentId } } }
         : {}),
     };
@@ -127,7 +127,7 @@ export async function createGroup(data: {
       });
     }
 
-    revalidateTag("groups", { expire: 0 });
+    revalidateTag('groups', { expire: 0 });
     return created;
   });
 }
@@ -135,7 +135,7 @@ export async function createGroup(data: {
 export async function deleteGroup(id: string) {
   const prisma = await getChurchPrisma();
   await prisma.groups.delete({ where: { id } });
-  revalidateTag("groups", { expire: 0 });
+  revalidateTag('groups', { expire: 0 });
   return { success: true };
 }
 
@@ -145,20 +145,20 @@ export async function getGroupHierarchy() {
 
   const parents = await prisma.groups.findMany({
     where: { church_id: churchId, parent_id: null },
-    orderBy: { name: "asc" },
+    orderBy: { name: 'asc' },
     include: {
       leader: true,
       fields: true,
       _count: { select: { members: true, subgroups: true } },
       subgroups: {
-        orderBy: { name: "asc" },
+        orderBy: { name: 'asc' },
         include: {
           leader: true,
           fields: true,
           _count: { select: { members: true, subgroups: true } },
           // optional second level if present
           subgroups: {
-            orderBy: { name: "asc" },
+            orderBy: { name: 'asc' },
             include: {
               leader: true,
               fields: true,
@@ -192,15 +192,15 @@ export async function updateGroup(
   return await prisma.$transaction(async (tx) => {
     const updateData: Prisma.GroupsUpdateInput = {};
     if (data.name !== undefined) updateData.name = data.name;
-    if (Object.prototype.hasOwnProperty.call(data, "leaderId")) {
+    if (Object.prototype.hasOwnProperty.call(data, 'leaderId')) {
       updateData.leader =
-        data.leaderId && data.leaderId !== ""
+        data.leaderId && data.leaderId !== ''
           ? { connect: { id: data.leaderId } }
           : { disconnect: true };
     }
-    if (Object.prototype.hasOwnProperty.call(data, "parentId")) {
+    if (Object.prototype.hasOwnProperty.call(data, 'parentId')) {
       updateData.parent =
-        data.parentId && data.parentId !== ""
+        data.parentId && data.parentId !== ''
           ? { connect: { id: data.parentId } }
           : { disconnect: true };
     }
@@ -246,7 +246,7 @@ export async function updateGroup(
       include: { fields: true },
     });
 
-    revalidateTag("groups", { expire: 0 });
+    revalidateTag('groups', { expire: 0 });
     return updated;
   });
 }

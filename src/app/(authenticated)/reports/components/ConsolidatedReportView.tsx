@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ReportFields } from '@/generated/prisma/client';
+import { ColumnVisibilityDropdown } from '@/components/ColumnVisibilityDropdown/ColumnVisibilityDropdown';
 
 type Row = Record<string, unknown> & {
   id: string;
@@ -298,6 +299,71 @@ export default function ConsolidatedReportView({
   const { consolidatedData, totals, numericFields, booleanFields } =
     useReportData(rows, fields, activeFilters, groupBy);
 
+  // Column visibility state (scoped to consolidated view)
+  const allColumns = useMemo(() => {
+    const cols = [{ key: 'count', label: 'Registros' }];
+    numericFields.forEach((f) => {
+      cols.push({ key: f.id, label: f.label || f.key });
+    });
+    booleanFields.forEach((f) => {
+      cols.push({ key: f.id, label: `${f.label || f.key} (Sí)` });
+    });
+    return cols;
+  }, [numericFields, booleanFields]);
+
+  const visibilityKey = `report-consolidated-visibility-${reportId}`;
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(visibilityKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            const validKeys = new Set(allColumns.map((c) => c.key));
+            const filtered = parsed.filter((k) => validKeys.has(k));
+            return new Set(filtered);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to parse column visibility', e);
+      }
+    }
+    return new Set(allColumns.map((col) => col.key));
+  });
+
+  const saveVisibility = (newSet: Set<string>) => {
+    localStorage.setItem(visibilityKey, JSON.stringify(Array.from(newSet)));
+  };
+
+  const toggleColumn = (columnKey: string) => {
+    setVisibleColumns((prev) => {
+      const next = new Set(prev);
+      if (next.has(columnKey)) {
+        next.delete(columnKey);
+      } else {
+        next.add(columnKey);
+      }
+      saveVisibility(next);
+      return next;
+    });
+  };
+
+  const showAllColumns = (columnKeys: string[]) => {
+    const next = new Set(columnKeys);
+    setVisibleColumns(next);
+    saveVisibility(next);
+  };
+
+  const hideAllColumns = (columnKeys: string[]) => {
+    const next = new Set<string>();
+    // Optional: keep count visible?
+    if (columnKeys.includes('count')) {
+      next.add('count');
+    }
+    setVisibleColumns(next);
+    saveVisibility(next);
+  };
+
   const insights = useReportInsights(
     consolidatedData,
     numericFields,
@@ -460,6 +526,14 @@ export default function ConsolidatedReportView({
                 </SelectContent>
               </Select>
             )}
+
+            <ColumnVisibilityDropdown
+              columns={allColumns}
+              visibleColumns={visibleColumns}
+              onToggleColumn={toggleColumn}
+              onShowAllColumns={showAllColumns}
+              onHideAllColumns={hideAllColumns}
+            />
           </div>
         </div>
       </CardHeader>
@@ -476,28 +550,34 @@ export default function ConsolidatedReportView({
                 {group.label}
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <div>
-                  <span className="text-muted-foreground">Registros:</span>
-                  <span className="ml-2 font-semibold">{group.count}</span>
-                </div>
-                {numericFields.map((f) => (
-                  <div key={f.id}>
-                    <span className="text-muted-foreground">{f.label}:</span>
-                    <span className="ml-2 font-semibold">
-                      {group.values[f.id].toLocaleString()}
-                    </span>
+                {visibleColumns.has('count') && (
+                  <div>
+                    <span className="text-muted-foreground">Registros:</span>
+                    <span className="ml-2 font-semibold">{group.count}</span>
                   </div>
-                ))}
-                {booleanFields.map((f) => (
-                  <div key={f.id}>
-                    <span className="text-muted-foreground">
-                      {f.label} (Sí):
-                    </span>
-                    <span className="ml-2 font-semibold">
-                      {group.values[f.id]}
-                    </span>
-                  </div>
-                ))}
+                )}
+                {numericFields
+                  .filter((f) => visibleColumns.has(f.id))
+                  .map((f) => (
+                    <div key={f.id}>
+                      <span className="text-muted-foreground">{f.label}:</span>
+                      <span className="ml-2 font-semibold">
+                        {group.values[f.id].toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                {booleanFields
+                  .filter((f) => visibleColumns.has(f.id))
+                  .map((f) => (
+                    <div key={f.id}>
+                      <span className="text-muted-foreground">
+                        {f.label} (Sí):
+                      </span>
+                      <span className="ml-2 font-semibold">
+                        {group.values[f.id]}
+                      </span>
+                    </div>
+                  ))}
               </div>
             </div>
           ))}
@@ -508,24 +588,32 @@ export default function ConsolidatedReportView({
               TOTAL
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div>
-                <span className="text-muted-foreground">Registros:</span>
-                <span className="ml-2 font-bold">{totals.count}</span>
-              </div>
-              {numericFields.map((f) => (
-                <div key={f.id}>
-                  <span className="text-muted-foreground">{f.label}:</span>
-                  <span className="ml-2 font-bold">
-                    {totals[f.id].toLocaleString()}
-                  </span>
+              {visibleColumns.has('count') && (
+                <div>
+                  <span className="text-muted-foreground">Registros:</span>
+                  <span className="ml-2 font-bold">{totals.count}</span>
                 </div>
-              ))}
-              {booleanFields.map((f) => (
-                <div key={f.id}>
-                  <span className="text-muted-foreground">{f.label} (Sí):</span>
-                  <span className="ml-2 font-bold">{totals[f.id]}</span>
-                </div>
-              ))}
+              )}
+              {numericFields
+                .filter((f) => visibleColumns.has(f.id))
+                .map((f) => (
+                  <div key={f.id}>
+                    <span className="text-muted-foreground">{f.label}:</span>
+                    <span className="ml-2 font-bold">
+                      {totals[f.id].toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+              {booleanFields
+                .filter((f) => visibleColumns.has(f.id))
+                .map((f) => (
+                  <div key={f.id}>
+                    <span className="text-muted-foreground">
+                      {f.label} (Sí):
+                    </span>
+                    <span className="ml-2 font-bold">{totals[f.id]}</span>
+                  </div>
+                ))}
             </div>
           </div>
         </div>
@@ -598,77 +686,10 @@ export default function ConsolidatedReportView({
                   <TableHead className="w-[200px] whitespace-nowrap py-2 sticky left-0 bg-background z-20 border-r">
                     Grupo
                   </TableHead>
-                  <TableHead className="whitespace-nowrap py-2 group">
-                    <div className="flex items-center gap-1">
-                      Registros
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <MoreVertical className="h-3 w-3" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start">
-                          <DropdownMenuLabel>Insights</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => toggleInsight('count', 'max')}
-                          >
-                            <div className="flex items-center gap-2 w-full">
-                              {isInsightActive('count', 'max') ? (
-                                <Trash2 className="h-3 w-3 text-red-500" />
-                              ) : (
-                                <ArrowUpCircle className="h-3 w-3 text-green-500" />
-                              )}
-                              <span
-                                className={
-                                  isInsightActive('count', 'max')
-                                    ? 'text-red-500'
-                                    : ''
-                                }
-                              >
-                                {isInsightActive('count', 'max')
-                                  ? 'Quitar Mayor'
-                                  : 'Destacar Mayor'}
-                              </span>
-                            </div>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => toggleInsight('count', 'min')}
-                          >
-                            <div className="flex items-center gap-2 w-full">
-                              {isInsightActive('count', 'min') ? (
-                                <Trash2 className="h-3 w-3 text-red-500" />
-                              ) : (
-                                <ArrowDownCircle className="h-3 w-3 text-yellow-500" />
-                              )}
-                              <span
-                                className={
-                                  isInsightActive('count', 'min')
-                                    ? 'text-red-500'
-                                    : ''
-                                }
-                              >
-                                {isInsightActive('count', 'min')
-                                  ? 'Quitar Menor'
-                                  : 'Destacar Menor'}
-                              </span>
-                            </div>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </TableHead>
-                  {numericFields.map((f) => (
-                    <TableHead
-                      key={f.id}
-                      className="whitespace-nowrap py-2 group"
-                    >
+                  {visibleColumns.has('count') && (
+                    <TableHead className="whitespace-nowrap py-2 group">
                       <div className="flex items-center gap-1">
-                        {f.label || 'Campo'}
+                        Registros
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
@@ -683,44 +704,44 @@ export default function ConsolidatedReportView({
                             <DropdownMenuLabel>Insights</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
-                              onClick={() => toggleInsight(f.id, 'max')}
+                              onClick={() => toggleInsight('count', 'max')}
                             >
                               <div className="flex items-center gap-2 w-full">
-                                {isInsightActive(f.id, 'max') ? (
+                                {isInsightActive('count', 'max') ? (
                                   <Trash2 className="h-3 w-3 text-red-500" />
                                 ) : (
                                   <ArrowUpCircle className="h-3 w-3 text-green-500" />
                                 )}
                                 <span
                                   className={
-                                    isInsightActive(f.id, 'max')
+                                    isInsightActive('count', 'max')
                                       ? 'text-red-500'
                                       : ''
                                   }
                                 >
-                                  {isInsightActive(f.id, 'max')
+                                  {isInsightActive('count', 'max')
                                     ? 'Quitar Mayor'
                                     : 'Destacar Mayor'}
                                 </span>
                               </div>
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => toggleInsight(f.id, 'min')}
+                              onClick={() => toggleInsight('count', 'min')}
                             >
                               <div className="flex items-center gap-2 w-full">
-                                {isInsightActive(f.id, 'min') ? (
+                                {isInsightActive('count', 'min') ? (
                                   <Trash2 className="h-3 w-3 text-red-500" />
                                 ) : (
                                   <ArrowDownCircle className="h-3 w-3 text-yellow-500" />
                                 )}
                                 <span
                                   className={
-                                    isInsightActive(f.id, 'min')
+                                    isInsightActive('count', 'min')
                                       ? 'text-red-500'
                                       : ''
                                   }
                                 >
-                                  {isInsightActive(f.id, 'min')
+                                  {isInsightActive('count', 'min')
                                     ? 'Quitar Menor'
                                     : 'Destacar Menor'}
                                 </span>
@@ -730,12 +751,85 @@ export default function ConsolidatedReportView({
                         </DropdownMenu>
                       </div>
                     </TableHead>
-                  ))}
-                  {booleanFields.map((f) => (
-                    <TableHead key={f.id} className="whitespace-nowrap py-2">
-                      {f.label || 'Campo'} (Sí)
-                    </TableHead>
-                  ))}
+                  )}
+                  {numericFields
+                    .filter((f) => visibleColumns.has(f.id))
+                    .map((f) => (
+                      <TableHead
+                        key={f.id}
+                        className="whitespace-nowrap py-2 group"
+                      >
+                        <div className="flex items-center gap-1">
+                          {f.label || 'Campo'}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <MoreVertical className="h-3 w-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                              <DropdownMenuLabel>Insights</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => toggleInsight(f.id, 'max')}
+                              >
+                                <div className="flex items-center gap-2 w-full">
+                                  {isInsightActive(f.id, 'max') ? (
+                                    <Trash2 className="h-3 w-3 text-red-500" />
+                                  ) : (
+                                    <ArrowUpCircle className="h-3 w-3 text-green-500" />
+                                  )}
+                                  <span
+                                    className={
+                                      isInsightActive(f.id, 'max')
+                                        ? 'text-red-500'
+                                        : ''
+                                    }
+                                  >
+                                    {isInsightActive(f.id, 'max')
+                                      ? 'Quitar Mayor'
+                                      : 'Destacar Mayor'}
+                                  </span>
+                                </div>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => toggleInsight(f.id, 'min')}
+                              >
+                                <div className="flex items-center gap-2 w-full">
+                                  {isInsightActive(f.id, 'min') ? (
+                                    <Trash2 className="h-3 w-3 text-red-500" />
+                                  ) : (
+                                    <ArrowDownCircle className="h-3 w-3 text-yellow-500" />
+                                  )}
+                                  <span
+                                    className={
+                                      isInsightActive(f.id, 'min')
+                                        ? 'text-red-500'
+                                        : ''
+                                    }
+                                  >
+                                    {isInsightActive(f.id, 'min')
+                                      ? 'Quitar Menor'
+                                      : 'Destacar Menor'}
+                                  </span>
+                                </div>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </TableHead>
+                    ))}
+                  {booleanFields
+                    .filter((f) => visibleColumns.has(f.id))
+                    .map((f) => (
+                      <TableHead key={f.id} className="whitespace-nowrap py-2">
+                        {f.label || 'Campo'} (Sí)
+                      </TableHead>
+                    ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -744,38 +838,56 @@ export default function ConsolidatedReportView({
                     <TableCell className="font-medium whitespace-nowrap py-2 sticky left-0 bg-background z-10 border-r">
                       {group.label}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap py-2">
-                      {group.count}
-                    </TableCell>
-                    {numericFields.map((f) => (
-                      <TableCell key={f.id} className="whitespace-nowrap py-2">
-                        {group.values[f.id].toLocaleString()}
+                    {visibleColumns.has('count') && (
+                      <TableCell className="whitespace-nowrap py-2">
+                        {group.count}
                       </TableCell>
-                    ))}
-                    {booleanFields.map((f) => (
-                      <TableCell key={f.id} className="whitespace-nowrap py-2">
-                        {group.values[f.id]}
-                      </TableCell>
-                    ))}
+                    )}
+                    {numericFields
+                      .filter((f) => visibleColumns.has(f.id))
+                      .map((f) => (
+                        <TableCell
+                          key={f.id}
+                          className="whitespace-nowrap py-2"
+                        >
+                          {group.values[f.id].toLocaleString()}
+                        </TableCell>
+                      ))}
+                    {booleanFields
+                      .filter((f) => visibleColumns.has(f.id))
+                      .map((f) => (
+                        <TableCell
+                          key={f.id}
+                          className="whitespace-nowrap py-2"
+                        >
+                          {group.values[f.id]}
+                        </TableCell>
+                      ))}
                   </TableRow>
                 ))}
                 <TableRow className="bg-muted/50 font-bold">
                   <TableCell className="whitespace-nowrap py-2 sticky left-0 bg-muted/50 z-10 border-r">
                     TOTAL
                   </TableCell>
-                  <TableCell className="whitespace-nowrap py-2">
-                    {totals.count}
-                  </TableCell>
-                  {numericFields.map((f) => (
-                    <TableCell key={f.id} className="whitespace-nowrap py-2">
-                      {totals[f.id].toLocaleString()}
+                  {visibleColumns.has('count') && (
+                    <TableCell className="whitespace-nowrap py-2">
+                      {totals.count}
                     </TableCell>
-                  ))}
-                  {booleanFields.map((f) => (
-                    <TableCell key={f.id} className="whitespace-nowrap py-2">
-                      {totals[f.id]}
-                    </TableCell>
-                  ))}
+                  )}
+                  {numericFields
+                    .filter((f) => visibleColumns.has(f.id))
+                    .map((f) => (
+                      <TableCell key={f.id} className="whitespace-nowrap py-2">
+                        {totals[f.id].toLocaleString()}
+                      </TableCell>
+                    ))}
+                  {booleanFields
+                    .filter((f) => visibleColumns.has(f.id))
+                    .map((f) => (
+                      <TableCell key={f.id} className="whitespace-nowrap py-2">
+                        {totals[f.id]}
+                      </TableCell>
+                    ))}
                 </TableRow>
               </TableBody>
             </Table>

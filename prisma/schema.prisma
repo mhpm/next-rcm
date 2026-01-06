@@ -338,6 +338,7 @@ enum ReportFieldType {
   SELECT
   SECTION
   MEMBER_SELECT
+  FRIEND_REGISTRATION
 }
 
 enum ReportScope {
@@ -467,7 +468,7 @@ model Friends {
   phone               String?
   cell_id             String
   invited_by_id       String?
-  spiritual_father_id String
+  spiritual_father_id String?
   isBaptized          Boolean  @default(false) @map("is_baptized")
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @updatedAt @map("updated_at")
@@ -475,7 +476,7 @@ model Friends {
   church          Churches           @relation(fields: [church_id], references: [id], onDelete: Cascade)
   cell            Cells              @relation(fields: [cell_id], references: [id], onDelete: Cascade)
   invitedBy       Members?           @relation("FriendInvitedBy", fields: [invited_by_id], references: [id], onDelete: SetNull)
-  spiritualFather Members            @relation("FriendSpiritualFather", fields: [spiritual_father_id], references: [id], onDelete: Restrict)
+  spiritualFather Members?           @relation("FriendSpiritualFather", fields: [spiritual_father_id], references: [id], onDelete: Restrict)
   attendances     EventAttendances[]
 
   @@index([church_id])

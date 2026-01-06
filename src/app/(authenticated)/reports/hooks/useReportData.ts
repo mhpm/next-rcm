@@ -32,7 +32,12 @@ export function useReportData(
 ) {
   // Identify numeric fields that can be aggregated
   const numericFields = useMemo(() => {
-    return fields.filter((f) => f.type === 'NUMBER' || f.type === 'CURRENCY');
+    return fields.filter(
+      (f) =>
+        f.type === 'NUMBER' ||
+        f.type === 'CURRENCY' ||
+        f.type === 'FRIEND_REGISTRATION'
+    );
   }, [fields]);
 
   // Identify boolean fields
@@ -200,9 +205,15 @@ export function useReportData(
         const rawKey = `raw_${f.id}`;
         const val = row[rawKey] ?? row[f.id];
 
-        const num = parseFloat(String(val || '0'));
-        if (!isNaN(num)) {
-          groups[key].values[f.id] += num;
+        if (f.type === 'FRIEND_REGISTRATION') {
+          if (Array.isArray(val)) {
+            groups[key].values[f.id] += val.length;
+          }
+        } else {
+          const num = parseFloat(String(val || '0'));
+          if (!isNaN(num)) {
+            groups[key].values[f.id] += num;
+          }
         }
       });
 

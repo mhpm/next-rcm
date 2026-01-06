@@ -10,7 +10,7 @@ export const useNetworks = () => {
   return useQuery({
     queryKey: ['networks'],
     queryFn: getNetworks,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5000, // 5 seconds
   });
 };
 

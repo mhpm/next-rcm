@@ -231,6 +231,7 @@ export async function submitPublicReportEntry(
 ) {
   const report = await prisma.reports.findUnique({
     where: { publicToken: input.token },
+    include: { fields: { select: { id: true, type: true } } }, // Fetch types too
   });
 
   if (!report) {
@@ -258,7 +259,7 @@ export async function submitPublicReportEntry(
   // Reuse saveDraftReportEntry which creates a DRAFT by default
   const result = await saveDraftReportEntry(input);
 
-  // If not draft, update to SUBMITTED immediately
+  // If not draft, update to SUBMITTED immediately and process side effects (Friends)
   if (!input.isDraft) {
     await prisma.reportEntries.update({
       where: { id: result.id },
@@ -266,6 +267,51 @@ export async function submitPublicReportEntry(
         status: 'SUBMITTED',
       },
     });
+
+    // Handle FRIEND_REGISTRATION fields
+    // Only if scope is CELL and we have a cellId (should be validated by now)
+    if (input.scope === 'CELL' && input.cellId) {
+      for (const v of input.values) {
+        const fieldDef = report.fields.find((f) => f.id === v.fieldId);
+        if (
+          fieldDef?.type === 'FRIEND_REGISTRATION' &&
+          Array.isArray(v.value)
+        ) {
+          const friendsData = v.value as {
+            firstName: string;
+            lastName: string;
+            phone?: string;
+          }[];
+          // Use transaction for friends creation?
+          // We are outside of saveDraftReportEntry transaction (it doesn't use one for the whole flow)
+          // It's safe to do separate calls here as the report entry is already saved.
+          for (const friend of friendsData) {
+            if (
+              friend.firstName &&
+              friend.firstName.trim() &&
+              friend.lastName &&
+              friend.lastName.trim()
+            ) {
+              try {
+                await prisma.friends.create({
+                  data: {
+                    name: `${friend.firstName.trim()} ${friend.lastName.trim()}`,
+                    phone: friend.phone?.trim() || null,
+                    church_id: report.church_id,
+                    cell_id: input.cellId,
+                    // spiritual_father_id is optional now
+                  },
+                });
+              } catch (e) {
+                console.error('Error creating friend from public report:', e);
+                // Continue with other friends even if one fails
+              }
+            }
+          }
+        }
+      }
+    }
+
     revalidatePath(`/reports/${report.id}/entries`);
   }
 

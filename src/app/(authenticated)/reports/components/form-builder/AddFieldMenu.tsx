@@ -43,6 +43,9 @@ export function AddFieldMenu({ onAdd, className = '', trigger }: AddFieldMenuPro
           <DropdownMenuItem onSelect={() => onAdd('MEMBER_SELECT')}>
             Selección de Miembro
           </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => onAdd('FRIEND_REGISTRATION')}>
+            Registro de Amigos
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

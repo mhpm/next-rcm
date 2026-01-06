@@ -3,18 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { connection } from 'next/server';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { FriendsTable } from './components/FriendsTable';
 
 export default async function FriendsPage() {
   await connection();
-  const { friends } = await getFriends();
+  const { friends } = await getFriends({ limit: 1000 }); // Get all for client-side filtering/pagination
 
   return (
     <div className="p-4 space-y-6">
@@ -34,47 +27,7 @@ export default async function FriendsPage() {
       </div>
 
       <div className="border rounded-md">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Célula</TableHead>
-              <TableHead>Padre Espiritual</TableHead>
-              <TableHead>Invitado Por</TableHead>
-              <TableHead>Bautizado</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {friends.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="text-center h-24 text-muted-foreground"
-                >
-                  No hay amigos registrados.
-                </TableCell>
-              </TableRow>
-            ) : (
-              friends.map((friend) => (
-                <TableRow key={friend.id}>
-                  <TableCell className="font-medium">{friend.name}</TableCell>
-                  <TableCell>{friend.cell?.name || 'Sin Célula'}</TableCell>
-                  <TableCell>
-                    {friend.spiritualFather
-                      ? `${friend.spiritualFather.firstName} ${friend.spiritualFather.lastName}`
-                      : '-'}
-                  </TableCell>
-                  <TableCell>
-                    {friend.invitedBy
-                      ? `${friend.invitedBy.firstName} ${friend.invitedBy.lastName}`
-                      : '-'}
-                  </TableCell>
-                  <TableCell>{friend.isBaptized ? 'Sí' : 'No'}</TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+        <FriendsTable friends={friends} />
       </div>
     </div>
   );
