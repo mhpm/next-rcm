@@ -35,6 +35,20 @@ export const transformMemberToTableData = (
         .join(', ')
     : 'N/A',
   network: member.network?.name || 'N/A',
+  cellName: member.cell?.name || 'N/A',
+  subSectorName:
+    member.cell?.subSector?.name || member.subSector?.name || 'N/A',
+  sectorName:
+    member.cell?.subSector?.sector?.name ||
+    member.subSector?.sector?.name ||
+    member.sector?.name ||
+    'N/A',
+  zoneName:
+    member.cell?.subSector?.sector?.zone?.name ||
+    member.subSector?.sector?.zone?.name ||
+    member.sector?.zone?.name ||
+    member.zone?.name ||
+    'N/A',
   birthDate: member.birthDate ? formatDate(member.birthDate) : 'N/A',
   baptismDate: member.baptismDate ? formatDate(member.baptismDate) : 'N/A',
   raw_birthDate: member.birthDate,

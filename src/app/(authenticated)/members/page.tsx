@@ -213,6 +213,26 @@ export default function MembersPage() {
       sortable: true,
     },
     {
+      key: 'zoneName',
+      label: 'Zona',
+      sortable: true,
+    },
+    {
+      key: 'sectorName',
+      label: 'Sector',
+      sortable: true,
+    },
+    {
+      key: 'subSectorName',
+      label: 'Sub-Sector',
+      sortable: true,
+    },
+    {
+      key: 'cellName',
+      label: 'Célula',
+      sortable: true,
+    },
+    {
       key: 'ministries',
       label: 'Ministerios',
       sortable: true,

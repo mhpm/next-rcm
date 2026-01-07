@@ -46,7 +46,11 @@ import {
   getMembersForSelect,
 } from '../actions/utils.actions';
 
-export function FriendForm() {
+interface FriendFormProps {
+  initialData?: FriendFormValues;
+}
+
+export function FriendForm({ initialData }: FriendFormProps) {
   const router = useRouter();
   const { addNotification } = useNotificationStore();
   const [cells, setCells] = useState<
@@ -67,12 +71,12 @@ export function FriendForm() {
   const form = useForm<FriendFormValues>({
     resolver: zodResolver(friendSchema) as any,
     defaultValues: {
-      name: '',
-      phone: '',
-      isBaptized: false,
-      cell_id: '',
-      spiritual_father_id: '',
-      invited_by_id: undefined, // Optional
+      name: initialData?.name || '',
+      phone: initialData?.phone || '',
+      isBaptized: initialData?.isBaptized || false,
+      cell_id: initialData?.cell_id || '',
+      spiritual_father_id: initialData?.spiritual_father_id || '',
+      invited_by_id: initialData?.invited_by_id || undefined,
     },
   });
 

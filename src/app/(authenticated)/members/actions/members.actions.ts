@@ -106,6 +106,34 @@ export async function getAllMembers(options?: {
             },
           },
           network: true,
+          cell: {
+            include: {
+              subSector: {
+                include: {
+                  sector: {
+                    include: {
+                      zone: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          subSector: {
+            include: {
+              sector: {
+                include: {
+                  zone: true,
+                },
+              },
+            },
+          },
+          sector: {
+            include: {
+              zone: true,
+            },
+          },
+          zone: true,
         },
       }),
       prisma.members.count({ where: whereClause }),

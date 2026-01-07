@@ -261,41 +261,39 @@ export async function submitPublicReportEntry(
 
   // If not draft, update to SUBMITTED immediately and process side effects (Friends)
   if (!input.isDraft) {
-    await prisma.reportEntries.update({
-      where: { id: result.id },
-      data: {
-        status: 'SUBMITTED',
-      },
-    });
+    await prisma.$transaction(async (tx) => {
+      await tx.reportEntries.update({
+        where: { id: result.id },
+        data: {
+          status: 'SUBMITTED',
+        },
+      });
 
-    // Handle FRIEND_REGISTRATION fields
-    // Only if scope is CELL and we have a cellId (should be validated by now)
-    if (input.scope === 'CELL' && input.cellId) {
-      for (const v of input.values) {
-        const fieldDef = report.fields.find((f) => f.id === v.fieldId);
-        if (
-          fieldDef?.type === 'FRIEND_REGISTRATION' &&
-          Array.isArray(v.value)
-        ) {
-          const friendsData = v.value as {
-            firstName: string;
-            lastName: string;
-            phone?: string;
-          }[];
-          // Use transaction for friends creation?
-          // We are outside of saveDraftReportEntry transaction (it doesn't use one for the whole flow)
-          // It's safe to do separate calls here as the report entry is already saved.
-          for (const friend of friendsData) {
-            if (
-              friend.firstName &&
-              friend.firstName.trim() &&
-              friend.lastName &&
-              friend.lastName.trim()
-            ) {
-              try {
+      // Handle FRIEND_REGISTRATION fields
+      // Only if scope is CELL and we have a cellId (should be validated by now)
+      if (input.scope === 'CELL' && input.cellId) {
+        for (const v of input.values) {
+          const fieldDef = report.fields.find((f) => f.id === v.fieldId);
+          if (
+            fieldDef?.type === 'FRIEND_REGISTRATION' &&
+            Array.isArray(v.value)
+          ) {
+            const friendsData = v.value as {
+              firstName: string;
+              lastName: string;
+              phone?: string;
+            }[];
+
+            for (const friend of friendsData) {
+              if (
+                friend.firstName &&
+                friend.firstName.trim() &&
+                friend.lastName &&
+                friend.lastName.trim()
+              ) {
                 const fullName = `${friend.firstName.trim()} ${friend.lastName.trim()}`;
 
-                const existingFriend = await prisma.friends.findFirst({
+                const existingFriend = await tx.friends.findFirst({
                   where: {
                     name: { equals: fullName, mode: 'insensitive' },
                     cell_id: input.cellId,
@@ -304,25 +302,21 @@ export async function submitPublicReportEntry(
                 });
 
                 if (!existingFriend) {
-                  await prisma.friends.create({
+                  await tx.friends.create({
                     data: {
                       name: fullName,
                       phone: friend.phone?.trim() || null,
                       church_id: report.church_id,
                       cell_id: input.cellId,
-                      // spiritual_father_id is optional now
                     },
                   });
                 }
-              } catch (e) {
-                console.error('Error creating friend from public report:', e);
-                // Continue with other friends even if one fails
               }
             }
           }
         }
       }
-    }
+    });
 
     revalidatePath(`/reports/${report.id}/entries`);
   }

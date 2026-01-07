@@ -16,6 +16,34 @@ export type MemberWithMinistries = Member & {
     ministry: Ministry;
   })[];
   network?: Networks | null;
+  cell?:
+    | (Cells & {
+        subSector?:
+          | (SubSectors & {
+              sector?:
+                | (Sectors & {
+                    zone?: Zones | null;
+                  })
+                | null;
+            })
+          | null;
+      })
+    | null;
+  subSector?:
+    | (SubSectors & {
+        sector?:
+          | (Sectors & {
+              zone?: Zones | null;
+            })
+          | null;
+      })
+    | null;
+  sector?:
+    | (Sectors & {
+        zone?: Zones | null;
+      })
+    | null;
+  zone?: Zones | null;
 };
 
 // Main Member interface matching Prisma schema

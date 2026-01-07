@@ -406,9 +406,7 @@ export async function getSectorStats(churchSlug?: string) {
     prisma.subSectors.count({
       where: { sector: { church_id: churchId } },
     }),
-    prisma.cells.count({
-      where: { subSector: { sector: { church_id: churchId } } },
-    }),
+    prisma.cells.count(),
   ]);
 
   // Re-evaluating members count query based on new schema
@@ -416,7 +414,15 @@ export async function getSectorStats(churchSlug?: string) {
   const totalMembersInHierarchy = await prisma.members.count({
     where: {
       cell_id: { not: null },
-      church_id: churchId,
+    },
+  });
+
+  const membersWithoutCell = await prisma.members.count({
+    where: {
+      cell_id: null,
+      role: {
+        notIn: [MemberRole.SUPERVISOR, MemberRole.PASTOR],
+      },
     },
   });
 
@@ -425,5 +431,6 @@ export async function getSectorStats(churchSlug?: string) {
     totalSubSectors,
     totalCells,
     totalMembers: totalMembersInHierarchy,
+    membersWithoutCell,
   };
 }

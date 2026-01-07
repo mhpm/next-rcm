@@ -169,6 +169,7 @@ export async function createCell(data: {
     }
 
     revalidateTag('cells', { expire: 0 });
+    revalidateTag('sectors', { expire: 0 });
 
     return cell;
   } catch (error) {
@@ -282,6 +283,7 @@ export async function updateCell(
     }
 
     revalidateTag('cells', { expire: 0 });
+    revalidateTag('sectors', { expire: 0 });
 
     return cell;
   } catch (error) {
