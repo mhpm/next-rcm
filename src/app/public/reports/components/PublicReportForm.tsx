@@ -2,7 +2,14 @@
 
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { InputField, SelectField } from '@/components/FormControls';
+import {
+  InputField,
+  SelectField,
+  NumberStepper,
+  ChoiceGroup,
+  SearchableSelectField,
+  DateField,
+} from '@/components/FormControls';
 import type { ReportFieldType, ReportScope } from '@/generated/prisma/client';
 import {
   FriendRegistrationField,
@@ -16,7 +23,7 @@ import {
 import { useNotificationStore } from '@/store/NotificationStore';
 import { FaLock, FaFloppyDisk, FaPaperPlane, FaKey } from 'react-icons/fa6';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,6 +40,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { ChevronDown, Loader2, Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type Option = { value: string; label: string };
 
@@ -186,85 +194,182 @@ export default function PublicReportForm({
     const baseName = `values.${f.id}` as const;
 
     const content = (() => {
-      if (f.type === 'NUMBER' || f.type === 'CURRENCY') {
+      if (f.type === 'CURRENCY') {
         return (
-          <InputField<FormValues>
+          <Controller
+            key={f.id}
             name={baseName}
-            label={f.label || f.key}
-            register={register}
-            type="number"
-            step={f.type === 'CURRENCY' ? '0.01' : '1'}
-            placeholder={f.type === 'CURRENCY' ? '0.00' : '0'}
+            control={control}
             rules={{
               ...(f.required ? { required: 'Requerido' } : {}),
-              valueAsNumber: true,
             }}
-            startIcon={
-              f.type === 'CURRENCY' ? (
-                <span className="text-gray-500 font-bold">$</span>
-              ) : undefined
-            }
+            render={({ field, fieldState }) => (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500 mb-2">
+                  <span className="text-2xl font-black">$</span>
+                  <span className="text-xs font-black uppercase tracking-widest">
+                    {f.label || f.key}
+                  </span>
+                </div>
+                <div className="relative group">
+                  <span className="absolute left-6 top-1/2 -translate-y-1/2 text-4xl font-black text-slate-300 dark:text-slate-700 group-focus-within:text-primary transition-colors">
+                    $
+                  </span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={(field.value as string | number) ?? ''}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value === '' ? '' : Number(e.target.value)
+                      )
+                    }
+                    placeholder="0.00"
+                    className={cn(
+                      'w-full bg-transparent border-none focus:ring-0 text-5xl sm:text-6xl font-black tracking-tighter p-0 pl-14 placeholder:text-slate-100 dark:placeholder:text-slate-800 transition-all',
+                      fieldState.error && 'text-destructive'
+                    )}
+                  />
+                </div>
+                {fieldState.error && (
+                  <p className="text-sm font-bold text-destructive px-1">
+                    {fieldState.error.message}
+                  </p>
+                )}
+                <div className="h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div
+                    className={cn(
+                      'h-full bg-primary transition-all duration-500',
+                      field.value ? 'w-full' : 'w-0'
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+          />
+        );
+      }
+      if (f.type === 'NUMBER') {
+        return (
+          <Controller
+            key={f.id}
+            name={baseName}
+            control={control}
+            rules={{
+              ...(f.required ? { required: 'Requerido' } : {}),
+            }}
+            render={({ field, fieldState }) => (
+              <NumberStepper
+                label={f.label || f.key}
+                value={Number(field.value) || 0}
+                onChange={field.onChange}
+                error={fieldState.error?.message}
+                className="w-full"
+              />
+            )}
           />
         );
       }
       if (f.type === 'BOOLEAN') {
+        const booleanOptions = [
+          { value: 'true', label: 'Sí' },
+          { value: 'false', label: 'No' },
+        ];
         return (
-          <SelectField<FormValues>
+          <Controller
+            key={f.id}
             name={baseName}
-            label={f.label || f.key}
             control={control}
-            options={[
-              { value: '', label: 'Selecciona' },
-              { value: 'true', label: 'Sí' },
-              { value: 'false', label: 'No' },
-            ]}
             rules={{
               ...(f.required ? { required: 'Requerido' } : {}),
-              setValueAs: (v) =>
-                v === 'true' ? true : v === 'false' ? false : undefined,
             }}
+            render={({ field, fieldState }) => (
+              <ChoiceGroup
+                label={f.label || f.key}
+                options={booleanOptions}
+                value={field.value?.toString() ?? ''}
+                onChange={(val) => field.onChange(val === 'true')}
+                error={fieldState.error?.message}
+                className="w-full"
+              />
+            )}
           />
         );
       }
       if (f.type === 'DATE') {
         return (
-          <InputField<FormValues>
+          <DateField<FormValues>
             name={baseName}
             label={f.label || f.key}
-            register={register}
-            type="date"
+            control={control}
             rules={f.required ? { required: 'Requerido' } : undefined}
+            error={(errors.values as any)?.[f.id]?.message}
           />
         );
       }
       if (f.type === 'SELECT') {
+        const selectOptions = (f.options || []).map((opt) => ({
+          value: opt,
+          label: opt,
+        }));
+
+        if (selectOptions.length <= 4) {
+          return (
+            <Controller
+              key={f.id}
+              name={baseName}
+              control={control}
+              rules={f.required ? { required: 'Requerido' } : undefined}
+              render={({ field, fieldState }) => (
+                <ChoiceGroup
+                  label={f.label || f.key}
+                  options={selectOptions}
+                  value={field.value as string}
+                  onChange={field.onChange}
+                  error={fieldState.error?.message}
+                  className="w-full"
+                />
+              )}
+            />
+          );
+        }
+
         return (
-          <SelectField<FormValues>
+          <Controller
+            key={f.id}
             name={baseName}
-            label={f.label || f.key}
             control={control}
-            options={[
-              { value: '', label: 'Selecciona una opción' },
-              ...(f.options || []).map((opt) => ({
-                value: opt,
-                label: opt,
-              })),
-            ]}
             rules={f.required ? { required: 'Requerido' } : undefined}
+            render={({ field, fieldState }) => (
+              <SearchableSelectField
+                label={f.label || f.key}
+                options={selectOptions}
+                value={field.value as string}
+                onChange={field.onChange}
+                error={fieldState.error?.message}
+                placeholder="Selecciona una opción..."
+              />
+            )}
           />
         );
       }
       if (f.type === 'MEMBER_SELECT') {
         return (
-          <SelectField<FormValues>
+          <Controller
+            key={f.id}
             name={baseName}
-            label={f.label || f.key}
             control={control}
-            options={[
-              { value: '', label: 'Selecciona un miembro' },
-              ...members,
-            ]}
             rules={f.required ? { required: 'Requerido' } : undefined}
+            render={({ field, fieldState }) => (
+              <SearchableSelectField
+                label={f.label || f.key}
+                options={members}
+                value={field.value as string}
+                onChange={field.onChange}
+                error={fieldState.error?.message}
+                placeholder="Selecciona un miembro..."
+              />
+            )}
           />
         );
       }
@@ -299,9 +404,21 @@ export default function PublicReportForm({
 
     if (!content) return null;
 
+    const isNumber = f.type === 'NUMBER' || f.type === 'CURRENCY';
+
     return (
-      <div key={f.id} className="w-[80%] mx-auto">
-        {content}
+      <div
+        key={f.id}
+        className={cn('transition-all duration-300', 'col-span-full')}
+      >
+        <div
+          className={cn(
+            'bg-white dark:bg-slate-900 rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all duration-200',
+            !isNumber ? 'p-6 sm:p-8' : 'p-4 sm:p-6'
+          )}
+        >
+          {content}
+        </div>
       </div>
     );
   };
@@ -497,67 +614,92 @@ export default function PublicReportForm({
       </AlertDialog>
 
       <form className="space-y-6" onSubmit={handleSubmit(onPreSubmit)}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2">
-            <h2 className="text-xl font-semibold">{title}</h2>
+        <div className="flex flex-col gap-10">
+          {/* Header Section Centered */}
+          <div className="flex flex-col items-center text-center space-y-4 max-w-3xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+              {title}
+            </h2>
             {description && (
-              <p className="text-muted-foreground mt-2">{description}</p>
+              <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                {description}
+              </p>
             )}
           </div>
-          <div className="md:col-span-1 space-y-4">
+
+          {/* Auth Card Centered */}
+          <div className="w-full max-w-md mx-auto">
             {scope === 'CELL' && (
-              <Card>
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-lg uppercase text-muted-foreground">
-                    Autenticación
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+              <Card className="overflow-hidden border-2 transition-all duration-300 hover:shadow-lg dark:bg-slate-900/50">
+                <div className="bg-primary/5 px-6 py-4 border-b">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-primary/70">
+                    Seguridad y Acceso
+                  </h3>
+                </div>
+                <CardContent className="p-6 space-y-5">
                   {!isAuthenticated && (
-                    <>
-                      <InputField
-                        name="accessCode"
-                        label="Clave de Acceso"
-                        register={register}
-                        rules={{ required: 'La clave de acceso es requerida' }}
-                        error={errors.accessCode?.message}
-                        type="password"
-                        placeholder="Clave de Acceso"
-                        startIcon={<FaKey className="text-muted-foreground" />}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            verifyAccess();
-                          }
-                        }}
-                      />
+                    <div className="space-y-5 animate-in fade-in slide-in-from-top-4 duration-500">
+                      <div className="space-y-2">
+                        <InputField
+                          name="accessCode"
+                          label="Código de Célula"
+                          register={register}
+                          rules={{
+                            required: 'La clave de acceso es requerida',
+                          }}
+                          error={errors.accessCode?.message}
+                          type="password"
+                          placeholder="Introduce el código..."
+                          startIcon={<FaKey className="text-primary/60" />}
+                          className="text-lg"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              verifyAccess();
+                            }
+                          }}
+                        />
+                        <p className="text-xs text-muted-foreground px-1">
+                          Ingresa la clave única de tu célula para continuar.
+                        </p>
+                      </div>
                       <Button
                         type="button"
-                        className="w-full"
+                        className="w-full h-12 text-base font-bold rounded-xl shadow-md transition-all active:scale-95"
                         onClick={verifyAccess}
                         disabled={isVerifying}
                       >
                         {isVerifying ? (
-                          <Loader2 className="animate-spin" />
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <span>Verificando...</span>
+                          </div>
                         ) : (
-                          'Verificar Acceso'
+                          <div className="flex items-center gap-2">
+                            <FaLock className="w-4 h-4" />
+                            <span>Acceder al Reporte</span>
+                          </div>
                         )}
                       </Button>
-                    </>
+                    </div>
                   )}
 
                   {isAuthenticated && cellInfo && (
-                    <div className="space-y-3">
-                      <div className="rounded-md border border-green-500/30 bg-green-500/10 p-3 text-sm flex justify-between items-center text-green-700 dark:text-green-400 transition-colors duration-300">
-                        <span className="font-medium flex items-center gap-2">
-                          <Check className="w-4 h-4" />
-                          Acceso verificado
-                        </span>
+                    <div className="space-y-4 animate-in zoom-in-95 duration-300">
+                      <div className="rounded-2xl border-2 border-green-500/20 bg-green-500/5 p-4 text-sm flex flex-col sm:flex-row justify-between items-center gap-3 text-green-700 dark:text-green-400">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-green-500 text-white p-1.5 rounded-full shadow-sm">
+                            <Check className="w-4 h-4" />
+                          </div>
+                          <span className="font-bold text-base">
+                            Identificado
+                          </span>
+                        </div>
                         <Button
                           type="button"
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
-                          className="hover:bg-green-500/20 hover:text-green-800 dark:hover:text-green-300"
+                          className="rounded-lg border-green-500/30 hover:bg-green-500/10 h-8 px-4"
                           onClick={() => {
                             setIsAuthenticated(false);
                             setCellInfo(null);
@@ -565,43 +707,59 @@ export default function PublicReportForm({
                             reset({ scope, cellId: '' });
                           }}
                         >
-                          Cambiar
+                          Salir
                         </Button>
                       </div>
 
-                      <div className="bg-muted/30 p-3 rounded-lg space-y-2 text-sm border">
-                        <div>
-                          <span className="block text-xs text-muted-foreground uppercase">
-                            Célula
-                          </span>
-                          <span className="font-semibold">{cellInfo.name}</span>
+                      <div className="bg-muted/40 p-5 rounded-2xl space-y-4 border-2 border-transparent hover:border-primary/10 transition-colors">
+                        <div className="flex flex-col items-center text-center gap-3">
+                          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold border-2 border-primary/5">
+                            {cellInfo.name.charAt(0)}
+                          </div>
+                          <div>
+                            <span className="block text-[10px] font-black text-muted-foreground uppercase tracking-wider">
+                              Célula Seleccionada
+                            </span>
+                            <span className="font-bold text-xl leading-tight block">
+                              {cellInfo.name}
+                            </span>
+                          </div>
                         </div>
 
-                        {cellInfo.leader && (
-                          <div>
-                            <span className="block text-xs text-muted-foreground uppercase">
-                              Líder
-                            </span>
-                            <span>{cellInfo.leader}</span>
-                          </div>
-                        )}
-
-                        {(cellInfo.sector || cellInfo.subSector) && (
-                          <div className="grid grid-cols-2 gap-2">
-                            {cellInfo.sector && (
+                        {(cellInfo.leader ||
+                          cellInfo.sector ||
+                          cellInfo.subSector) && (
+                          <div className="grid grid-cols-1 gap-4 pt-4 border-t border-border/50 text-center">
+                            {cellInfo.leader && (
                               <div>
-                                <span className="block text-xs text-muted-foreground uppercase">
-                                  Sector
+                                <span className="block text-[10px] font-black text-muted-foreground uppercase tracking-wider">
+                                  Líder a Cargo
                                 </span>
-                                <span>{cellInfo.sector}</span>
+                                <span className="font-semibold text-slate-700 dark:text-slate-300 text-lg">
+                                  {cellInfo.leader}
+                                </span>
                               </div>
                             )}
+
+                            {cellInfo.sector && (
+                              <div>
+                                <span className="block text-[10px] font-black text-muted-foreground uppercase tracking-wider">
+                                  Sector / Zona
+                                </span>
+                                <span className="font-semibold text-slate-700 dark:text-slate-300">
+                                  {cellInfo.sector}
+                                </span>
+                              </div>
+                            )}
+
                             {cellInfo.subSector && (
                               <div>
-                                <span className="block text-xs text-muted-foreground uppercase">
+                                <span className="block text-[10px] font-black text-muted-foreground uppercase tracking-wider">
                                   Subsector
                                 </span>
-                                <span>{cellInfo.subSector}</span>
+                                <span className="font-semibold text-slate-700 dark:text-slate-300">
+                                  {cellInfo.subSector}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -614,28 +772,32 @@ export default function PublicReportForm({
             )}
 
             {scope === 'GROUP' && (
-              <SelectField
-                name="groupId"
-                label="Grupo"
-                control={control}
-                options={[
-                  { value: '', label: 'Selecciona un grupo' },
-                  ...groups,
-                ]}
-                rules={{ required: 'Requerido' }}
-              />
+              <div className="w-full max-w-md mx-auto">
+                <SelectField
+                  name="groupId"
+                  label="Grupo"
+                  control={control}
+                  options={[
+                    { value: '', label: 'Selecciona un grupo' },
+                    ...groups,
+                  ]}
+                  rules={{ required: 'Requerido' }}
+                />
+              </div>
             )}
             {scope === 'SECTOR' && (
-              <SelectField
-                name="sectorId"
-                label="Sector"
-                control={control}
-                options={[
-                  { value: '', label: 'Selecciona un sector' },
-                  ...sectors,
-                ]}
-                rules={{ required: 'Requerido' }}
-              />
+              <div className="w-full max-w-md mx-auto">
+                <SelectField
+                  name="sectorId"
+                  label="Sector"
+                  control={control}
+                  options={[
+                    { value: '', label: 'Selecciona un sector' },
+                    ...sectors,
+                  ]}
+                  rules={{ required: 'Requerido' }}
+                />
+              </div>
             )}
           </div>
         </div>
@@ -643,9 +805,9 @@ export default function PublicReportForm({
         {/* Form Fields - Only show if authenticated (for CELL scope) or if other scope */}
         {(scope !== 'CELL' || isAuthenticated) && (
           <>
-            <Card>
-              <CardContent className="p-6">
-                <div className="space-y-4">
+            <Card className="border-none shadow-none bg-transparent">
+              <CardContent className="p-0">
+                <div className="space-y-8 max-w-3xl mx-auto">
                   {groupedFields.map((group, i) => {
                     if (group.section) {
                       if (!isFieldVisible(group.section)) return null;
@@ -659,26 +821,29 @@ export default function PublicReportForm({
                           onOpenChange={(open) =>
                             setSectionOpen(sectionKey, open)
                           }
-                          className="rounded-lg border"
+                          className="bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-300"
                         >
                           <CollapsibleTrigger asChild>
                             <Button
                               type="button"
                               variant="ghost"
-                              className="w-full justify-between px-4 py-3"
+                              className="w-full justify-between px-6 py-8 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors"
                             >
-                              <span className="text-base font-semibold">
+                              <span className="text-xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">
                                 {group.section.label || 'Sección'}
                               </span>
-                              <ChevronDown
-                                className={`transition-transform ${
-                                  isOpen ? 'rotate-180' : ''
-                                }`}
-                              />
+                              <div className="h-8 w-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm">
+                                <ChevronDown
+                                  className={cn(
+                                    'h-5 w-5 transition-transform duration-300 text-slate-500',
+                                    isOpen ? 'rotate-180' : ''
+                                  )}
+                                />
+                              </div>
                             </Button>
                           </CollapsibleTrigger>
-                          <CollapsibleContent className="px-4 pb-4 overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-                            <div className="grid grid-cols-1 gap-4 pt-2">
+                          <CollapsibleContent className="px-6 pb-8 data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
+                            <div className="grid grid-cols-1 gap-6 pt-4">
                               {group.fields.map((f) => {
                                 if (!isFieldVisible(f)) return null;
                                 return renderField(f);
@@ -691,7 +856,7 @@ export default function PublicReportForm({
                     return (
                       <div
                         key={`group-${i}`}
-                        className="grid grid-cols-1 gap-4"
+                        className="grid grid-cols-1 gap-6"
                       >
                         {group.fields.map((f) => {
                           if (!isFieldVisible(f)) return null;
@@ -704,34 +869,34 @@ export default function PublicReportForm({
               </CardContent>
             </Card>
 
-            <div className="flex flex-col md:flex-row justify-end gap-3 sticky bottom-4 bg-background/80 backdrop-blur-md p-4 rounded-md border shadow-sm z-20">
+            <div className="flex flex-col md:flex-row justify-end gap-4 sticky bottom-6 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl z-20 mt-12 transition-all duration-300 max-w-3xl mx-auto w-full">
               <Button
                 type="button"
                 variant="outline"
-                className="w-full md:w-auto gap-2"
+                className="w-full md:w-auto gap-3 h-14 px-8 rounded-2xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400 font-semibold transition-all duration-200"
                 onClick={handleSubmit(onSaveDraft)}
                 disabled={isSavingDraft || isSubmitting}
               >
                 {isSavingDraft ? (
-                  <Loader2 className="animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
-                  <FaFloppyDisk />
+                  <FaFloppyDisk className="h-5 w-5" />
                 )}
                 Guardar Borrador
               </Button>
               <Button
                 type="submit"
-                className="w-full md:w-auto gap-2"
+                className="w-full md:w-auto gap-3 h-14 px-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-500/20 transition-all duration-200"
                 disabled={isSubmitting || isSavingDraft}
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="animate-spin" />
+                    <Loader2 className="h-5 w-5 animate-spin" />
                     Enviando...
                   </>
                 ) : (
                   <>
-                    <FaPaperPlane />
+                    <FaPaperPlane className="h-5 w-5" />
                     Enviar Reporte
                   </>
                 )}

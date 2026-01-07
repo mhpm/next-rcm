@@ -1,24 +1,20 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { FieldValues, Path } from 'react-hook-form';
 import { RiArrowDownSLine, RiCloseLine } from 'react-icons/ri';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2, Check } from 'lucide-react';
+import { Loader2, Check, Search } from 'lucide-react';
 
-export interface MultiSelectOption {
+export interface SelectOption {
   value: string;
   label: string;
 }
 
-interface MultiSelectFieldProps<T extends FieldValues> {
-  name?: Path<T>; // Made optional since we don't use it internally
+interface SearchableSelectFieldProps {
   label: string;
-  options: MultiSelectOption[];
-  value?: string[];
-  onChange: (values: string[]) => void;
+  options: SelectOption[];
+  value?: string;
+  onChange: (value: string) => void;
   error?: string;
   placeholder?: string;
   disabled?: boolean;
@@ -26,17 +22,17 @@ interface MultiSelectFieldProps<T extends FieldValues> {
   isLoading?: boolean;
 }
 
-export function MultiSelectField<T extends FieldValues>({
+export function SearchableSelectField({
   label,
   options,
-  value = [],
+  value,
   onChange,
   error,
   placeholder = 'Seleccionar...',
   disabled = false,
   required = false,
   isLoading = false,
-}: Omit<MultiSelectFieldProps<T>, 'name'>) {
+}: SearchableSelectFieldProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -47,30 +43,20 @@ export function MultiSelectField<T extends FieldValues>({
     option.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Get selected options for display
-  const selectedOptions = options.filter((option) =>
-    value.includes(option.value)
-  );
+  // Get selected option for display
+  const selectedOption = options.find((option) => option.value === value);
 
   // Handle option selection
-  const handleOptionToggle = (optionValue: string) => {
-    const newValue = value.includes(optionValue)
-      ? value.filter((v) => v !== optionValue)
-      : [...value, optionValue];
-    onChange(newValue);
+  const handleSelect = (optionValue: string) => {
+    onChange(optionValue);
+    setIsOpen(false);
+    setSearchTerm('');
   };
 
-  // Handle removing a selected option
-  const handleRemoveOption = (optionValue: string, e: React.MouseEvent) => {
+  // Handle clear selection
+  const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const newValue = value.filter((v) => v !== optionValue);
-    onChange(newValue);
-  };
-
-  // Handle clear all
-  const handleClearAll = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onChange([]);
+    onChange('');
   };
 
   // Close dropdown when clicking outside
@@ -112,44 +98,26 @@ export function MultiSelectField<T extends FieldValues>({
         {/* Main input display */}
         <div
           className={cn(
-            'flex w-full min-h-14 h-auto cursor-pointer flex-wrap items-center gap-2 rounded-2xl border border-input bg-background/50 px-4 py-3 text-base ring-offset-background transition-all hover:bg-accent/50 hover:border-primary/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
+            'flex w-full min-h-14 h-auto cursor-pointer items-center gap-2 rounded-2xl border border-input bg-background/50 px-4 py-3 text-base ring-offset-background transition-all hover:bg-accent/50 hover:border-primary/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
             error && 'border-destructive focus-within:ring-destructive',
             disabled && 'cursor-not-allowed opacity-50 bg-muted'
           )}
           onClick={() => !disabled && setIsOpen(!isOpen)}
         >
-          {/* Selected items */}
-          {selectedOptions.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5 flex-1">
-              {selectedOptions.map((option) => (
-                <Badge
-                  key={option.value}
-                  variant="secondary"
-                  className="rounded-xl px-3 py-1 gap-1.5 hover:bg-secondary/80 text-sm font-medium border-none bg-primary/10 text-primary"
-                >
-                  {option.label}
-                  {!disabled && (
-                    <button
-                      type="button"
-                      onClick={(e) => handleRemoveOption(option.value, e)}
-                      className="ml-0.5 rounded-full outline-none hover:bg-primary/20 p-0.5 transition-colors"
-                    >
-                      <RiCloseLine className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </Badge>
-              ))}
-            </div>
+          {selectedOption ? (
+            <span className="flex-1 font-medium text-foreground truncate">
+              {selectedOption.label}
+            </span>
           ) : (
             <span className="text-muted-foreground flex-1">{placeholder}</span>
           )}
 
           {/* Controls */}
           <div className="flex items-center gap-2 ml-auto">
-            {selectedOptions.length > 0 && !disabled && (
+            {value && !disabled && (
               <button
                 type="button"
-                onClick={handleClearAll}
+                onClick={handleClear}
                 className="text-muted-foreground hover:text-destructive p-1 rounded-full hover:bg-destructive/10 transition-colors"
               >
                 <RiCloseLine className="w-5 h-5" />
@@ -171,13 +139,14 @@ export function MultiSelectField<T extends FieldValues>({
             {/* Search input */}
             <div className="p-3 border-b bg-muted/30">
               <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   ref={inputRef}
                   type="text"
-                  placeholder="Buscar opciones..."
+                  placeholder="Buscar..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="flex h-11 w-full rounded-xl border border-input bg-background px-4 py-2 text-base shadow-sm transition-all placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-transparent"
+                  className="flex h-11 w-full rounded-xl border border-input bg-background pl-10 pr-4 py-2 text-base shadow-sm transition-all placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-transparent"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -192,7 +161,7 @@ export function MultiSelectField<T extends FieldValues>({
                 </div>
               ) : filteredOptions.length > 0 ? (
                 filteredOptions.map((option) => {
-                  const isSelected = value.includes(option.value);
+                  const isSelected = value === option.value;
                   return (
                     <div
                       key={option.value}
@@ -202,26 +171,18 @@ export function MultiSelectField<T extends FieldValues>({
                           ? 'bg-primary/10 text-primary font-medium'
                           : 'hover:bg-accent hover:text-accent-foreground'
                       )}
-                      onClick={() => handleOptionToggle(option.value)}
+                      onClick={() => handleSelect(option.value)}
                     >
-                      <div className="flex items-center gap-3 w-full">
-                        <Checkbox
-                          checked={isSelected}
-                          onCheckedChange={() => {}} // Controlled by parent click
-                          className={cn(
-                            'h-5 w-5 rounded-md border-2 pointer-events-none',
-                            isSelected && 'bg-primary border-primary'
-                          )}
-                        />
-                        <span className="flex-1 truncate">{option.label}</span>
-                        {isSelected && <Check className="w-5 h-5 ml-auto" />}
-                      </div>
+                      <span className="flex-1 truncate">{option.label}</span>
+                      {isSelected && (
+                        <Check className="w-5 h-5 ml-auto text-primary" />
+                      )}
                     </div>
                   );
                 })
               ) : (
                 <div className="py-8 text-center text-base text-muted-foreground">
-                  No se encontraron opciones
+                  No se encontraron resultados
                 </div>
               )}
             </div>

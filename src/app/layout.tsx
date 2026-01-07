@@ -2,19 +2,14 @@ import type { Metadata } from 'next';
 import { StackProvider, StackTheme } from '@stackframe/stack';
 import { stackClientApp } from '../stack/client';
 import { Suspense } from 'react';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import { ThemeProvider, QueryProvider, NavigationLoader } from '@/components';
 import { ToastContainer } from '@/components/Toast';
 import StoreProvider from '@/lib/providers/StoreProvider';
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const inter = Inter({
+  variable: '--font-inter',
   subsets: ['latin'],
 });
 
@@ -32,7 +27,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} font-sans antialiased`}
       >
         <StackProvider app={stackClientApp}>
           <StackTheme>

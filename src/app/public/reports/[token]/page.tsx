@@ -19,10 +19,16 @@ export default async function PublicReportPage({
   if (!entities) notFound(); // Should not happen if report exists, but good for safety
 
   return (
-    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">{report.church.name}</h1>
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-12">
+        <div className="text-center space-y-2">
+          <span className="text-blue-600 dark:text-blue-400 font-bold tracking-widest uppercase text-sm">
+            Reporte Público
+          </span>
+          <h1 className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
+            {report.church.name}
+          </h1>
+          <div className="h-1 w-20 bg-blue-600 mx-auto rounded-full mt-4" />
         </div>
 
         <PublicReportForm
