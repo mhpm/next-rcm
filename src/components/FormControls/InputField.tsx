@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 import {
   FieldValues,
   Path,
@@ -8,15 +8,15 @@ import {
   UseFormRegister,
   Control,
   Controller,
-} from "react-hook-form";
-import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
-import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+} from 'react-hook-form';
+import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 
 type InputFieldProps<T extends FieldValues> = {
   name: Path<T>;
   label: string;
-  type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
+  type?: React.InputHTMLAttributes<HTMLInputElement>['type'];
   placeholder?: string;
   register?: UseFormRegister<T>;
   control?: Control<T>;
@@ -34,7 +34,7 @@ type InputFieldProps<T extends FieldValues> = {
 export function InputField<T extends FieldValues>({
   name,
   label,
-  type = "text",
+  type = 'text',
   placeholder,
   register,
   control,
@@ -53,7 +53,10 @@ export function InputField<T extends FieldValues>({
     return (
       <Field className={className} data-invalid={!!error}>
         {label && (
-          <FieldLabel className="mb-2 px-1 font-bold text-base" htmlFor={String(name)}>
+          <FieldLabel
+            className="mb-3 px-1 font-bold text-base"
+            htmlFor={String(name)}
+          >
             {label}
           </FieldLabel>
         )}
@@ -73,7 +76,7 @@ export function InputField<T extends FieldValues>({
                 id={String(name)}
                 type={type}
                 placeholder={placeholder || label}
-                className={cn(startIcon ? "pl-9" : "")}
+                className={cn(startIcon ? 'pl-9' : '')}
                 readOnly={readOnly}
                 disabled={disabled}
                 tabIndex={tabIndex}
@@ -82,7 +85,7 @@ export function InputField<T extends FieldValues>({
                 aria-invalid={!!error}
                 {...field}
                 {...rest}
-                value={field.value ?? ""}
+                value={field.value ?? ''}
               />
             )}
           />
@@ -95,7 +98,10 @@ export function InputField<T extends FieldValues>({
   return (
     <Field className={className} data-invalid={!!error}>
       {label && (
-        <FieldLabel className="mb-2 px-1 font-bold text-base" htmlFor={String(name)}>
+        <FieldLabel
+          className="mb-2 px-1 font-bold text-base"
+          htmlFor={String(name)}
+        >
           {label}
         </FieldLabel>
       )}
@@ -109,7 +115,7 @@ export function InputField<T extends FieldValues>({
           id={String(name)}
           type={type}
           placeholder={placeholder || label}
-          className={cn(startIcon ? "pl-9" : "")}
+          className={cn(startIcon ? 'pl-9' : '')}
           defaultValue={defaultValue}
           readOnly={readOnly}
           disabled={disabled}

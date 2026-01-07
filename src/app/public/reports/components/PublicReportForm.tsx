@@ -19,6 +19,7 @@ import {
   submitPublicReportEntry,
   verifyCellAccess,
   getDraftReportEntry,
+  getPublicReportEntityMembers,
 } from '../../actions';
 import { useNotificationStore } from '@/store/NotificationStore';
 import { FaLock, FaFloppyDisk, FaPaperPlane, FaKey } from 'react-icons/fa6';
@@ -109,6 +110,7 @@ export default function PublicReportForm({
     null
   );
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+  const [currentMembers, setCurrentMembers] = useState<Option[]>(members);
 
   const {
     register,
@@ -204,7 +206,7 @@ export default function PublicReportForm({
               ...(f.required ? { required: 'Requerido' } : {}),
             }}
             render={({ field, fieldState }) => (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500 mb-2">
                   <span className="text-2xl font-black">$</span>
                   <span className="text-xs font-black uppercase tracking-widest">
@@ -226,13 +228,13 @@ export default function PublicReportForm({
                     }
                     placeholder="0.00"
                     className={cn(
-                      'w-full bg-transparent border-none focus:ring-0 text-5xl sm:text-6xl font-black tracking-tighter p-0 pl-14 placeholder:text-slate-100 dark:placeholder:text-slate-800 transition-all',
+                      'w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-5xl sm:text-6xl font-black tracking-tighter p-0 pl-14 placeholder:text-slate-100 dark:placeholder:text-slate-800 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
                       fieldState.error && 'text-destructive'
                     )}
                   />
                 </div>
                 {fieldState.error && (
-                  <p className="text-sm font-bold text-destructive px-1">
+                  <p className="text-base font-bold text-destructive px-1 mt-2">
                     {fieldState.error.message}
                   </p>
                 )}
@@ -363,7 +365,7 @@ export default function PublicReportForm({
             render={({ field, fieldState }) => (
               <SearchableSelectField
                 label={f.label || f.key}
-                options={members}
+                options={currentMembers}
                 value={field.value as string}
                 onChange={field.onChange}
                 error={fieldState.error?.message}
@@ -385,6 +387,7 @@ export default function PublicReportForm({
                 value={(field.value as FriendRegistrationValue[]) || []}
                 onChange={field.onChange}
                 label={f.label || f.key}
+                members={currentMembers}
               />
             )}
           />
@@ -448,6 +451,22 @@ export default function PublicReportForm({
           subSector: cell.subSector?.name,
         });
         setValue('cellId', cell.id);
+
+        // Fetch members for this cell
+        try {
+          const entityMembers = await getPublicReportEntityMembers(
+            token,
+            scope,
+            cell.id
+          );
+          const memberOptions = entityMembers.map((m) => ({
+            value: m.id,
+            label: `${m.firstName} ${m.lastName}`,
+          }));
+          setCurrentMembers(memberOptions);
+        } catch (error) {
+          console.error('Error fetching members:', error);
+        }
 
         showSuccess('Acceso correcto. Buscando borradores...');
 
@@ -557,7 +576,7 @@ export default function PublicReportForm({
   if (submitted) {
     return (
       <Card>
-        <CardContent className="p-8 text-center space-y-4">
+        <CardContent className="p-8 text-center space-y-6">
           <div className="text-5xl">✓</div>
           <h2 className="text-2xl font-bold">¡Reporte enviado!</h2>
           <p className="text-muted-foreground">
@@ -616,7 +635,7 @@ export default function PublicReportForm({
       <form className="space-y-6" onSubmit={handleSubmit(onPreSubmit)}>
         <div className="flex flex-col gap-10">
           {/* Header Section Centered */}
-          <div className="flex flex-col items-center text-center space-y-4 max-w-3xl mx-auto">
+          <div className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
               {title}
             </h2>
@@ -685,7 +704,7 @@ export default function PublicReportForm({
                   )}
 
                   {isAuthenticated && cellInfo && (
-                    <div className="space-y-4 animate-in zoom-in-95 duration-300">
+                    <div className="space-y-6 animate-in zoom-in-95 duration-300">
                       <div className="rounded-2xl border-2 border-green-500/20 bg-green-500/5 p-4 text-sm flex flex-col sm:flex-row justify-between items-center gap-3 text-green-700 dark:text-green-400">
                         <div className="flex items-center gap-3">
                           <div className="bg-green-500 text-white p-1.5 rounded-full shadow-sm">
@@ -711,7 +730,7 @@ export default function PublicReportForm({
                         </Button>
                       </div>
 
-                      <div className="bg-muted/40 p-5 rounded-2xl space-y-4 border-2 border-transparent hover:border-primary/10 transition-colors">
+                      <div className="bg-muted/40 p-5 rounded-2xl space-y-6 border-2 border-transparent hover:border-primary/10 transition-colors">
                         <div className="flex flex-col items-center text-center gap-3">
                           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold border-2 border-primary/5">
                             {cellInfo.name.charAt(0)}
@@ -843,7 +862,7 @@ export default function PublicReportForm({
                             </Button>
                           </CollapsibleTrigger>
                           <CollapsibleContent className="px-6 pb-8 data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-                            <div className="grid grid-cols-1 gap-6 pt-4">
+                            <div className="grid grid-cols-1 gap-8 pt-4">
                               {group.fields.map((f) => {
                                 if (!isFieldVisible(f)) return null;
                                 return renderField(f);
@@ -856,7 +875,7 @@ export default function PublicReportForm({
                     return (
                       <div
                         key={`group-${i}`}
-                        className="grid grid-cols-1 gap-6"
+                        className="grid grid-cols-1 gap-8"
                       >
                         {group.fields.map((f) => {
                           if (!isFieldVisible(f)) return null;

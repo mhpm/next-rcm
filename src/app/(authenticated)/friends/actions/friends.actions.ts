@@ -1,15 +1,15 @@
-"use server";
+'use server';
 
-import { revalidatePath } from "next/cache";
-import { getChurchPrisma, getChurchId } from "@/actions/churchContext";
-import { friendSchema } from "../schema/friends.schema";
+import { revalidatePath } from 'next/cache';
+import { getChurchPrisma, getChurchId } from '@/actions/churchContext';
+import { friendSchema } from '../schema/friends.schema';
 import type {
   FriendFormData,
   FriendsQueryOptions,
   FriendsListResult,
   FriendWithRelations,
-} from "../types/friends.d";
-import { Prisma } from "@/generated/prisma/client";
+} from '../types/friends.d';
+import { Prisma } from '@/generated/prisma/client';
 
 export async function getFriends(
   options: FriendsQueryOptions = {}
@@ -22,16 +22,16 @@ export async function getFriends(
     search,
     cellId,
     isBaptized,
-    orderBy = "name",
-    orderDirection = "asc",
+    orderBy = 'name',
+    orderDirection = 'asc',
   } = options;
 
   const where: Prisma.FriendsWhereInput = {
     church_id: churchId,
     ...(search && {
       OR: [
-        { name: { contains: search, mode: "insensitive" } },
-        { phone: { contains: search, mode: "insensitive" } },
+        { name: { contains: search, mode: 'insensitive' } },
+        { phone: { contains: search, mode: 'insensitive' } },
       ],
     }),
     ...(cellId && { cell_id: cellId }),
@@ -73,7 +73,9 @@ export async function getFriends(
   };
 }
 
-export async function getFriendById(id: string): Promise<FriendWithRelations | null> {
+export async function getFriendById(
+  id: string
+): Promise<FriendWithRelations | null> {
   const prisma = await getChurchPrisma();
   const churchId = await getChurchId();
 
@@ -102,7 +104,7 @@ export async function createFriend(data: FriendFormData) {
     },
   });
 
-  revalidatePath("/friends");
+  revalidatePath('/friends');
   return { success: true, data: friend };
 }
 
@@ -117,7 +119,7 @@ export async function updateFriend(id: string, data: FriendFormData) {
     data: validated,
   });
 
-  revalidatePath("/friends");
+  revalidatePath('/friends');
   return { success: true, data: friend };
 }
 
@@ -129,6 +131,21 @@ export async function deleteFriend(id: string) {
     where: { id, church_id: churchId },
   });
 
-  revalidatePath("/friends");
+  revalidatePath('/friends');
+  return { success: true };
+}
+
+export async function deleteFriends(ids: string[]) {
+  const prisma = await getChurchPrisma();
+  const churchId = await getChurchId();
+
+  await prisma.friends.deleteMany({
+    where: {
+      id: { in: ids },
+      church_id: churchId,
+    },
+  });
+
+  revalidatePath('/friends');
   return { success: true };
 }

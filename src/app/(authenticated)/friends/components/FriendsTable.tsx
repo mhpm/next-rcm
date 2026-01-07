@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import { DataTable, PeriodFilter, FilterType } from '@/components';
 import { TableColumn, TableAction } from '@/types';
 import { FriendWithRelations } from '../types/friends.d';
-import { deleteFriend } from '../actions/friends.actions';
+import { deleteFriend, deleteFriends } from '../actions/friends.actions';
 import { useNotificationStore } from '@/store/NotificationStore';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Trash2, Loader2 } from 'lucide-react';
 
 import {
   Select,
@@ -25,10 +27,17 @@ interface FriendsTableProps {
 export function FriendsTable({ friends }: FriendsTableProps) {
   const router = useRouter();
   const { showSuccess, showError } = useNotificationStore();
+
+  // Single Delete State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [friendToDelete, setFriendToDelete] =
     useState<FriendWithRelations | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Bulk Delete State
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   // Filter State
   const [selectedZone, setSelectedZone] = useState<string>('all');
@@ -308,6 +317,50 @@ export function FriendsTable({ friends }: FriendsTableProps) {
     }
   };
 
+  const handleBulkDelete = async () => {
+    if (selectedRows.size === 0) return;
+
+    setIsBulkDeleting(true);
+    try {
+      await deleteFriends(Array.from(selectedRows));
+      showSuccess(`${selectedRows.size} amigos eliminados correctamente`);
+      setIsBulkDeleteModalOpen(false);
+      setSelectedRows(new Set());
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      showError('Error al eliminar amigos seleccionados');
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
+
+  const handleSelectRow = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedRows);
+    if (checked) {
+      newSelected.add(id);
+    } else {
+      newSelected.delete(id);
+    }
+    setSelectedRows(newSelected);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      // Select all currently filtered friends
+      // Note: We might want to select ONLY visible ones on current page, or ALL matching filter.
+      // DataTable implementation selects paginatedData.
+      // Since we control it here, we should probably match DataTable behavior or better.
+      // Let's select all filtered friends for simplicity, or just IDs from data prop.
+      // But we don't have access to DataTable's paginated data easily here.
+      // However, we passed `filteredFriends` to DataTable.
+      const allIds = new Set(filteredFriends.map((f) => f.id));
+      setSelectedRows(allIds);
+    } else {
+      setSelectedRows(new Set());
+    }
+  };
+
   const filterControls = (
     <PeriodFilter
       selectedYear={selectedYear}
@@ -321,111 +374,140 @@ export function FriendsTable({ friends }: FriendsTableProps) {
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-4 mb-4 p-4 border rounded-lg bg-card shadow-sm">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Zona:</span>
-          <Select value={selectedZone} onValueChange={setSelectedZone}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Todas" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas</SelectItem>
-              {uniqueZones.map((zone) => (
-                <SelectItem key={zone} value={zone!}>
-                  {zone}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="flex flex-col gap-4 mb-4">
+        {selectedRows.size > 0 && (
+          <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-2 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+            <span className="font-medium">
+              {selectedRows.size}{' '}
+              {selectedRows.size === 1
+                ? 'amigo seleccionado'
+                : 'amigos seleccionados'}
+            </span>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setIsBulkDeleteModalOpen(true)}
+              disabled={isBulkDeleting}
+            >
+              {isBulkDeleting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              Eliminar Seleccionados
+            </Button>
+          </div>
+        )}
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Sector:</span>
-          <Select value={selectedSector} onValueChange={setSelectedSector}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Todos" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              {uniqueSectors.map((sector) => (
-                <SelectItem key={sector} value={sector!}>
-                  {sector}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <div className="flex flex-wrap items-center gap-4 p-4 border rounded-lg bg-card shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Zona:</span>
+            <Select value={selectedZone} onValueChange={setSelectedZone}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Todas" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas</SelectItem>
+                {uniqueZones.map((zone) => (
+                  <SelectItem key={zone} value={zone!}>
+                    {zone}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Subsector:</span>
-          <Select
-            value={selectedSubSector}
-            onValueChange={setSelectedSubSector}
-          >
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Todos" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              {uniqueSubSectors.map((sub) => (
-                <SelectItem key={sub} value={sub!}>
-                  {sub}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Sector:</span>
+            <Select value={selectedSector} onValueChange={setSelectedSector}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Todos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                {uniqueSectors.map((sector) => (
+                  <SelectItem key={sector} value={sector!}>
+                    {sector}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Célula:</span>
-          <Select value={selectedCell} onValueChange={setSelectedCell}>
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Todas" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas</SelectItem>
-              {uniqueCells.map((cell) => (
-                <SelectItem key={cell} value={cell!}>
-                  {cell}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Subsector:</span>
+            <Select
+              value={selectedSubSector}
+              onValueChange={setSelectedSubSector}
+            >
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Todos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                {uniqueSubSectors.map((sub) => (
+                  <SelectItem key={sub} value={sub!}>
+                    {sub}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Líder:</span>
-          <Select value={selectedLeader} onValueChange={setSelectedLeader}>
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Todos" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              {uniqueLeaders.map((leader) => (
-                <SelectItem key={leader} value={leader!}>
-                  {leader}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Célula:</span>
+            <Select value={selectedCell} onValueChange={setSelectedCell}>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Todas" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas</SelectItem>
+                {uniqueCells.map((cell) => (
+                  <SelectItem key={cell} value={cell!}>
+                    {cell}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Bautizado:</span>
-          <Select value={selectedBaptized} onValueChange={setSelectedBaptized}>
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Todos" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="true">Sí</SelectItem>
-              <SelectItem value="false">No</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Líder:</span>
+            <Select value={selectedLeader} onValueChange={setSelectedLeader}>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Todos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                {uniqueLeaders.map((leader) => (
+                  <SelectItem key={leader} value={leader!}>
+                    {leader}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="ml-auto text-sm text-muted-foreground">
-          Total: {filteredFriends.length}
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Bautizado:</span>
+            <Select
+              value={selectedBaptized}
+              onValueChange={setSelectedBaptized}
+            >
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder="Todos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="true">Sí</SelectItem>
+                <SelectItem value="false">No</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="ml-auto text-sm text-muted-foreground">
+            Total: {filteredFriends.length}
+          </div>
         </div>
       </div>
 
@@ -439,6 +521,11 @@ export function FriendsTable({ friends }: FriendsTableProps) {
         itemsPerPage={10}
         emptyMessage="No hay amigos registrados"
         searchEndContent={filterControls}
+        selectable={true}
+        selectedRows={selectedRows}
+        onSelectRow={handleSelectRow}
+        onSelectAll={handleSelectAll}
+        loading={isDeleting || isBulkDeleting}
       />
 
       <DeleteConfirmationModal
@@ -451,6 +538,15 @@ export function FriendsTable({ friends }: FriendsTableProps) {
         title="Eliminar Amigo"
         description={`¿Estás seguro de que deseas eliminar a ${friendToDelete?.name}? Esta acción no se puede deshacer.`}
         isPending={isDeleting}
+      />
+
+      <DeleteConfirmationModal
+        open={isBulkDeleteModalOpen}
+        onCancel={() => setIsBulkDeleteModalOpen(false)}
+        onConfirm={handleBulkDelete}
+        title="Eliminar Amigos Seleccionados"
+        description={`¿Estás seguro de que deseas eliminar ${selectedRows.size} amigos seleccionados? Esta acción no se puede deshacer.`}
+        isPending={isBulkDeleting}
       />
     </>
   );

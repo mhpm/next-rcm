@@ -1,17 +1,28 @@
-import type { Friends, Cells, Members, SubSectors, Sectors, Zones } from "@/generated/prisma/client";
+import type {
+  Friends,
+  Cells,
+  Members,
+  SubSectors,
+  Sectors,
+  Zones,
+} from '@/generated/prisma/client';
 
 // Friend with relations
 export type FriendWithRelations = Friends & {
   cell: Cells & {
-    subSector?: (SubSectors & {
-      sector?: (Sectors & {
-        zone?: Zones | null;
-      }) | null;
-    }) | null;
+    subSector?:
+      | (SubSectors & {
+          sector?:
+            | (Sectors & {
+                zone?: Zones | null;
+              })
+            | null;
+        })
+      | null;
     leader?: Members | null;
   };
   invitedBy: Members | null;
-  spiritualFather: Members;
+  spiritualFather: Members | null;
 };
 
 // Form-specific interface for creating/updating friends
@@ -44,8 +55,8 @@ export interface FriendsQueryOptions {
   search?: string;
   cellId?: string;
   isBaptized?: boolean;
-  orderBy?: "name" | "createdAt";
-  orderDirection?: "asc" | "desc";
+  orderBy?: 'name' | 'createdAt';
+  orderDirection?: 'asc' | 'desc';
 }
 
 export interface FriendsListResult {

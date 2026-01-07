@@ -192,7 +192,7 @@ export function SearchableSelectField({
 
       {/* Error message */}
       {error && (
-        <p className="text-sm font-medium text-destructive animate-in fade-in slide-in-from-top-1">
+        <p className="text-base font-bold text-destructive mt-2 px-1 animate-in fade-in slide-in-from-top-1">
           {error}
         </p>
       )}

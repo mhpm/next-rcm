@@ -95,7 +95,7 @@ export function NumberStepper({
           <Plus className="h-7 w-7" />
         </Button>
       </div>
-      {error && <span className="text-xs text-destructive mt-1">{error}</span>}
+      {error && <span className="text-base font-bold text-destructive mt-2 px-1 block">{error}</span>}
     </div>
   );
 }

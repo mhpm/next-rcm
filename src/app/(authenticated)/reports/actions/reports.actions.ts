@@ -388,6 +388,7 @@ export async function updateReportEntry(input: UpdateReportEntryInput) {
           firstName: string;
           lastName: string;
           phone?: string;
+          spiritualFatherId?: string;
         }[];
 
         for (const friend of friendsData) {
@@ -416,7 +417,7 @@ export async function updateReportEntry(input: UpdateReportEntryInput) {
                   phone: friend.phone?.trim() || null,
                   church_id: churchId,
                   cell_id: targetCellId,
-                  // spiritual_father_id is optional now
+                  spiritual_father_id: friend.spiritualFatherId || null,
                 },
               });
             }
@@ -517,6 +518,7 @@ export async function createReportEntry(input: CreateReportEntryInput) {
             firstName: string;
             lastName: string;
             phone?: string;
+            spiritualFatherId?: string;
           }[];
           for (const friend of friendsData) {
             if (
@@ -543,7 +545,7 @@ export async function createReportEntry(input: CreateReportEntryInput) {
                     phone: friend.phone?.trim() || null,
                     church_id: churchId,
                     cell_id: cellId,
-                    // spiritual_father_id is optional now
+                    spiritual_father_id: friend.spiritualFatherId || null,
                   },
                 });
               }

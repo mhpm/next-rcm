@@ -4,36 +4,33 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Trash2, UserPlus } from 'lucide-react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Plus, Trash2, User, Users } from 'lucide-react';
+import { SearchableSelectField } from '@/components/FormControls';
 
 export type FriendRegistrationValue = {
   firstName: string;
   lastName: string;
   phone?: string;
+  spiritualFatherId?: string;
 };
 
 interface FriendRegistrationFieldProps {
   value?: FriendRegistrationValue[];
   onChange: (value: FriendRegistrationValue[]) => void;
   label?: string;
+  members?: { value: string; label: string }[];
 }
 
 export function FriendRegistrationField({
   value = [],
   onChange,
   label = 'Registro de Amigos',
+  members = [],
 }: FriendRegistrationFieldProps) {
   const [firstName, setFirstName] = React.useState('');
   const [lastName, setLastName] = React.useState('');
   const [phone, setPhone] = React.useState('');
+  const [spiritualFatherId, setSpiritualFatherId] = React.useState('');
 
   const handleAdd = () => {
     if (!firstName.trim() || !lastName.trim()) return;
@@ -42,12 +39,14 @@ export function FriendRegistrationField({
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       phone: phone.trim() || undefined,
+      spiritualFatherId: spiritualFatherId || undefined,
     };
 
     onChange([...value, newFriend]);
     setFirstName('');
     setLastName('');
     setPhone('');
+    setSpiritualFatherId('');
   };
 
   const handleRemove = (index: number) => {
@@ -57,83 +56,132 @@ export function FriendRegistrationField({
   };
 
   return (
-    <div className="space-y-4 border rounded-md p-4 bg-card">
-      <div className="flex items-center gap-2 mb-2">
-        <UserPlus className="h-5 w-5 text-primary" />
-        <Label className="text-base font-semibold">{label}</Label>
+    <div className="space-y-8">
+      {/* Header with Icon */}
+      <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500 mb-6 px-1">
+        <Users className="h-6 w-6" />
+        <span className="text-xs font-black uppercase tracking-widest">
+          {label}
+        </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-        <div className="space-y-2">
-          <Label htmlFor="friend-firstName">Nombre(s) *</Label>
-          <Input
-            id="friend-firstName"
-            placeholder="Ej. Juan"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
+      {/* Modern Input Card */}
+      <div className="bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl border-2 border-slate-100 dark:border-slate-800 p-6 sm:p-8 space-y-8 transition-all duration-300">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="flex flex-col gap-6">
+            <Label className="px-1 font-bold text-sm text-slate-500 uppercase tracking-tight">
+              Nombre(s) *
+            </Label>
+            <div className="relative group">
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+              <Input
+                placeholder="Ej. Juan"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="pl-12 h-14 rounded-2xl border-2 bg-white dark:bg-slate-950 font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <Label className="px-1 font-bold text-sm text-slate-500 uppercase tracking-tight">
+              Apellidos *
+            </Label>
+            <div className="relative group">
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+              <Input
+                placeholder="Ej. Pérez"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="pl-12 h-14 rounded-2xl border-2 bg-white dark:bg-slate-950 font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <Label className="px-1 font-bold text-sm text-slate-500 uppercase tracking-tight">
+              Teléfono
+            </Label>
+            <div className="relative group">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl pointer-events-none grayscale group-focus-within:grayscale-0 transition-all">
+                📱
+              </span>
+              <Input
+                placeholder="Ej. 123456789"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="pl-12 h-14 rounded-2xl border-2 bg-white dark:bg-slate-950 font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6 col-span-full">
+            <Label className="px-1 font-bold text-sm text-slate-500 uppercase tracking-tight">
+              Padre Espiritual
+            </Label>
+            <div className="relative group">
+              <SearchableSelectField
+                label=""
+                options={members}
+                value={spiritualFatherId}
+                onChange={(val) => setSpiritualFatherId(val)}
+                placeholder="Seleccionar Padre Espiritual..."
+              />
+            </div>
+          </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="friend-lastName">Apellidos *</Label>
-          <Input
-            id="friend-lastName"
-            placeholder="Ej. Pérez"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="friend-phone">Teléfono (Opcional)</Label>
-          <Input
-            id="friend-phone"
-            placeholder="Ej. 55 1234 5678"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </div>
+
         <Button
           type="button"
           onClick={handleAdd}
           disabled={!firstName.trim() || !lastName.trim()}
-          className="md:col-span-3"
+          className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-lg shadow-lg shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:grayscale disabled:scale-100"
         >
-          <Plus className="h-4 w-4 mr-2" />
-          Agregar Amigo
+          <Plus className="mr-2 h-6 w-6" />
+          Agregar Amigo a la Lista
         </Button>
       </div>
 
+      {/* Friends List - Visual Grid */}
       {value.length > 0 && (
-        <div className="mt-4 border rounded-md overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Apellidos</TableHead>
-                <TableHead>Teléfono</TableHead>
-                <TableHead className="w-12.5"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {value.map((friend, index) => (
-                <TableRow key={index}>
-                  <TableCell>{friend.firstName}</TableCell>
-                  <TableCell>{friend.lastName}</TableCell>
-                  <TableCell>{friend.phone || '-'}</TableCell>
-                  <TableCell>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemove(index)}
-                      className="text-destructive hover:text-destructive/90"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          {value.map((friend, index) => (
+            <div
+              key={index}
+              className="group relative flex items-center justify-between p-5 bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-100 dark:border-slate-800 shadow-sm hover:border-primary/30 transition-all duration-300"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black text-xl border-2 border-primary/5">
+                  {friend.firstName.charAt(0)}
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-900 dark:text-white leading-tight">
+                    {friend.firstName} {friend.lastName}
+                  </h4>
+                  {friend.phone && (
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+                      {friend.phone}
+                    </p>
+                  )}
+                  {friend.spiritualFatherId && (
+                    <p className="text-xs text-primary font-bold mt-1 uppercase tracking-wide">
+                      PE:{' '}
+                      {members.find((m) => m.value === friend.spiritualFatherId)
+                        ?.label || 'Desconocido'}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleRemove(index)}
+                className="opacity-0 group-hover:opacity-100 h-10 w-10 rounded-xl text-destructive hover:bg-destructive/10 transition-all"
+              >
+                <Trash2 className="h-5 w-5" />
+              </Button>
+            </div>
+          ))}
         </div>
       )}
     </div>

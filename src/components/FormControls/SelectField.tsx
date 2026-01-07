@@ -44,7 +44,14 @@ export function SelectField<T extends FieldValues>({
 }: SelectFieldProps<T>) {
   return (
     <Field className={cn("w-full", className)} data-invalid={!!error}>
-      {label && <FieldLabel htmlFor={String(name)}>{label}</FieldLabel>}
+      {label && (
+        <FieldLabel
+          className="mb-3 px-1 font-bold text-base"
+          htmlFor={String(name)}
+        >
+          {label}
+        </FieldLabel>
+      )}
       <Controller
         control={control}
         name={name}

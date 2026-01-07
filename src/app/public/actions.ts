@@ -238,32 +238,13 @@ export async function submitPublicReportEntry(
     throw new Error('Reporte no encontrado');
   }
 
-  // If entryId provided, update existing
-  if (input.entryId) {
-    await saveDraftReportEntry(input);
+  const entryId = input.entryId || (await saveDraftReportEntry(input)).id;
 
-    // Only update status to SUBMITTED if it's not a draft save
-    if (!input.isDraft) {
-      await prisma.reportEntries.update({
-        where: { id: input.entryId },
-        data: {
-          status: 'SUBMITTED',
-        },
-      });
-      revalidatePath(`/reports/${report.id}/entries`);
-    }
-    return { id: input.entryId };
-  }
-
-  // Create new (DRAFT or SUBMITTED)
-  // Reuse saveDraftReportEntry which creates a DRAFT by default
-  const result = await saveDraftReportEntry(input);
-
-  // If not draft, update to SUBMITTED immediately and process side effects (Friends)
+  // If not draft, update to SUBMITTED and process side effects (Friends)
   if (!input.isDraft) {
     await prisma.$transaction(async (tx) => {
       await tx.reportEntries.update({
-        where: { id: result.id },
+        where: { id: entryId },
         data: {
           status: 'SUBMITTED',
         },
@@ -282,6 +263,7 @@ export async function submitPublicReportEntry(
               firstName: string;
               lastName: string;
               phone?: string;
+              spiritualFatherId?: string;
             }[];
 
             for (const friend of friendsData) {
@@ -308,6 +290,7 @@ export async function submitPublicReportEntry(
                       phone: friend.phone?.trim() || null,
                       church_id: report.church_id,
                       cell_id: input.cellId,
+                      spiritual_father_id: friend.spiritualFatherId || null,
                     },
                   });
                 }
@@ -319,9 +302,10 @@ export async function submitPublicReportEntry(
     });
 
     revalidatePath(`/reports/${report.id}/entries`);
+    revalidatePath('/friends');
   }
 
-  return result;
+  return { id: entryId };
 }
 
 export async function getPublicReportEntityMembers(

@@ -238,6 +238,12 @@ export default function ReportEntriesTable({
                                 <span>📱</span> {friend.phone}
                               </div>
                             )}
+                            {friend.spiritualFatherId && (
+                              <div className="text-xs text-primary font-bold mt-1">
+                                PE:{' '}
+                                {friend.spiritualFatherName || 'Cargando...'}
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
