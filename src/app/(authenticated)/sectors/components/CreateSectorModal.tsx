@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
+import { useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { InputField, SelectField } from "@/components/FormControls";
-import { MemberSearchField } from "@/components/FormControls/MemberSearchField";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useCreateSector, useCreateSubSector } from "../hooks/useSectors";
-import { sectorCreateSchema } from "../schema/sectors.schema";
-import { z } from "zod";
-import { useNotificationStore } from "@/store/NotificationStore";
-import { useQuery } from "@tanstack/react-query";
-import { getAllSectors } from "../actions/sectors.actions";
-import { getAllMembers } from "../../members/actions/members.actions";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+} from '@/components/ui/dialog';
+import { InputField, SelectField } from '@/components/FormControls';
+import { MemberSearchField } from '@/components/FormControls/MemberSearchField';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCreateSector, useCreateSubSector } from '../hooks/useSectors';
+import { sectorCreateSchema } from '../schema/sectors.schema';
+import { z } from 'zod';
+import { useNotificationStore } from '@/store/NotificationStore';
+import { useQuery } from '@tanstack/react-query';
+import { getAllSectors } from '../actions/sectors.actions';
+import { getAllMembers } from '../../members/actions/members.actions';
+import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 
 type FormValues = z.infer<typeof sectorCreateSchema>;
 
@@ -38,6 +38,8 @@ export default function CreateSectorModal({
 }: CreateSectorModalProps) {
   const createSectorMutation = useCreateSector();
   const createSubSectorMutation = useCreateSubSector();
+  const isPending =
+    createSectorMutation.isPending || createSubSectorMutation.isPending;
   const { showSuccess, showError } = useNotificationStore();
 
   const {
@@ -51,18 +53,18 @@ export default function CreateSectorModal({
   } = useForm<FormValues>({
     resolver: zodResolver(sectorCreateSchema),
     defaultValues: {
-      name: "",
+      name: '',
       supervisorId: undefined,
       parentId: initialParentId || undefined,
     },
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   // Reset form when modal opens with new initialParentId
   useEffect(() => {
     if (open) {
       reset({
-        name: "",
+        name: '',
         supervisorId: undefined,
         parentId: initialParentId || undefined,
       });
@@ -71,7 +73,7 @@ export default function CreateSectorModal({
 
   // Fetch all sectors for the parent selector
   const { data: sectorsData } = useQuery({
-    queryKey: ["sectors", "all"],
+    queryKey: ['sectors', 'all'],
     queryFn: () => getAllSectors(),
   });
 
@@ -81,13 +83,13 @@ export default function CreateSectorModal({
   }));
 
   const parentSelectOptions = [
-    { value: "", label: "Sin sector padre (Sector Principal)" },
+    { value: '', label: 'Sin sector padre (Sector Principal)' },
     ...parentOptions,
   ];
 
   const handleClose = () => {
     onClose();
-    reset({ name: "", supervisorId: undefined, parentId: undefined });
+    reset({ name: '', supervisorId: undefined, parentId: undefined });
   };
 
   return (
@@ -95,7 +97,7 @@ export default function CreateSectorModal({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
-            {watch("parentId") ? "Nuevo Subsector" : "Nuevo Sector"}
+            {watch('parentId') ? 'Nuevo Subsector' : 'Nuevo Sector'}
           </DialogTitle>
         </DialogHeader>
 
@@ -109,13 +111,13 @@ export default function CreateSectorModal({
                   sectorId: form.parentId,
                   supervisorId: form.supervisorId || undefined,
                 });
-                showSuccess("Subsector creado exitosamente");
+                showSuccess('Subsector creado exitosamente');
               } else {
                 await createSectorMutation.mutateAsync({
                   name: form.name,
                   supervisorId: form.supervisorId || undefined,
                 });
-                showSuccess("Sector creado exitosamente");
+                showSuccess('Sector creado exitosamente');
               }
               onCreated?.();
               handleClose();
@@ -123,7 +125,7 @@ export default function CreateSectorModal({
               const message =
                 error instanceof Error
                   ? error.message
-                  : "Error al crear el sector";
+                  : 'Error al crear el sector';
               showError(message);
             }
           })}
@@ -141,7 +143,7 @@ export default function CreateSectorModal({
 
             <InputField<FormValues>
               label={
-                watch("parentId") ? "Nombre del Subsector" : "Nombre del Sector"
+                watch('parentId') ? 'Nombre del Subsector' : 'Nombre del Sector'
               }
               name="name"
               control={control}
@@ -171,15 +173,15 @@ export default function CreateSectorModal({
               type="button"
               variant="outline"
               onClick={handleClose}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isPending}
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting && (
+            <Button type="submit" disabled={isSubmitting || isPending}>
+              {(isSubmitting || isPending) && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {isSubmitting ? "Guardando..." : "Guardar"}
+              {isSubmitting || isPending ? 'Guardando...' : 'Guardar'}
             </Button>
           </div>
         </form>

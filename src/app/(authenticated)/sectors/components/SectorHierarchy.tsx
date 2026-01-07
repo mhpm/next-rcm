@@ -5,6 +5,7 @@ import {
   useSectorHierarchy,
   useDeleteSector,
   useDeleteSubSector,
+  useDeleteCell,
 } from '../hooks/useSectors';
 import { updateCell } from '../../cells/actions/cells.actions';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -133,9 +134,14 @@ function toNodes(
 }
 
 export default function SectorHierarchy() {
-  const { data, isLoading, error, refetch } = useSectorHierarchy();
+  const { data, isLoading, isFetching, error, refetch } = useSectorHierarchy();
   const deleteSectorMutation = useDeleteSector();
   const deleteSubSectorMutation = useDeleteSubSector();
+  const deleteCellMutation = useDeleteCell();
+  const isAnyMutationPending =
+    deleteSectorMutation.isPending ||
+    deleteSubSectorMutation.isPending ||
+    deleteCellMutation.isPending;
   const router = useRouter();
   const { showSuccess, showError } = useNotificationStore();
   const [createOpen, setCreateOpen] = React.useState(false);
@@ -155,7 +161,7 @@ export default function SectorHierarchy() {
   const [deleteTarget, setDeleteTarget] = React.useState<{
     id: string;
     name: string;
-    type: 'SECTOR' | 'SUB_SECTOR';
+    type: 'SECTOR' | 'SUB_SECTOR' | 'CELL';
   } | null>(null);
   const nodes = toNodes(data || []);
 
@@ -170,6 +176,7 @@ export default function SectorHierarchy() {
       updateCell(data.id, { accessCode: data.accessCode }),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
       queryClient.invalidateQueries({ queryKey: ['cell', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['cells'] });
       setEditingAccessCode(null);
@@ -238,8 +245,11 @@ export default function SectorHierarchy() {
     <Card className="border-none shadow-none sm:border sm:shadow-sm">
       <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-6">
         <div>
-          <CardTitle className="text-xl sm:text-2xl">
+          <CardTitle className="text-xl sm:text-2xl flex items-center gap-2">
             Jerarquía de Sectores
+            {(isFetching || isAnyMutationPending) && !isLoading && (
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            )}
           </CardTitle>
           <CardDescription>
             Gestiona la estructura de sectores, subsectores y células.
@@ -250,7 +260,7 @@ export default function SectorHierarchy() {
             variant="outline"
             onClick={toggleExpandAll}
             className="w-full sm:w-auto"
-            disabled={nodes.length === 0}
+            disabled={nodes.length === 0 || isFetching || isAnyMutationPending}
           >
             {isAllExpanded ? (
               <>
@@ -270,6 +280,7 @@ export default function SectorHierarchy() {
               setCreateOpen(true);
             }}
             className="w-full sm:w-auto"
+            disabled={isFetching || isAnyMutationPending}
           >
             <Plus className="mr-2 h-4 w-4" />
             Nuevo Sector
@@ -306,6 +317,10 @@ export default function SectorHierarchy() {
                   setDeleteTarget({ id: s.id, name: s.name, type: node.type });
                   setDeleteOpen(true);
                 }}
+                onDeleteCell={(c: { id: string; name: string }) => {
+                  setDeleteTarget({ id: c.id, name: c.name, type: 'CELL' });
+                  setDeleteOpen(true);
+                }}
                 onAddMembers={(sectorId: string) =>
                   router.push(`/members?sector=${sectorId}`)
                 }
@@ -316,6 +331,7 @@ export default function SectorHierarchy() {
                 onEditAccessCode={(id: string, code: string) =>
                   setEditingAccessCode({ id, code })
                 }
+                disabled={isFetching || isAnyMutationPending}
               />
             ))}
           </div>
@@ -416,7 +432,11 @@ export default function SectorHierarchy() {
       <DeleteConfirmationModal
         open={deleteOpen}
         title={`Eliminar ${
-          deleteTarget?.type === 'SECTOR' ? 'Sector' : 'Subsector'
+          deleteTarget?.type === 'SECTOR'
+            ? 'Sector'
+            : deleteTarget?.type === 'SUB_SECTOR'
+            ? 'Subsector'
+            : 'Célula'
         }`}
         entityName={deleteTarget?.name}
         description="Esta acción no se puede deshacer."
@@ -429,12 +449,18 @@ export default function SectorHierarchy() {
           try {
             if (deleteTarget.type === 'SECTOR') {
               await deleteSectorMutation.mutateAsync(deleteTarget.id);
-            } else {
+            } else if (deleteTarget.type === 'SUB_SECTOR') {
               await deleteSubSectorMutation.mutateAsync(deleteTarget.id);
+            } else {
+              await deleteCellMutation.mutateAsync(deleteTarget.id);
             }
             showSuccess(
               `${
-                deleteTarget.type === 'SECTOR' ? 'Sector' : 'Subsector'
+                deleteTarget.type === 'SECTOR'
+                  ? 'Sector'
+                  : deleteTarget.type === 'SUB_SECTOR'
+                  ? 'Subsector'
+                  : 'Célula'
               } eliminado`
             );
             setDeleteOpen(false);
@@ -443,13 +469,19 @@ export default function SectorHierarchy() {
           } catch (e) {
             showError(
               `Error al eliminar el ${
-                deleteTarget.type === 'SECTOR' ? 'sector' : 'subsector'
+                deleteTarget.type === 'SECTOR'
+                  ? 'sector'
+                  : deleteTarget.type === 'SUB_SECTOR'
+                  ? 'subsector'
+                  : 'célula'
               }`
             );
           }
         }}
         isPending={
-          deleteSectorMutation.isPending || deleteSubSectorMutation.isPending
+          deleteSectorMutation.isPending ||
+          deleteSubSectorMutation.isPending ||
+          deleteCellMutation.isPending
         }
       />
     </Card>
@@ -463,10 +495,12 @@ function SectorItem({
   onAddChild,
   onEdit,
   onDelete,
+  onDeleteCell,
   onAddMembers,
   onAddCell,
   parentSectorId,
   onEditAccessCode,
+  disabled,
 }: {
   node: SectorNode;
   expandedIds: Set<string>;
@@ -474,10 +508,12 @@ function SectorItem({
   onAddChild: (parentId: string) => void;
   onEdit: (node: SectorNode) => void;
   onDelete: (s: { id: string; name: string }) => void;
+  onDeleteCell: (c: { id: string; name: string }) => void;
   onAddMembers: (sectorId: string) => void;
   onAddCell: (subSectorId: string, sectorId: string) => void;
   parentSectorId?: string;
   onEditAccessCode: (id: string, code: string) => void;
+  disabled?: boolean;
 }) {
   const isOpen = expandedIds.has(node.id);
 
@@ -540,7 +576,12 @@ function SectorItem({
           <div className="flex items-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  disabled={disabled}
+                >
                   <MoreHorizontal className="h-4 w-4" />
                   <span className="sr-only">Acciones</span>
                 </Button>
@@ -617,10 +658,12 @@ function SectorItem({
                   onAddChild={onAddChild}
                   onEdit={onEdit}
                   onDelete={onDelete}
+                  onDeleteCell={onDeleteCell}
                   onAddMembers={onAddMembers}
                   onAddCell={onAddCell}
                   parentSectorId={node.type === 'SECTOR' ? node.id : undefined}
                   onEditAccessCode={onEditAccessCode}
+                  disabled={disabled}
                 />
               ))}
             </div>
@@ -654,8 +697,19 @@ function SectorItem({
                               onEditAccessCode(cell.id, cell.accessCode || '')
                             }
                             title="Editar clave de acceso"
+                            disabled={disabled}
                           >
                             <Edit2 className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 ml-1 text-destructive hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => onDeleteCell(cell)}
+                            title="Eliminar célula"
+                            disabled={disabled}
+                          >
+                            <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
                         <Badge

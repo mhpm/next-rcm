@@ -99,6 +99,8 @@ function EditFormContent({
 
   const updateSectorMutation = useUpdateSector(node.id);
   const updateSubSectorMutation = useUpdateSubSector(node.id);
+  const isPending =
+    updateSectorMutation.isPending || updateSubSectorMutation.isPending;
 
   const { showSuccess, showError } = useNotificationStore();
 
@@ -217,11 +219,18 @@ function EditFormContent({
       </div>
 
       <div className="flex justify-end gap-2 pt-4">
-        <Button type="button" variant="outline" onClick={onClose}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onClose}
+          disabled={isSubmitting || isPending}
+        >
           Cancelar
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        <Button type="submit" disabled={isSubmitting || isPending}>
+          {(isSubmitting || isPending) && (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          )}
           Guardar Cambios
         </Button>
       </div>

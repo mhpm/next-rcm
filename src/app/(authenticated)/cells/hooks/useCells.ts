@@ -61,6 +61,8 @@ export const useDeleteCell = () => {
     mutationFn: (id: string) => deleteCell(id),
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ['cells'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
       queryClient.invalidateQueries({ queryKey: ['cell', id] });
       queryClient.invalidateQueries({ queryKey: ['cell', 'members', id] });
       // Refrescar listados de miembros para que aparezcan como disponibles
@@ -91,6 +93,8 @@ export const useCreateCell = () => {
     }) => createCell(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cells'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
     },
   });
 };
@@ -113,6 +117,8 @@ export const useUpdateCell = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['cells'] });
       queryClient.invalidateQueries({ queryKey: ['cell', id] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
     },
   });
 };
@@ -125,6 +131,7 @@ export const useAddMemberToCell = () => {
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ['cell', vars.cellId] });
       queryClient.invalidateQueries({ queryKey: ['cells'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
       // Invalidate sectors to update member counts
       queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
     },
@@ -149,6 +156,8 @@ export const useAddMembersToCell = () => {
       queryClient.invalidateQueries({ queryKey: ['cells'] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
       queryClient.invalidateQueries({ queryKey: ['members', 'all'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
     },
   });
 };
@@ -166,6 +175,8 @@ export const useRemoveMemberFromCell = () => {
       queryClient.invalidateQueries({ queryKey: ['cells'] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
       queryClient.invalidateQueries({ queryKey: ['members', 'all'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
     },
   });
 };

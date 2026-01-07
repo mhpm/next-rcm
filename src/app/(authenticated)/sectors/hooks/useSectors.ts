@@ -11,6 +11,7 @@ import {
   updateSubSector,
   deleteSubSector,
 } from '../actions/sectors.actions';
+import { deleteCell } from '../../cells/actions/cells.actions';
 import {
   SectorsQueryOptions,
   SectorFormData,
@@ -108,6 +109,19 @@ export const useCreateSector = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sectors', 'all'] });
       queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
+    },
+  });
+};
+
+export const useDeleteCell = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => withTimeout(deleteCell(id)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
+      queryClient.invalidateQueries({ queryKey: ['cells'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
     },
   });
 };
@@ -120,6 +134,7 @@ export const useUpdateSector = (id: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sectors', 'all'] });
       queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
       queryClient.invalidateQueries({ queryKey: ['sector', id] });
     },
   });
@@ -132,6 +147,7 @@ export const useDeleteSector = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sectors', 'all'] });
       queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
     },
   });
 };
@@ -143,6 +159,7 @@ export const useCreateSubSector = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sectors', 'all'] });
       queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
     },
   });
 };
@@ -155,6 +172,7 @@ export const useUpdateSubSector = (id: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sectors', 'all'] });
       queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
       queryClient.invalidateQueries({ queryKey: ['sector', id] });
     },
   });
@@ -167,6 +185,7 @@ export const useDeleteSubSector = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sectors', 'all'] });
       queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
     },
   });
 };
