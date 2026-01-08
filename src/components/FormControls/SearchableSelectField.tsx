@@ -86,7 +86,7 @@ export function SearchableSelectField({
     <div className="w-full space-y-3">
       <label
         className={cn(
-          'text-base font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 px-1',
+          'text-base font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 px-1 text-slate-700 dark:text-slate-200',
           error && 'text-destructive'
         )}
       >
@@ -98,7 +98,7 @@ export function SearchableSelectField({
         {/* Main input display */}
         <div
           className={cn(
-            'flex w-full min-h-14 h-auto cursor-pointer items-center gap-2 rounded-2xl border border-input bg-background/50 px-4 py-3 text-base ring-offset-background transition-all hover:bg-accent/50 hover:border-primary/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
+            'flex w-full min-h-14 h-auto cursor-pointer items-center gap-2 rounded-2xl border border-input bg-background px-4 py-3 text-base ring-offset-background transition-all hover:bg-accent hover:border-primary/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
             error && 'border-destructive focus-within:ring-destructive',
             disabled && 'cursor-not-allowed opacity-50 bg-muted'
           )}

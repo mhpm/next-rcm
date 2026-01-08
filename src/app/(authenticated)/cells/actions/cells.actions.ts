@@ -1,7 +1,7 @@
 'use server';
 
 import { getChurchPrisma, getChurchId } from '@/actions/churchContext';
-import { Prisma } from '@/generated/prisma/client';
+import { Prisma, MemberRole } from '@/generated/prisma/client';
 import type { CellListItem, CellWithRelations } from '../types/cells';
 import { revalidateTag } from 'next/cache';
 // Removed prisma-zod types usage; rely on Prisma types and normal Zod for form payloads
@@ -80,8 +80,35 @@ export async function getAllCells(options?: {
 export async function deleteCell(id: string) {
   try {
     const prisma = await getChurchPrisma();
+    const churchId = await getChurchId();
+
+    // Obtener información del líder antes de eliminar
+    const cell = await prisma.cells.findUnique({
+      where: { id },
+      select: { leader_id: true },
+    });
+
+    if (cell?.leader_id) {
+      // Verificar si lidera otras células
+      const otherCellsCount = await prisma.cells.count({
+        where: {
+          leader_id: cell.leader_id,
+          id: { not: id },
+          church_id: churchId,
+        },
+      });
+
+      if (otherCellsCount === 0) {
+        await prisma.members.update({
+          where: { id: cell.leader_id },
+          data: { role: MemberRole.MIEMBRO },
+        });
+      }
+    }
+
     await prisma.cells.delete({ where: { id } });
     revalidateTag('cells', { expire: 0 });
+    revalidateTag('members', { expire: 0 });
     return { success: true };
   } catch (error) {
     console.error('Error deleting cell:', error);
@@ -155,6 +182,14 @@ export async function createCell(data: {
 
     const cell = await prisma.cells.create({ data: prismaData });
 
+    // Actualizar el rol del nuevo líder a LIDER
+    if (data.leaderId && data.leaderId !== '') {
+      await prisma.members.update({
+        where: { id: data.leaderId, church_id: churchId },
+        data: { role: MemberRole.LIDER },
+      });
+    }
+
     // Asegurar que líder/anfitrión/asistente figuren como miembros de la célula
     const ensureMemberIds = [
       data.leaderId,
@@ -170,6 +205,7 @@ export async function createCell(data: {
 
     revalidateTag('cells', { expire: 0 });
     revalidateTag('sectors', { expire: 0 });
+    revalidateTag('members', { expire: 0 });
 
     return cell;
   } catch (error) {
@@ -211,7 +247,7 @@ export async function updateCell(
 
     const existingCell = await prisma.cells.findUnique({
       where: { id },
-      select: { id: true, church_id: true },
+      select: { id: true, church_id: true, leader_id: true },
     });
     if (!existingCell || existingCell.church_id !== churchId) {
       throw new Error(
@@ -252,6 +288,40 @@ export async function updateCell(
 
     const cell = await prisma.cells.update({ where: { id }, data: updateData });
 
+    // Gestionar cambios de rol para el líder
+    if (Object.prototype.hasOwnProperty.call(data, 'leaderId')) {
+      const newLeaderId = data.leaderId;
+      const oldLeaderId = existingCell.leader_id;
+
+      if (newLeaderId !== oldLeaderId) {
+        // 1. Degradar al antiguo líder si existe y no lidera otras células
+        if (oldLeaderId) {
+          const otherCellsCount = await prisma.cells.count({
+            where: {
+              leader_id: oldLeaderId,
+              id: { not: id },
+              church_id: churchId,
+            },
+          });
+
+          if (otherCellsCount === 0) {
+            await prisma.members.update({
+              where: { id: oldLeaderId, church_id: churchId },
+              data: { role: MemberRole.MIEMBRO },
+            });
+          }
+        }
+
+        // 2. Promover al nuevo líder si existe
+        if (newLeaderId && newLeaderId !== '') {
+          await prisma.members.update({
+            where: { id: newLeaderId, church_id: churchId },
+            data: { role: MemberRole.LIDER },
+          });
+        }
+      }
+    }
+
     // Si se asignó líder/anfitrión/asistente, asegurar su membresía en la célula
     const setIds: string[] = [];
     if (
@@ -284,6 +354,7 @@ export async function updateCell(
 
     revalidateTag('cells', { expire: 0 });
     revalidateTag('sectors', { expire: 0 });
+    revalidateTag('members', { expire: 0 });
 
     return cell;
   } catch (error) {
@@ -474,6 +545,95 @@ export async function addMembersToCell(cellId: string, memberIds: string[]) {
   }
 }
 
+export async function removeMembersFromCell(
+  cellId: string,
+  memberIds: string[]
+) {
+  try {
+    const prisma = await getChurchPrisma();
+    const churchId = await getChurchId();
+
+    // Validar que la célula existe y pertenece a la iglesia
+    const cell = await prisma.cells.findUnique({
+      where: { id: cellId },
+      select: { id: true, church_id: true },
+    });
+
+    if (!cell || cell.church_id !== churchId) {
+      throw new Error('La célula no pertenece a esta iglesia');
+    }
+
+    // Ejecutar la eliminación para cada miembro
+    // Usamos un bucle secuencial para evitar condiciones de carrera al actualizar la célula (líder/anfitrión)
+    for (const memberId of memberIds) {
+      // Reutilizamos la lógica de eliminación individual pero sin revalidar en cada paso
+      // Para optimizar, podríamos refactorizar removeMemberFromCell, pero por ahora llamamos a la función
+      // y aceptamos las revalidaciones múltiples o copiamos la lógica.
+      // Copiaré la lógica para evitar revalidaciones excesivas y manejar errores mejor.
+
+      const existing = await prisma.members.findFirst({
+        where: { id: memberId, cell_id: cellId, church_id: churchId },
+        select: { id: true },
+      });
+
+      if (!existing) continue;
+
+      // 1. Actualizar miembro
+      await prisma.members.update({
+        where: { id: memberId },
+        data: { cell_id: null },
+      });
+
+      // 2. Actualizar roles en la célula si es necesario
+      // Necesitamos obtener la info actualizada de la célula en cada iteración por si cambia
+      const currentCell = await prisma.cells.findUnique({
+        where: { id: cellId },
+        select: { leader_id: true, host_id: true },
+      });
+
+      if (!currentCell) continue;
+
+      const updates: Prisma.CellsUpdateInput = {};
+      if (currentCell.leader_id === memberId) {
+        updates.leader = { disconnect: true };
+
+        // Verificar si lidera otras células
+        const otherCellsCount = await prisma.cells.count({
+          where: {
+            leader_id: memberId,
+            id: { not: cellId },
+            church_id: churchId,
+          },
+        });
+
+        if (otherCellsCount === 0) {
+          await prisma.members.update({
+            where: { id: memberId },
+            data: { role: MemberRole.MIEMBRO },
+          });
+        }
+      }
+      if (currentCell.host_id === memberId) {
+        updates.host = { disconnect: true };
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await prisma.cells.update({
+          where: { id: cellId },
+          data: updates,
+        });
+      }
+    }
+
+    revalidateTag('cells', { expire: 0 });
+    revalidateTag('members', { expire: 0 });
+    return { success: true };
+  } catch (error) {
+    console.error('Error removing members from cell:', error);
+    throw new Error('Failed to remove members from cell');
+  }
+}
+
 export async function removeMemberFromCell(cellId: string, memberId: string) {
   try {
     const prisma = await getChurchPrisma();
@@ -503,6 +663,22 @@ export async function removeMemberFromCell(cellId: string, memberId: string) {
     const updates: Prisma.CellsUpdateInput = {};
     if (cell.leader_id === memberId) {
       updates.leader = { disconnect: true };
+
+      // Verificar si lidera otras células antes de quitarle el rol
+      const otherCellsCount = await prisma.cells.count({
+        where: {
+          leader_id: memberId,
+          id: { not: cellId },
+          church_id: churchId,
+        },
+      });
+
+      if (otherCellsCount === 0) {
+        await prisma.members.update({
+          where: { id: memberId },
+          data: { role: MemberRole.MIEMBRO },
+        });
+      }
     }
     if (cell.host_id === memberId) {
       updates.host = { disconnect: true };
@@ -515,6 +691,7 @@ export async function removeMemberFromCell(cellId: string, memberId: string) {
       await prisma.cells.update(updateCellArgs);
     }
     revalidateTag('cells', { expire: 0 });
+    revalidateTag('members', { expire: 0 });
     return { success: true };
   } catch (error) {
     console.error('Error removing member from cell:', error);

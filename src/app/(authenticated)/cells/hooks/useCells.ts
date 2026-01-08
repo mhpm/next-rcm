@@ -8,6 +8,7 @@ import {
   addMemberToCell,
   addMembersToCell,
   removeMemberFromCell,
+  removeMembersFromCell,
   getCellStats,
 } from '../actions/cells.actions';
 import { CellsQueryOptions } from '../types/cells';
@@ -167,6 +168,30 @@ export const useRemoveMemberFromCell = () => {
   return useMutation({
     mutationFn: ({ cellId, memberId }: { cellId: string; memberId: string }) =>
       removeMemberFromCell(cellId, memberId),
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['cell', vars.cellId] });
+      queryClient.invalidateQueries({
+        queryKey: ['cell', 'members', vars.cellId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['cells'] });
+      queryClient.invalidateQueries({ queryKey: ['members'] });
+      queryClient.invalidateQueries({ queryKey: ['members', 'all'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['sectors', 'hierarchy'] });
+    },
+  });
+};
+
+export const useRemoveMembersFromCell = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      cellId,
+      memberIds,
+    }: {
+      cellId: string;
+      memberIds: string[];
+    }) => removeMembersFromCell(cellId, memberIds),
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ['cell', vars.cellId] });
       queryClient.invalidateQueries({

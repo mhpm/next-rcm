@@ -885,54 +885,100 @@ export default function ComparisonReportView({
         </div>
       </CardHeader>
 
-      <CardContent className="px-0 sm:px-6 pb-4 overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[200px]">Grupo</TableHead>
+      <CardContent className="px-0 sm:px-6 pb-4">
+        <div className="overflow-x-auto rounded-xl border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[200px]">Grupo</TableHead>
 
-              {visibleColumns.has('count') && (
-                <TableHead className="text-center bg-muted/30 border-l border-r">
-                  Registros
-                </TableHead>
-              )}
-
-              {numericFields
-                .filter((f) => visibleColumns.has(f.id))
-                .map((f) => (
-                  <TableHead
-                    key={f.id}
-                    className="text-center min-w-[120px] bg-muted/10 border-r"
-                  >
-                    {f.label}
+                {visibleColumns.has('count') && (
+                  <TableHead className="text-center bg-muted/30 border-l border-r">
+                    Registros
                   </TableHead>
-                ))}
+                )}
 
-              {booleanFields
-                .filter((f) => visibleColumns.has(f.id))
-                .map((f) => (
-                  <TableHead
-                    key={f.id}
-                    className="text-center min-w-[120px] bg-muted/10 border-r"
-                  >
-                    {f.label} (Sí)
-                  </TableHead>
-                ))}
-            </TableRow>
-          </TableHeader>
+                {numericFields
+                  .filter((f) => visibleColumns.has(f.id))
+                  .map((f) => (
+                    <TableHead
+                      key={f.id}
+                      className="text-center min-w-[120px] bg-muted/10 border-r"
+                    >
+                      {f.label}
+                    </TableHead>
+                  ))}
 
-          <TableBody>
-            {comparisonData.map((row) => (
-              <TableRow key={row.key}>
-                <TableCell className="font-medium whitespace-nowrap sticky left-0 bg-background z-10 border-r py-2">
-                  {row.label}
+                {booleanFields
+                  .filter((f) => visibleColumns.has(f.id))
+                  .map((f) => (
+                    <TableHead
+                      key={f.id}
+                      className="text-center min-w-[120px] bg-muted/10 border-r"
+                    >
+                      {f.label} (Sí)
+                    </TableHead>
+                  ))}
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {comparisonData.map((row) => (
+                <TableRow key={row.key}>
+                  <TableCell className="font-medium whitespace-nowrap sticky left-0 bg-background z-10 border-r py-2">
+                    {row.label}
+                  </TableCell>
+
+                  {visibleColumns.has('count') && (
+                    <TableCell className="text-center border-l border-r bg-muted/30 py-2">
+                      <ComparisonCell
+                        a={row.itemA?.count || 0}
+                        b={row.itemB?.count || 0}
+                      />
+                    </TableCell>
+                  )}
+
+                  {numericFields
+                    .filter((f) => visibleColumns.has(f.id))
+                    .map((f) => (
+                      <TableCell
+                        key={f.id}
+                        className="text-center border-r py-2"
+                      >
+                        <ComparisonCell
+                          a={row.itemA?.values[f.id] || 0}
+                          b={row.itemB?.values[f.id] || 0}
+                        />
+                      </TableCell>
+                    ))}
+
+                  {booleanFields
+                    .filter((f) => visibleColumns.has(f.id))
+                    .map((f) => (
+                      <TableCell
+                        key={f.id}
+                        className="text-center border-r py-2"
+                      >
+                        <ComparisonCell
+                          a={row.itemA?.values[f.id] || 0}
+                          b={row.itemB?.values[f.id] || 0}
+                        />
+                      </TableCell>
+                    ))}
+                </TableRow>
+              ))}
+
+              {/* TOTAL */}
+              <TableRow className="bg-slate-500 dark:bg-slate-800 text-white hover:bg-slate-900 dark:hover:bg-slate-700 font-black text-base shadow-lg">
+                <TableCell className="whitespace-nowrap py-4 px-6 sticky left-0 bg-slate-500 dark:bg-slate-800 text-white z-10 border-r border-slate-800 rounded-l-lg">
+                  TOTAL
                 </TableCell>
 
                 {visibleColumns.has('count') && (
-                  <TableCell className="text-center border-l border-r bg-muted/30 py-2">
+                  <TableCell className="text-center border-l border-r py-4 px-6 text-lg">
                     <ComparisonCell
-                      a={row.itemA?.count || 0}
-                      b={row.itemB?.count || 0}
+                      a={totalsA.count || 0}
+                      b={totalsB.count || 0}
                     />
                   </TableCell>
                 )}
@@ -940,10 +986,13 @@ export default function ComparisonReportView({
                 {numericFields
                   .filter((f) => visibleColumns.has(f.id))
                   .map((f) => (
-                    <TableCell key={f.id} className="text-center border-r py-2">
+                    <TableCell
+                      key={f.id}
+                      className="text-center border-r py-4 px-6 text-lg"
+                    >
                       <ComparisonCell
-                        a={row.itemA?.values[f.id] || 0}
-                        b={row.itemB?.values[f.id] || 0}
+                        a={totalsA[f.id] || 0}
+                        b={totalsB[f.id] || 0}
                       />
                     </TableCell>
                   ))}
@@ -951,55 +1000,20 @@ export default function ComparisonReportView({
                 {booleanFields
                   .filter((f) => visibleColumns.has(f.id))
                   .map((f) => (
-                    <TableCell key={f.id} className="text-center border-r py-2">
+                    <TableCell
+                      key={f.id}
+                      className="text-center border-r py-4 px-6 text-lg"
+                    >
                       <ComparisonCell
-                        a={row.itemA?.values[f.id] || 0}
-                        b={row.itemB?.values[f.id] || 0}
+                        a={totalsA[f.id] || 0}
+                        b={totalsB[f.id] || 0}
                       />
                     </TableCell>
                   ))}
               </TableRow>
-            ))}
-
-            {/* TOTAL */}
-            <TableRow className="bg-muted/50 font-bold">
-              <TableCell className="whitespace-nowrap sticky left-0 bg-muted/50 z-10 border-r py-2">
-                TOTAL
-              </TableCell>
-
-              {visibleColumns.has('count') && (
-                <TableCell className="text-center border-l border-r bg-muted/30 py-2">
-                  <ComparisonCell
-                    a={totalsA.count || 0}
-                    b={totalsB.count || 0}
-                  />
-                </TableCell>
-              )}
-
-              {numericFields
-                .filter((f) => visibleColumns.has(f.id))
-                .map((f) => (
-                  <TableCell key={f.id} className="text-center border-r py-2">
-                    <ComparisonCell
-                      a={totalsA[f.id] || 0}
-                      b={totalsB[f.id] || 0}
-                    />
-                  </TableCell>
-                ))}
-
-              {booleanFields
-                .filter((f) => visibleColumns.has(f.id))
-                .map((f) => (
-                  <TableCell key={f.id} className="text-center border-r py-2">
-                    <ComparisonCell
-                      a={totalsA[f.id] || 0}
-                      b={totalsB[f.id] || 0}
-                    />
-                  </TableCell>
-                ))}
-            </TableRow>
-          </TableBody>
-        </Table>
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
 
       {/* ===================== CHART ===================== */}

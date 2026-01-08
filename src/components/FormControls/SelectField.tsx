@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   FieldValues,
@@ -6,16 +6,16 @@ import {
   RegisterOptions,
   Control,
   Controller,
-} from "react-hook-form";
-import { cn } from "@/lib/utils";
-import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+} from 'react-hook-form';
+import { cn } from '@/lib/utils';
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 type SelectFieldProps<T extends FieldValues> = {
   name: Path<T>;
@@ -40,13 +40,13 @@ export function SelectField<T extends FieldValues>({
   className,
   defaultValue,
   disabled,
-  placeholder = "Seleccionar...",
+  placeholder = 'Seleccionar...',
 }: SelectFieldProps<T>) {
   return (
-    <Field className={cn("w-full", className)} data-invalid={!!error}>
+    <Field className={cn('w-full', className)} data-invalid={!!error}>
       {label && (
         <FieldLabel
-          className="mb-3 px-1 font-bold text-base"
+          className="mb-3 px-1 font-bold text-base text-slate-700 dark:text-slate-200"
           htmlFor={String(name)}
         >
           {label}
@@ -60,10 +60,10 @@ export function SelectField<T extends FieldValues>({
         render={({ field }) => (
           <Select
             onValueChange={(val) => {
-              const v = val === "__EMPTY__" ? "" : val;
+              const v = val === '__EMPTY__' ? '' : val;
               field.onChange(v);
             }}
-            value={field.value === "" ? "__EMPTY__" : (field.value as any)}
+            value={field.value === '' ? '__EMPTY__' : (field.value as any)}
             disabled={disabled}
           >
             <SelectTrigger
@@ -76,7 +76,7 @@ export function SelectField<T extends FieldValues>({
             <SelectContent>
               <div className="max-h-50 overflow-y-auto">
                 {options.map((opt) => {
-                  const val = opt.value === "" ? "__EMPTY__" : opt.value;
+                  const val = opt.value === '' ? '__EMPTY__' : opt.value;
                   return (
                     <SelectItem key={val} value={val}>
                       {opt.label}

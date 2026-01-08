@@ -129,6 +129,14 @@ export default async function Dashboard() {
     cacheTag('members');
     const stats = await getMemberStats(slug);
     const totalMembers = String(stats?.total ?? 0);
+    const supervisorCount = stats?.byRole?.['SUPERVISOR'] ?? 0;
+    const leaderCount = stats?.byRole?.['LIDER'] ?? 0;
+
+    const extraMemberStats = [
+      { label: 'Supervisores:', value: String(supervisorCount) },
+      { label: 'Líderes:', value: String(leaderCount) },
+    ];
+
     return (
       <StatCard
         title="Miembros"
@@ -137,6 +145,7 @@ export default async function Dashboard() {
         changeType="increase"
         period="vs. 12 ultimo cuatrimestre"
         icon={<FaUserGroup size={24} />}
+        extraStats={extraMemberStats}
         isLoading={false}
         action={
           <Link

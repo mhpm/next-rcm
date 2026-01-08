@@ -583,7 +583,7 @@ export default function ConsolidatedReportView({
           ))}
 
           {/* Totals Card */}
-          <div className="border-2 border-primary rounded-lg p-3 bg-primary/5 space-y-2">
+          <div className="border-2 border-primary rounded-lg p-3 bg-primary/5 dark:bg-primary/20 space-y-2">
             <div className="font-bold text-sm border-b border-primary/20 pb-2 mb-2">
               TOTAL
             </div>
@@ -679,11 +679,11 @@ export default function ConsolidatedReportView({
 
         {/* Desktop Table View */}
         <div className="hidden md:block w-full overflow-hidden">
-          <div className="overflow-x-auto rounded-md border max-w-full relative">
+          <div className="overflow-x-auto rounded-xl border max-w-full relative">
             <Table className="w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[200px] whitespace-nowrap py-2 sticky left-0 bg-background z-20 border-r">
+                  <TableHead className="w-50 whitespace-nowrap py-2 sticky left-0 bg-background z-20 border-r">
                     Grupo
                   </TableHead>
                   {visibleColumns.has('count') && (
@@ -865,26 +865,32 @@ export default function ConsolidatedReportView({
                       ))}
                   </TableRow>
                 ))}
-                <TableRow className="bg-muted/50 font-bold">
-                  <TableCell className="whitespace-nowrap py-2 sticky left-0 bg-muted/50 z-10 border-r">
-                    TOTAL
+                <TableRow className="bg-slate-500 dark:bg-slate-800 text-white hover:bg-slate-900 dark:hover:bg-slate-700 font-black text-base shadow-lg">
+                  <TableCell className="whitespace-nowrap py-4 px-6 sticky left-0 bg-slate-500 dark:bg-slate-800 text-white z-10 border-r border-slate-800 rounded-l-lg">
+                    TOTAL GENERAL
                   </TableCell>
                   {visibleColumns.has('count') && (
-                    <TableCell className="whitespace-nowrap py-2">
+                    <TableCell className="whitespace-nowrap py-4 px-6 text-lg">
                       {totals.count}
                     </TableCell>
                   )}
                   {numericFields
                     .filter((f) => visibleColumns.has(f.id))
                     .map((f) => (
-                      <TableCell key={f.id} className="whitespace-nowrap py-2">
+                      <TableCell
+                        key={f.id}
+                        className="whitespace-nowrap py-4 px-6 text-lg"
+                      >
                         {totals[f.id].toLocaleString()}
                       </TableCell>
                     ))}
                   {booleanFields
                     .filter((f) => visibleColumns.has(f.id))
                     .map((f) => (
-                      <TableCell key={f.id} className="whitespace-nowrap py-2">
+                      <TableCell
+                        key={f.id}
+                        className="whitespace-nowrap py-4 px-6 text-lg"
+                      >
                         {totals[f.id]}
                       </TableCell>
                     ))}

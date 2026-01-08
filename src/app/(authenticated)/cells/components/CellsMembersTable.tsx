@@ -1,18 +1,20 @@
-"use client";
+'use client';
 
-import { useMemo, useState } from "react";
-import { DataTable } from "@/components";
-import { TableColumn, TableAction } from "@/types";
-import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
-import { Modal } from "@/components/Modal/Modal";
-import { MultiSelectField } from "@/components/FormControls/MultiSelectField";
-import { useMembers } from "@/app/(authenticated)/members/hooks/useMembers";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { useMemo, useState, useCallback } from 'react';
+import { DataTable } from '@/components';
+import { TableColumn, TableAction } from '@/types';
+import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
+import { Modal } from '@/components/Modal/Modal';
+import { MultiSelectField } from '@/components/FormControls/MultiSelectField';
+import { useMembers } from '@/app/(authenticated)/members/hooks/useMembers';
+import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
+import { RiDeleteBinLine } from 'react-icons/ri';
 import {
   useAddMembersToCell,
   useRemoveMemberFromCell,
-} from "../hooks/useCells";
+  useRemoveMembersFromCell,
+} from '../hooks/useCells';
 
 type CellsMembersTableProps = {
   cellId: string;
@@ -32,12 +34,14 @@ export default function CellsMembersTable({
 }: CellsMembersTableProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState<{
     memberId: string;
     nombre: string;
   } | null>(null);
   const addMembersMutation = useAddMembersToCell();
   const removeMemberMutation = useRemoveMemberFromCell();
+  const removeMembersMutation = useRemoveMembersFromCell();
 
   const { data: allMembersData, isLoading: isLoadingMembers } = useMembers();
 
@@ -57,16 +61,37 @@ export default function CellsMembersTable({
   );
 
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
+  const [tableSelectedRows, setTableSelectedRows] = useState<Set<string>>(
+    new Set()
+  );
+
+  const handleSelectionChange = useCallback((selected: { id: string }[]) => {
+    setTableSelectedRows(new Set(selected.map((r) => r.id)));
+  }, []);
+
+  const handleBulkDelete = async () => {
+    if (tableSelectedRows.size === 0) return;
+    try {
+      await removeMembersMutation.mutateAsync({
+        cellId,
+        memberIds: Array.from(tableSelectedRows),
+      });
+      setIsBulkDeleteModalOpen(false);
+      setTableSelectedRows(new Set());
+    } catch (err) {
+      console.error('Error al eliminar miembros:', err);
+    }
+  };
 
   const rows = useMemo(
     () =>
       members.map((m) => ({
         id: m.id,
         nombre: `${m.firstName} ${m.lastName}`,
-        email: m.email ?? "",
+        email: m.email ?? '',
         rol: m.role,
         agregadoEl:
-          typeof m.createdAt === "string"
+          typeof m.createdAt === 'string'
             ? new Date(m.createdAt).toLocaleDateString()
             : m.createdAt.toLocaleDateString(),
       })),
@@ -74,16 +99,16 @@ export default function CellsMembersTable({
   );
 
   const columns: TableColumn<(typeof rows)[number]>[] = [
-    { key: "nombre", label: "Nombre", sortable: true },
-    { key: "email", label: "Email", sortable: true },
-    { key: "rol", label: "Rol", sortable: true },
-    { key: "agregadoEl", label: "Agregado", sortable: true },
+    { key: 'nombre', label: 'Nombre', sortable: true },
+    { key: 'email', label: 'Email', sortable: true },
+    { key: 'rol', label: 'Rol', sortable: true },
+    { key: 'agregadoEl', label: 'Agregado', sortable: true },
   ];
 
   const actions: TableAction<(typeof rows)[number]>[] = [
     {
-      label: "Eliminar",
-      variant: "ghost",
+      label: 'Eliminar',
+      variant: 'ghost',
       onClick: (row) => {
         if (addMembersMutation.isPending || removeMemberMutation.isPending)
           return;
@@ -94,8 +119,8 @@ export default function CellsMembersTable({
   ];
 
   const addButton = {
-    text: "Agregar miembro",
-    variant: "primary" as const,
+    text: 'Agregar miembro',
+    variant: 'primary' as const,
     onClick: () => {
       if (addMembersMutation.isPending || removeMemberMutation.isPending)
         return;
@@ -104,7 +129,9 @@ export default function CellsMembersTable({
   };
 
   const isProcessing =
-    addMembersMutation.isPending || removeMemberMutation.isPending;
+    addMembersMutation.isPending ||
+    removeMemberMutation.isPending ||
+    removeMembersMutation.isPending;
 
   const handleAddMembers = async () => {
     if (!selectedMemberIds.length) return;
@@ -116,7 +143,7 @@ export default function CellsMembersTable({
       setSelectedMemberIds([]);
       setIsModalOpen(false);
     } catch (err) {
-      console.error("Error al agregar miembros:", err);
+      console.error('Error al agregar miembros:', err);
     }
   };
 
@@ -131,6 +158,21 @@ export default function CellsMembersTable({
         addButton={addButton}
         itemsPerPage={5}
         loading={isProcessing}
+        selectable={true}
+        onSelectionChange={handleSelectionChange}
+        searchEndContent={
+          tableSelectedRows.size > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setIsBulkDeleteModalOpen(true)}
+              className="ml-2"
+            >
+              <RiDeleteBinLine className="mr-2 h-4 w-4" />
+              Eliminar ({tableSelectedRows.size})
+            </Button>
+          )
+        }
       />
 
       <DeleteConfirmationModal
@@ -150,10 +192,20 @@ export default function CellsMembersTable({
             setIsDeleteModalOpen(false);
             setMemberToDelete(null);
           } catch (err) {
-            console.error("Error al eliminar miembro de la célula:", err);
+            console.error('Error al eliminar miembro de la célula:', err);
           }
         }}
         isPending={removeMemberMutation.isPending}
+      />
+
+      <DeleteConfirmationModal
+        open={isBulkDeleteModalOpen}
+        entityName={`${tableSelectedRows.size} miembros seleccionados`}
+        onCancel={() => setIsBulkDeleteModalOpen(false)}
+        onConfirm={handleBulkDelete}
+        isPending={removeMembersMutation.isPending}
+        title="Eliminar miembros"
+        description="¿Estás seguro de que deseas eliminar los miembros seleccionados de esta célula? Esta acción no se puede deshacer."
       />
 
       <Modal
@@ -168,7 +220,7 @@ export default function CellsMembersTable({
               value: m.id,
               label:
                 `${m.firstName} ${m.lastName}` +
-                (m.email ? ` - ${m.email}` : ""),
+                (m.email ? ` - ${m.email}` : ''),
             }))}
             value={selectedMemberIds}
             onChange={setSelectedMemberIds}
@@ -191,7 +243,7 @@ export default function CellsMembersTable({
                   Agregando...
                 </>
               ) : (
-                "Agregar"
+                'Agregar'
               )}
             </Button>
           </div>

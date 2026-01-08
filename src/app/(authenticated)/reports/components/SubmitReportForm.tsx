@@ -370,7 +370,7 @@ export default function SubmitReportForm({
         router.push(`/reports/${reportId}/entries`);
       } else {
         await createReportEntry({
-          reportId,
+          reportId: reportId,
           scope,
           cellId: scope === 'CELL' ? data.cellId : undefined,
           groupId: scope === 'GROUP' ? data.groupId : undefined,

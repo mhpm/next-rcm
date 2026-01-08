@@ -63,7 +63,7 @@ export function DateField<T extends FieldValues>({
   return (
     <Field className={className} data-invalid={!!error}>
       {label && (
-        <FieldLabel className="mb-3 px-1 font-bold text-base block">
+        <FieldLabel className="mb-3 px-1 font-bold text-base block text-slate-700 dark:text-slate-200">
           {label}
         </FieldLabel>
       )}
@@ -77,14 +77,14 @@ export function DateField<T extends FieldValues>({
               <Button
                 variant={'outline'}
                 className={cn(
-                  'w-full h-14 justify-start text-left font-bold text-lg rounded-2xl border-input bg-background/50 hover:bg-accent/50 transition-all px-4',
-                  !field.value && 'text-muted-foreground',
+                  'w-full h-14 justify-start text-left font-bold text-lg rounded-2xl border-input bg-background hover:bg-accent transition-all px-4',
+                  !field.value && 'text-slate-500 dark:text-slate-400',
                   error && 'border-destructive ring-destructive/20',
                   disabled && 'opacity-50 cursor-not-allowed'
                 )}
                 disabled={disabled}
               >
-                <CalendarIcon className="mr-3 h-5 w-5 text-primary/60" />
+                <CalendarIcon className="mr-3 h-5 w-5 text-slate-500 dark:text-slate-400" />
                 {field.value ? (
                   format(new Date(field.value), 'PPP', { locale: es })
                 ) : (
@@ -146,7 +146,11 @@ function Calendar({
             className="bg-transparent font-black text-lg cursor-pointer hover:text-primary transition-colors focus:outline-none"
           >
             {months.map((m) => (
-              <option key={m} value={m} className="bg-background">
+              <option
+                key={m}
+                value={m}
+                className="bg-background text-slate-900 dark:text-slate-100"
+              >
                 {format(new Date(2000, m, 1), 'MMMM', { locale: es })}
               </option>
             ))}
@@ -156,10 +160,14 @@ function Calendar({
             onChange={(e) =>
               setCurrentMonth(setYear(currentMonth, parseInt(e.target.value)))
             }
-            className="bg-transparent font-black text-lg cursor-pointer hover:text-primary transition-colors focus:outline-none"
+            className="bg-transparent font-black text-lg cursor-pointer hover:text-primary transition-colors focus:outline-none text-slate-900 dark:text-slate-100"
           >
             {years.map((y) => (
-              <option key={y} value={y} className="bg-background">
+              <option
+                key={y}
+                value={y}
+                className="bg-background text-slate-900 dark:text-slate-100"
+              >
                 {y}
               </option>
             ))}
@@ -189,7 +197,7 @@ function Calendar({
         {['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'].map((day) => (
           <div
             key={day}
-            className="text-center text-xs font-black uppercase text-muted-foreground/60 py-1"
+            className="text-center text-xs font-black uppercase text-slate-500 dark:text-slate-400 py-1"
           >
             {day}
           </div>
@@ -207,8 +215,8 @@ function Calendar({
               key={i}
               onClick={() => onSelect(day)}
               className={cn(
-                'h-10 w-10 flex items-center justify-center rounded-xl text-base transition-all relative',
-                !isCurrentMonth && 'text-muted-foreground/30',
+                'h-10 w-10 flex items-center justify-center rounded-xl text-base transition-all relative text-slate-700 dark:text-slate-200',
+                !isCurrentMonth && 'text-slate-300 dark:text-slate-600',
                 isSelected
                   ? 'bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/30'
                   : 'hover:bg-accent',

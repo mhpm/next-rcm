@@ -326,12 +326,12 @@ function DataTable<T extends Record<string, unknown>>({
   return (
     <div
       className={cn(
-        'rounded-lg border bg-card text-card-foreground shadow-sm w-full',
+        'rounded-2xl border bg-card text-card-foreground shadow-xl shadow-black/5 w-full overflow-hidden',
         className
       )}
     >
       {/* Header */}
-      <div className="p-3 sm:p-6 border-b rounded-t-lg">
+      <div className="p-4 sm:p-6 border-b bg-muted/20">
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -416,7 +416,7 @@ function DataTable<T extends Record<string, unknown>>({
                 <div
                   key={rowId}
                   className={cn(
-                    'border rounded-xl bg-linear-to-br from-card/50 to-card transition-all duration-200 shadow-sm',
+                    'border rounded-xl bg-linear-to-br from-card/50 to-card transition-all duration-200 shadow-md',
                     selectable ? 'cursor-pointer' : '',
                     isSelected
                       ? 'ring-2 ring-primary border-primary/50'
@@ -467,23 +467,24 @@ function DataTable<T extends Record<string, unknown>>({
                               <MoreHorizontal className="h-5 w-5" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuContent
+                            align="end"
+                            className="w-48 rounded-xl shadow-xl border-border/50 bg-popover/95 backdrop-blur-sm"
+                          >
                             {actions.map((action, actionIndex) => (
                               <DropdownMenuItem
                                 key={actionIndex}
                                 onClick={() => handleAction(action, row)}
                                 className={cn(
-                                  'cursor-pointer py-2.5',
+                                  'cursor-pointer py-2.5 px-3 rounded-lg focus:bg-accent focus:text-accent-foreground my-0.5 font-medium text-sm gap-2',
                                   action.variant === 'error' ||
                                     action.variant === 'destructive'
-                                    ? 'text-destructive focus:text-destructive'
+                                    ? 'text-destructive focus:text-destructive focus:bg-destructive/10'
                                     : ''
                                 )}
                               >
                                 {getActionIcon(action)}
-                                <span className="ml-2 font-medium">
-                                  {action.label}
-                                </span>
+                                <span className="ml-2">{action.label}</span>
                               </DropdownMenuItem>
                             ))}
                           </DropdownMenuContent>
@@ -516,12 +517,12 @@ function DataTable<T extends Record<string, unknown>>({
 
       {/* Desktop Table View */}
       <div className="hidden md:block w-full overflow-hidden">
-        <div className="overflow-x-auto rounded-md border max-w-full relative">
+        <div className="overflow-x-auto max-w-full relative">
           <Table className="w-full">
             <TableHeader>
-              <TableRow>
+              <TableRow className="hover:bg-transparent border-b border-muted/20">
                 {selectable && (
-                  <TableHead className="w-12 h-10 py-2">
+                  <TableHead className="w-12">
                     <Checkbox
                       checked={isAllSelected}
                       onCheckedChange={(checked) =>
@@ -534,18 +535,18 @@ function DataTable<T extends Record<string, unknown>>({
                   <TableHead
                     key={String(column.key)}
                     className={cn(
-                      'whitespace-nowrap h-10 py-2',
+                      'whitespace-nowrap',
                       column.className || '',
                       column.sortable
-                        ? 'cursor-pointer select-none group hover:bg-accent transition-colors'
+                        ? 'cursor-pointer select-none group hover:text-foreground transition-colors'
                         : ''
                     )}
                     onClick={() => column.sortable && handleSort(column.key)}
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-2">
                       <span>{column.label}</span>
                       {column.sortable && (
-                        <div className="ml-2 shrink-0">
+                        <div className="shrink-0 text-muted-foreground/50 group-hover:text-primary transition-colors">
                           {getSortIcon(column.key)}
                         </div>
                       )}
@@ -553,7 +554,7 @@ function DataTable<T extends Record<string, unknown>>({
                   </TableHead>
                 ))}
                 {actions.length > 0 && (
-                  <TableHead className="text-right whitespace-nowrap h-10 py-2">
+                  <TableHead className="text-right whitespace-nowrap">
                     Actions
                   </TableHead>
                 )}
@@ -568,9 +569,14 @@ function DataTable<T extends Record<string, unknown>>({
                       (selectable ? 1 : 0) +
                       (actions.length > 0 ? 1 : 0)
                     }
-                    className="text-center py-8 text-muted-foreground"
+                    className="text-center py-16 text-muted-foreground"
                   >
-                    {emptyMessage}
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="bg-muted/50 p-4 rounded-full">
+                        <RiSearchLine className="w-6 h-6 opacity-50" />
+                      </div>
+                      <p className="font-medium">{emptyMessage}</p>
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -582,7 +588,10 @@ function DataTable<T extends Record<string, unknown>>({
                     <TableRow
                       key={rowId}
                       data-state={isSelected ? 'selected' : undefined}
-                      className={selectable ? 'cursor-pointer' : ''}
+                      className={cn(
+                        'group transition-all hover:bg-muted/30 border-b border-muted/10 last:border-0',
+                        selectable ? 'cursor-pointer' : ''
+                      )}
                       onClick={(e) => {
                         const target = e.target as HTMLElement;
                         // Evitar toggle si se hace click en acciones interactivas
@@ -600,7 +609,7 @@ function DataTable<T extends Record<string, unknown>>({
                       }}
                     >
                       {selectable && (
-                        <TableCell className="py-2">
+                        <TableCell>
                           <Checkbox
                             checked={isSelected}
                             onCheckedChange={(checked) =>
@@ -613,7 +622,7 @@ function DataTable<T extends Record<string, unknown>>({
                         <TableCell
                           key={String(column.key)}
                           className={cn(
-                            'whitespace-nowrap py-2',
+                            'whitespace-nowrap text-sm font-medium text-foreground',
                             column.className || ''
                           )}
                         >
@@ -621,33 +630,35 @@ function DataTable<T extends Record<string, unknown>>({
                         </TableCell>
                       ))}
                       {actions.length > 0 && (
-                        <TableCell className="text-right py-2">
+                        <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
+                              <Button
+                                variant="ghost"
+                                className="h-8 w-8 p-0 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                              >
                                 <span className="sr-only">Open menu</span>
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
+                            <DropdownMenuContent
+                              align="end"
+                              className="w-48 rounded-xl shadow-xl border-border/50 bg-popover/95 backdrop-blur-sm"
+                            >
                               {actions.map((action, actionIndex) => (
                                 <DropdownMenuItem
                                   key={actionIndex}
-                                  onClick={() =>
-                                    action.onClick && action.onClick(row)
-                                  }
+                                  onClick={() => handleAction(action, row)}
                                   className={cn(
-                                    action.variant === 'destructive'
-                                      ? 'text-destructive focus:text-destructive'
+                                    'cursor-pointer py-2.5 px-3 rounded-lg focus:bg-accent focus:text-accent-foreground my-0.5 font-medium text-sm gap-2',
+                                    action.variant === 'error' ||
+                                      action.variant === 'destructive'
+                                      ? 'text-destructive focus:text-destructive focus:bg-destructive/10'
                                       : ''
                                   )}
                                 >
-                                  {action.icon && (
-                                    <span className="mr-2 h-4 w-4">
-                                      {action.icon}
-                                    </span>
-                                  )}
-                                  {action.label}
+                                  {getActionIcon(action)}
+                                  <span className="ml-2">{action.label}</span>
                                 </DropdownMenuItem>
                               ))}
                             </DropdownMenuContent>

@@ -207,14 +207,14 @@ export default function PublicReportForm({
             }}
             render={({ field, fieldState }) => (
               <div className="space-y-6">
-                <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500 mb-2">
+                <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400 mb-2">
                   <span className="text-2xl font-black">$</span>
                   <span className="text-xs font-black uppercase tracking-widest">
                     {f.label || f.key}
                   </span>
                 </div>
                 <div className="relative group">
-                  <span className="absolute left-6 top-1/2 -translate-y-1/2 text-4xl font-black text-slate-300 dark:text-slate-700 group-focus-within:text-primary transition-colors">
+                  <span className="absolute left-6 top-1/2 -translate-y-1/2 text-4xl font-black text-slate-400 dark:text-slate-600 group-focus-within:text-primary transition-colors">
                     $
                   </span>
                   <input
@@ -228,7 +228,7 @@ export default function PublicReportForm({
                     }
                     placeholder="0.00"
                     className={cn(
-                      'w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-5xl sm:text-6xl font-black tracking-tighter p-0 pl-14 placeholder:text-slate-100 dark:placeholder:text-slate-800 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
+                      'w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-5xl sm:text-6xl font-black tracking-tighter p-0 pl-14 placeholder:text-slate-300 dark:placeholder:text-slate-700 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
                       fieldState.error && 'text-destructive'
                     )}
                   />
@@ -730,16 +730,16 @@ export default function PublicReportForm({
                         </Button>
                       </div>
 
-                      <div className="bg-muted/40 p-5 rounded-2xl space-y-6 border-2 border-transparent hover:border-primary/10 transition-colors">
+                      <div className="bg-white dark:bg-slate-900/50 p-6 rounded-3xl space-y-6 border-2 border-slate-200 dark:border-slate-800 transition-colors">
                         <div className="flex flex-col items-center text-center gap-3">
                           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold border-2 border-primary/5">
                             {cellInfo.name.charAt(0)}
                           </div>
                           <div>
-                            <span className="block text-[10px] font-black text-muted-foreground uppercase tracking-wider">
+                            <span className="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                               Célula Seleccionada
                             </span>
-                            <span className="font-bold text-xl leading-tight block">
+                            <span className="font-bold text-xl leading-tight block text-slate-900 dark:text-slate-100">
                               {cellInfo.name}
                             </span>
                           </div>

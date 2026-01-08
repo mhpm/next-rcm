@@ -58,7 +58,7 @@ export function FriendRegistrationField({
   return (
     <div className="space-y-8">
       {/* Header with Icon */}
-      <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500 mb-6 px-1">
+      <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400 mb-6 px-1">
         <Users className="h-6 w-6" />
         <span className="text-xs font-black uppercase tracking-widest">
           {label}
@@ -66,14 +66,14 @@ export function FriendRegistrationField({
       </div>
 
       {/* Modern Input Card */}
-      <div className="bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl border-2 border-slate-100 dark:border-slate-800 p-6 sm:p-8 space-y-8 transition-all duration-300">
+      <div className="bg-white dark:bg-slate-900/50 rounded-3xl border-2 border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-8 transition-all duration-300">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="flex flex-col gap-6">
-            <Label className="px-1 font-bold text-sm text-slate-500 uppercase tracking-tight">
+            <Label className="px-1 font-bold text-sm text-slate-700 dark:text-slate-400 uppercase tracking-tight">
               Nombre(s) *
             </Label>
             <div className="relative group">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-slate-500 group-focus-within:text-primary transition-colors" />
               <Input
                 placeholder="Ej. Juan"
                 value={firstName}
@@ -84,11 +84,11 @@ export function FriendRegistrationField({
           </div>
 
           <div className="flex flex-col gap-6">
-            <Label className="px-1 font-bold text-sm text-slate-500 uppercase tracking-tight">
+            <Label className="px-1 font-bold text-sm text-slate-700 dark:text-slate-400 uppercase tracking-tight">
               Apellidos *
             </Label>
             <div className="relative group">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-slate-500 group-focus-within:text-primary transition-colors" />
               <Input
                 placeholder="Ej. Pérez"
                 value={lastName}
@@ -99,7 +99,7 @@ export function FriendRegistrationField({
           </div>
 
           <div className="flex flex-col gap-6">
-            <Label className="px-1 font-bold text-sm text-slate-500 uppercase tracking-tight">
+            <Label className="px-1 font-bold text-sm text-slate-700 dark:text-slate-400 uppercase tracking-tight">
               Teléfono
             </Label>
             <div className="relative group">
@@ -116,7 +116,7 @@ export function FriendRegistrationField({
           </div>
 
           <div className="flex flex-col gap-6 col-span-full">
-            <Label className="px-1 font-bold text-sm text-slate-500 uppercase tracking-tight">
+            <Label className="px-1 font-bold text-sm text-slate-700 dark:text-slate-400 uppercase tracking-tight">
               Padre Espiritual
             </Label>
             <div className="relative group">
