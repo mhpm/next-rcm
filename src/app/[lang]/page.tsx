@@ -1,9 +1,24 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Users, CalendarDays, BarChart3 } from 'lucide-react';
+import {
+  ArrowRight,
+  Users,
+  CalendarDays,
+  BarChart3,
+  Check,
+} from 'lucide-react';
 import { stackServerApp } from '@/stack/server';
+import { getDictionary } from '@/i18n/get-dictionary';
+import { Locale } from '@/i18n/config';
+import { LanguageToggle } from '@/components/LanguageToggle';
 
-export default async function LandingPage() {
+export default async function LandingPage({
+  params,
+}: {
+  params: Promise<{ lang: Locale }>;
+}) {
+  const { lang } = await params;
+  const dict = await getDictionary(lang);
   const user = await stackServerApp.getUser();
 
   return (
@@ -18,10 +33,10 @@ export default async function LandingPage() {
       <header className="px-6 h-20 flex items-center justify-between border-b border-white/5 bg-slate-950/50 backdrop-blur-xl sticky top-0 z-50 transition-all duration-300">
         <div className="flex items-center gap-3 font-bold text-xl text-white tracking-tight">
           <div className="h-10 w-10 rounded-xl bg-linear-to-br from-primary to-primary/80 flex items-center justify-center text-white shadow-lg shadow-primary/20">
-            R
+            M
           </div>
           <span className="bg-clip-text text-transparent bg-linear-to-r from-white to-slate-400">
-            RCM Control
+            MultiplyNet
           </span>
         </div>
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
@@ -29,33 +44,34 @@ export default async function LandingPage() {
             href="#"
             className="hover:text-white transition-colors duration-200"
           >
-            Características
+            {dict.nav.features}
           </Link>
           <Link
             href="#"
             className="hover:text-white transition-colors duration-200"
           >
-            Testimonios
+            {dict.nav.testimonials}
           </Link>
           <Link
-            href="#"
+            href="#pricing"
             className="hover:text-white transition-colors duration-200"
           >
-            Precios
+            {dict.nav.pricing}
           </Link>
         </nav>
         <div className="flex items-center gap-4">
+          <LanguageToggle />
           {user ? (
             <Link href="/dashboard">
               <Button className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md rounded-full px-6">
-                Ir al Dashboard
+                {dict.nav.dashboard}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           ) : (
             <Link href="/sign-in">
               <Button className="bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white border-0 shadow-lg shadow-primary/25 rounded-full px-6 transition-all duration-300 hover:scale-105">
-                Iniciar Sesión
+                {dict.nav.signIn}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
@@ -71,18 +87,16 @@ export default async function LandingPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              Nueva versión 2.0 disponible
+              {dict.hero.newVersion}
             </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight text-white">
-              Gestión de Iglesias <br />
-              <span className="bg-clip-text text-transparent bg-linear-to-r from-primary via-primary/70 to-primary">
-                Sin Límites
-              </span>
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight bg-clip-text text-transparent bg-linear-to-r from-white via-primary to-primary/60 mb-2">
+              {dict.hero.title}
             </h1>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              Una plataforma integral para administrar células, miembros,
-              eventos y el crecimiento de tu congregación con datos en tiempo
-              real y una experiencia de usuario sublime.
+            <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed font-medium mb-6">
+              {dict.hero.subtitle}
+            </p>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8">
+              {dict.hero.description}
             </p>
           </div>
 
@@ -93,7 +107,7 @@ export default async function LandingPage() {
                   size="lg"
                   className="h-14 px-10 text-lg rounded-full bg-white text-slate-900 hover:bg-slate-200 font-bold shadow-xl shadow-white/10 transition-transform hover:scale-105"
                 >
-                  Ir al Dashboard
+                  {dict.nav.dashboard}
                 </Button>
               </Link>
             ) : (
@@ -102,7 +116,7 @@ export default async function LandingPage() {
                   size="lg"
                   className="h-14 px-10 text-lg rounded-full bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold shadow-xl shadow-purple-500/30 transition-transform hover:scale-105 border-0"
                 >
-                  Comenzar Ahora
+                  {dict.hero.cta}
                 </Button>
               </Link>
             )}
@@ -111,7 +125,7 @@ export default async function LandingPage() {
               variant="outline"
               className="h-14 px-10 text-lg rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white backdrop-blur-sm transition-transform hover:scale-105"
             >
-              Ver Demo
+              {dict.hero.demo}
             </Button>
           </div>
 
@@ -132,7 +146,7 @@ export default async function LandingPage() {
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <p className="text-xl font-medium bg-black/50 px-6 py-3 rounded-full backdrop-blur-md border border-white/10">
-                    Vista previa del Dashboard
+                    {dict.hero.preview}
                   </p>
                 </div>
               </div>
@@ -145,29 +159,81 @@ export default async function LandingPage() {
           <div className="container px-6 mx-auto relative z-10">
             <div className="text-center mb-16 space-y-4">
               <h2 className="text-3xl md:text-5xl font-bold text-white">
-                Todo lo que necesitas
+                {dict.features.title}
               </h2>
               <p className="text-slate-400 max-w-2xl mx-auto">
-                Herramientas potentes diseñadas específicamente para el
-                liderazgo moderno.
+                {dict.features.subtitle}
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <FeatureCard
-                title="Gestión de Células"
-                description="Administra líderes, anfitriones y miembros de cada célula de manera eficiente con una interfaz intuitiva."
+                title={dict.features.cells.title}
+                description={dict.features.cells.description}
                 icon={<Users className="h-8 w-8 text-purple-400" />}
               />
               <FeatureCard
-                title="Seguimiento de Eventos"
-                description="Controla la asistencia y resultados de tus campañas evangelísticas y eventos especiales en tiempo real."
+                title={dict.features.events.title}
+                description={dict.features.events.description}
                 icon={<CalendarDays className="h-8 w-8 text-blue-400" />}
               />
               <FeatureCard
-                title="Reportes Detallados"
-                description="Obtén insights valiosos sobre el crecimiento y salud de tu iglesia con gráficos intuitivos y exportables."
+                title={dict.features.reports.title}
+                description={dict.features.reports.description}
                 icon={<BarChart3 className="h-8 w-8 text-emerald-400" />}
+              />
+            </div>
+          </div>
+        </section>
+
+        <section id="pricing" className="py-24 relative bg-slate-900/30">
+          <div className="container px-6 mx-auto relative z-10">
+            <div className="text-center mb-16 space-y-4">
+              <h2 className="text-3xl md:text-5xl font-bold text-white">
+                {dict.pricing.title}
+              </h2>
+              <p className="text-slate-400 max-w-2xl mx-auto">
+                {dict.pricing.subtitle}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {/* Free Plan */}
+              <PricingCard
+                name={dict.pricing.free.name}
+                price={dict.pricing.free.price}
+                priceMXN={dict.pricing.free.priceMXN}
+                description={dict.pricing.free.description}
+                features={dict.pricing.free.features}
+                cta={dict.pricing.free.cta}
+                monthly={dict.pricing.monthly}
+                lang={lang}
+              />
+
+              {/* Plus Plan */}
+              <PricingCard
+                name={dict.pricing.plus.name}
+                price={dict.pricing.plus.price}
+                priceMXN={dict.pricing.plus.priceMXN}
+                description={dict.pricing.plus.description}
+                features={dict.pricing.plus.features}
+                cta={dict.pricing.plus.cta}
+                monthly={dict.pricing.monthly}
+                popular
+                lang={lang}
+              />
+
+              {/* Premium Plan */}
+              <PricingCard
+                name={dict.pricing.premium.name}
+                price={dict.pricing.premium.price}
+                priceMXN={dict.pricing.premium.priceMXN}
+                description={dict.pricing.premium.description}
+                features={dict.pricing.premium.features}
+                cta={dict.pricing.premium.cta}
+                monthly={dict.pricing.monthly}
+                extraCost={dict.pricing.premium.extraCost}
+                lang={lang}
               />
             </div>
           </div>
@@ -187,8 +253,7 @@ export default async function LandingPage() {
           ))}
         </div>
         <p>
-          &copy; {new Date().getFullYear()} Next RCM. Todos los derechos
-          reservados.
+          &copy; {new Date().getFullYear()} MultiplyNet. {dict.footer.rights}
         </p>
       </footer>
     </div>
@@ -215,6 +280,89 @@ function FeatureCard({
       <p className="text-slate-400 leading-relaxed group-hover:text-slate-300 transition-colors">
         {description}
       </p>
+    </div>
+  );
+}
+
+function PricingCard({
+  name,
+  price,
+  priceMXN,
+  description,
+  features,
+  cta,
+  monthly,
+  extraCost,
+  popular = false,
+  lang,
+}: {
+  name: string;
+  price: string;
+  priceMXN: string;
+  description: string;
+  features: string[];
+  cta: string;
+  monthly: string;
+  extraCost?: string;
+  popular?: boolean;
+  lang: Locale;
+}) {
+  const isUSD = lang === 'en';
+
+  return (
+    <div
+      className={`relative p-8 rounded-3xl border flex flex-col ${
+        popular
+          ? 'bg-white/10 border-primary/50 shadow-2xl shadow-primary/20'
+          : 'bg-white/5 border-white/5 hover:bg-white/[0.08] transition-colors'
+      } backdrop-blur-sm`}
+    >
+      {popular && (
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
+          Most Popular
+        </div>
+      )}
+
+      <div className="mb-8">
+        <h3 className="text-xl font-bold text-white mb-2">{name}</h3>
+        <p className="text-slate-400 text-sm h-10">{description}</p>
+      </div>
+
+      <div className="mb-8">
+        <div className="flex items-baseline gap-1">
+          <span className="text-4xl font-bold text-white">
+            {isUSD ? '$' : '$'}
+            {isUSD ? price : priceMXN}
+          </span>
+          <span className="text-slate-500">
+            {isUSD ? 'USD' : 'MXN'} {monthly}
+          </span>
+        </div>
+        {extraCost && (
+          <p className="text-xs text-primary font-medium mt-2 bg-primary/10 inline-block px-2 py-1 rounded-md border border-primary/20">
+            {extraCost}
+          </p>
+        )}
+      </div>
+
+      <ul className="space-y-4 mb-8 flex-1">
+        {features.map((feature, i) => (
+          <li key={i} className="flex items-start gap-3 text-slate-300 text-sm">
+            <Check className="h-5 w-5 text-primary shrink-0" />
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+
+      <Button
+        className={`w-full rounded-full h-12 font-bold ${
+          popular
+            ? 'bg-primary hover:bg-primary/90 text-white'
+            : 'bg-white/10 hover:bg-white/20 text-white border border-white/10'
+        }`}
+      >
+        {cta}
+      </Button>
     </div>
   );
 }

@@ -1,0 +1,85 @@
+{
+  "nav": {
+    "features": "Características",
+    "testimonials": "Testimonios",
+    "pricing": "Precios",
+    "dashboard": "Ir al Dashboard",
+    "signIn": "Iniciar Sesión"
+  },
+  "hero": {
+    "newVersion": "Nueva versión 2.0 disponible",
+    "title": "MultiplyNet",
+    "subtitle": "El sistema para multiplicar células y gestionar iglesias",
+    "description": "Gestiona células, sectores y redes completas con una facilidad sin precedentes. MultiplyNet simplifica el seguimiento de asistencia, la consolidación de nuevos creyentes y la generación de reportes estadísticos en tiempo real, permitiendo a los líderes enfocarse en lo que realmente importa: las personas.",
+    "cta": "Comenzar Ahora",
+    "demo": "Ver Demo",
+    "preview": "Vista previa del Dashboard"
+  },
+  "features": {
+    "title": "Todo lo que necesitas",
+    "subtitle": "Herramientas potentes diseñadas específicamente para el liderazgo moderno.",
+    "cells": {
+      "title": "Gestión de Células",
+      "description": "Administra líderes, anfitriones y miembros de cada célula de manera eficiente con una interfaz intuitiva."
+    },
+    "events": {
+      "title": "Seguimiento de Eventos",
+      "description": "Controla la asistencia y resultados de tus campañas evangelísticas y eventos especiales en tiempo real."
+    },
+    "reports": {
+      "title": "Reportes Detallados",
+      "description": "Obtén insights valiosos sobre el crecimiento y salud de tu iglesia con gráficos intuitivos y exportables."
+    }
+  },
+  "pricing": {
+    "title": "Planes Simples y Transparentes",
+    "subtitle": "Elige el plan perfecto para el crecimiento de tu ministerio.",
+    "monthly": "/mes",
+    "free": {
+      "name": "Gratis",
+      "description": "Ideal para comenzar a organizar tus células.",
+      "price": "0",
+      "priceMXN": "0",
+      "features": [
+        "Hasta 20 Células",
+        "Reportes Básicos",
+        "Gestión de Miembros",
+        "Soporte Comunitario"
+      ],
+      "cta": "Comenzar Gratis"
+    },
+    "plus": {
+      "name": "Plus",
+      "description": "Para iglesias en crecimiento que necesitan más.",
+      "price": "12",
+      "priceMXN": "249",
+      "features": [
+        "Células Ilimitadas",
+        "Estadísticas Avanzadas",
+        "Seguimiento de Eventos",
+        "Exportación de Datos",
+        "Soporte Prioritario"
+      ],
+      "cta": "Obtener Plus"
+    },
+    "premium": {
+      "name": "Premium",
+      "description": "La solución definitiva para obispos, distritos e iglesias madres.",
+      "price": "49",
+      "priceMXN": "999",
+      "extraCost": "+ $150 MXN por iglesia activa",
+      "features": [
+        "Gestión Multi-Iglesia",
+        "Dashboard Global",
+        "Reportes Financieros",
+        "Métricas de Red",
+        "Gerente de Éxito Dedicado",
+        "API de Integración"
+      ],
+      "cta": "Contactar Ventas"
+    }
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados."
+  }
+}

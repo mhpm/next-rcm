@@ -1,7 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-
 const LoadingPage = () => {
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
@@ -12,20 +10,14 @@ const LoadingPage = () => {
       </div>
 
       <div className="relative z-10 flex flex-col items-center justify-center space-y-8 animate-in fade-in zoom-in-95 duration-700">
-        {/* Logo Container with Glass Effect */}
-        <div className="relative group">
-          <div className="absolute inset-0 bg-primary/30 rounded-full blur-xl animate-pulse group-hover:bg-primary/50 transition-colors duration-500"></div>
-          <div className="relative h-28 w-28 rounded-3xl bg-slate-900/50 backdrop-blur-xl border border-white/10 flex items-center justify-center shadow-2xl shadow-primary/20 ring-1 ring-white/20">
-            <div className="relative w-16 h-16">
-              <Image
-                src="/images/logo.png"
-                alt="RCM Logo"
-                fill
-                className="object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
-                priority={true}
-              />
-            </div>
+        {/* MultiplyNet Logo */}
+        <div className="relative group flex flex-col items-center gap-6">
+          <div className="relative h-24 w-24 rounded-3xl bg-linear-to-br from-primary to-primary/80 flex items-center justify-center text-white shadow-2xl shadow-primary/30 text-5xl font-bold animate-bounce delay-75">
+            M
           </div>
+          <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-slate-400 tracking-tight animate-pulse">
+            MultiplyNet
+          </h1>
         </div>
 
         {/* Loading Text */}

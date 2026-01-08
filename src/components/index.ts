@@ -16,3 +16,4 @@ export * from './StatCard/StatCard';
 export * from './ThemeProvider';
 export * from './Toast';
 export * from './PeriodFilter';
+export * from './LanguageToggle';

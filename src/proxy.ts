@@ -1,8 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getChurchSlugFromHost, isValidChurchSlug } from "@/lib/church-context";
+import { i18n } from '@/i18n/config';
+import { match as matchLocale } from '@formatjs/intl-localematcher';
+import Negotiator from 'negotiator';
+
+function getLocale(request: NextRequest): string {
+  const negotiatorHeaders: Record<string, string> = {};
+  request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
+
+  // @ts-ignore locales are readonly
+  const locales: string[] = i18n.locales;
+  const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
+
+  return matchLocale(languages, locales, i18n.defaultLocale);
+}
 
 // Proxy function to handle multi-church routing and headers
 export function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
+  // Only redirect root path '/'
+  if (pathname === '/') {
+    const locale = getLocale(request);
+    return NextResponse.redirect(new URL(`/${locale}`, request.url));
+  }
+
   const host = request.headers.get("host") || "localhost:3000";
 
   // Get church slug from the host

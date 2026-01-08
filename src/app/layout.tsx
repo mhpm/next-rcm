@@ -14,8 +14,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'RCM',
-  description: 'RCM is a platform to manage membership and groups of a church',
+  title: 'MultiplyNet',
+  description: 'The System for Cell Multiplication & Church Management',
 };
 
 export default function RootLayout({

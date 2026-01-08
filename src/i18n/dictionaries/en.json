@@ -1,0 +1,85 @@
+{
+  "nav": {
+    "features": "Features",
+    "testimonials": "Testimonials",
+    "pricing": "Pricing",
+    "dashboard": "Go to Dashboard",
+    "signIn": "Sign In"
+  },
+  "hero": {
+    "newVersion": "New version 2.0 available",
+    "title": "MultiplyNet",
+    "subtitle": "The System for Cell Multiplication & Church Management",
+    "description": "Manage cells, sectors, and entire networks with unprecedented ease. MultiplyNet simplifies attendance tracking, new believer consolidation, and real-time statistical reporting, allowing leaders to focus on what truly matters: people.",
+    "cta": "Get Started",
+    "demo": "View Demo",
+    "preview": "Dashboard Preview"
+  },
+  "features": {
+    "title": "Everything you need",
+    "subtitle": "Powerful tools designed specifically for modern leadership.",
+    "cells": {
+      "title": "Cell Management",
+      "description": "Manage leaders, hosts, and members of each cell efficiently with an intuitive interface."
+    },
+    "events": {
+      "title": "Event Tracking",
+      "description": "Control attendance and results of your evangelistic campaigns and special events in real time."
+    },
+    "reports": {
+      "title": "Detailed Reports",
+      "description": "Get valuable insights on the growth and health of your church with intuitive and exportable charts."
+    }
+  },
+  "pricing": {
+    "title": "Simple & Transparent Pricing",
+    "subtitle": "Choose the perfect plan for your ministry's growth.",
+    "monthly": "/month",
+    "free": {
+      "name": "Free",
+      "description": "Ideal for starting to organize your cells.",
+      "price": "0",
+      "priceMXN": "0",
+      "features": [
+        "Up to 20 Cells",
+        "Basic Reports",
+        "Member Management",
+        "Community Support"
+      ],
+      "cta": "Start for Free"
+    },
+    "plus": {
+      "name": "Plus",
+      "description": "For growing churches that need more.",
+      "price": "12",
+      "priceMXN": "249",
+      "features": [
+        "Unlimited Cells",
+        "Advanced Statistics",
+        "Event Tracking",
+        "Data Export",
+        "Priority Support"
+      ],
+      "cta": "Get Plus"
+    },
+    "premium": {
+      "name": "Premium",
+      "description": "The ultimate solution for bishops, districts, and mother churches.",
+      "price": "49",
+      "priceMXN": "999",
+      "extraCost": "+ $8 USD per active church",
+      "features": [
+        "Multi-Church Management",
+        "Global Dashboard",
+        "Financial Reports",
+        "Network Metrics",
+        "Dedicated Success Manager",
+        "Integration API"
+      ],
+      "cta": "Contact Sales"
+    }
+  },
+  "footer": {
+    "rights": "All rights reserved."
+  }
+}
