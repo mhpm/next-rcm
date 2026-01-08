@@ -84,15 +84,17 @@ export function SearchableSelectField({
 
   return (
     <div className="w-full space-y-3">
-      <label
-        className={cn(
-          'text-base font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 px-1 text-slate-700 dark:text-slate-200',
-          error && 'text-destructive'
-        )}
-      >
-        {label}
-        {required && <span className="text-destructive ml-1">*</span>}
-      </label>
+      {label && (
+        <label
+          className={cn(
+            'text-base font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 px-1 text-slate-700 dark:text-slate-200',
+            error && 'text-destructive'
+          )}
+        >
+          {label}
+          {required && <span className="text-destructive ml-1">*</span>}
+        </label>
+      )}
 
       <div className="relative" ref={dropdownRef}>
         {/* Main input display */}

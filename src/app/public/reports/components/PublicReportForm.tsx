@@ -892,7 +892,7 @@ export default function PublicReportForm({
               <Button
                 type="button"
                 variant="outline"
-                className="w-full md:w-auto gap-3 h-14 px-8 rounded-2xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400 font-semibold transition-all duration-200"
+                className="w-full md:w-auto gap-3 h-14 px-8 rounded-2xl border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-semibold transition-all duration-200"
                 onClick={handleSubmit(onSaveDraft)}
                 disabled={isSavingDraft || isSubmitting}
               >
