@@ -88,7 +88,7 @@ export function NumberStepper({
           type="button"
           variant="ghost"
           size="icon"
-          className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800/60 hover:text-blue-800 dark:hover:text-blue-200 transition-colors border-2 border-blue-200 dark:border-blue-700 shadow-sm"
+          className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary hover:bg-primary/20 dark:hover:bg-primary/30 hover:text-primary dark:hover:text-primary transition-colors border-2 border-primary/20 dark:border-primary/50 shadow-sm"
           onClick={handleIncrement}
           disabled={max !== undefined && value >= max}
         >

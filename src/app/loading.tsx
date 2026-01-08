@@ -4,136 +4,47 @@ import Image from 'next/image';
 
 const LoadingPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-base-200 via-base-100 to-base-200 flex items-center justify-center p-4">
-      <div className="text-center space-y-8">
-        {/* Logo with Pulse Animation */}
-        <div className="relative">
-          <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping"></div>
-          <div className="relative flex justify-center items-center p-4">
-            <Image
-              src="/images/logo.png"
-              alt="RCM Logo"
-              width={80}
-              height={80}
-              className="animate-pulse"
-              priority={true}
-            />
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/15 rounded-full blur-[120px] animate-pulse delay-1000" />
+      </div>
+
+      <div className="relative z-10 flex flex-col items-center justify-center space-y-8 animate-in fade-in zoom-in-95 duration-700">
+        {/* Logo Container with Glass Effect */}
+        <div className="relative group">
+          <div className="absolute inset-0 bg-primary/30 rounded-full blur-xl animate-pulse group-hover:bg-primary/50 transition-colors duration-500"></div>
+          <div className="relative h-28 w-28 rounded-3xl bg-slate-900/50 backdrop-blur-xl border border-white/10 flex items-center justify-center shadow-2xl shadow-primary/20 ring-1 ring-white/20">
+            <div className="relative w-16 h-16">
+              <Image
+                src="/images/logo.png"
+                alt="RCM Logo"
+                fill
+                className="object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                priority={true}
+              />
+            </div>
           </div>
         </div>
 
         {/* Loading Text */}
-        <div className="space-y-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-base-content animate-fade-in">
+        <div className="text-center space-y-3">
+          <h2 className="text-3xl font-bold bg-linear-to-r from-white to-slate-400 bg-clip-text text-transparent animate-pulse">
             Cargando
           </h2>
-          <p className="text-base-content/60 animate-fade-in-delay">
+          <p className="text-slate-400 text-sm tracking-wide animate-bounce delay-100">
             Preparando tu experiencia...
           </p>
         </div>
+
+        {/* Loading Spinner */}
+        <div className="flex gap-2">
+          <div className="w-3 h-3 rounded-full bg-primary animate-[bounce_1s_infinite_0ms]"></div>
+          <div className="w-3 h-3 rounded-full bg-primary/70 animate-[bounce_1s_infinite_200ms]"></div>
+          <div className="w-3 h-3 rounded-full bg-white animate-[bounce_1s_infinite_400ms]"></div>
+        </div>
       </div>
-
-      {/* Background Decoration */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute top-1/3 left-1/4 w-32 h-32 bg-primary/5 rounded-full blur-2xl animate-float"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-48 h-48 bg-secondary/5 rounded-full blur-2xl animate-float-delay"></div>
-        <div className="absolute top-2/3 left-2/3 w-24 h-24 bg-accent/5 rounded-full blur-xl animate-float-slow"></div>
-      </div>
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fade-in-delay {
-          0%,
-          30% {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes spin-slow {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px) scale(1);
-          }
-          50% {
-            transform: translateY(-20px) scale(1.1);
-          }
-        }
-
-        @keyframes float-delay {
-          0%,
-          100% {
-            transform: translateY(0px) scale(1);
-          }
-          50% {
-            transform: translateY(-15px) scale(1.05);
-          }
-        }
-
-        @keyframes float-slow {
-          0%,
-          100% {
-            transform: translateY(0px) scale(1);
-          }
-          50% {
-            transform: translateY(-10px) scale(1.02);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.8s ease-out;
-        }
-
-        .animate-fade-in-delay {
-          animation: fade-in-delay 1.2s ease-out;
-        }
-
-        .animate-spin-slow {
-          animation: spin-slow 3s linear infinite;
-        }
-
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-
-        .animate-float-delay {
-          animation: float-delay 8s ease-in-out infinite;
-        }
-
-        .animate-float-slow {
-          animation: float-slow 10s ease-in-out infinite;
-        }
-
-        .delay-100 {
-          animation-delay: 0.1s;
-        }
-
-        .delay-200 {
-          animation-delay: 0.2s;
-        }
-      `}</style>
     </div>
   );
 };

@@ -87,7 +87,7 @@ const Toast: FC<ToastProps> = ({ notification, onClose }) => {
     <div className={getToastClasses()}>
       <div className="p-4">
         <div className="flex items-start">
-          <div className="flex-shrink-0">{getIcon()}</div>
+          <div className="shrink-0">{getIcon()}</div>
           <div className="ml-3 w-0 flex-1 pt-0.5">
             {notification.title && (
               <p className="text-sm font-medium text-gray-900">
@@ -112,7 +112,7 @@ const Toast: FC<ToastProps> = ({ notification, onClose }) => {
               </div>
             )}
           </div>
-          <div className="ml-4 flex-shrink-0 flex">
+          <div className="ml-4 shrink-0 flex">
             <button
               onClick={handleClose}
               className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

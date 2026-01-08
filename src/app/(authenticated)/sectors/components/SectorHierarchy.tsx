@@ -681,7 +681,7 @@ function SectorItem({
                         className="font-medium hover:underline flex items-center gap-2 text-primary w-full sm:w-auto"
                       >
                         <span className="truncate">{cell.name}</span>
-                        <ExternalLink className="h-3 w-3 opacity-50 flex-shrink-0" />
+                        <ExternalLink className="h-3 w-3 opacity-50 shrink-0" />
                       </Link>
                       <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-3">
                         <div className="flex items-center gap-1 text-xs sm:text-sm">
@@ -712,10 +712,7 @@ function SectorItem({
                             <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
-                        <Badge
-                          variant="secondary"
-                          className="text-xs flex-shrink-0"
-                        >
+                        <Badge variant="secondary" className="text-xs shrink-0">
                           {cell.membersCount} miembros
                         </Badge>
                       </div>

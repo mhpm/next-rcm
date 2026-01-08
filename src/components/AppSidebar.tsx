@@ -60,7 +60,7 @@ export function AppSidebar({ className, collapsed = false }: AppSidebarProps) {
     <TooltipProvider delayDuration={0}>
       <div
         className={cn(
-          'pb-12 border-r min-h-screen bg-card transition-all duration-300',
+          'pb-12 border-r h-full overflow-y-auto bg-card transition-all duration-300',
           collapsed ? 'w-16' : 'w-64',
           className
         )}

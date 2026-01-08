@@ -595,17 +595,17 @@ export default function PublicReportForm({
       <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
+            <AlertDialogTitle className="flex items-center gap-2 text-2xl">
               <FaLock /> Confirmar Envío
             </AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-lg mt-4">
               ¿Estás seguro de que deseas enviar el reporte?
-              <span className="font-semibold text-destructive block mt-2">
+              <span className="font-bold text-red-500 dark:text-red-400 block mt-3 text-lg">
                 Una vez enviado, no podrás volver a modificarlo.
               </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="mt-4">
             <AlertDialogCancel
               disabled={isConfirming}
               onClick={() => setIsConfirmOpen(false)}
@@ -848,13 +848,13 @@ export default function PublicReportForm({
                               variant="ghost"
                               className="w-full justify-between px-6 py-8 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors"
                             >
-                              <span className="text-xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">
+                              <span className="text-2xl font-extrabold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent tracking-tight">
                                 {group.section.label || 'Sección'}
                               </span>
-                              <div className="h-8 w-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm">
+                              <div className="h-8 w-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center border border-primary/30 shadow-sm text-primary">
                                 <ChevronDown
                                   className={cn(
-                                    'h-5 w-5 transition-transform duration-300 text-slate-500',
+                                    'h-5 w-5 transition-transform duration-300',
                                     isOpen ? 'rotate-180' : ''
                                   )}
                                 />
@@ -905,7 +905,7 @@ export default function PublicReportForm({
               </Button>
               <Button
                 type="submit"
-                className="w-full md:w-auto gap-3 h-14 px-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-500/20 transition-all duration-200"
+                className="w-full md:w-auto gap-3 h-14 px-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/25 transition-all duration-200"
                 disabled={isSubmitting || isSavingDraft}
               >
                 {isSubmitting ? (

@@ -19,7 +19,7 @@ const NotFoundPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-base-200 via-base-100 to-base-200 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-base-200 via-base-100 to-base-200 flex items-center justify-center p-4">
       <div className="max-w-2xl mx-auto text-center">
         {/* Animated 404 Number */}
         <div className="relative mb-8">
