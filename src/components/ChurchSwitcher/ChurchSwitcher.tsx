@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useChurch } from "@/app/(authenticated)/churches/hooks/useChurch";
+import { useChurch } from "@/app/[lang]/(authenticated)/churches/hooks/useChurch";
 import {
   getAllChurches,
   type Church,
-} from "@/app/(authenticated)/churches/actions/churches.actions";
+} from "@/app/[lang]/(authenticated)/churches/actions/churches.actions";
 
 interface ChurchSwitcherProps {
   className?: string;

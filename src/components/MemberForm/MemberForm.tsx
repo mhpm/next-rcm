@@ -18,9 +18,9 @@ import { Loader2 } from 'lucide-react';
 import {
   useEmailAvailability,
   useNetworks,
-} from '@/app/(authenticated)/members/hooks/useMembers';
+} from '@/app/[lang]/(authenticated)/members/hooks/useMembers';
 import { useDebounce } from '@/hooks/useDebounce';
-import { useMinistries } from '@/app/(authenticated)/ministries/hooks/useMinistries';
+import { useMinistries } from '@/app/[lang]/(authenticated)/ministries/hooks/useMinistries';
 import {
   InputField,
   SelectField,
@@ -33,7 +33,7 @@ import {
   memberFormSchema,
   memberFormSchemaEdit,
   MemberFormInput,
-} from '@/app/(authenticated)/members/schema/members.schema';
+} from '@/app/[lang]/(authenticated)/members/schema/members.schema';
 
 // Usamos el tipo de entrada del esquema (antes de transformaciones)
 export type FormValues = MemberFormInput;

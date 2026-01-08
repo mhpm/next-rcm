@@ -81,5 +81,74 @@
   },
   "footer": {
     "rights": "Todos los derechos reservados."
+  },
+  "sidebar": {
+    "home": "Inicio",
+    "dashboard": "Tablero",
+    "members": "Miembros",
+    "cells": "Células",
+    "sectors": "Sectores",
+    "ministries": "Ministerios",
+    "networks": "Redes",
+    "metrics": "Métricas",
+    "tracking": "Seguimiento",
+    "friends": "Amigos",
+    "events": "Eventos",
+    "documents": "Documentos",
+    "reports": "Formularios"
+  },
+  "header": {
+    "toggleSidebar": "Alternar barra lateral",
+    "toggleTheme": "Alternar tema",
+    "profile": "Perfil",
+    "myAccount": "Mi Cuenta",
+    "settings": "Configuración",
+    "support": "Soporte",
+    "logout": "Cerrar Sesión"
+  },
+  "dashboard": {
+    "title": "Panel de Control",
+    "ministries": {
+      "title": "Ministerios",
+      "activeMembers": "Miembros activos:",
+      "membersWithoutMinistry": "Miembros sin ministerio:",
+      "viewDetails": "Ver más detalles"
+    },
+    "cells": {
+      "title": "Células",
+      "membersInCells": "Miembros en células:",
+      "membersWithoutCell": "Miembros sin célula:",
+      "viewDetails": "Ver más detalles"
+    },
+    "members": {
+      "title": "Miembros",
+      "supervisors": "Supervisors:",
+      "leaders": "Líderes:",
+      "viewDetails": "Ver más detalles"
+    },
+    "sectors": {
+      "title": "Sectores",
+      "subSectors": "Sub-sectores:",
+      "cells": "Células:",
+      "members": "Miembros:",
+      "viewDetails": "Ver más detalles"
+    },
+    "stats": {
+      "vsLastPeriod": "vs. último cuatrimestre",
+      "vsLast3Periods": "vs. 3 últimos cuatrimestres",
+      "vsLast12Periods": "vs. 12 últimos cuatrimestres"
+    }
+  },
+  "chart": {
+    "label": "Miembros",
+    "title": "Crecimiento de la Iglesia",
+    "description": "Mostrando nuevos miembros por periodo",
+    "placeholder": "Seleccionar periodo",
+    "periods": {
+      "month": "Mensual",
+      "quarter": "Trimestral",
+      "fourMonth": "Cuatrimestral",
+      "year": "Anual"
+    }
   }
 }

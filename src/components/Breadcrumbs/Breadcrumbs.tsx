@@ -15,10 +15,12 @@ import {
 const Breadcrumbs = () => {
   const pathname = usePathname();
   const pathSegments = pathname.split("/").filter((segment) => segment);
+  const lang = pathSegments[0];
+  const segments = pathSegments.slice(1);
 
   const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-  const isDashboard = pathname === "/dashboard";
+  const isDashboard = segments.length === 1 && segments[0] === 'dashboard';
 
   return (
     <Breadcrumb className="hidden sm:block">
@@ -28,15 +30,15 @@ const Breadcrumbs = () => {
             <BreadcrumbPage>Dashboard</BreadcrumbPage>
           ) : (
             <BreadcrumbLink asChild>
-              <Link href="/dashboard">Dashboard</Link>
+              <Link href={`/${lang}/dashboard`}>Dashboard</Link>
             </BreadcrumbLink>
           )}
         </BreadcrumbItem>
-        {pathSegments.map((segment, index) => {
+        {segments.map((segment, index) => {
           if (segment === "dashboard" && index === 0) return null;
 
-          const href = `/${pathSegments.slice(0, index + 1).join("/")}`;
-          const isLast = index === pathSegments.length - 1;
+          const href = `/${pathSegments.slice(0, index + 2).join("/")}`;
+          const isLast = index === segments.length - 1;
 
           return (
             <React.Fragment key={href}>

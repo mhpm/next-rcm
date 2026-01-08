@@ -11,7 +11,7 @@ import { AutocompleteField } from "./AutocompleteField";
 import {
   getAllMembers,
   getMemberById,
-} from "@/app/(authenticated)/members/actions/members.actions";
+} from "@/app/[lang]/(authenticated)/members/actions/members.actions";
 import { MemberWithMinistries } from "@/types";
 
 type MemberSearchFieldProps<T extends FieldValues> = {

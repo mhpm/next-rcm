@@ -62,7 +62,7 @@ export default async function LandingPage({
         <div className="flex items-center gap-4">
           <LanguageToggle />
           {user ? (
-            <Link href="/dashboard">
+            <Link href={`/${lang}/dashboard`}>
               <Button className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md rounded-full px-6">
                 {dict.nav.dashboard}
                 <ArrowRight className="ml-2 h-4 w-4" />

@@ -81,5 +81,74 @@
   },
   "footer": {
     "rights": "All rights reserved."
+  },
+  "sidebar": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "members": "Members",
+    "cells": "Cells",
+    "sectors": "Sectors",
+    "ministries": "Ministries",
+    "networks": "Networks",
+    "metrics": "Metrics",
+    "tracking": "Tracking",
+    "friends": "Friends",
+    "events": "Events",
+    "documents": "Documents",
+    "reports": "Forms"
+  },
+  "header": {
+    "toggleSidebar": "Toggle Sidebar",
+    "toggleTheme": "Toggle Theme",
+    "profile": "Profile",
+    "myAccount": "My Account",
+    "settings": "Settings",
+    "support": "Support",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "ministries": {
+      "title": "Ministries",
+      "activeMembers": "Active Members:",
+      "membersWithoutMinistry": "Members without Ministry:",
+      "viewDetails": "View Details"
+    },
+    "cells": {
+      "title": "Cells",
+      "membersInCells": "Members in Cells:",
+      "membersWithoutCell": "Members without Cell:",
+      "viewDetails": "View Details"
+    },
+    "members": {
+      "title": "Members",
+      "supervisors": "Supervisors:",
+      "leaders": "Leaders:",
+      "viewDetails": "View Details"
+    },
+    "sectors": {
+      "title": "Sectors",
+      "subSectors": "Sub-sectors:",
+      "cells": "Cells:",
+      "members": "Members:",
+      "viewDetails": "View Details"
+    },
+    "stats": {
+      "vsLastPeriod": "vs. last period",
+      "vsLast3Periods": "vs. last 3 periods",
+      "vsLast12Periods": "vs. last 12 periods"
+    }
+  },
+  "chart": {
+    "label": "Members",
+    "title": "Church Growth",
+    "description": "Showing new members per period",
+    "placeholder": "Select period",
+    "periods": {
+      "month": "Monthly",
+      "quarter": "Quarterly",
+      "fourMonth": "Four-Monthly",
+      "year": "Yearly"
+    }
   }
 }

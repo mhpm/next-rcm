@@ -2,17 +2,18 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import {
   RiHomeLine,
   RiArrowLeftLine,
   RiSearchLine,
   RiTeamLine,
 } from 'react-icons/ri';
-import { ROUTES } from '@/routes';
 
 const NotFoundPage = () => {
   const router = useRouter();
+  const params = useParams();
+  const lang = (params?.lang as string) || 'es';
 
   const handleGoBack = () => {
     router.back();
@@ -52,7 +53,7 @@ const NotFoundPage = () => {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
             <Link
-              href={ROUTES.HOME}
+              href={`/${lang}`}
               className="btn btn-primary btn-lg gap-2 min-w-[200px] group hover:scale-105 transition-transform"
             >
               <RiHomeLine className="w-5 h-5 group-hover:animate-pulse" />
@@ -75,7 +76,7 @@ const NotFoundPage = () => {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Link
-                href={ROUTES.DASHBOARD}
+                href={`/${lang}/dashboard`}
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-base-200 transition-colors group"
               >
                 <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
@@ -90,7 +91,7 @@ const NotFoundPage = () => {
               </Link>
 
               <Link
-                href={ROUTES.MEMBERS}
+                href={`/${lang}/members`}
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-base-200 transition-colors group"
               >
                 <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center group-hover:bg-success/20 transition-colors">

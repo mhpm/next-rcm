@@ -21,40 +21,70 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-const sidebarItems = [
-  {
-    title: 'Home',
-    items: [
-      { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-      { title: 'Miembros', href: '/members', icon: Users },
-      { title: 'Celulas', href: '/cells', icon: Home },
-      { title: 'Sectores', href: '/sectors', icon: MapPin },
-      { title: 'Ministerios', href: '/ministries', icon: BookOpen },
-      { title: 'Redes', href: '/networks', icon: Network },
-    ],
-  },
-  {
-    title: 'Métricas',
-    items: [
-      { title: 'Seguimiento', href: '/evangelism', icon: LayoutDashboard },
-      { title: 'Amigos', href: '/friends', icon: Users },
-      { title: 'Eventos', href: '/events', icon: BookOpen },
-    ],
-  },
-  {
-    title: 'Documents',
-    items: [{ title: 'Formularios', href: '/reports', icon: FileText }],
-  },
-];
-
 interface AppSidebarProps {
   className?: string;
   collapsed?: boolean;
   churchName?: string | null;
+  dict: any;
+  lang: string;
 }
 
-export function AppSidebar({ className, collapsed = false }: AppSidebarProps) {
+export function AppSidebar({
+  className,
+  collapsed = false,
+  dict,
+  lang,
+  churchName,
+}: AppSidebarProps) {
   const pathname = usePathname();
+
+  const sidebarItems = [
+    {
+      title: dict.sidebar.home,
+      items: [
+        {
+          title: dict.sidebar.dashboard,
+          href: `/${lang}/dashboard`,
+          icon: LayoutDashboard,
+        },
+        { title: dict.sidebar.members, href: `/${lang}/members`, icon: Users },
+        { title: dict.sidebar.cells, href: `/${lang}/cells`, icon: Home },
+        { title: dict.sidebar.sectors, href: `/${lang}/sectors`, icon: MapPin },
+        {
+          title: dict.sidebar.ministries,
+          href: `/${lang}/ministries`,
+          icon: BookOpen,
+        },
+        {
+          title: dict.sidebar.networks,
+          href: `/${lang}/networks`,
+          icon: Network,
+        },
+      ],
+    },
+    {
+      title: dict.sidebar.metrics,
+      items: [
+        {
+          title: dict.sidebar.tracking,
+          href: `/${lang}/evangelism`,
+          icon: LayoutDashboard,
+        },
+        { title: dict.sidebar.friends, href: `/${lang}/friends`, icon: Users },
+        { title: dict.sidebar.events, href: `/${lang}/events`, icon: BookOpen },
+      ],
+    },
+    {
+      title: dict.sidebar.documents,
+      items: [
+        {
+          title: dict.sidebar.reports,
+          href: `/${lang}/reports`,
+          icon: FileText,
+        },
+      ],
+    },
+  ];
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -77,7 +107,7 @@ export function AppSidebar({ className, collapsed = false }: AppSidebarProps) {
               {!collapsed && (
                 <div className="flex flex-col overflow-hidden">
                   <h2 className="text-lg font-semibold tracking-tight truncate">
-                    RCM Admin
+                    {churchName || 'RCM Admin'}
                   </h2>
                 </div>
               )}

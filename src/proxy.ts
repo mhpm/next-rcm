@@ -19,10 +19,24 @@ function getLocale(request: NextRequest): string {
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Only redirect root path '/'
-  if (pathname === '/') {
+  // 1. i18n Routing
+  // Check if there is any supported locale in the pathname
+  const pathnameIsMissingLocale = i18n.locales.every(
+    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
+  );
+
+  // Redirect if there is no locale
+  if (pathnameIsMissingLocale) {
     const locale = getLocale(request);
-    return NextResponse.redirect(new URL(`/${locale}`, request.url));
+
+    // e.g. incoming request is /products
+    // The new URL is now /en-US/products
+    return NextResponse.redirect(
+      new URL(
+        `/${locale}${pathname.startsWith('/') ? '' : '/'}${pathname}`,
+        request.url
+      )
+    );
   }
 
   const host = request.headers.get("host") || "localhost:3000";

@@ -1,4 +1,4 @@
-import { getSectorStats } from "../src/app/(authenticated)/sectors/actions/sectors.actions";
+import { getSectorStats } from "../src/app/[lang]/(authenticated)/sectors/actions/sectors.actions";
 
 async function run() {
   try {
