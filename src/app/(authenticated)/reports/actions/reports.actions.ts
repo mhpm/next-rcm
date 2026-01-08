@@ -11,7 +11,7 @@ export type ReportFieldInput = {
   label?: string | null;
   type: ReportFieldType;
   value?: unknown;
-  options?: string[]; // Add options
+  options?: string[] | any[]; // Add options
   visibilityRules?: any;
   required?: boolean;
 };

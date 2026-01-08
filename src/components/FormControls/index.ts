@@ -13,3 +13,4 @@ export { SearchableSelectField } from './SearchableSelectField';
 export { DateField } from './DateField';
 export { FormSectionHeading } from './FormSectionHeading';
 export { FormSection } from './FormSection';
+export { CycleWeekIndicator } from './CycleWeekIndicator';

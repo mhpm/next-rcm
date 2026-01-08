@@ -8,7 +8,7 @@ export type FieldItem = {
   label?: string | null;
   type: ReportFieldType;
   value?: unknown;
-  options?: { value: string }[];
+  options?: { value: string; description?: string }[];
   required?: boolean;
   visibilityRules?: VisibilityRule[];
 };

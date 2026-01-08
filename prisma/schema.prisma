@@ -339,6 +339,7 @@ enum ReportFieldType {
   SECTION
   MEMBER_SELECT
   FRIEND_REGISTRATION
+  CYCLE_WEEK_INDICATOR
 }
 
 enum ReportScope {

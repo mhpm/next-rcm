@@ -8,6 +8,7 @@ import {
 import { FaCopy, FaTrash } from 'react-icons/fa6';
 import { InputField } from '@/components/FormControls';
 import { OptionsEditor } from './OptionsEditor';
+import { CycleVerbsEditor } from './CycleVerbsEditor';
 import { LogicEditor } from './LogicEditor';
 import { slugify } from './utils';
 import { ReportFormValues, FieldItem } from './types';
@@ -70,6 +71,7 @@ export const FieldEditor = React.memo(function FieldEditor({
             {field.type === 'SECTION' && 'Sección'}
             {field.type === 'MEMBER_SELECT' && 'Selección de Miembro'}
             {field.type === 'FRIEND_REGISTRATION' && 'Registro de Amigos'}
+            {field.type === 'CYCLE_WEEK_INDICATOR' && 'Indicador de Semana'}
           </span>
         </Badge>
         <div className="flex items-center gap-1">
@@ -146,6 +148,29 @@ export const FieldEditor = React.memo(function FieldEditor({
             isExpanded={optionsExpanded}
             onToggle={() => onToggleUi(id, 'options')}
           />
+        )}
+
+        {field.type === 'CYCLE_WEEK_INDICATOR' && (
+          <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-200 dark:border-slate-800 space-y-2">
+            <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Configuración del Ciclo
+            </h4>
+            <InputField
+              name={`fields.${index}.value`}
+              label="Fecha de Inicio del Ciclo"
+              type="date"
+              register={register}
+              rules={{ required: 'La fecha de inicio es requerida' }}
+            />
+            <p className="text-xs text-muted-foreground">
+              El ciclo de 16 semanas comenzará a contar a partir de esta fecha.
+            </p>
+            <CycleVerbsEditor
+              nestIndex={index}
+              control={control}
+              register={register}
+            />
+          </div>
         )}
 
         {/* Allow LogicEditor for SECTION type too, but maybe hide key editing if needed, or allow it.

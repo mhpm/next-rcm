@@ -17,7 +17,11 @@ interface AddFieldMenuProps {
   trigger?: React.ReactElement;
 }
 
-export function AddFieldMenu({ onAdd, className = '', trigger }: AddFieldMenuProps) {
+export function AddFieldMenu({
+  onAdd,
+  className = '',
+  trigger,
+}: AddFieldMenuProps) {
   return (
     <div className={className}>
       <DropdownMenu>
@@ -31,20 +35,35 @@ export function AddFieldMenu({ onAdd, className = '', trigger }: AddFieldMenuPro
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuItem onSelect={() => onAdd('TEXT')}>Texto</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => onAdd('NUMBER')}>Número</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => onAdd('CURRENCY')}>Moneda</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => onAdd('BOOLEAN')}>Sí/No</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => onAdd('DATE')}>Fecha</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => onAdd('TEXT')}>
+            Texto
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => onAdd('NUMBER')}>
+            Número
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => onAdd('CURRENCY')}>
+            Moneda
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => onAdd('BOOLEAN')}>
+            Sí/No
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => onAdd('DATE')}>
+            Fecha
+          </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => onAdd('SELECT')}>
             Opción Múltiple
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => onAdd('SECTION')}>Sección</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => onAdd('SECTION')}>
+            Sección
+          </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => onAdd('MEMBER_SELECT')}>
             Selección de Miembro
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => onAdd('FRIEND_REGISTRATION')}>
             Registro de Amigos
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => onAdd('CYCLE_WEEK_INDICATOR')}>
+            Indicador de Semana
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

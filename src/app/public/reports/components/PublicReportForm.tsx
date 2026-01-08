@@ -9,6 +9,7 @@ import {
   ChoiceGroup,
   SearchableSelectField,
   DateField,
+  CycleWeekIndicator,
 } from '@/components/FormControls';
 import type { ReportFieldType, ReportScope } from '@/generated/prisma/client';
 import {
@@ -21,6 +22,7 @@ import {
   getDraftReportEntry,
   getPublicReportEntityMembers,
 } from '../../actions';
+import { calculateCycleState } from '@/lib/cycleUtils';
 import { useNotificationStore } from '@/store/NotificationStore';
 import { FaLock, FaFloppyDisk, FaPaperPlane, FaKey } from 'react-icons/fa6';
 import { Button } from '@/components/ui/button';
@@ -375,6 +377,16 @@ export default function PublicReportForm({
           />
         );
       }
+      if (f.type === 'CYCLE_WEEK_INDICATOR') {
+        return (
+          <CycleWeekIndicator
+            key={f.id}
+            label={f.label || f.key}
+            startDate={f.value}
+            verbs={f.options}
+          />
+        );
+      }
       if (f.type === 'FRIEND_REGISTRATION') {
         return (
           <Controller
@@ -511,7 +523,20 @@ export default function PublicReportForm({
     if (isDraft) setIsSavingDraft(true);
 
     try {
-      const values = Object.entries(data.values || {}).map(
+      // Calculate cycle values to include in submission
+      const cycleValues: Record<string, unknown> = {};
+      fields.forEach((f) => {
+        if (f.type === 'CYCLE_WEEK_INDICATOR') {
+          const state = calculateCycleState(f.value, f.options);
+          if (state.status === 'active' && state.verb) {
+            cycleValues[f.id] = `Semana ${state.weekNumber}: ${state.verb}`;
+          } else {
+            cycleValues[f.id] = state.message || 'Estado desconocido';
+          }
+        }
+      });
+
+      const values = Object.entries({ ...data.values, ...cycleValues }).map(
         ([fieldId, value]) => ({
           fieldId,
           value,

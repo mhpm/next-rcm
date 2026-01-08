@@ -12,6 +12,12 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import {
+  CycleWeekIndicator,
+  NumberStepper,
+  ChoiceGroup,
+} from '@/components/FormControls';
 
 export function LivePreview({
   control,
@@ -49,96 +55,189 @@ export function LivePreview({
   }, [values.fields]);
 
   const renderField = (field: any, i: number) => {
+    const content = (() => {
+      if (field.type === 'TEXT') {
+        return (
+          <div className="space-y-2">
+            <Label className="font-medium">
+              {field.label || `Pregunta ${i + 1}`}
+              {field.required && (
+                <span className="text-destructive ml-1">*</span>
+              )}
+            </Label>
+            <Input disabled placeholder="Tu respuesta" />
+          </div>
+        );
+      }
+
+      if (field.type === 'NUMBER') {
+        return (
+          <NumberStepper
+            label={field.label || `Pregunta ${i + 1}`}
+            value={0}
+            onChange={() => {}}
+            disabled
+            className="w-full"
+          />
+        );
+      }
+
+      if (field.type === 'CURRENCY') {
+        return (
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400 mb-2">
+              <span className="text-2xl font-black">$</span>
+              <span className="text-xs font-black uppercase tracking-widest">
+                {field.label || `Pregunta ${i + 1}`}
+              </span>
+            </div>
+            <div className="relative group opacity-60">
+              <span className="absolute left-6 top-1/2 -translate-y-1/2 text-4xl font-black text-slate-400 dark:text-slate-600">
+                $
+              </span>
+              <input
+                type="number"
+                disabled
+                placeholder="0.00"
+                className="w-full bg-transparent border-none focus:ring-0 focus:outline-none outline-none text-5xl sm:text-6xl font-black tracking-tighter p-0 pl-14 placeholder:text-slate-300 dark:placeholder:text-slate-700 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
+            <div className="h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-primary w-0" />
+            </div>
+          </div>
+        );
+      }
+
+      if (field.type === 'BOOLEAN') {
+        return (
+          <ChoiceGroup
+            label={field.label || `Pregunta ${i + 1}`}
+            options={[
+              { value: 'true', label: 'Sí' },
+              { value: 'false', label: 'No' },
+            ]}
+            value=""
+            onChange={() => {}}
+            disabled
+            className="w-full"
+          />
+        );
+      }
+
+      if (field.type === 'DATE') {
+        return (
+          <div className="space-y-2">
+            <Label className="font-medium">
+              {field.label || `Pregunta ${i + 1}`}
+              {field.required && (
+                <span className="text-destructive ml-1">*</span>
+              )}
+            </Label>
+            <Input type="date" disabled className="w-full" />
+          </div>
+        );
+      }
+
+      if (field.type === 'SELECT' || field.type === 'MEMBER_SELECT') {
+        const options =
+          field.type === 'SELECT'
+            ? field.options?.map((o: any) => ({
+                value: o.value,
+                label: o.value,
+              })) || []
+            : [
+                { value: '1', label: 'Miembro 1' },
+                { value: '2', label: 'Miembro 2' },
+              ];
+
+        return (
+          <ChoiceGroup
+            label={field.label || `Pregunta ${i + 1}`}
+            options={
+              options.length > 0
+                ? options
+                : [{ value: '', label: 'Sin opciones' }]
+            }
+            value=""
+            onChange={() => {}}
+            disabled
+            className="w-full"
+          />
+        );
+      }
+
+      if (field.type === 'CYCLE_WEEK_INDICATOR') {
+        const verbs = field.options;
+        return (
+          <CycleWeekIndicator
+            label={field.label || 'Semana'}
+            startDate={field.value}
+            verbs={verbs}
+          />
+        );
+      }
+
+      if (field.type === 'FRIEND_REGISTRATION') {
+        return (
+          <div className="space-y-4">
+            <Label className="font-medium">
+              {field.label || 'Registro de Amigos'}
+              {field.required && (
+                <span className="text-destructive ml-1">*</span>
+              )}
+            </Label>
+            <div className="p-4 border rounded-lg bg-muted/20 space-y-4">
+              <div className="text-sm text-muted-foreground text-center">
+                Formulario de registro de amigos (Vista Previa)
+              </div>
+              <Button disabled variant="outline" className="w-full">
+                + Agregar Amigo
+              </Button>
+            </div>
+          </div>
+        );
+      }
+
+      return null;
+    })();
+
+    if (!content) return null;
+
+    const isNumber = field.type === 'NUMBER' || field.type === 'CURRENCY';
+
     return (
-      <div key={i} className="w-full rounded-lg border bg-card p-4">
-        <div className="flex items-start justify-between gap-3">
-          <Label className="font-medium">
-            {field.label || `Pregunta ${i + 1}`}
-          </Label>
-          {field.required && (
-            <span className="text-destructive text-sm leading-none">*</span>
-          )}
-        </div>
-
-        {field.type === 'TEXT' && (
-          <Input
-            type="text"
-            placeholder="Tu respuesta"
-            disabled
-            className="mt-2"
-          />
+      <div
+        key={i}
+        className={cn(
+          'bg-white dark:bg-slate-900 rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all duration-200',
+          !isNumber ? 'p-6 sm:p-8' : 'p-4 sm:p-6'
         )}
-
-        {field.type === 'NUMBER' && (
-          <Input type="number" placeholder="0" disabled className="mt-2" />
-        )}
-
-        {field.type === 'CURRENCY' && (
-          <div className="relative mt-2">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">
-              $
-            </span>
-            <Input type="number" placeholder="0.00" disabled className="pl-8" />
-          </div>
-        )}
-
-        {field.type === 'DATE' && (
-          <Input type="date" disabled className="mt-2" />
-        )}
-
-        {(field.type === 'BOOLEAN' ||
-          field.type === 'SELECT' ||
-          field.type === 'MEMBER_SELECT') && (
-          <Input
-            disabled
-            className="mt-2"
-            placeholder="Selecciona una opción"
-          />
-        )}
-
-        {field.type === 'FRIEND_REGISTRATION' && (
-          <div className="mt-2 space-y-3 p-3 border rounded-md bg-muted/20">
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label className="text-xs">Nombre(s)</Label>
-                <Input disabled placeholder="Ej. Juan" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Apellidos</Label>
-                <Input disabled placeholder="Ej. Pérez" />
-              </div>
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs">Teléfono</Label>
-              <Input disabled placeholder="Ej. 55 1234 5678" />
-            </div>
-            <Button disabled variant="outline" size="sm" className="w-full">
-              + Agregar Amigo
-            </Button>
-          </div>
-        )}
+      >
+        {content}
       </div>
     );
   };
 
   return (
-    <Card className="h-full">
+    <Card className="h-full border-none shadow-none bg-transparent">
       <CardContent className="p-0 h-full">
         <div className="flex justify-center px-4 py-6 h-full overflow-y-auto max-h-[calc(100vh-200px)]">
-          <div className="w-full max-w-lg space-y-6">
-            <div
-              className="text-center mb-8 pb-6 rounded-t-lg border-t-8"
-              style={{ borderTopColor: values.color || '#3b82f6' }}
-            >
-              <h2 className="text-2xl font-bold mt-4">
+          <div className="w-full max-w-lg space-y-8">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div
+                className="h-2 w-full max-w-[200px] rounded-full mb-4"
+                style={{ backgroundColor: values.color || '#3b82f6' }}
+              />
+              <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
                 {values.title || 'Título del Reporte'}
               </h2>
               {values.description ? (
-                <p className="text-muted-foreground mt-2">
+                <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
                   {values.description}
                 </p>
               ) : (
-                <p className="text-muted-foreground/70 italic mt-2">
+                <p className="text-muted-foreground/70 italic">
                   Sin descripción
                 </p>
               )}
@@ -146,36 +245,27 @@ export function LivePreview({
 
             <div className="space-y-4">
               {values.scope === 'CELL' && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between gap-3">
-                    <Label>Célula</Label>
-                    <span className="text-destructive text-sm leading-none">
-                      *
-                    </span>
+                <div className="bg-white dark:bg-slate-900 rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm p-6">
+                  <div className="space-y-2">
+                    <Label className="font-medium">Célula</Label>
+                    <Input disabled placeholder="Selecciona una célula" />
                   </div>
-                  <Input disabled placeholder="Selecciona una célula" />
                 </div>
               )}
               {values.scope === 'GROUP' && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between gap-3">
-                    <Label>Grupo</Label>
-                    <span className="text-destructive text-sm leading-none">
-                      *
-                    </span>
+                <div className="bg-white dark:bg-slate-900 rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm p-6">
+                  <div className="space-y-2">
+                    <Label className="font-medium">Grupo</Label>
+                    <Input disabled placeholder="Selecciona un grupo" />
                   </div>
-                  <Input disabled placeholder="Selecciona un grupo" />
                 </div>
               )}
               {values.scope === 'SECTOR' && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between gap-3">
-                    <Label>Sector</Label>
-                    <span className="text-destructive text-sm leading-none">
-                      *
-                    </span>
+                <div className="bg-white dark:bg-slate-900 rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm p-6">
+                  <div className="space-y-2">
+                    <Label className="font-medium">Sector</Label>
+                    <Input disabled placeholder="Selecciona un sector" />
                   </div>
-                  <Input disabled placeholder="Selecciona un sector" />
                 </div>
               )}
 
@@ -198,26 +288,29 @@ export function LivePreview({
                           [sectionKey]: open,
                         }))
                       }
-                      className="rounded-lg border"
+                      className="bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-300"
                     >
                       <CollapsibleTrigger asChild>
                         <Button
                           type="button"
                           variant="ghost"
-                          className="w-full justify-between px-4 py-3"
+                          className="w-full justify-between px-6 py-8 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors"
                         >
-                          <span className="text-base font-semibold">
+                          <span className="text-2xl font-extrabold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent tracking-tight">
                             {group.section.label || 'Sección'}
                           </span>
-                          <ChevronDown
-                            className={`transition-transform ${
-                              isOpen ? 'rotate-180' : ''
-                            }`}
-                          />
+                          <div className="h-8 w-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center border border-primary/30 shadow-sm text-primary">
+                            <ChevronDown
+                              className={cn(
+                                'h-5 w-5 transition-transform duration-300',
+                                isOpen ? 'rotate-180' : ''
+                              )}
+                            />
+                          </div>
                         </Button>
                       </CollapsibleTrigger>
-                      <CollapsibleContent className="px-4 pb-4">
-                        <div className="grid grid-cols-1 gap-4 pt-2">
+                      <CollapsibleContent className="px-6 pb-8 data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
+                        <div className="grid grid-cols-1 gap-8 pt-4">
                           {group.fields.map((f, idx) => renderField(f, idx))}
                         </div>
                       </CollapsibleContent>
@@ -225,7 +318,7 @@ export function LivePreview({
                   );
                 }
                 return (
-                  <div key={i} className="grid grid-cols-1 gap-4">
+                  <div key={i} className="grid grid-cols-1 gap-8">
                     {group.fields.map((f, idx) => renderField(f, idx))}
                   </div>
                 );
@@ -240,7 +333,7 @@ export function LivePreview({
 
             <Separator />
             <div className="flex justify-end py-4">
-              <Button disabled className="w-full sm:w-auto">
+              <Button disabled className="w-full sm:w-auto h-12 rounded-xl">
                 Enviar Reporte
               </Button>
             </div>

@@ -30,7 +30,8 @@ export const ReportFieldType = {
   SELECT: 'SELECT',
   SECTION: 'SECTION',
   MEMBER_SELECT: 'MEMBER_SELECT',
-  FRIEND_REGISTRATION: 'FRIEND_REGISTRATION'
+  FRIEND_REGISTRATION: 'FRIEND_REGISTRATION',
+  CYCLE_WEEK_INDICATOR: 'CYCLE_WEEK_INDICATOR'
 } as const
 
 export type ReportFieldType = (typeof ReportFieldType)[keyof typeof ReportFieldType]

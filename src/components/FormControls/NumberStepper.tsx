@@ -14,6 +14,7 @@ interface NumberStepperProps {
   label?: string;
   className?: string;
   error?: string;
+  disabled?: boolean;
 }
 
 export function NumberStepper({
@@ -25,8 +26,10 @@ export function NumberStepper({
   label,
   className,
   error,
+  disabled,
 }: NumberStepperProps) {
   const handleDecrement = (e: React.MouseEvent) => {
+    if (disabled) return;
     e.preventDefault();
     const newValue = value - step;
     if (min !== undefined && newValue < min) return;
@@ -34,6 +37,7 @@ export function NumberStepper({
   };
 
   const handleIncrement = (e: React.MouseEvent) => {
+    if (disabled) return;
     e.preventDefault();
     const newValue = value + step;
     if (max !== undefined && newValue > max) return;
@@ -41,6 +45,7 @@ export function NumberStepper({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
     const newValue = parseInt(e.target.value);
     if (isNaN(newValue)) {
       onChange(0);
@@ -70,7 +75,7 @@ export function NumberStepper({
           size="icon"
           className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 transition-colors border-2 border-slate-200 dark:border-slate-700 shadow-sm"
           onClick={handleDecrement}
-          disabled={min !== undefined && value <= min}
+          disabled={disabled || (min !== undefined && value <= min)}
         >
           <Minus className="h-7 w-7" />
         </Button>
@@ -80,6 +85,7 @@ export function NumberStepper({
             type="number"
             value={value}
             onChange={handleChange}
+            disabled={disabled}
             className="w-full text-center text-4xl sm:text-5xl font-black bg-transparent border-none focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white"
           />
         </div>
@@ -90,12 +96,16 @@ export function NumberStepper({
           size="icon"
           className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary hover:bg-primary/20 dark:hover:bg-primary/30 hover:text-primary dark:hover:text-primary transition-colors border-2 border-primary/20 dark:border-primary/50 shadow-sm"
           onClick={handleIncrement}
-          disabled={max !== undefined && value >= max}
+          disabled={disabled || (max !== undefined && value >= max)}
         >
           <Plus className="h-7 w-7" />
         </Button>
       </div>
-      {error && <span className="text-base font-bold text-destructive mt-2 px-1 block">{error}</span>}
+      {error && (
+        <span className="text-base font-bold text-destructive mt-2 px-1 block">
+          {error}
+        </span>
+      )}
     </div>
   );
 }

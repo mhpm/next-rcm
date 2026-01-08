@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { RiFilter3Line, RiDeleteBinLine } from 'react-icons/ri';
 import { InputField, SelectField } from '@/components/FormControls';
 import type { ReportFieldType } from '@/generated/prisma/client';
+import { DEFAULT_VERBS } from '@/lib/cycleUtils';
 import {
   Dialog,
   DialogContent,
@@ -20,7 +21,7 @@ export type FilterField = {
   key: string;
   label?: string | null;
   type: ReportFieldType;
-  options?: string[];
+  options?: string[] | any[];
 };
 
 type AdvancedFilterModalProps = {
@@ -117,6 +118,28 @@ export default function AdvancedFilterModal({
                       label={field.label || field.key}
                       register={register}
                       placeholder="Contiene..."
+                    />
+                  )}
+
+                  {field.type === 'CYCLE_WEEK_INDICATOR' && (
+                    <SelectField
+                      name={field.id}
+                      label={field.label || field.key}
+                      control={control}
+                      options={[
+                        { value: '', label: 'Todos' },
+                        ...(field.options && field.options.length > 0
+                          ? field.options
+                          : DEFAULT_VERBS
+                        ).map((verb, index) => {
+                          const verbValue =
+                            typeof verb === 'string' ? verb : verb.value;
+                          return {
+                            value: `Semana ${index + 1}:`,
+                            label: `Semana ${index + 1}: ${verbValue}`,
+                          };
+                        }),
+                      ]}
                     />
                   )}
 
