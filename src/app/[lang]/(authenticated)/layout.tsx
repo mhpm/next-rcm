@@ -16,7 +16,7 @@ export default async function AuthenticatedLayout({
   const user = await stackServerApp.getUser();
 
   if (!user) {
-    redirect('/sign-in');
+    redirect(`/${lang}/sign-in`);
   }
 
   const churchName = await getUserChurchName();

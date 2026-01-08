@@ -8,8 +8,14 @@ import {
 } from '@/components/ui/card';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { Logo } from '@/components/Logo';
 
-export default function SignInPage() {
+export default async function SignInPage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Effects */}
@@ -20,14 +26,12 @@ export default function SignInPage() {
 
       <Card className="w-full max-w-md relative z-10 bg-slate-900/50 backdrop-blur-xl border-white/10 shadow-2xl animate-in fade-in zoom-in-95 duration-500">
         <CardHeader className="text-center space-y-2 pb-6">
-          <div className="mx-auto h-14 w-14 rounded-2xl bg-linear-to-br from-primary to-primary/80 flex items-center justify-center text-white font-bold text-3xl mb-4 shadow-lg shadow-primary/30 ring-1 ring-white/20">
-            R
-          </div>
+          <Logo size="lg" className="mx-auto mb-4" />
           <CardTitle className="text-3xl font-bold tracking-tight bg-linear-to-r from-white to-slate-400 bg-clip-text text-transparent">
             Bienvenido de nuevo
           </CardTitle>
           <CardDescription className="text-slate-400 text-base">
-            Ingresa tus credenciales para acceder al sistema RCM
+            Ingresa tus credenciales para acceder al sistema MultiplyNet
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -36,7 +40,7 @@ export default function SignInPage() {
           </div>
           <div className="text-center pt-2">
             <Link
-              href="/"
+              href={`/${lang}`}
               className="inline-flex items-center text-sm text-slate-400 hover:text-white transition-colors duration-200"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />

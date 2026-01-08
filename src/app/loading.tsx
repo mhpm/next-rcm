@@ -1,5 +1,7 @@
 'use client';
 
+import { Logo } from '@/components/Logo';
+
 const LoadingPage = () => {
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
@@ -12,9 +14,7 @@ const LoadingPage = () => {
       <div className="relative z-10 flex flex-col items-center justify-center space-y-8 animate-in fade-in zoom-in-95 duration-700">
         {/* MultiplyNet Logo */}
         <div className="relative group flex flex-col items-center gap-6">
-          <div className="relative h-24 w-24 rounded-3xl bg-linear-to-br from-primary to-primary/80 flex items-center justify-center text-white shadow-2xl shadow-primary/30 text-5xl font-bold animate-bounce delay-75">
-            M
-          </div>
+          <Logo size="xl" className="animate-bounce delay-75" />
           <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-slate-400 tracking-tight animate-pulse">
             MultiplyNet
           </h1>

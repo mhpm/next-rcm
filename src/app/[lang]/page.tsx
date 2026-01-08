@@ -11,6 +11,7 @@ import { stackServerApp } from '@/stack/server';
 import { getDictionary } from '@/i18n/get-dictionary';
 import { Locale } from '@/i18n/config';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import { Logo } from '@/components/Logo';
 
 export default async function LandingPage({
   params,
@@ -32,9 +33,7 @@ export default async function LandingPage({
 
       <header className="px-6 h-20 flex items-center justify-between border-b border-white/5 bg-slate-950/50 backdrop-blur-xl sticky top-0 z-50 transition-all duration-300">
         <div className="flex items-center gap-3 font-bold text-xl text-white tracking-tight">
-          <div className="h-10 w-10 rounded-xl bg-linear-to-br from-primary to-primary/80 flex items-center justify-center text-white shadow-lg shadow-primary/20">
-            M
-          </div>
+          <Logo size="md" className="shadow-primary/20" />
           <span className="bg-clip-text text-transparent bg-linear-to-r from-white to-slate-400">
             MultiplyNet
           </span>
@@ -69,7 +68,7 @@ export default async function LandingPage({
               </Button>
             </Link>
           ) : (
-            <Link href="/sign-in">
+            <Link href={`/${lang}/sign-in`}>
               <Button className="bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white border-0 shadow-lg shadow-primary/25 rounded-full px-6 transition-all duration-300 hover:scale-105">
                 {dict.nav.signIn}
                 <ArrowRight className="ml-2 h-4 w-4" />

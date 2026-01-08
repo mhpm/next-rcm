@@ -21,6 +21,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
+import { Logo } from '@/components/Logo';
+
 interface AppSidebarProps {
   className?: string;
   collapsed?: boolean;
@@ -99,15 +101,15 @@ export function AppSidebar({
           <div className={cn('px-3 py-2', collapsed ? 'text-center' : '')}>
             <div
               className={cn(
-                'mb-2 flex items-center gap-2',
+                'mb-2 flex items-center gap-3',
                 collapsed ? 'justify-center px-0' : 'px-4'
               )}
             >
-              <div className="h-6 w-6 rounded-full bg-primary shrink-0" />
+              <Logo size="sm" />
               {!collapsed && (
                 <div className="flex flex-col overflow-hidden">
                   <h2 className="text-lg font-semibold tracking-tight truncate">
-                    {churchName || 'RCM Admin'}
+                    {churchName || 'MultiplyNet'}
                   </h2>
                 </div>
               )}
