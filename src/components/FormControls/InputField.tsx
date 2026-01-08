@@ -99,7 +99,7 @@ export function InputField<T extends FieldValues>({
     <Field className={className} data-invalid={!!error}>
       {label && (
         <FieldLabel
-          className="mb-2 px-1 font-bold text-base text-slate-700 dark:text-slate-200"
+          className="mb-2 px-1 font-bold text-base text-foreground"
           htmlFor={String(name)}
         >
           {label}

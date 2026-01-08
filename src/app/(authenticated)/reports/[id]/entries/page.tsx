@@ -78,6 +78,33 @@ export default async function ReportEntriesPage({
     take: 5000,
   });
 
+  // Extract spiritualFatherIds from FRIEND_REGISTRATION fields to pre-fetch names
+  const spiritualFatherIds = new Set<string>();
+  entries.forEach((entry) => {
+    entry.values.forEach((val) => {
+      if (
+        val.field.type === 'FRIEND_REGISTRATION' &&
+        Array.isArray(val.value)
+      ) {
+        (val.value as any[]).forEach((friend) => {
+          if (friend.spiritualFatherId) {
+            spiritualFatherIds.add(friend.spiritualFatherId);
+          }
+        });
+      }
+    });
+  });
+
+  // Fetch member names
+  const members = await prisma.members.findMany({
+    where: { id: { in: Array.from(spiritualFatherIds) } },
+    select: { id: true, firstName: true, lastName: true },
+  });
+
+  const memberMap = new Map(
+    members.map((m) => [m.id, `${m.firstName} ${m.lastName}`])
+  );
+
   type Row = Record<string, unknown> & {
     id: string;
     createdAt: string;
@@ -182,6 +209,14 @@ export default async function ReportEntriesPage({
           style: 'currency',
           currency: 'MXN',
         }).format(Number(val));
+      else if (f.type === 'FRIEND_REGISTRATION' && Array.isArray(val)) {
+        display = (val as any[]).map((friend) => ({
+          ...friend,
+          spiritualFatherName: friend.spiritualFatherId
+            ? memberMap.get(friend.spiritualFatherId)
+            : undefined,
+        }));
+      }
       base[f.id] = display;
       base[`raw_${f.id}`] = val; // Store raw value for filtering
     }

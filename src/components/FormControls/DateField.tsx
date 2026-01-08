@@ -63,7 +63,7 @@ export function DateField<T extends FieldValues>({
   return (
     <Field className={className} data-invalid={!!error}>
       {label && (
-        <FieldLabel className="mb-3 px-1 font-bold text-base block text-slate-700 dark:text-slate-200">
+        <FieldLabel className="mb-3 px-1 font-bold text-base block text-foreground">
           {label}
         </FieldLabel>
       )}
@@ -77,14 +77,14 @@ export function DateField<T extends FieldValues>({
               <Button
                 variant={'outline'}
                 className={cn(
-                  'w-full h-14 justify-start text-left font-bold text-lg rounded-2xl border-input bg-background hover:bg-accent transition-all px-4',
-                  !field.value && 'text-slate-500 dark:text-slate-400',
+                  'w-full h-14 justify-start text-left font-bold text-lg rounded-2xl border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all px-4',
+                  !field.value && 'text-muted-foreground',
                   error && 'border-destructive ring-destructive/20',
                   disabled && 'opacity-50 cursor-not-allowed'
                 )}
                 disabled={disabled}
               >
-                <CalendarIcon className="mr-3 h-5 w-5 text-slate-500 dark:text-slate-400" />
+                <CalendarIcon className="mr-3 h-5 w-5 text-muted-foreground" />
                 {field.value ? (
                   format(new Date(field.value), 'PPP', { locale: es })
                 ) : (

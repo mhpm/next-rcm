@@ -151,8 +151,8 @@ export const FieldEditor = React.memo(function FieldEditor({
         )}
 
         {field.type === 'CYCLE_WEEK_INDICATOR' && (
-          <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-200 dark:border-slate-800 space-y-2">
-            <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <div className="p-4 rounded-lg border border-border space-y-4">
+            <h4 className="text-sm font-medium text-foreground">
               Configuración del Ciclo
             </h4>
             <InputField

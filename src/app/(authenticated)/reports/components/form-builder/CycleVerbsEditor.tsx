@@ -53,9 +53,9 @@ export function CycleVerbsEditor({
   }, []); // Only on mount if empty
 
   return (
-    <div className="space-y-4 mt-4 border-t pt-4 border-slate-200 dark:border-slate-800">
+    <div className="space-y-4 mt-4 border-t pt-4 border-border">
       <div className="flex items-center justify-between">
-        <h5 className="text-sm font-medium text-slate-700 dark:text-slate-300">
+        <h5 className="text-sm font-medium text-foreground">
           Verbos del Ciclo (16 Semanas)
         </h5>
         <Button
@@ -72,7 +72,7 @@ export function CycleVerbsEditor({
         {fields.map((field, k) => (
           <div
             key={field.id}
-            className="p-3 border rounded-md bg-slate-50 dark:bg-slate-900/50 space-y-2"
+            className="p-3 border border-border rounded-md bg-card space-y-2"
           >
             <Label className="text-[10px] uppercase font-bold text-muted-foreground">
               Semana {k + 1}

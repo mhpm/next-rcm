@@ -26,7 +26,7 @@ export function ChoiceGroup({
       {label && (
         <label
           className={cn(
-            'text-base font-bold text-slate-700 dark:text-slate-200 mb-3 px-1 block',
+            'text-base font-bold text-foreground mb-3 px-1 block',
             error && 'text-destructive'
           )}
         >
@@ -45,8 +45,8 @@ export function ChoiceGroup({
               className={cn(
                 'flex items-center justify-center px-6 py-4 rounded-2xl border-2 transition-all duration-200 text-lg font-bold shadow-sm',
                 isSelected
-                  ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/20'
-                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-slate-50 dark:hover:bg-slate-800',
+                  ? 'bg-primary border-primary text-primary-foreground shadow-primary/20'
+                  : 'bg-background border-input text-muted-foreground hover:border-primary/50 hover:bg-accent hover:text-accent-foreground',
                 disabled && 'opacity-50 cursor-not-allowed'
               )}
             >

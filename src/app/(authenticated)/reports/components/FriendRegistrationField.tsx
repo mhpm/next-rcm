@@ -58,7 +58,7 @@ export function FriendRegistrationField({
   return (
     <div className="space-y-8">
       {/* Header with Icon */}
-      <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400 mb-6 px-1">
+      <div className="flex items-center gap-3 text-muted-foreground mb-6 px-1">
         <Users className="h-6 w-6" />
         <span className="text-xs font-black uppercase tracking-widest">
           {label}
@@ -66,40 +66,40 @@ export function FriendRegistrationField({
       </div>
 
       {/* Modern Input Card */}
-      <div className="bg-white dark:bg-slate-900/50 rounded-3xl border-2 border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-8 transition-all duration-300">
+      <div className="bg-card rounded-3xl border-2 border-border p-6 sm:p-8 space-y-8 transition-all duration-300 shadow-sm">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="flex flex-col gap-6">
-            <Label className="px-1 font-bold text-sm text-slate-700 dark:text-slate-400 uppercase tracking-tight">
+            <Label className="px-1 font-bold text-sm text-foreground uppercase tracking-tight">
               Nombre(s) *
             </Label>
             <div className="relative group">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-slate-500 group-focus-within:text-primary transition-colors" />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input
                 placeholder="Ej. Juan"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="pl-12 h-14 rounded-2xl border-2 bg-white dark:bg-slate-950 font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10"
+                className="pl-12 h-14 rounded-2xl border-input bg-background font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10"
               />
             </div>
           </div>
 
           <div className="flex flex-col gap-6">
-            <Label className="px-1 font-bold text-sm text-slate-700 dark:text-slate-400 uppercase tracking-tight">
+            <Label className="px-1 font-bold text-sm text-foreground uppercase tracking-tight">
               Apellidos *
             </Label>
             <div className="relative group">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-slate-500 group-focus-within:text-primary transition-colors" />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input
                 placeholder="Ej. Pérez"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                className="pl-12 h-14 rounded-2xl border-2 bg-white dark:bg-slate-950 font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10"
+                className="pl-12 h-14 rounded-2xl border-input bg-background font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10"
               />
             </div>
           </div>
 
           <div className="flex flex-col gap-6">
-            <Label className="px-1 font-bold text-sm text-slate-700 dark:text-slate-400 uppercase tracking-tight">
+            <Label className="px-1 font-bold text-sm text-foreground uppercase tracking-tight">
               Teléfono
             </Label>
             <div className="relative group">
@@ -110,13 +110,13 @@ export function FriendRegistrationField({
                 placeholder="Ej. 123456789"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="pl-12 h-14 rounded-2xl border-2 bg-white dark:bg-slate-950 font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10"
+                className="pl-12 h-14 rounded-2xl border-input bg-background font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10"
               />
             </div>
           </div>
 
           <div className="flex flex-col gap-6 col-span-full">
-            <Label className="px-1 font-bold text-sm text-slate-700 dark:text-slate-400 uppercase tracking-tight">
+            <Label className="px-1 font-bold text-sm text-foreground uppercase tracking-tight">
               Padre Espiritual
             </Label>
             <div className="relative group">
@@ -135,7 +135,7 @@ export function FriendRegistrationField({
           type="button"
           onClick={handleAdd}
           disabled={!firstName.trim() || !lastName.trim()}
-          className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-lg shadow-lg shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:grayscale disabled:scale-100"
+          className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg shadow-lg shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:grayscale disabled:scale-100"
         >
           <Plus className="mr-2 h-6 w-6" />
           Agregar Amigo a la Lista
@@ -148,18 +148,18 @@ export function FriendRegistrationField({
           {value.map((friend, index) => (
             <div
               key={index}
-              className="group relative flex items-center justify-between p-5 bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-100 dark:border-slate-800 shadow-sm hover:border-primary/30 transition-all duration-300"
+              className="group relative flex items-center justify-between p-5 bg-card rounded-2xl border-2 border-border shadow-sm hover:border-primary/30 transition-all duration-300"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black text-xl border-2 border-primary/5">
                   {friend.firstName.charAt(0)}
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 dark:text-white leading-tight">
+                  <h4 className="font-bold text-foreground leading-tight">
                     {friend.firstName} {friend.lastName}
                   </h4>
                   {friend.phone && (
-                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+                    <p className="text-sm text-muted-foreground font-medium">
                       {friend.phone}
                     </p>
                   )}

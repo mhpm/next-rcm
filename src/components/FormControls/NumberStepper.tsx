@@ -61,19 +61,19 @@ export function NumberStepper({
       {label && (
         <label
           className={cn(
-            'text-base font-bold text-slate-700 dark:text-slate-200 mb-3 px-1 block',
+            'text-base font-bold text-foreground mb-3 px-1 block',
             error && 'text-destructive'
           )}
         >
           {label}
         </label>
       )}
-      <div className="flex items-center justify-between bg-white dark:bg-slate-900 border-2 rounded-3xl p-3 shadow-sm hover:shadow-md transition-all duration-200 group border-slate-200 dark:border-slate-800 h-24 sm:h-28">
+      <div className="flex items-center justify-between bg-card border-2 rounded-3xl p-3 shadow-sm hover:shadow-md transition-all duration-200 group border-border h-24 sm:h-28">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 transition-colors border-2 border-slate-200 dark:border-slate-700 shadow-sm"
+          className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors border-2 border-border shadow-sm"
           onClick={handleDecrement}
           disabled={disabled || (min !== undefined && value <= min)}
         >
@@ -86,7 +86,7 @@ export function NumberStepper({
             value={value}
             onChange={handleChange}
             disabled={disabled}
-            className="w-full text-center text-4xl sm:text-5xl font-black bg-transparent border-none focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white"
+            className="w-full text-center text-4xl sm:text-5xl font-black bg-transparent border-none focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-foreground"
           />
         </div>
 
@@ -94,7 +94,7 @@ export function NumberStepper({
           type="button"
           variant="ghost"
           size="icon"
-          className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary hover:bg-primary/20 dark:hover:bg-primary/30 hover:text-primary dark:hover:text-primary transition-colors border-2 border-primary/20 dark:border-primary/50 shadow-sm"
+          className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary transition-colors border-2 border-primary/20 shadow-sm"
           onClick={handleIncrement}
           disabled={disabled || (max !== undefined && value >= max)}
         >

@@ -67,7 +67,7 @@ export default function EditReportForm({
             key = `section_${index}_${Math.random().toString(36).substr(2, 9)}`;
           }
           return {
-            fieldId: f.fieldId, // This is the ID of existing field in DB
+            id: f.fieldId,
             key: key,
             label: f.label ?? null,
             type: f.type,

@@ -210,7 +210,7 @@ export function LivePreview({
       <div
         key={i}
         className={cn(
-          'bg-white dark:bg-slate-900 rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all duration-200',
+          'bg-card rounded-3xl border-2 border-border shadow-sm transition-all duration-200',
           !isNumber ? 'p-6 sm:p-8' : 'p-4 sm:p-6'
         )}
       >
@@ -229,11 +229,11 @@ export function LivePreview({
                 className="h-2 w-full max-w-[200px] rounded-full mb-4"
                 style={{ backgroundColor: values.color || '#3b82f6' }}
               />
-              <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+              <h2 className="text-3xl font-black tracking-tight text-foreground">
                 {values.title || 'Título del Reporte'}
               </h2>
               {values.description ? (
-                <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                <p className="text-lg text-muted-foreground leading-relaxed">
                   {values.description}
                 </p>
               ) : (
@@ -245,7 +245,7 @@ export function LivePreview({
 
             <div className="space-y-4">
               {values.scope === 'CELL' && (
-                <div className="bg-white dark:bg-slate-900 rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm p-6">
+                <div className="bg-card rounded-3xl border-2 border-border shadow-sm p-6">
                   <div className="space-y-2">
                     <Label className="font-medium">Célula</Label>
                     <Input disabled placeholder="Selecciona una célula" />
@@ -253,7 +253,7 @@ export function LivePreview({
                 </div>
               )}
               {values.scope === 'GROUP' && (
-                <div className="bg-white dark:bg-slate-900 rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm p-6">
+                <div className="bg-card rounded-3xl border-2 border-border shadow-sm p-6">
                   <div className="space-y-2">
                     <Label className="font-medium">Grupo</Label>
                     <Input disabled placeholder="Selecciona un grupo" />
@@ -261,7 +261,7 @@ export function LivePreview({
                 </div>
               )}
               {values.scope === 'SECTOR' && (
-                <div className="bg-white dark:bg-slate-900 rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm p-6">
+                <div className="bg-card rounded-3xl border-2 border-border shadow-sm p-6">
                   <div className="space-y-2">
                     <Label className="font-medium">Sector</Label>
                     <Input disabled placeholder="Selecciona un sector" />
@@ -288,18 +288,18 @@ export function LivePreview({
                           [sectionKey]: open,
                         }))
                       }
-                      className="bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-300"
+                      className="bg-muted/30 rounded-3xl border border-border shadow-sm overflow-hidden transition-all duration-300"
                     >
                       <CollapsibleTrigger asChild>
                         <Button
                           type="button"
                           variant="ghost"
-                          className="w-full justify-between px-6 py-8 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors"
+                          className="w-full justify-between px-6 py-8 hover:bg-accent/50 transition-colors"
                         >
                           <span className="text-2xl font-extrabold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent tracking-tight">
                             {group.section.label || 'Sección'}
                           </span>
-                          <div className="h-8 w-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center border border-primary/30 shadow-sm text-primary">
+                          <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center border border-primary/30 shadow-sm text-primary">
                             <ChevronDown
                               className={cn(
                                 'h-5 w-5 transition-transform duration-300',

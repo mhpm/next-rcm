@@ -238,7 +238,8 @@ export async function submitPublicReportEntry(
     throw new Error('Reporte no encontrado');
   }
 
-  const entryId = input.entryId || (await saveDraftReportEntry(input)).id;
+  // Always save/update values first
+  const { id: entryId } = await saveDraftReportEntry(input);
 
   // If not draft, update to SUBMITTED and process side effects (Friends)
   if (!input.isDraft) {

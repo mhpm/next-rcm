@@ -428,7 +428,7 @@ export default function PublicReportForm({
       >
         <div
           className={cn(
-            'bg-white dark:bg-slate-900 rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all duration-200',
+            'bg-card rounded-3xl border-2 border-border shadow-sm transition-all duration-200',
             !isNumber ? 'p-6 sm:p-8' : 'p-4 sm:p-6'
           )}
         >
@@ -489,9 +489,40 @@ export default function PublicReportForm({
           showSuccess('Borrador recuperado');
           // Populate form
           draft.values.forEach((v: any) => {
-            // Handle different value types if necessary
             if (v.field?.id) {
-              setValue(`values.${v.field.id}`, v.value);
+              const fieldDef = fields.find((f) => f.id === v.field.id);
+              let val = v.value;
+
+              // Parse numbers if needed
+              if (
+                fieldDef?.type === 'NUMBER' ||
+                fieldDef?.type === 'CURRENCY'
+              ) {
+                val = Number(v.value);
+              }
+
+              // Parse Friend Registration if needed
+              if (fieldDef?.type === 'FRIEND_REGISTRATION') {
+                // Ensure it is an array. If it's a string, parse it.
+                if (typeof v.value === 'string') {
+                  try {
+                    val = JSON.parse(v.value);
+                  } catch (e) {
+                    console.error(
+                      'Error parsing friend registration value:',
+                      e
+                    );
+                    val = [];
+                  }
+                }
+                // If it's already an object/array (Prisma default behavior), use it.
+                // If null/undefined, default to empty array
+                if (!val || !Array.isArray(val)) {
+                  val = [];
+                }
+              }
+
+              setValue(`values.${v.field.id}`, val);
             }
           });
         }
@@ -523,25 +554,39 @@ export default function PublicReportForm({
     if (isDraft) setIsSavingDraft(true);
 
     try {
-      // Calculate cycle values to include in submission
-      const cycleValues: Record<string, unknown> = {};
-      fields.forEach((f) => {
-        if (f.type === 'CYCLE_WEEK_INDICATOR') {
-          const state = calculateCycleState(f.value, f.options);
-          if (state.status === 'active' && state.verb) {
-            cycleValues[f.id] = `Semana ${state.weekNumber}: ${state.verb}`;
-          } else {
-            cycleValues[f.id] = state.message || 'Estado desconocido';
-          }
-        }
-      });
+      const values = fields
+        .map((f) => {
+          if (f.type === 'SECTION') return null;
 
-      const values = Object.entries({ ...data.values, ...cycleValues }).map(
-        ([fieldId, value]) => ({
-          fieldId,
-          value,
+          let val: unknown;
+
+          if (f.type === 'CYCLE_WEEK_INDICATOR') {
+            const state = calculateCycleState(f.value, f.options);
+            if (state.status === 'active' && state.verb) {
+              val = `Semana ${state.weekNumber}: ${state.verb}`;
+            } else {
+              val = state.message || 'Estado desconocido';
+            }
+          } else {
+            val = data.values[f.id];
+
+            // Default to 0 for numeric fields if undefined/null/empty
+            if (f.type === 'NUMBER' || f.type === 'CURRENCY') {
+              if (val === undefined || val === null || val === '') {
+                val = 0;
+              }
+            }
+          }
+
+          return {
+            fieldId: f.id,
+            value: val,
+          };
         })
-      );
+        .filter(
+          (v): v is { fieldId: string; value: unknown } =>
+            v !== null && v.value !== undefined
+        );
 
       const result = await submitPublicReportEntry({
         token,
@@ -661,11 +706,11 @@ export default function PublicReportForm({
         <div className="flex flex-col gap-10">
           {/* Header Section Centered */}
           <div className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
               {title}
             </h2>
             {description && (
-              <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+              <p className="text-lg text-muted-foreground leading-relaxed">
                 {description}
               </p>
             )}
@@ -674,7 +719,7 @@ export default function PublicReportForm({
           {/* Auth Card Centered */}
           <div className="w-full max-w-md mx-auto">
             {scope === 'CELL' && (
-              <Card className="overflow-hidden border-2 transition-all duration-300 hover:shadow-lg dark:bg-slate-900/50">
+              <Card className="overflow-hidden border-2 transition-all duration-300 hover:shadow-lg bg-card">
                 <div className="bg-primary/5 px-6 py-4 border-b">
                   <h3 className="text-xs font-black uppercase tracking-widest text-primary/70">
                     Seguridad y Acceso
@@ -755,16 +800,16 @@ export default function PublicReportForm({
                         </Button>
                       </div>
 
-                      <div className="bg-white dark:bg-slate-900/50 p-6 rounded-3xl space-y-6 border-2 border-slate-200 dark:border-slate-800 transition-colors">
-                        <div className="flex flex-col items-center text-center gap-3">
-                          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold border-2 border-primary/5">
+                      <div className="bg-card p-8 rounded-3xl space-y-8 border-2 border-border transition-colors shadow-sm">
+                        <div className="flex flex-col items-center text-center gap-4">
+                          <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-3xl font-black border-2 border-primary/10 shadow-inner">
                             {cellInfo.name.charAt(0)}
                           </div>
                           <div>
-                            <span className="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                            <span className="block text-xs font-bold text-primary uppercase tracking-widest mb-1">
                               Célula Seleccionada
                             </span>
-                            <span className="font-bold text-xl leading-tight block text-slate-900 dark:text-slate-100">
+                            <span className="font-black text-3xl leading-tight block text-foreground tracking-tight">
                               {cellInfo.name}
                             </span>
                           </div>
@@ -773,13 +818,13 @@ export default function PublicReportForm({
                         {(cellInfo.leader ||
                           cellInfo.sector ||
                           cellInfo.subSector) && (
-                          <div className="grid grid-cols-1 gap-4 pt-4 border-t border-border/50 text-center">
+                          <div className="grid grid-cols-1 gap-6 pt-6 border-t-2 border-dashed border-border/60 text-center">
                             {cellInfo.leader && (
                               <div>
-                                <span className="block text-[10px] font-black text-muted-foreground uppercase tracking-wider">
+                                <span className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                                   Líder a Cargo
                                 </span>
-                                <span className="font-semibold text-slate-700 dark:text-slate-300 text-lg">
+                                <span className="font-black text-xl text-foreground">
                                   {cellInfo.leader}
                                 </span>
                               </div>
@@ -787,10 +832,10 @@ export default function PublicReportForm({
 
                             {cellInfo.sector && (
                               <div>
-                                <span className="block text-[10px] font-black text-muted-foreground uppercase tracking-wider">
+                                <span className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                                   Sector / Zona
                                 </span>
-                                <span className="font-semibold text-slate-700 dark:text-slate-300">
+                                <span className="font-black text-lg text-foreground/90">
                                   {cellInfo.sector}
                                 </span>
                               </div>
@@ -798,10 +843,10 @@ export default function PublicReportForm({
 
                             {cellInfo.subSector && (
                               <div>
-                                <span className="block text-[10px] font-black text-muted-foreground uppercase tracking-wider">
+                                <span className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                                   Subsector
                                 </span>
-                                <span className="font-semibold text-slate-700 dark:text-slate-300">
+                                <span className="font-black text-lg text-foreground/90">
                                   {cellInfo.subSector}
                                 </span>
                               </div>
@@ -865,18 +910,18 @@ export default function PublicReportForm({
                           onOpenChange={(open) =>
                             setSectionOpen(sectionKey, open)
                           }
-                          className="bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-300"
+                          className="bg-muted/30 rounded-3xl border border-border shadow-sm overflow-hidden transition-all duration-300"
                         >
                           <CollapsibleTrigger asChild>
                             <Button
                               type="button"
                               variant="ghost"
-                              className="w-full justify-between px-6 py-8 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors"
+                              className="w-full justify-between px-6 py-8 hover:bg-accent/50 transition-colors"
                             >
                               <span className="text-2xl font-extrabold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent tracking-tight">
                                 {group.section.label || 'Sección'}
                               </span>
-                              <div className="h-8 w-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center border border-primary/30 shadow-sm text-primary">
+                              <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center border border-primary/30 shadow-sm text-primary">
                                 <ChevronDown
                                   className={cn(
                                     'h-5 w-5 transition-transform duration-300',
@@ -913,11 +958,11 @@ export default function PublicReportForm({
               </CardContent>
             </Card>
 
-            <div className="flex flex-col md:flex-row justify-end gap-4 sticky bottom-6 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl z-20 mt-12 transition-all duration-300 max-w-3xl mx-auto w-full">
+            <div className="flex flex-col md:flex-row justify-end gap-4 sticky bottom-6 bg-background/80 backdrop-blur-xl p-6 rounded-3xl border border-border shadow-xl z-20 mt-12 transition-all duration-300 max-w-3xl mx-auto w-full">
               <Button
                 type="button"
                 variant="outline"
-                className="w-full md:w-auto gap-3 h-14 px-8 rounded-2xl border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-semibold transition-all duration-200"
+                className="w-full md:w-auto gap-3 h-14 px-8 rounded-2xl border-border hover:bg-accent hover:text-accent-foreground text-muted-foreground font-semibold transition-all duration-200"
                 onClick={handleSubmit(onSaveDraft)}
                 disabled={isSavingDraft || isSubmitting}
               >

@@ -27,7 +27,7 @@ export function CycleWeekIndicator({
   return (
     <div className={cn('space-y-3', className)}>
       {label && (
-        <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 font-medium text-sm uppercase tracking-wider">
+        <div className="flex items-center gap-2 text-muted-foreground font-medium text-sm uppercase tracking-wider">
           <Info className="h-4 w-4" />
           {label}
         </div>
@@ -37,8 +37,8 @@ export function CycleWeekIndicator({
         className={cn(
           'relative overflow-hidden rounded-2xl border-2 p-6 transition-all duration-300',
           state.status === 'active'
-            ? 'bg-primary/5 border-primary/20 dark:bg-primary/10 dark:border-primary/30'
-            : 'bg-slate-50 border-slate-200 dark:bg-slate-900/50 dark:border-slate-800'
+            ? 'bg-primary/5 border-primary/20'
+            : 'bg-card border-border'
         )}
       >
         {/* Background Pattern */}
@@ -47,26 +47,26 @@ export function CycleWeekIndicator({
         <div className="relative z-10 flex flex-col items-center justify-center text-center gap-4">
           {state.status === 'active' ? (
             <>
-              <div className="flex items-center gap-2 text-primary font-bold bg-white/80 dark:bg-slate-900/80 px-4 py-1.5 rounded-full text-sm shadow-sm border border-primary/10 backdrop-blur-sm">
+              <div className="flex items-center gap-2 text-primary font-bold bg-background/80 px-4 py-1.5 rounded-full text-sm shadow-sm border border-primary/10 backdrop-blur-sm">
                 <Clock className="h-4 w-4" />
                 <span>Semana {state.weekNumber} de 16</span>
               </div>
 
               <div className="space-y-1">
-                <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+                <h3 className="text-6xl mb-4 font-black tracking-tight text-foreground">
                   {state.verb}
                 </h3>
                 {state.description ? (
-                  <p className="text-slate-500 dark:text-slate-400 font-medium">
+                  <p className="text-muted-foreground font-medium">
                     {state.description}
                   </p>
                 ) : (
-                  <p className="text-slate-500 dark:text-slate-400 font-medium">
+                  <p className="text-muted-foreground font-medium">
                     Acción de la semana
                   </p>
                 )}
                 {state.weekStartDate && state.weekEndDate && (
-                  <p className="text-xs text-primary/70 font-medium mt-2">
+                  <p className="text-md mt-4 text-primary/70 font-medium">
                     {format(state.weekStartDate, "d 'de' MMMM", { locale: es })}{' '}
                     - {format(state.weekEndDate, "d 'de' MMMM", { locale: es })}
                   </p>
@@ -75,14 +75,14 @@ export function CycleWeekIndicator({
             </>
           ) : (
             <>
-              <div className="h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-2">
+              <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground mb-2">
                 <Calendar className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-700 dark:text-slate-300">
+              <h3 className="text-xl font-bold text-foreground">
                 {state.message}
               </h3>
               {startDate && state.status === 'pending' && (
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   Inicia el{' '}
                   {format(new Date(startDate), "d 'de' MMMM, yyyy", {
                     locale: es,
