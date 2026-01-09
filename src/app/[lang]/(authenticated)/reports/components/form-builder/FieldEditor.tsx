@@ -6,7 +6,7 @@ import {
   UseFormSetValue,
 } from 'react-hook-form';
 import { FaCopy, FaTrash } from 'react-icons/fa6';
-import { InputField } from '@/components/FormControls';
+import { InputField, DateField } from '@/components/FormControls';
 import { OptionsEditor } from './OptionsEditor';
 import { CycleVerbsEditor } from './CycleVerbsEditor';
 import { LogicEditor } from './LogicEditor';
@@ -155,12 +155,12 @@ export const FieldEditor = React.memo(function FieldEditor({
             <h4 className="text-sm font-medium text-foreground">
               Configuración del Ciclo
             </h4>
-            <InputField
+            <DateField
               name={`fields.${index}.value`}
               label="Fecha de Inicio del Ciclo"
-              type="date"
-              register={register}
+              control={control}
               rules={{ required: 'La fecha de inicio es requerida' }}
+              defaultToNow={true}
             />
             <p className="text-xs text-muted-foreground">
               El ciclo de 16 semanas comenzará a contar a partir de esta fecha.

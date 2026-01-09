@@ -12,7 +12,8 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { InputField, SelectField } from '@/components/FormControls';
+import { InputField, SelectField, DateField } from '@/components/FormControls';
+import { format } from 'date-fns';
 import { useMinistries } from '@/app/[lang]/(authenticated)/ministries/hooks/useMinistries';
 import { getNetworks } from '../actions/networks.actions';
 import { useQuery } from '@tanstack/react-query';
@@ -75,13 +76,40 @@ export default function MembersFilterModal({
   }, [activeFilters, reset, isOpen]);
 
   const onSubmit = (data: Record<string, any>) => {
-    // Filter out empty values
-    const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
-      if (value !== '' && value !== null && value !== undefined) {
-        acc[key] = value;
+    const formattedData = { ...data };
+
+    // Helper to format ISO to YYYY-MM-DD
+    const formatDate = (val: string) => {
+      if (!val) return val;
+      try {
+        return format(new Date(val), 'yyyy-MM-dd');
+      } catch {
+        return val;
       }
-      return acc;
-    }, {} as Record<string, any>);
+    };
+
+    // Format date fields
+    [
+      'birthDate_from',
+      'birthDate_to',
+      'baptismDate_from',
+      'baptismDate_to',
+    ].forEach((key) => {
+      if (formattedData[key]) {
+        formattedData[key] = formatDate(formattedData[key]);
+      }
+    });
+
+    // Filter out empty values
+    const cleanData = Object.entries(formattedData).reduce(
+      (acc, [key, value]) => {
+        if (value !== '' && value !== null && value !== undefined) {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, any>
+    );
 
     onApply(cleanData);
     onClose();
@@ -157,30 +185,26 @@ export default function MembersFilterModal({
               />
 
               {/* Fecha Nacimiento */}
-              <InputField
+              <DateField
                 name="birthDate_from"
                 label="Fecha Nacimiento (Desde)"
-                type="date"
                 control={control}
               />
-              <InputField
+              <DateField
                 name="birthDate_to"
                 label="Fecha Nacimiento (Hasta)"
-                type="date"
                 control={control}
               />
 
               {/* Fecha Bautismo */}
-              <InputField
+              <DateField
                 name="baptismDate_from"
                 label="Fecha Bautismo (Desde)"
-                type="date"
                 control={control}
               />
-              <InputField
+              <DateField
                 name="baptismDate_to"
                 label="Fecha Bautismo (Hasta)"
-                type="date"
                 control={control}
               />
             </div>

@@ -9,7 +9,7 @@ import {
   useWatch,
 } from 'react-hook-form';
 import { GroupCreateSchema } from '../schema/groups.schema';
-import { InputField, SelectField } from '@/components/FormControls';
+import { InputField, SelectField, DateField } from '@/components/FormControls';
 import {
   DragDropContext,
   Droppable,
@@ -49,11 +49,11 @@ function FieldValueInput({
   }
   if (type === 'DATE') {
     return (
-      <InputField
+      <DateField
         name={`fields.${index}.value`}
         label="Valor"
-        type="date"
-        register={register}
+        control={control}
+        defaultToNow={true}
       />
     );
   }

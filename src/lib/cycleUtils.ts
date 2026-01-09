@@ -28,7 +28,8 @@ export type VerbOption = string | { value: string; description?: string };
 
 export function calculateCycleState(
   startDate: string | Date | null | undefined,
-  customVerbs?: VerbOption[]
+  customVerbs?: VerbOption[],
+  currentDate?: Date | string | null
 ) {
   if (!startDate) {
     return {
@@ -48,7 +49,21 @@ export function calculateCycleState(
   }
   start = startOfDay(start);
 
-  const now = startOfDay(new Date());
+  let now: Date;
+  if (currentDate) {
+    if (
+      typeof currentDate === 'string' &&
+      /^\d{4}-\d{2}-\d{2}$/.test(currentDate)
+    ) {
+      const [year, month, day] = currentDate.split('-').map(Number);
+      now = new Date(year, month - 1, day);
+    } else {
+      now = new Date(currentDate);
+    }
+    now = startOfDay(now);
+  } else {
+    now = startOfDay(new Date());
+  }
 
   if (isBefore(now, start)) {
     return {
@@ -97,6 +112,65 @@ export function calculateCycleState(
     verb,
     description,
     weekNumber: currentWeekIndex + 1,
+    weekStartDate,
+    weekEndDate,
+  };
+}
+
+export function getCycleStateForWeek(
+  weekNumber: number,
+  startDate?: string | Date | null,
+  customVerbs?: VerbOption[]
+) {
+  const currentWeekIndex = weekNumber - 1;
+  const verbs =
+    customVerbs && customVerbs.length > 0 ? customVerbs : DEFAULT_VERBS;
+
+  if (currentWeekIndex < 0 || currentWeekIndex >= 16) {
+    return {
+      status: 'invalid',
+      message: 'Semana inválida',
+      verb: null,
+      description: null,
+    };
+  }
+
+  const currentVerbEntry = verbs[currentWeekIndex] || 'Sin verbo';
+  let verb = 'Sin verbo';
+  let description: string | null = null;
+
+  if (typeof currentVerbEntry === 'string') {
+    verb = currentVerbEntry;
+  } else if (currentVerbEntry) {
+    verb = currentVerbEntry.value;
+    description = currentVerbEntry.description || null;
+  }
+
+  let weekStartDate: Date | undefined;
+  let weekEndDate: Date | undefined;
+
+  if (startDate) {
+    let start: Date;
+    if (
+      typeof startDate === 'string' &&
+      /^\d{4}-\d{2}-\d{2}$/.test(startDate)
+    ) {
+      const [year, month, day] = startDate.split('-').map(Number);
+      start = new Date(year, month - 1, day);
+    } else {
+      start = new Date(startDate);
+    }
+    start = startOfDay(start);
+    weekStartDate = addDays(start, currentWeekIndex * 7);
+    weekEndDate = addDays(weekStartDate, 6);
+  }
+
+  return {
+    status: 'active',
+    message: null,
+    verb,
+    description,
+    weekNumber,
     weekStartDate,
     weekEndDate,
   };

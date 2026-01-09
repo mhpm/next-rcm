@@ -11,7 +11,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   CycleWeekIndicator,
@@ -134,7 +134,16 @@ export function LivePreview({
                 <span className="text-destructive ml-1">*</span>
               )}
             </Label>
-            <Input type="date" disabled className="w-full" />
+            <Button
+              variant={'outline'}
+              className={cn(
+                'w-full h-14 justify-start text-left font-bold text-lg rounded-2xl border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all px-4 text-muted-foreground opacity-50 cursor-not-allowed'
+              )}
+              disabled
+            >
+              <Calendar className="mr-3 h-5 w-5 text-muted-foreground" />
+              <span>Seleccionar fecha</span>
+            </Button>
           </div>
         );
       }
@@ -222,7 +231,7 @@ export function LivePreview({
   return (
     <Card className="h-full border-none shadow-none bg-transparent">
       <CardContent className="p-0 h-full">
-        <div className="flex justify-center px-4 py-6 h-full overflow-y-auto max-h-[calc(100vh-200px)]">
+        <div className="flex justify-center px-4 py-6 h-full overflow-y-auto">
           <div className="w-full max-w-lg space-y-8">
             <div className="flex flex-col items-center text-center space-y-4">
               <div

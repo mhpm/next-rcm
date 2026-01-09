@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Control,
-  Controller,
   FieldValues,
   Path,
   RegisterOptions,
+  useController,
 } from 'react-hook-form';
 import {
   format,
@@ -48,6 +48,7 @@ interface DateFieldProps<T extends FieldValues> {
   className?: string;
   placeholder?: string;
   disabled?: boolean;
+  defaultToNow?: boolean;
 }
 
 export function DateField<T extends FieldValues>({
@@ -55,11 +56,26 @@ export function DateField<T extends FieldValues>({
   label,
   control,
   rules,
-  error,
+  error: errorProp,
   className,
   placeholder = 'Seleccionar fecha',
   disabled,
+  defaultToNow = false,
 }: DateFieldProps<T>) {
+  const { field, fieldState } = useController({
+    name,
+    control,
+    rules,
+  });
+
+  const error = errorProp || fieldState.error?.message;
+
+  useEffect(() => {
+    if (defaultToNow && !field.value) {
+      field.onChange(new Date().toISOString());
+    }
+  }, [defaultToNow, field.value, field]);
+
   return (
     <Field className={className} data-invalid={!!error}>
       {label && (
@@ -67,45 +83,38 @@ export function DateField<T extends FieldValues>({
           {label}
         </FieldLabel>
       )}
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        render={({ field }) => (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={'outline'}
-                className={cn(
-                  'w-full h-14 justify-start text-left font-bold text-lg rounded-2xl border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all px-4',
-                  !field.value && 'text-muted-foreground',
-                  error && 'border-destructive ring-destructive/20',
-                  disabled && 'opacity-50 cursor-not-allowed'
-                )}
-                disabled={disabled}
-              >
-                <CalendarIcon className="mr-3 h-5 w-5 text-muted-foreground" />
-                {field.value ? (
-                  format(new Date(field.value), 'PPP', { locale: es })
-                ) : (
-                  <span>{placeholder}</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-auto p-0 rounded-2xl shadow-2xl border-2"
-              align="start"
-            >
-              <Calendar
-                selected={field.value ? new Date(field.value) : undefined}
-                onSelect={(date) => {
-                  field.onChange(date?.toISOString());
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-        )}
-      />
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant={'outline'}
+            className={cn(
+              'w-full h-14 justify-start text-left font-bold text-lg rounded-2xl border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all px-4',
+              !field.value && 'text-muted-foreground',
+              error && 'border-destructive ring-destructive/20',
+              disabled && 'opacity-50 cursor-not-allowed'
+            )}
+            disabled={disabled}
+          >
+            <CalendarIcon className="mr-3 h-5 w-5 text-muted-foreground" />
+            {field.value ? (
+              format(new Date(field.value), 'PPP', { locale: es })
+            ) : (
+              <span>{placeholder}</span>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-(--radix-popover-trigger-width) p-0 rounded-2xl shadow-2xl border-2"
+          align="start"
+        >
+          <Calendar
+            selected={field.value ? new Date(field.value) : undefined}
+            onSelect={(date) => {
+              field.onChange(date?.toISOString());
+            }}
+          />
+        </PopoverContent>
+      </Popover>
       {error && <FieldError className="mt-2">{error}</FieldError>}
     </Field>
   );
@@ -135,7 +144,7 @@ function Calendar({
   const months = Array.from({ length: 12 }, (_, i) => i);
 
   return (
-    <div className="p-4 bg-background dark:bg-slate-900 w-[320px]">
+    <div className="p-4 bg-background dark:bg-slate-900 w-full">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <select
@@ -215,7 +224,7 @@ function Calendar({
               key={i}
               onClick={() => onSelect(day)}
               className={cn(
-                'h-10 w-10 flex items-center justify-center rounded-xl text-base transition-all relative text-slate-700 dark:text-slate-200',
+                'h-10 w-full flex items-center justify-center rounded-xl text-base transition-all relative text-slate-700 dark:text-slate-200',
                 !isCurrentMonth && 'text-slate-300 dark:text-slate-600',
                 isSelected
                   ? 'bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/30'

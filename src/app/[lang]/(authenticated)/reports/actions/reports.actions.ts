@@ -289,12 +289,13 @@ export type UpdateReportEntryInput = {
   groupId?: string | null;
   sectorId?: string | null;
   values: { fieldId: string; value?: unknown }[];
+  createdAt?: Date;
 };
 
 export async function updateReportEntry(input: UpdateReportEntryInput) {
   const prisma = await getChurchPrisma();
 
-  const { scope, cellId, groupId, sectorId } = input;
+  const { scope, cellId, groupId, sectorId, createdAt } = input;
   if (scope === 'CELL' && !cellId && !input.id)
     // Only require cellId on create if scope is CELL
     throw new Error('Debes seleccionar una célula');
@@ -325,6 +326,7 @@ export async function updateReportEntry(input: UpdateReportEntryInput) {
     where: { id: input.id },
     data: {
       ...connectByScope,
+      ...(createdAt ? { createdAt } : {}),
     },
   });
 
@@ -444,13 +446,14 @@ export type CreateReportEntryInput = {
   groupId?: string | null;
   sectorId?: string | null;
   values: { fieldId: string; value?: unknown }[];
+  createdAt?: Date;
 };
 
 export async function createReportEntry(input: CreateReportEntryInput) {
   const prisma = await getChurchPrisma();
   const churchId = await getChurchId();
 
-  const { scope, cellId, groupId, sectorId } = input;
+  const { scope, cellId, groupId, sectorId, createdAt } = input;
   if (scope === 'CELL' && !cellId)
     throw new Error('Debes seleccionar una célula');
   if (scope === 'GROUP' && !groupId)
@@ -499,6 +502,7 @@ export async function createReportEntry(input: CreateReportEntryInput) {
       data: {
         church: { connect: { id: churchId } },
         report: { connect: { id: input.reportId } },
+        createdAt: createdAt || new Date(), // Use provided date or now
         ...connectByScope,
         values: {
           create: valuesCreate,

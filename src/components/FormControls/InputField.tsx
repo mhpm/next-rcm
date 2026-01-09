@@ -29,6 +29,7 @@ type InputFieldProps<T extends FieldValues> = {
   tabIndex?: number;
   startIcon?: React.ReactNode;
   step?: string;
+  variant?: 'default' | 'filled';
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 export function InputField<T extends FieldValues>({
@@ -47,8 +48,14 @@ export function InputField<T extends FieldValues>({
   tabIndex,
   startIcon,
   step,
+  variant = 'default',
   ...rest
 }: InputFieldProps<T>) {
+  const variantClasses =
+    variant === 'filled'
+      ? 'bg-muted/50 border-transparent focus:border-input focus:bg-background transition-colors'
+      : '';
+
   if (control) {
     return (
       <Field className={className} data-invalid={!!error}>
@@ -76,7 +83,7 @@ export function InputField<T extends FieldValues>({
                 id={String(name)}
                 type={type}
                 placeholder={placeholder || label}
-                className={cn(startIcon ? 'pl-9' : '')}
+                className={cn(startIcon ? 'pl-9' : '', variantClasses)}
                 readOnly={readOnly}
                 disabled={disabled}
                 tabIndex={tabIndex}
@@ -115,7 +122,7 @@ export function InputField<T extends FieldValues>({
           id={String(name)}
           type={type}
           placeholder={placeholder || label}
-          className={cn(startIcon ? 'pl-9' : '')}
+          className={cn(startIcon ? 'pl-9' : '', variantClasses)}
           defaultValue={defaultValue}
           readOnly={readOnly}
           disabled={disabled}

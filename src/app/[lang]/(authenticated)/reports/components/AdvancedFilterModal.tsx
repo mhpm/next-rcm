@@ -3,7 +3,8 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { RiFilter3Line, RiDeleteBinLine } from 'react-icons/ri';
-import { InputField, SelectField } from '@/components/FormControls';
+import { InputField, SelectField, DateField } from '@/components/FormControls';
+import { format } from 'date-fns';
 import type { ReportFieldType } from '@/generated/prisma/client';
 import { DEFAULT_VERBS } from '@/lib/cycleUtils';
 import {
@@ -53,13 +54,46 @@ export default function AdvancedFilterModal({
   }, [isOpen, activeFilters, reset]);
 
   const onSubmit = (data: Record<string, any>) => {
-    // Filter out empty values
-    const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
-      if (value !== '' && value !== null && value !== undefined) {
-        acc[key] = value;
+    // Helper to format ISO to YYYY-MM-DD
+    const formatDate = (val: string) => {
+      if (!val) return val;
+      try {
+        return format(new Date(val), 'yyyy-MM-dd');
+      } catch {
+        return val;
       }
-      return acc;
-    }, {} as Record<string, any>);
+    };
+
+    const formattedData = { ...data };
+
+    // Format static date fields
+    if (formattedData.createdAt_from)
+      formattedData.createdAt_from = formatDate(formattedData.createdAt_from);
+    if (formattedData.createdAt_to)
+      formattedData.createdAt_to = formatDate(formattedData.createdAt_to);
+
+    // Format dynamic date fields
+    fields.forEach((f) => {
+      if (f.type === 'DATE') {
+        const fromKey = `${f.id}_from`;
+        const toKey = `${f.id}_to`;
+        if (formattedData[fromKey])
+          formattedData[fromKey] = formatDate(formattedData[fromKey]);
+        if (formattedData[toKey])
+          formattedData[toKey] = formatDate(formattedData[toKey]);
+      }
+    });
+
+    // Filter out empty values
+    const cleanData = Object.entries(formattedData).reduce(
+      (acc, [key, value]) => {
+        if (value !== '' && value !== null && value !== undefined) {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, any>
+    );
 
     onApply(cleanData);
     onClose();
@@ -95,18 +129,16 @@ export default function AdvancedFilterModal({
                 placeholder="Buscar por nombre de entidad..."
               />
 
-              <InputField
+              <DateField
                 name="createdAt_from"
                 label="Fecha (Desde)"
-                type="date"
-                register={register}
+                control={control}
               />
 
-              <InputField
+              <DateField
                 name="createdAt_to"
                 label="Fecha (Hasta)"
-                type="date"
-                register={register}
+                control={control}
               />
 
               {/* Campos dinámicos del reporte */}
@@ -190,20 +222,24 @@ export default function AdvancedFilterModal({
                         {field.label || field.key}
                       </label>
                       <div className="flex gap-2">
-                        <InputField
-                          name={`${field.id}_from`}
-                          label=""
-                          type="date"
-                          register={register}
-                          className="mt-0"
-                        />
-                        <InputField
-                          name={`${field.id}_to`}
-                          label=""
-                          type="date"
-                          register={register}
-                          className="mt-0"
-                        />
+                        <div className="flex-1">
+                          <DateField
+                            name={`${field.id}_from`}
+                            label=""
+                            control={control}
+                            className="mt-0"
+                            placeholder="Desde"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <DateField
+                            name={`${field.id}_to`}
+                            label=""
+                            control={control}
+                            className="mt-0"
+                            placeholder="Hasta"
+                          />
+                        </div>
                       </div>
                     </div>
                   )}

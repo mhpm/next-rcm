@@ -20,6 +20,7 @@ interface SearchableSelectFieldProps {
   disabled?: boolean;
   required?: boolean;
   isLoading?: boolean;
+  variant?: 'default' | 'filled';
 }
 
 export function SearchableSelectField({
@@ -32,11 +33,17 @@ export function SearchableSelectField({
   disabled = false,
   required = false,
   isLoading = false,
+  variant = 'default',
 }: SearchableSelectFieldProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const variantClasses =
+    variant === 'filled'
+      ? 'bg-muted/50 border-transparent focus-within:bg-background'
+      : 'bg-background';
 
   // Filter options based on search term
   const filteredOptions = options.filter((option) =>
@@ -100,7 +107,8 @@ export function SearchableSelectField({
         {/* Main input display */}
         <div
           className={cn(
-            'flex w-full min-h-14 h-auto cursor-pointer items-center gap-2 rounded-2xl border border-input bg-background px-4 py-3 text-base ring-offset-background transition-all hover:bg-accent hover:border-primary/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
+            'flex w-full min-h-14 h-auto cursor-pointer items-center gap-2 rounded-2xl border border-input px-4 py-3 text-base ring-offset-background transition-all hover:bg-accent hover:border-primary/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
+            variantClasses,
             error && 'border-destructive focus-within:ring-destructive',
             disabled && 'cursor-not-allowed opacity-50 bg-muted'
           )}

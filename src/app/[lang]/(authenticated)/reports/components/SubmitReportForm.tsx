@@ -6,6 +6,7 @@ import {
   InputField,
   SelectField,
   CycleWeekIndicator,
+  DateField,
 } from '@/components/FormControls';
 import type { ReportFieldType, ReportScope } from '@/generated/prisma/client';
 import {
@@ -19,7 +20,7 @@ import {
   getReportEntityInfo,
 } from '@/app/[lang]/(authenticated)/reports/actions/reports.actions';
 import { calculateCycleState } from '@/lib/cycleUtils';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useNotificationStore } from '@/store/NotificationStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -28,7 +29,18 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { ChevronDown, Loader2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import {
+  ChevronDown,
+  Loader2,
+  MapPin,
+  Users,
+  User,
+  Home,
+  UserCheck,
+  Layers,
+  Hash,
+} from 'lucide-react';
 
 type Option = { value: string; label: string };
 
@@ -55,6 +67,7 @@ type FormValues = {
   groupId?: string;
   sectorId?: string;
   values: Record<string, unknown>; // fieldId -> value
+  createdAt?: string;
 };
 
 export default function SubmitReportForm({
@@ -81,8 +94,6 @@ export default function SubmitReportForm({
   entryId?: string;
 }) {
   const router = useRouter();
-  const params = useParams();
-  const lang = (params?.lang as string) || 'es';
   const { showSuccess, showError } = useNotificationStore();
   const {
     register,
@@ -91,7 +102,10 @@ export default function SubmitReportForm({
     control,
     formState: { isSubmitting },
   } = useForm<FormValues>({
-    defaultValues: initialValues || { scope },
+    defaultValues: initialValues || {
+      scope,
+      createdAt: new Date().toISOString().split('T')[0],
+    },
   });
 
   const [members, setMembers] = React.useState<
@@ -112,9 +126,14 @@ export default function SubmitReportForm({
   const watchedCellId = watch('cellId');
   const watchedGroupId = watch('groupId');
   const watchedSectorId = watch('sectorId');
+  const watchedCreatedAt = watch('createdAt');
 
   const [openSections, setOpenSections] = React.useState<
     Record<string, boolean>
+  >({});
+
+  const [cycleStartDates, setCycleStartDates] = React.useState<
+    Record<string, string>
   >({});
 
   const getSectionOpen = (sectionId: string) => openSections[sectionId] ?? true;
@@ -276,12 +295,11 @@ export default function SubmitReportForm({
     }
     if (f.type === 'DATE') {
       return (
-        <InputField<FormValues>
+        <DateField<FormValues>
           key={f.id}
           name={baseName}
           label={f.label || f.key}
-          register={register}
-          type="date"
+          control={control}
           rules={f.required ? { required: 'Requerido' } : undefined}
         />
       );
@@ -327,8 +345,12 @@ export default function SubmitReportForm({
         <CycleWeekIndicator
           key={f.id}
           label={f.label || f.key}
-          startDate={f.value}
+          startDate={cycleStartDates[f.id] || f.value}
           verbs={f.options}
+          reportDate={watchedCreatedAt}
+          onStartDateChange={(date) =>
+            setCycleStartDates((prev) => ({ ...prev, [f.id]: date }))
+          }
         />
       );
     }
@@ -344,6 +366,7 @@ export default function SubmitReportForm({
               value={(field.value as FriendRegistrationValue[]) || []}
               onChange={field.onChange}
               label={f.label || f.key}
+              variant="filled"
             />
           )}
         />
@@ -370,7 +393,13 @@ export default function SubmitReportForm({
       const cycleValues: Record<string, unknown> = {};
       fields.forEach((f) => {
         if (f.type === 'CYCLE_WEEK_INDICATOR') {
-          const state = calculateCycleState(f.value, f.options);
+          const startDate = cycleStartDates[f.id] || f.value;
+          const state = calculateCycleState(
+            startDate,
+            f.options,
+            data.createdAt
+          );
+
           if (state.status === 'active' && state.verb) {
             cycleValues[f.id] = `Semana ${state.weekNumber}: ${state.verb}`;
           } else {
@@ -394,9 +423,9 @@ export default function SubmitReportForm({
           groupId: scope === 'GROUP' ? data.groupId : undefined,
           sectorId: scope === 'SECTOR' ? data.sectorId : undefined,
           values,
+          createdAt: data.createdAt ? new Date(data.createdAt) : undefined,
         });
         showSuccess('Entrada actualizada exitosamente');
-        router.push(`/${lang}/reports/${reportId}/entries`);
       } else {
         await createReportEntry({
           reportId: reportId,
@@ -405,9 +434,9 @@ export default function SubmitReportForm({
           groupId: scope === 'GROUP' ? data.groupId : undefined,
           sectorId: scope === 'SECTOR' ? data.sectorId : undefined,
           values,
+          createdAt: data.createdAt ? new Date(data.createdAt) : undefined,
         });
         showSuccess('Entrada creada exitosamente');
-        router.push(`/${lang}/reports/${reportId}/entries`);
       }
     } catch (error) {
       console.error('Error al enviar reporte:', error);
@@ -417,14 +446,14 @@ export default function SubmitReportForm({
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
+      <div className="space-y-6">
+        <div>
           <h2 className="text-xl font-semibold">{title}</h2>
           {description && (
             <p className="text-muted-foreground mt-2">{description}</p>
           )}
         </div>
-        <div className="md:col-span-1">
+        <div>
           {scope === 'CELL' && (
             <div className="space-y-4">
               <SelectField
@@ -436,6 +465,7 @@ export default function SubmitReportForm({
                   ...cells,
                 ]}
                 rules={{ required: 'Selecciona una célula' }}
+                variant="filled"
               />
 
               {isLoadingInfo ? (
@@ -446,50 +476,88 @@ export default function SubmitReportForm({
                   </CardContent>
                 </Card>
               ) : entityInfo ? (
-                <Card className="bg-muted/50 border-none shadow-none">
-                  <CardContent className="p-4 space-y-3 text-sm">
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <span className="text-muted-foreground block text-xs">
-                          Sector
-                        </span>
-                        <span className="font-medium">{entityInfo.sector}</span>
+                <Card className="bg-card border-border shadow-sm overflow-hidden">
+                  <div className="bg-muted/40 px-4 py-3 border-b flex items-center gap-2">
+                    <Hash className="h-4 w-4 text-primary" />
+                    <span className="font-semibold text-sm">
+                      Detalles de la Célula
+                    </span>
+                  </div>
+                  <CardContent className="p-0">
+                    <div className="grid grid-cols-2 divide-x">
+                      <div className="p-4 space-y-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                            <Layers className="h-3 w-3" />
+                            Sector
+                          </div>
+                          <p className="font-semibold text-sm pl-4.5">
+                            {entityInfo.sector}
+                          </p>
+                        </div>
+
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                            <MapPin className="h-3 w-3" />
+                            Sub-sector
+                          </div>
+                          <p className="font-semibold text-sm pl-4.5">
+                            {entityInfo.subSector}
+                          </p>
+                        </div>
+
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                            <Users className="h-3 w-3" />
+                            Miembros
+                          </div>
+                          <div className="pl-4.5">
+                            <Badge variant="secondary" className="font-bold">
+                              {entityInfo.membersCount}
+                            </Badge>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-muted-foreground block text-xs">
-                          Sub-sector
-                        </span>
-                        <span className="font-medium">
-                          {entityInfo.subSector}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground block text-xs">
-                          Líder
-                        </span>
-                        <span className="font-medium">{entityInfo.leader}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground block text-xs">
-                          Miembros
-                        </span>
-                        <span className="font-medium">
-                          {entityInfo.membersCount}
-                        </span>
-                      </div>
-                      <div className="col-span-2">
-                        <span className="text-muted-foreground block text-xs">
-                          Anfitrión
-                        </span>
-                        <span className="font-medium">{entityInfo.host}</span>
-                      </div>
-                      <div className="col-span-2">
-                        <span className="text-muted-foreground block text-xs">
-                          Asistente
-                        </span>
-                        <span className="font-medium">
-                          {entityInfo.assistant}
-                        </span>
+
+                      <div className="p-4 space-y-4 bg-muted/10">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                            <User className="h-3 w-3" />
+                            Líder
+                          </div>
+                          <p
+                            className="font-medium text-sm pl-4.5 line-clamp-2"
+                            title={entityInfo.leader}
+                          >
+                            {entityInfo.leader}
+                          </p>
+                        </div>
+
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                            <Home className="h-3 w-3" />
+                            Anfitrión
+                          </div>
+                          <p
+                            className="font-medium text-sm pl-4.5 text-muted-foreground line-clamp-2"
+                            title={entityInfo.host}
+                          >
+                            {entityInfo.host || 'N/A'}
+                          </p>
+                        </div>
+
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                            <UserCheck className="h-3 w-3" />
+                            Asistente
+                          </div>
+                          <p
+                            className="font-medium text-sm pl-4.5 text-muted-foreground line-clamp-2"
+                            title={entityInfo.assistant}
+                          >
+                            {entityInfo.assistant || 'N/A'}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -520,6 +588,16 @@ export default function SubmitReportForm({
               rules={{ required: 'Selecciona un sector' }}
             />
           )}
+
+          {/* Created At Field */}
+          <div className="mt-4">
+            <DateField
+              name="createdAt"
+              label="Fecha del Reporte"
+              control={control}
+              rules={{ required: 'La fecha es requerida' }}
+            />
+          </div>
         </div>
       </div>
 

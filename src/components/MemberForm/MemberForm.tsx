@@ -27,6 +27,7 @@ import {
   RadioGroupField,
   EmailField,
   MultiSelectField,
+  DateField,
 } from '@/components/FormControls';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -295,18 +296,16 @@ export const MemberForm: React.FC<MemberFormProps> = ({
                   register={register}
                   error={errors.age?.message}
                 />
-                <InputField<FormValues>
+                <DateField<FormValues>
                   name="birthDate"
                   label="Fecha de Nacimiento"
-                  type="date"
-                  register={register}
+                  control={control}
                   error={errors.birthDate?.message}
                 />
-                <InputField<FormValues>
+                <DateField<FormValues>
                   name="baptismDate"
                   label="Fecha de Bautismo"
-                  type="date"
-                  register={register}
+                  control={control}
                   error={errors.baptismDate?.message}
                 />
                 <RadioGroupField<FormValues>

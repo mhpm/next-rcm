@@ -28,6 +28,7 @@ type SelectFieldProps<T extends FieldValues> = {
   defaultValue?: string;
   disabled?: boolean;
   placeholder?: string;
+  variant?: 'default' | 'filled';
 };
 
 export function SelectField<T extends FieldValues>({
@@ -41,7 +42,13 @@ export function SelectField<T extends FieldValues>({
   defaultValue,
   disabled,
   placeholder = 'Seleccionar...',
+  variant = 'default',
 }: SelectFieldProps<T>) {
+  const variantClasses =
+    variant === 'filled'
+      ? 'bg-muted/50 border-transparent focus:ring-2 focus:ring-ring focus:bg-background transition-colors'
+      : '';
+
   return (
     <Field className={cn('w-full', className)} data-invalid={!!error}>
       {label && (
@@ -68,7 +75,7 @@ export function SelectField<T extends FieldValues>({
           >
             <SelectTrigger
               id={String(name)}
-              className="w-full"
+              className={cn('w-full', variantClasses)}
               aria-invalid={!!error}
             >
               <SelectValue placeholder={placeholder} />

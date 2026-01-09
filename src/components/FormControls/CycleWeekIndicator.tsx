@@ -5,13 +5,16 @@ import { calculateCycleState, VerbOption } from '@/lib/cycleUtils';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import { Calendar, Clock, Info } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, Info } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 interface CycleWeekIndicatorProps {
   label?: string | null;
   startDate?: string | Date | null;
   className?: string;
   verbs?: VerbOption[];
+  reportDate?: string | Date | null;
+  onStartDateChange?: (date: string) => void;
 }
 
 export function CycleWeekIndicator({
@@ -19,17 +22,39 @@ export function CycleWeekIndicator({
   startDate,
   className,
   verbs,
+  reportDate,
+  onStartDateChange,
 }: CycleWeekIndicatorProps) {
   const state = useMemo(() => {
-    return calculateCycleState(startDate, verbs);
-  }, [startDate, verbs]);
+    return calculateCycleState(startDate, verbs, reportDate);
+  }, [startDate, verbs, reportDate]);
 
   return (
     <div className={cn('space-y-3', className)}>
       {label && (
-        <div className="flex items-center gap-2 text-muted-foreground font-medium text-sm uppercase tracking-wider">
-          <Info className="h-4 w-4" />
-          {label}
+        <div className="flex items-center justify-between text-muted-foreground font-medium text-sm uppercase tracking-wider">
+          <div className="flex items-center gap-2">
+            <Info className="h-4 w-4" />
+            {label}
+          </div>
+        </div>
+      )}
+
+      {onStartDateChange && (
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-semibold">Fecha Inicio Ciclo</label>
+          <Input
+            type="date"
+            className="w-full h-14 rounded-2xl border-input bg-background hover:bg-accent/50 transition-colors"
+            value={
+              startDate
+                ? typeof startDate === 'string'
+                  ? startDate.split('T')[0]
+                  : format(new Date(startDate), 'yyyy-MM-dd')
+                : ''
+            }
+            onChange={(e) => onStartDateChange(e.target.value)}
+          />
         </div>
       )}
 
@@ -76,7 +101,7 @@ export function CycleWeekIndicator({
           ) : (
             <>
               <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground mb-2">
-                <Calendar className="h-6 w-6" />
+                <CalendarIcon className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-bold text-foreground">
                 {state.message}

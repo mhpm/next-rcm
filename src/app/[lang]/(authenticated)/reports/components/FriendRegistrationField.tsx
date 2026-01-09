@@ -19,6 +19,7 @@ interface FriendRegistrationFieldProps {
   onChange: (value: FriendRegistrationValue[]) => void;
   label?: string;
   members?: { value: string; label: string }[];
+  variant?: 'default' | 'filled';
 }
 
 export function FriendRegistrationField({
@@ -26,11 +27,17 @@ export function FriendRegistrationField({
   onChange,
   label = 'Registro de Amigos',
   members = [],
+  variant = 'default',
 }: FriendRegistrationFieldProps) {
   const [firstName, setFirstName] = React.useState('');
   const [lastName, setLastName] = React.useState('');
   const [phone, setPhone] = React.useState('');
   const [spiritualFatherId, setSpiritualFatherId] = React.useState('');
+
+  const inputBgClass =
+    variant === 'filled'
+      ? 'bg-muted/50 border-transparent focus:bg-background'
+      : 'bg-background';
 
   const handleAdd = () => {
     if (!firstName.trim() || !lastName.trim()) return;
@@ -78,7 +85,7 @@ export function FriendRegistrationField({
                 placeholder="Ej. Juan"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="pl-12 h-14 rounded-2xl border-input bg-background font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10"
+                className={`pl-12 h-14 rounded-2xl border-input ${inputBgClass} font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10`}
               />
             </div>
           </div>
@@ -93,7 +100,7 @@ export function FriendRegistrationField({
                 placeholder="Ej. Pérez"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                className="pl-12 h-14 rounded-2xl border-input bg-background font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10"
+                className={`pl-12 h-14 rounded-2xl border-input ${inputBgClass} font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10`}
               />
             </div>
           </div>
@@ -110,7 +117,7 @@ export function FriendRegistrationField({
                 placeholder="Ej. 123456789"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="pl-12 h-14 rounded-2xl border-input bg-background font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10"
+                className={`pl-12 h-14 rounded-2xl border-input ${inputBgClass} font-semibold text-lg transition-all focus:ring-4 focus:ring-primary/10`}
               />
             </div>
           </div>
@@ -126,6 +133,7 @@ export function FriendRegistrationField({
                 value={spiritualFatherId}
                 onChange={(val) => setSpiritualFatherId(val)}
                 placeholder="Seleccionar Padre Espiritual..."
+                variant={variant}
               />
             </div>
           </div>
