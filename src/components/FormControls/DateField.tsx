@@ -109,14 +109,14 @@ export function DateField<T extends FieldValues>({
           <Button
             variant={'outline'}
             className={cn(
-              'w-full h-10 justify-start text-left font-normal text-sm rounded-md border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all px-3',
+              'w-full h-12 sm:h-10 justify-start text-left font-normal text-base sm:text-sm rounded-md border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all px-3',
               !field.value && 'text-muted-foreground',
               error && 'border-destructive ring-destructive/20',
               disabled && 'opacity-50 cursor-not-allowed'
             )}
             disabled={disabled}
           >
-            <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+            <CalendarIcon className="mr-2 h-5 w-5 sm:h-4 sm:w-4 text-muted-foreground" />
             {safeValue ? (
               format(safeValue, 'PPP', { locale: es })
             ) : (

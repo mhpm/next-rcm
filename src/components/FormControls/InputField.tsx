@@ -76,7 +76,11 @@ export function InputField<T extends FieldValues>({
                 id={String(name)}
                 type={type}
                 placeholder={placeholder || label}
-                className={cn(startIcon ? 'pl-9' : '', variantClasses)}
+                className={cn(
+                  'h-12 sm:h-10 text-lg sm:text-sm',
+                  startIcon ? 'pl-9' : '',
+                  variantClasses
+                )}
                 readOnly={readOnly}
                 disabled={disabled}
                 tabIndex={tabIndex}
@@ -108,7 +112,11 @@ export function InputField<T extends FieldValues>({
           id={String(name)}
           type={type}
           placeholder={placeholder || label}
-          className={cn(startIcon ? 'pl-9' : '', variantClasses)}
+          className={cn(
+            'h-12 sm:h-10 text-lg sm:text-sm',
+            startIcon ? 'pl-9' : '',
+            variantClasses
+          )}
           defaultValue={defaultValue}
           readOnly={readOnly}
           disabled={disabled}

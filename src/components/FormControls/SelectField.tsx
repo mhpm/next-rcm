@@ -76,7 +76,10 @@ export function SelectField<T extends FieldValues>({
             >
               <SelectTrigger
                 id={String(name)}
-                className={cn('w-full', variantClasses)}
+                className={cn(
+                  'w-full h-12 sm:h-10 text-lg sm:text-sm',
+                  variantClasses
+                )}
                 aria-invalid={!!error}
               >
                 <SelectValue placeholder={placeholder} />

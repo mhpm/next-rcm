@@ -45,7 +45,7 @@ export function CycleWeekIndicator({
           <label className="text-sm font-medium">Fecha Inicio Ciclo</label>
           <Input
             type="date"
-            className="w-full h-10 rounded-md border-input bg-background hover:bg-accent/50 transition-colors"
+            className="w-full h-12 sm:h-10 text-lg sm:text-sm rounded-md border-input bg-background hover:bg-accent/50 transition-colors"
             value={
               startDate
                 ? typeof startDate === 'string'

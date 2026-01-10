@@ -60,16 +60,16 @@ export function NumberStepper({
   return (
     <Field className={className} data-invalid={!!error}>
       {label && <FieldLabel>{label}</FieldLabel>}
-      <div className="flex items-center justify-between bg-card border rounded-md p-1 shadow-sm transition-all duration-200 group border-border h-11">
+      <div className="flex items-center justify-between bg-card border rounded-md p-1 shadow-sm transition-all duration-200 group border-border h-14 sm:h-11">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="h-8 w-8 rounded-md bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors border border-border"
+          className="h-10 w-10 sm:h-8 sm:w-8 rounded-md bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors border border-border"
           onClick={handleDecrement}
           disabled={disabled || (min !== undefined && value <= min)}
         >
-          <Minus className="h-4 w-4" />
+          <Minus className="h-5 w-5 sm:h-4 sm:w-4" />
         </Button>
 
         <div className="flex-1 flex justify-center">
@@ -78,7 +78,7 @@ export function NumberStepper({
             value={value}
             onChange={handleChange}
             disabled={disabled}
-            className="w-full text-center text-sm font-semibold bg-transparent border-none focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-foreground"
+            className="w-full text-center text-lg sm:text-sm font-semibold bg-transparent border-none focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-foreground"
           />
         </div>
 
@@ -86,11 +86,11 @@ export function NumberStepper({
           type="button"
           variant="ghost"
           size="icon"
-          className="h-8 w-8 rounded-md bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary transition-colors border border-primary/20"
+          className="h-10 w-10 sm:h-8 sm:w-8 rounded-md bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary transition-colors border border-primary/20"
           onClick={handleIncrement}
           disabled={disabled || (max !== undefined && value >= max)}
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-5 w-5 sm:h-4 sm:w-4" />
         </Button>
       </div>
       {error && <FieldError>{error}</FieldError>}
