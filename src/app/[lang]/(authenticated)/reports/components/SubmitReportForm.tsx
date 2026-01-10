@@ -102,9 +102,10 @@ export default function SubmitReportForm({
     control,
     formState: { isSubmitting },
   } = useForm<FormValues>({
-    defaultValues: initialValues || {
+    defaultValues: {
       scope,
       createdAt: new Date().toISOString().split('T')[0],
+      ...initialValues,
     },
   });
 
@@ -426,6 +427,7 @@ export default function SubmitReportForm({
           createdAt: data.createdAt ? new Date(data.createdAt) : undefined,
         });
         showSuccess('Entrada actualizada exitosamente');
+        router.push(`/reports/${reportId}/entries`);
       } else {
         await createReportEntry({
           reportId: reportId,
@@ -437,6 +439,7 @@ export default function SubmitReportForm({
           createdAt: data.createdAt ? new Date(data.createdAt) : undefined,
         });
         showSuccess('Entrada creada exitosamente');
+        router.push(`/reports/${reportId}/entries`);
       }
     } catch (error) {
       console.error('Error al enviar reporte:', error);
@@ -664,7 +667,7 @@ export default function SubmitReportForm({
         <Button
           type="button"
           variant="outline"
-          onClick={() => router.push('/reports')}
+          onClick={() => router.push(`/reports/${reportId}/entries`)}
           disabled={isSubmitting}
         >
           Cancelar
