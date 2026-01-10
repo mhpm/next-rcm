@@ -858,7 +858,7 @@ export default function SubmitReportForm({
                             Líder
                           </div>
                           <p
-                            className="font-medium text-sm pl-4.5 line-clamp-2"
+                            className="font-bold text-sm pl-4.5 text-primary line-clamp-2"
                             title={entityInfo.leader}
                           >
                             {entityInfo.leader}
