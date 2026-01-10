@@ -36,6 +36,8 @@ export default async function ReportEntriesPage({
           name: true,
           leader_id: true,
           leader: { select: { firstName: true, lastName: true } },
+          host: { select: { firstName: true, lastName: true } },
+          assistant: { select: { firstName: true, lastName: true } },
           subSector: {
             select: {
               name: true,
@@ -135,6 +137,8 @@ export default async function ReportEntriesPage({
 
     let supervisor = '';
     let lider = '';
+    let asistente = '';
+    let anfitrion = '';
 
     // Names for grouping
     let celula = '';
@@ -163,6 +167,12 @@ export default async function ReportEntriesPage({
       }
       if (e.cell.leader) {
         lider = `${e.cell.leader.firstName} ${e.cell.leader.lastName}`;
+      }
+      if (e.cell.assistant) {
+        asistente = `${e.cell.assistant.firstName} ${e.cell.assistant.lastName}`;
+      }
+      if (e.cell.host) {
+        anfitrion = `${e.cell.host.firstName} ${e.cell.host.lastName}`;
       }
     } else if (e.sector) {
       sector = e.sector.name;
@@ -226,19 +236,59 @@ export default async function ReportEntriesPage({
             : undefined,
         }));
       } else if (f.type === 'MEMBER_SELECT' && Array.isArray(val)) {
-        const selectedNames = (val as string[])
+        let selectedNames = (val as string[])
           .map((id) => memberMap.get(id))
-          .filter(Boolean);
+          .filter(Boolean) as string[];
 
-        // If it's a cell report and we have a leader, ensure leader is included in display
-        if (e.cell?.leader && !selectedNames.includes(lider)) {
-          selectedNames.unshift(`${lider} (Líder)`);
-        } else if (e.cell?.leader) {
-          // If already in list, just add the (Líder) suffix for clarity if not present
-          const leaderIndex = selectedNames.findIndex((n) => n === lider);
-          if (leaderIndex !== -1) {
-            selectedNames[leaderIndex] = `${lider} (Líder)`;
+        // If it's a cell report, ensure leader, assistant and host are included with labels
+        if (e.cell) {
+          // Add/Update Leader
+          if (lider) {
+            const index = selectedNames.findIndex((n) => n.startsWith(lider));
+            if (index !== -1) {
+              selectedNames[index] = `${lider} (Líder)`;
+            } else {
+              selectedNames.push(`${lider} (Líder)`);
+            }
           }
+
+          // Add/Update Assistant
+          if (asistente) {
+            const index = selectedNames.findIndex((n) =>
+              n.startsWith(asistente)
+            );
+            if (index !== -1) {
+              selectedNames[index] = `${asistente} (Asistente)`;
+            } else {
+              selectedNames.push(`${asistente} (Asistente)`);
+            }
+          }
+
+          // Add/Update Host
+          if (anfitrion) {
+            const index = selectedNames.findIndex((n) =>
+              n.startsWith(anfitrion)
+            );
+            if (index !== -1) {
+              selectedNames[index] = `${anfitrion} (Anfitrión)`;
+            } else {
+              selectedNames.push(`${anfitrion} (Anfitrión)`);
+            }
+          }
+
+          // Sort: Leader > Assistant > Host > Others
+          selectedNames.sort((a, b) => {
+            const getOrder = (name: string) => {
+              if (name.includes('(Líder)')) return 1;
+              if (name.includes('(Asistente)')) return 2;
+              if (name.includes('(Anfitrión)')) return 3;
+              return 4;
+            };
+            const orderA = getOrder(a);
+            const orderB = getOrder(b);
+            if (orderA !== orderB) return orderA - orderB;
+            return a.localeCompare(b);
+          });
         }
         display = selectedNames;
 

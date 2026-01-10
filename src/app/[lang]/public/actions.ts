@@ -79,6 +79,20 @@ export async function verifyCellAccess(code: string) {
           lastName: true,
         },
       },
+      host_id: true,
+      host: {
+        select: {
+          firstName: true,
+          lastName: true,
+        },
+      },
+      assistant_id: true,
+      assistant: {
+        select: {
+          firstName: true,
+          lastName: true,
+        },
+      },
       subSector: {
         select: {
           name: true,

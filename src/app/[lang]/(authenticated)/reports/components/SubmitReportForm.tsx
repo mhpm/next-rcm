@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useQuery } from '@tanstack/react-query';
 import {
   InputField,
   SelectField,
@@ -21,9 +22,12 @@ import {
   getUnlinkedMembers,
   getReportEntityMembers,
 } from '@/app/[lang]/(authenticated)/reports/actions/reports.actions';
+import { getAllZones } from '@/app/[lang]/(authenticated)/sectors/actions/sectors.actions';
+import { useSectorHierarchy } from '@/app/[lang]/(authenticated)/sectors/hooks/useSectors';
 import { calculateCycleState } from '@/lib/cycleUtils';
 import { useRouter } from 'next/navigation';
 import { useNotificationStore } from '@/store/NotificationStore';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -124,16 +128,66 @@ export default function SubmitReportForm({
 
   const [entityInfo, setEntityInfo] = React.useState<{
     sector: string;
+    sectorId?: string;
     subSector: string;
+    subSectorId?: string;
+    zoneId?: string;
     leader: string;
     leaderId?: string | null;
     assistant: string;
+    assistantId?: string | null;
     host: string;
+    hostId?: string | null;
     membersCount: number;
   } | null>(null);
 
   const [isLoadingInfo, setIsLoadingInfo] = React.useState(false);
   const [isSavingDraft, setIsSavingDraft] = React.useState(false);
+
+  // --- Hierarchy Filters State ---
+  const [selectedZone, setSelectedZone] = React.useState<string | undefined>();
+  const [selectedSector, setSelectedSector] = React.useState<
+    string | undefined
+  >();
+  const [selectedSubSector, setSelectedSubSector] = React.useState<
+    string | undefined
+  >();
+
+  // Fetch all zones
+  const { data: zonesData } = useQuery({
+    queryKey: ['zones', 'all'],
+    queryFn: () => getAllZones(),
+    enabled: scope === 'CELL',
+  });
+
+  // Fetch hierarchy
+  const { data: sectorHierarchy } = useSectorHierarchy();
+
+  // Filtered options
+  const filteredSectors = React.useMemo(() => {
+    if (!sectorHierarchy) return [];
+    const hasZones = zonesData && zonesData.length > 0;
+    if (!hasZones) return sectorHierarchy;
+    if (!selectedZone) return [];
+    return sectorHierarchy.filter((s) => s.zone_id === selectedZone);
+  }, [sectorHierarchy, selectedZone, zonesData]);
+
+  const filteredSubSectors = React.useMemo(() => {
+    if (!filteredSectors || !selectedSector) return [];
+    const sector = filteredSectors.find((s) => s.id === selectedSector);
+    return sector?.subSectors || [];
+  }, [filteredSectors, selectedSector]);
+
+  const filteredCells = React.useMemo(() => {
+    if (!filteredSubSectors || !selectedSubSector) return [];
+    const subSector = filteredSubSectors.find(
+      (ss) => ss.id === selectedSubSector
+    );
+    return (subSector?.cells || []).map((c) => ({
+      value: c.id,
+      label: c.name,
+    }));
+  }, [filteredSubSectors, selectedSubSector]);
 
   const watchedCellId = watch('cellId');
   const watchedGroupId = watch('groupId');
@@ -222,6 +276,15 @@ export default function SubmitReportForm({
           ]);
 
           setEntityInfo(infoData);
+
+          // Pre-fill hierarchy filters if we're editing or a cell was just selected
+          if (infoData && scope === 'CELL') {
+            if (infoData.zoneId) setSelectedZone(infoData.zoneId);
+            if (infoData.sectorId) setSelectedSector(infoData.sectorId);
+            if (infoData.subSectorId)
+              setSelectedSubSector(infoData.subSectorId);
+          }
+
           setUnlinkedMembers(
             unlinkedData.map((m) => ({
               value: m.id,
@@ -399,9 +462,20 @@ export default function SubmitReportForm({
             // Combine both sources for available options
             const allAvailableMembers = [...cellMembers, ...unlinkedMembers];
 
-            const selectedMembers = allAvailableMembers.filter((m) =>
-              selectedIds.includes(m.value)
-            );
+            const selectedMembers = allAvailableMembers
+              .filter((m) => selectedIds.includes(m.value))
+              .sort((a, b) => {
+                const getOrder = (id: string) => {
+                  if (id === entityInfo?.leaderId) return 1;
+                  if (id === entityInfo?.assistantId) return 2;
+                  if (id === entityInfo?.hostId) return 3;
+                  return 4;
+                };
+                const orderA = getOrder(a.value);
+                const orderB = getOrder(b.value);
+                if (orderA !== orderB) return orderA - orderB;
+                return a.label.localeCompare(b.label);
+              });
 
             const handleAddMember = (id: string) => {
               if (id && !selectedIds.includes(id)) {
@@ -432,32 +506,63 @@ export default function SubmitReportForm({
                       Seleccionados ({selectedMembers.length})
                     </p>
                     <div className="grid grid-cols-1 gap-1.5">
-                      {selectedMembers.map((member) => (
-                        <div
-                          key={member.value}
-                          className="flex items-center justify-between p-2 pl-3 rounded-lg bg-muted/30 border border-border group"
-                        >
-                          <span className="text-sm font-medium">
-                            {member.label}
-                            {member.value === entityInfo?.leaderId && (
-                              <span className="ml-2 text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase tracking-tighter">
-                                Líder
-                              </span>
+                      {selectedMembers.map((member) => {
+                        const isSpecialRole =
+                          member.value === entityInfo?.leaderId ||
+                          member.value === entityInfo?.assistantId ||
+                          member.value === entityInfo?.hostId;
+
+                        return (
+                          <div
+                            key={member.value}
+                            className={cn(
+                              'flex items-center justify-between p-2 pl-3 rounded-lg border transition-all duration-200 group',
+                              isSpecialRole
+                                ? 'bg-primary/10 border-primary/30 shadow-sm'
+                                : 'bg-muted/30 border-border'
                             )}
-                          </span>
-                          {member.value !== entityInfo?.leaderId && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleRemoveMember(member.value)}
-                              className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
+                          >
+                            <span
+                              className={cn(
+                                'text-sm font-medium',
+                                isSpecialRole && 'text-primary'
+                              )}
                             >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      ))}
+                              {member.label}
+                              {member.value === entityInfo?.leaderId && (
+                                <span className="ml-2 text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase tracking-tighter border border-primary/20">
+                                  Líder
+                                </span>
+                              )}
+                              {member.value === entityInfo?.assistantId && (
+                                <span className="ml-2 text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase tracking-tighter border border-primary/20">
+                                  Asistente
+                                </span>
+                              )}
+                              {member.value === entityInfo?.hostId && (
+                                <span className="ml-2 text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase tracking-tighter border border-primary/20">
+                                  Anfitrión
+                                </span>
+                              )}
+                            </span>
+                            {member.value !== entityInfo?.leaderId &&
+                              member.value !== entityInfo?.assistantId &&
+                              member.value !== entityInfo?.hostId && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() =>
+                                    handleRemoveMember(member.value)
+                                  }
+                                  className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -606,16 +711,93 @@ export default function SubmitReportForm({
         <div>
           {scope === 'CELL' && (
             <div className="space-y-4">
-              <SelectField
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {zonesData && zonesData.length > 0 && (
+                  <SearchableSelectField
+                    label="Zona"
+                    options={
+                      zonesData?.map((z) => ({ value: z.id, label: z.name })) ||
+                      []
+                    }
+                    value={selectedZone}
+                    onChange={(val) => {
+                      setSelectedZone(val);
+                      setSelectedSector(undefined);
+                      setSelectedSubSector(undefined);
+                      setValue('cellId', '');
+                    }}
+                    placeholder="Busca y selecciona una zona"
+                    variant="filled"
+                  />
+                )}
+
+                <SearchableSelectField
+                  label="Sector"
+                  options={filteredSectors.map((s) => ({
+                    value: s.id,
+                    label: s.name,
+                  }))}
+                  value={selectedSector}
+                  onChange={(val) => {
+                    setSelectedSector(val);
+                    setSelectedSubSector(undefined);
+                    setValue('cellId', '');
+                  }}
+                  disabled={zonesData && zonesData.length > 0 && !selectedZone}
+                  placeholder={
+                    zonesData && zonesData.length > 0 && !selectedZone
+                      ? 'Selecciona primero una zona'
+                      : 'Selecciona un sector'
+                  }
+                  variant="filled"
+                />
+
+                <SearchableSelectField
+                  label="Subsector"
+                  options={filteredSubSectors.map((ss) => ({
+                    value: ss.id,
+                    label: ss.name,
+                  }))}
+                  value={selectedSubSector}
+                  onChange={(val) => {
+                    setSelectedSubSector(val);
+                    setValue('cellId', '');
+                  }}
+                  disabled={
+                    filteredSectors &&
+                    filteredSectors.length > 0 &&
+                    !selectedSector
+                  }
+                  placeholder={
+                    filteredSectors &&
+                    filteredSectors.length > 0 &&
+                    !selectedSector
+                      ? 'Selecciona primero un sector'
+                      : 'Selecciona un subsector'
+                  }
+                  variant="filled"
+                />
+              </div>
+
+              <Controller
                 name="cellId"
-                label="Célula"
                 control={control}
-                options={[
-                  { value: '', label: 'Selecciona una célula' },
-                  ...cells,
-                ]}
                 rules={{ required: 'Selecciona una célula' }}
-                variant="filled"
+                render={({ field, fieldState }) => (
+                  <SearchableSelectField
+                    label="Célula"
+                    options={selectedSubSector ? filteredCells : cells}
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={fieldState.error?.message}
+                    placeholder={
+                      !selectedSubSector
+                        ? 'O busca directamente una célula'
+                        : 'Selecciona una célula'
+                    }
+                    variant="filled"
+                  />
+                )}
               />
 
               {isLoadingInfo ? (
@@ -717,25 +899,38 @@ export default function SubmitReportForm({
           )}
 
           {scope === 'GROUP' && (
-            <SelectField
+            <Controller
               name="groupId"
-              label="Grupo"
               control={control}
-              options={[{ value: '', label: 'Selecciona un grupo' }, ...groups]}
               rules={{ required: 'Selecciona un grupo' }}
+              render={({ field, fieldState }) => (
+                <SearchableSelectField
+                  label="Grupo"
+                  options={groups}
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={fieldState.error?.message}
+                  placeholder="Busca y selecciona un grupo"
+                />
+              )}
             />
           )}
 
           {scope === 'SECTOR' && (
-            <SelectField
+            <Controller
               name="sectorId"
-              label="Sector"
               control={control}
-              options={[
-                { value: '', label: 'Selecciona un sector' },
-                ...sectors,
-              ]}
               rules={{ required: 'Selecciona un sector' }}
+              render={({ field, fieldState }) => (
+                <SearchableSelectField
+                  label="Sector"
+                  options={sectors}
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={fieldState.error?.message}
+                  placeholder="Busca y selecciona un sector"
+                />
+              )}
             />
           )}
 

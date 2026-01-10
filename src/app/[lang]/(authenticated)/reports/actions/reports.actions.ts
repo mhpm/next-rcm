@@ -696,13 +696,22 @@ export async function getReportEntityInfo(
         name: true,
         subSector: {
           select: {
+            id: true,
             name: true,
-            sector: { select: { name: true } },
+            sector: {
+              select: {
+                id: true,
+                name: true,
+                zone: { select: { id: true, name: true } },
+              },
+            },
           },
         },
         leader_id: true,
         leader: { select: { firstName: true, lastName: true } },
+        host_id: true,
         host: { select: { firstName: true, lastName: true } },
+        assistant_id: true,
         assistant: { select: { firstName: true, lastName: true } },
         _count: { select: { members: true } },
       },
@@ -712,15 +721,20 @@ export async function getReportEntityInfo(
 
     return {
       sector: cell.subSector?.sector?.name || 'N/A',
+      sectorId: cell.subSector?.sector?.id,
       subSector: cell.subSector?.name || 'N/A',
+      subSectorId: cell.subSector?.id,
+      zoneId: cell.subSector?.sector?.zone?.id,
       leader: cell.leader
         ? `${cell.leader.firstName} ${cell.leader.lastName}`
         : 'N/A',
       leaderId: cell.leader_id,
       host: cell.host ? `${cell.host.firstName} ${cell.host.lastName}` : 'N/A',
+      hostId: cell.host_id,
       assistant: cell.assistant
         ? `${cell.assistant.firstName} ${cell.assistant.lastName}`
         : 'N/A',
+      assistantId: cell.assistant_id,
       membersCount: cell._count.members,
     };
   }

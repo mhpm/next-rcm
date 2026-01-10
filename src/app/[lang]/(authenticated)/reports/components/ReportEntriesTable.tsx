@@ -281,14 +281,25 @@ export default function ReportEntriesTable({
                         Miembros Seleccionados
                       </div>
                       <div className="p-2 space-y-1">
-                        {value.map((name: string, i: number) => (
-                          <div
-                            key={i}
-                            className="text-sm px-2 py-1.5 rounded-md hover:bg-muted transition-colors"
-                          >
-                            {name}
-                          </div>
-                        ))}
+                        {value.map((name: string, i: number) => {
+                          const isSpecialRole =
+                            name.includes('(Líder)') ||
+                            name.includes('(Asistente)') ||
+                            name.includes('(Anfitrión)');
+
+                          return (
+                            <div
+                              key={i}
+                              className={`text-sm px-2 py-1.5 rounded-md hover:bg-muted transition-colors ${
+                                isSpecialRole
+                                  ? 'text-primary font-semibold bg-primary/5'
+                                  : ''
+                              }`}
+                            >
+                              {name}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   </TooltipContent>

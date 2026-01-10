@@ -103,6 +103,10 @@ export default function PublicReportForm({
     name: string;
     leader?: string;
     leaderId?: string | null;
+    assistant?: string;
+    assistantId?: string | null;
+    host?: string;
+    hostId?: string | null;
     sector?: string;
     subSector?: string;
   } | null>(null);
@@ -396,9 +400,20 @@ export default function PublicReportForm({
                 ...unlinkedMembers,
               ];
 
-              const selectedMembers = allAvailableMembers.filter((m) =>
-                selectedIds.includes(m.value)
-              );
+              const selectedMembers = allAvailableMembers
+                .filter((m) => selectedIds.includes(m.value))
+                .sort((a, b) => {
+                  const getOrder = (id: string) => {
+                    if (id === cellInfo?.leaderId) return 1;
+                    if (id === cellInfo?.assistantId) return 2;
+                    if (id === cellInfo?.hostId) return 3;
+                    return 4;
+                  };
+                  const orderA = getOrder(a.value);
+                  const orderB = getOrder(b.value);
+                  if (orderA !== orderB) return orderA - orderB;
+                  return a.label.localeCompare(b.label);
+                });
 
               const handleAddMember = (id: string) => {
                 if (id && !selectedIds.includes(id)) {
@@ -431,32 +446,65 @@ export default function PublicReportForm({
                         </p>
                       </div>
                       <div className="grid grid-cols-1 gap-2">
-                        {selectedMembers.map((member) => (
-                          <div
-                            key={member.value}
-                            className="flex items-center justify-between p-3 pl-4 rounded-2xl bg-primary/5 border border-primary/10 hover:border-primary/30 transition-all duration-200 group"
-                          >
-                            <span className="font-bold text-foreground/90">
-                              {member.label}
-                              {member.value === cellInfo?.leaderId && (
-                                <span className="ml-2 text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-black uppercase tracking-tighter">
-                                  Líder
-                                </span>
+                        {selectedMembers.map((member) => {
+                          const isSpecialRole =
+                            member.value === cellInfo?.leaderId ||
+                            member.value === cellInfo?.assistantId ||
+                            member.value === cellInfo?.hostId;
+
+                          return (
+                            <div
+                              key={member.value}
+                              className={cn(
+                                'flex items-center justify-between p-3 pl-4 rounded-2xl border transition-all duration-200 group',
+                                isSpecialRole
+                                  ? 'bg-primary/10 border-primary/30 shadow-sm'
+                                  : 'bg-primary/5 border-primary/10 hover:border-primary/30'
                               )}
-                            </span>
-                            {member.value !== cellInfo?.leaderId && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleRemoveMember(member.value)}
-                                className="h-10 w-10 rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
+                            >
+                              <span
+                                className={cn(
+                                  'font-bold',
+                                  isSpecialRole
+                                    ? 'text-primary'
+                                    : 'text-foreground/90'
+                                )}
                               >
-                                <Trash2 className="h-5 w-5" />
-                              </Button>
-                            )}
-                          </div>
-                        ))}
+                                {member.label}
+                                {member.value === cellInfo?.leaderId && (
+                                  <span className="ml-2 text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-black uppercase tracking-tighter border border-primary/20">
+                                    Líder
+                                  </span>
+                                )}
+                                {member.value === cellInfo?.assistantId && (
+                                  <span className="ml-2 text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-black uppercase tracking-tighter border border-primary/20">
+                                    Asistente
+                                  </span>
+                                )}
+                                {member.value === cellInfo?.hostId && (
+                                  <span className="ml-2 text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-black uppercase tracking-tighter border border-primary/20">
+                                    Anfitrión
+                                  </span>
+                                )}
+                              </span>
+                              {member.value !== cellInfo?.leaderId &&
+                                member.value !== cellInfo?.assistantId &&
+                                member.value !== cellInfo?.hostId && (
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() =>
+                                      handleRemoveMember(member.value)
+                                    }
+                                    className="h-10 w-10 rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
+                                  >
+                                    <Trash2 className="h-5 w-5" />
+                                  </Button>
+                                )}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -549,6 +597,14 @@ export default function PublicReportForm({
             ? `${cell.leader.firstName} ${cell.leader.lastName}`
             : undefined,
           leaderId: cell.leader_id,
+          assistant: cell.assistant
+            ? `${cell.assistant.firstName} ${cell.assistant.lastName}`
+            : undefined,
+          assistantId: cell.assistant_id,
+          host: cell.host
+            ? `${cell.host.firstName} ${cell.host.lastName}`
+            : undefined,
+          hostId: cell.host_id,
           sector: cell.subSector?.sector?.name,
           subSector: cell.subSector?.name,
         });
