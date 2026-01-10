@@ -129,6 +129,34 @@ export default function MembersPage() {
         )
           return false;
 
+        // Zona
+        if (
+          activeFilters.zoneName &&
+          member.zoneName !== activeFilters.zoneName
+        )
+          return false;
+
+        // Sector
+        if (
+          activeFilters.sectorName &&
+          member.sectorName !== activeFilters.sectorName
+        )
+          return false;
+
+        // Sub-Sector
+        if (
+          activeFilters.subSectorName &&
+          member.subSectorName !== activeFilters.subSectorName
+        )
+          return false;
+
+        // Célula
+        if (
+          activeFilters.cellName &&
+          member.cellName !== activeFilters.cellName
+        )
+          return false;
+
         // Birth Date
         if (activeFilters.birthDate_from || activeFilters.birthDate_to) {
           if (!member.raw_birthDate) return false;
@@ -372,7 +400,7 @@ export default function MembersPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-4">
+    <div className="flex flex-col gap-6 p-4 min-w-0">
       <div className="flex items-center justify-between">
         <BackLink text="Volver atrás" fallbackHref="/dashboard" />
         <Breadcrumbs />

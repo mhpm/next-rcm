@@ -13,9 +13,12 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { InputField, SelectField, DateField } from '@/components/FormControls';
-import { format } from 'date-fns';
 import { useMinistries } from '@/app/[lang]/(authenticated)/ministries/hooks/useMinistries';
 import { getNetworks } from '../actions/networks.actions';
+import {
+  getAllZones,
+  getSectorHierarchy,
+} from '@/app/[lang]/(authenticated)/sectors/actions/sectors.actions';
 import { useQuery } from '@tanstack/react-query';
 // ScrollArea no está disponible; usamos un contenedor con overflow
 
@@ -34,9 +37,13 @@ export default function MembersFilterModal({
   onClear,
   activeFilters,
 }: MembersFilterModalProps) {
-  const { handleSubmit, reset, control } = useForm({
+  const { handleSubmit, reset, control, watch, setValue } = useForm({
     defaultValues: activeFilters,
   });
+
+  const watchZone = watch('zoneName');
+  const watchSector = watch('sectorName');
+  const watchSubSector = watch('subSectorName');
 
   const { data: ministriesData, isLoading: isLoadingMinistries } =
     useMinistries({
@@ -47,6 +54,107 @@ export default function MembersFilterModal({
     queryKey: ['networks'],
     queryFn: () => getNetworks(),
   });
+
+  const { data: zonesData, isLoading: isLoadingZones } = useQuery({
+    queryKey: ['zones'],
+    queryFn: () => getAllZones(),
+  });
+
+  const { data: hierarchyData, isLoading: isLoadingHierarchy } = useQuery({
+    queryKey: ['sectors-hierarchy'],
+    queryFn: () => getSectorHierarchy(),
+  });
+
+  const zoneOptions = React.useMemo(() => {
+    if (!zonesData) return [{ value: '', label: 'Todas' }];
+    return [
+      { value: '', label: 'Todas' },
+      ...zonesData.map((zone) => ({
+        value: zone.name,
+        label: zone.name,
+      })),
+    ];
+  }, [zonesData]);
+
+  const sectorOptions = React.useMemo(() => {
+    if (!hierarchyData) return [{ value: '', label: 'Todos' }];
+
+    // Si hay una zona seleccionada, filtrar sectores por esa zona
+    let filteredSectors = hierarchyData;
+    if (watchZone) {
+      filteredSectors = hierarchyData.filter((s) => s.zone?.name === watchZone);
+    }
+
+    return [
+      { value: '', label: 'Todos' },
+      ...filteredSectors.map((sector) => ({
+        value: sector.name,
+        label: sector.name,
+      })),
+    ];
+  }, [hierarchyData, watchZone]);
+
+  const subSectorOptions = React.useMemo(() => {
+    if (!hierarchyData || !watchSector) return [{ value: '', label: 'Todos' }];
+
+    const selectedSector = hierarchyData.find((s) => s.name === watchSector);
+    if (!selectedSector) return [{ value: '', label: 'Todos' }];
+
+    return [
+      { value: '', label: 'Todos' },
+      ...selectedSector.subSectors.map((ss) => ({
+        value: ss.name,
+        label: ss.name,
+      })),
+    ];
+  }, [hierarchyData, watchSector]);
+
+  const cellOptions = React.useMemo(() => {
+    if (!hierarchyData || !watchSector || !watchSubSector)
+      return [{ value: '', label: 'Todas' }];
+
+    const selectedSector = hierarchyData.find((s) => s.name === watchSector);
+    if (!selectedSector) return [{ value: '', label: 'Todas' }];
+
+    const selectedSubSector = selectedSector.subSectors.find(
+      (ss) => ss.name === watchSubSector
+    );
+    if (!selectedSubSector) return [{ value: '', label: 'Todas' }];
+
+    return [
+      { value: '', label: 'Todas' },
+      ...selectedSubSector.cells.map((cell) => ({
+        value: cell.name,
+        label: cell.name,
+      })),
+    ];
+  }, [hierarchyData, watchSector, watchSubSector]);
+
+  // Reset dependent fields when parent changes
+  React.useEffect(() => {
+    if (isOpen) {
+      // Si cambia la zona y el sector actual no pertenece a esa zona, resetear sector
+      if (watchZone && hierarchyData) {
+        const sector = hierarchyData.find((s) => s.name === watchSector);
+        if (sector && sector.zone?.name !== watchZone) {
+          setValue('sectorName', '');
+        }
+      }
+    }
+  }, [watchZone, setValue, isOpen, hierarchyData, watchSector]);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setValue('subSectorName', '');
+      setValue('cellName', '');
+    }
+  }, [watchSector, setValue, isOpen]);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setValue('cellName', '');
+    }
+  }, [watchSubSector, setValue, isOpen]);
 
   const ministryOptions = React.useMemo(() => {
     if (!ministriesData?.ministries) return [{ value: '', label: 'Todos' }];
@@ -78,11 +186,20 @@ export default function MembersFilterModal({
   const onSubmit = (data: Record<string, any>) => {
     const formattedData = { ...data };
 
-    // Helper to format ISO to YYYY-MM-DD
-    const formatDate = (val: string) => {
+    // Helper to format date safely to YYYY-MM-DD
+    const formatDateToYMD = (val: string) => {
       if (!val) return val;
+      // Si ya está en formato YYYY-MM-DD, no hacemos nada
+      if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+
       try {
-        return format(new Date(val), 'yyyy-MM-dd');
+        const d = new Date(val);
+        if (isNaN(d.getTime())) return val;
+        // Usamos los métodos locales para asegurar que el día no cambie
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
       } catch {
         return val;
       }
@@ -96,7 +213,7 @@ export default function MembersFilterModal({
       'baptismDate_to',
     ].forEach((key) => {
       if (formattedData[key]) {
-        formattedData[key] = formatDate(formattedData[key]);
+        formattedData[key] = formatDateToYMD(formattedData[key]);
       }
     });
 
@@ -166,6 +283,46 @@ export default function MembersFilterModal({
                 options={networkOptions}
                 placeholder="Seleccionar red..."
                 disabled={isLoadingNetworks}
+              />
+
+              {/* Zona */}
+              <SelectField
+                name="zoneName"
+                label="Zona"
+                control={control}
+                options={zoneOptions}
+                placeholder="Seleccionar zona..."
+                disabled={isLoadingZones}
+              />
+
+              {/* Sector */}
+              <SelectField
+                name="sectorName"
+                label="Sector"
+                control={control}
+                options={sectorOptions}
+                placeholder="Seleccionar sector..."
+                disabled={isLoadingHierarchy}
+              />
+
+              {/* Sub-Sector */}
+              <SelectField
+                name="subSectorName"
+                label="Sub-Sector"
+                control={control}
+                options={subSectorOptions}
+                placeholder="Seleccionar sub-sector..."
+                disabled={!watchSector || isLoadingHierarchy}
+              />
+
+              {/* Célula */}
+              <SelectField
+                name="cellName"
+                label="Célula"
+                control={control}
+                options={cellOptions}
+                placeholder="Seleccionar célula..."
+                disabled={!watchSubSector || isLoadingHierarchy}
               />
 
               {/* Dirección */}

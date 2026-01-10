@@ -59,14 +59,7 @@ export function InputField<T extends FieldValues>({
   if (control) {
     return (
       <Field className={className} data-invalid={!!error}>
-        {label && (
-          <FieldLabel
-            className="mb-3 px-1 font-bold text-base"
-            htmlFor={String(name)}
-          >
-            {label}
-          </FieldLabel>
-        )}
+        {label && <FieldLabel htmlFor={String(name)}>{label}</FieldLabel>}
         <div className="relative flex items-center">
           {startIcon && (
             <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-muted-foreground">
@@ -104,14 +97,7 @@ export function InputField<T extends FieldValues>({
 
   return (
     <Field className={className} data-invalid={!!error}>
-      {label && (
-        <FieldLabel
-          className="mb-2 px-1 font-bold text-base text-foreground"
-          htmlFor={String(name)}
-        >
-          {label}
-        </FieldLabel>
-      )}
+      {label && <FieldLabel htmlFor={String(name)}>{label}</FieldLabel>}
       <div className="relative flex items-center">
         {startIcon && (
           <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-muted-foreground">

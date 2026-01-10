@@ -31,8 +31,8 @@ export function ImageUploadField<T extends FieldValues>({ name, control, label =
   }, [previewUrl]);
 
   return (
-    <div className="space-y-4">
-      {label ? <h3 className="text-sm font-medium text-base-content/70">{label}</h3> : null}
+    <div className="space-y-1.5">
+      {label ? <h3 className="text-sm font-medium text-muted-foreground">{label}</h3> : null}
       <Controller
         name={name}
         control={control}

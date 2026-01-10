@@ -3,7 +3,7 @@ import {
   MemberWithMinistries,
 } from '@/app/[lang]/(authenticated)/members/types/member';
 
-// Formateo de fecha estable (evita dependencias de locale/zonas horarias)
+// Formateo de fecha estable (usa UTC para evitar desfases de zona horaria en cumpleaños/bautismos)
 export const formatDate = (value?: string | Date | null): string => {
   if (!value) return 'N/A';
   const d = new Date(value);

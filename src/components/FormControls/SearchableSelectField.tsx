@@ -5,6 +5,8 @@ import { RiArrowDownSLine, RiCloseLine } from 'react-icons/ri';
 import { cn } from '@/lib/utils';
 import { Loader2, Check, Search } from 'lucide-react';
 
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+
 export interface SelectOption {
   value: string;
   label: string;
@@ -90,24 +92,19 @@ export function SearchableSelectField({
   }, [isOpen]);
 
   return (
-    <div className="w-full space-y-3">
+    <Field data-invalid={!!error}>
       {label && (
-        <label
-          className={cn(
-            'text-base font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 px-1 text-slate-700 dark:text-slate-200',
-            error && 'text-destructive'
-          )}
-        >
+        <FieldLabel>
           {label}
           {required && <span className="text-destructive ml-1">*</span>}
-        </label>
+        </FieldLabel>
       )}
 
       <div className="relative" ref={dropdownRef}>
         {/* Main input display */}
         <div
           className={cn(
-            'flex w-full min-h-14 h-auto cursor-pointer items-center gap-2 rounded-2xl border border-input px-4 py-3 text-base ring-offset-background transition-all hover:bg-accent hover:border-primary/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
+            'flex w-full min-h-11 h-auto cursor-pointer items-center gap-2 rounded-md border border-input px-3 py-2 text-sm ring-offset-background transition-all hover:bg-accent hover:border-primary/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
             variantClasses,
             error && 'border-destructive focus-within:ring-destructive',
             disabled && 'cursor-not-allowed opacity-50 bg-muted'
@@ -130,13 +127,13 @@ export function SearchableSelectField({
                 onClick={handleClear}
                 className="text-muted-foreground hover:text-destructive p-1 rounded-full hover:bg-destructive/10 transition-colors"
               >
-                <RiCloseLine className="w-5 h-5" />
+                <RiCloseLine className="w-4 h-4" />
               </button>
             )}
-            <div className="w-px h-6 bg-border mx-1" />
+            <div className="w-px h-4 bg-border mx-1" />
             <RiArrowDownSLine
               className={cn(
-                'w-6 h-6 text-muted-foreground transition-transform duration-300',
+                'w-4 h-4 text-muted-foreground transition-transform duration-300',
                 isOpen && 'rotate-180 text-primary'
               )}
             />
@@ -145,9 +142,9 @@ export function SearchableSelectField({
 
         {/* Dropdown */}
         {isOpen && !disabled && (
-          <div className="absolute z-50 w-full mt-2 rounded-2xl border bg-popover text-popover-foreground shadow-xl outline-none animate-in fade-in-0 zoom-in-95 overflow-hidden backdrop-blur-xl bg-popover/95">
+          <div className="absolute z-50 w-full mt-2 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95 overflow-hidden backdrop-blur-sm bg-popover/95">
             {/* Search input */}
-            <div className="p-3 border-b bg-muted/30">
+            <div className="p-2 border-b bg-muted/30">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
@@ -156,17 +153,17 @@ export function SearchableSelectField({
                   placeholder="Buscar..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="flex h-11 w-full rounded-xl border border-input bg-background pl-10 pr-4 py-2 text-base shadow-sm transition-all placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-transparent"
+                  className="flex h-9 w-full rounded-md border border-input bg-background pl-9 pr-3 py-1 text-sm shadow-sm transition-all placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-transparent"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
             </div>
 
             {/* Options list */}
-            <div className="max-h-72 overflow-y-auto p-2 space-y-1">
+            <div className="max-h-60 overflow-y-auto p-1 space-y-1">
               {isLoading ? (
-                <div className="flex items-center justify-center py-8 text-base text-muted-foreground">
-                  <Loader2 className="mr-3 h-5 w-5 animate-spin text-primary" />
+                <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
                   Cargando...
                 </div>
               ) : filteredOptions.length > 0 ? (
@@ -176,7 +173,7 @@ export function SearchableSelectField({
                     <div
                       key={option.value}
                       className={cn(
-                        'relative flex w-full cursor-pointer select-none items-center rounded-xl py-3 px-3 text-base outline-none transition-colors',
+                        'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none transition-colors',
                         isSelected
                           ? 'bg-primary/10 text-primary font-medium'
                           : 'hover:bg-accent hover:text-accent-foreground'
@@ -185,13 +182,13 @@ export function SearchableSelectField({
                     >
                       <span className="flex-1 truncate">{option.label}</span>
                       {isSelected && (
-                        <Check className="w-5 h-5 ml-auto text-primary" />
+                        <Check className="w-4 h-4 ml-auto text-primary" />
                       )}
                     </div>
                   );
                 })
               ) : (
-                <div className="py-8 text-center text-base text-muted-foreground">
+                <div className="py-4 text-center text-sm text-muted-foreground">
                   No se encontraron resultados
                 </div>
               )}
@@ -201,11 +198,7 @@ export function SearchableSelectField({
       </div>
 
       {/* Error message */}
-      {error && (
-        <p className="text-base font-bold text-destructive mt-2 px-1 animate-in fade-in slide-in-from-top-1">
-          {error}
-        </p>
-      )}
-    </div>
+      {error && <FieldError>{error}</FieldError>}
+    </Field>
   );
 }

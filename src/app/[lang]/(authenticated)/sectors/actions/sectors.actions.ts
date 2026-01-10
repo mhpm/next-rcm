@@ -151,6 +151,7 @@ export async function getSectorHierarchy() {
     orderBy: { name: 'asc' },
     include: {
       supervisor: true,
+      zone: true,
       _count: { select: { members: true, subSectors: true } },
       subSectors: {
         orderBy: { name: 'asc' },

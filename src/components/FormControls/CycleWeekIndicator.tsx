@@ -30,22 +30,22 @@ export function CycleWeekIndicator({
   }, [startDate, verbs, reportDate]);
 
   return (
-    <div className={cn('space-y-3', className)}>
+    <div className={cn('space-y-1.5', className)}>
       {label && (
-        <div className="flex items-center justify-between text-muted-foreground font-medium text-sm uppercase tracking-wider">
+        <div className="flex items-center justify-between text-muted-foreground font-medium text-xs uppercase tracking-wider">
           <div className="flex items-center gap-2">
-            <Info className="h-4 w-4" />
+            <Info className="h-3.5 w-3.5" />
             {label}
           </div>
         </div>
       )}
 
       {onStartDateChange && (
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold">Fecha Inicio Ciclo</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium">Fecha Inicio Ciclo</label>
           <Input
             type="date"
-            className="w-full h-14 rounded-2xl border-input bg-background hover:bg-accent/50 transition-colors"
+            className="w-full h-10 rounded-md border-input bg-background hover:bg-accent/50 transition-colors"
             value={
               startDate
                 ? typeof startDate === 'string'

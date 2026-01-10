@@ -3,7 +3,8 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus } from 'lucide-react';
-import { cn } from '@/lib/utils';
+
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 
 interface NumberStepperProps {
   value: number;
@@ -57,27 +58,18 @@ export function NumberStepper({
   };
 
   return (
-    <div className={cn('flex flex-col gap-2 w-full', className)}>
-      {label && (
-        <label
-          className={cn(
-            'text-base font-bold text-foreground mb-3 px-1 block',
-            error && 'text-destructive'
-          )}
-        >
-          {label}
-        </label>
-      )}
-      <div className="flex items-center justify-between bg-card border-2 rounded-3xl p-3 shadow-sm hover:shadow-md transition-all duration-200 group border-border h-24 sm:h-28">
+    <Field className={className} data-invalid={!!error}>
+      {label && <FieldLabel>{label}</FieldLabel>}
+      <div className="flex items-center justify-between bg-card border rounded-md p-1 shadow-sm transition-all duration-200 group border-border h-11">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors border-2 border-border shadow-sm"
+          className="h-8 w-8 rounded-md bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors border border-border"
           onClick={handleDecrement}
           disabled={disabled || (min !== undefined && value <= min)}
         >
-          <Minus className="h-7 w-7" />
+          <Minus className="h-4 w-4" />
         </Button>
 
         <div className="flex-1 flex justify-center">
@@ -86,7 +78,7 @@ export function NumberStepper({
             value={value}
             onChange={handleChange}
             disabled={disabled}
-            className="w-full text-center text-4xl sm:text-5xl font-black bg-transparent border-none focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-foreground"
+            className="w-full text-center text-sm font-semibold bg-transparent border-none focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-foreground"
           />
         </div>
 
@@ -94,18 +86,14 @@ export function NumberStepper({
           type="button"
           variant="ghost"
           size="icon"
-          className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary transition-colors border-2 border-primary/20 shadow-sm"
+          className="h-8 w-8 rounded-md bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary transition-colors border border-primary/20"
           onClick={handleIncrement}
           disabled={disabled || (max !== undefined && value >= max)}
         >
-          <Plus className="h-7 w-7" />
+          <Plus className="h-4 w-4" />
         </Button>
       </div>
-      {error && (
-        <span className="text-base font-bold text-destructive mt-2 px-1 block">
-          {error}
-        </span>
-      )}
-    </div>
+      {error && <FieldError>{error}</FieldError>}
+    </Field>
   );
 }

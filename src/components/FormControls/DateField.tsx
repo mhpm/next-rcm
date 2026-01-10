@@ -23,6 +23,7 @@ import {
   setYear,
   getYear,
   getMonth,
+  parseISO,
 } from 'date-fns';
 import { es } from 'date-fns/locale';
 import {
@@ -72,32 +73,52 @@ export function DateField<T extends FieldValues>({
 
   useEffect(() => {
     if (defaultToNow && !field.value) {
-      field.onChange(new Date().toISOString());
+      field.onChange(format(new Date(), 'yyyy-MM-dd'));
     }
   }, [defaultToNow, field.value, field]);
 
+  // Función segura para parsear la fecha guardada (evita desfases de zona horaria)
+  const getSafeDate = (value: any): Date | undefined => {
+    if (!value) return undefined;
+    if (value instanceof Date) return value;
+    if (typeof value !== 'string') return undefined;
+
+    // Si es un ISO string completo (con T), lo parseamos asegurando que usamos el día UTC
+    if (value.includes('T')) {
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return undefined;
+      // Creamos una fecha local con los componentes UTC para que no haya desfase al mostrar
+      return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+    }
+
+    // Si es un string de fecha simple (YYYY-MM-DD), parseISO lo trata como local
+    try {
+      return parseISO(value);
+    } catch {
+      return new Date(value);
+    }
+  };
+
+  const safeValue = getSafeDate(field.value);
+
   return (
     <Field className={className} data-invalid={!!error}>
-      {label && (
-        <FieldLabel className="mb-3 px-1 font-bold text-base block text-foreground">
-          {label}
-        </FieldLabel>
-      )}
+      {label && <FieldLabel className="block">{label}</FieldLabel>}
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant={'outline'}
             className={cn(
-              'w-full h-14 justify-start text-left font-bold text-lg rounded-2xl border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all px-4',
+              'w-full h-10 justify-start text-left font-normal text-sm rounded-md border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all px-3',
               !field.value && 'text-muted-foreground',
               error && 'border-destructive ring-destructive/20',
               disabled && 'opacity-50 cursor-not-allowed'
             )}
             disabled={disabled}
           >
-            <CalendarIcon className="mr-3 h-5 w-5 text-muted-foreground" />
-            {field.value ? (
-              format(new Date(field.value), 'PPP', { locale: es })
+            <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+            {safeValue ? (
+              format(safeValue, 'PPP', { locale: es })
             ) : (
               <span>{placeholder}</span>
             )}
@@ -108,9 +129,13 @@ export function DateField<T extends FieldValues>({
           align="start"
         >
           <Calendar
-            selected={field.value ? new Date(field.value) : undefined}
+            selected={safeValue}
             onSelect={(date) => {
-              field.onChange(date?.toISOString());
+              if (date) {
+                field.onChange(format(date, 'yyyy-MM-dd'));
+              } else {
+                field.onChange(undefined);
+              }
             }}
           />
         </PopoverContent>
@@ -137,9 +162,10 @@ function Calendar({
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
 
+  const currentYear = getYear(new Date());
   const years = Array.from(
-    { length: 10 },
-    (_, i) => getYear(new Date()) - 5 + i
+    { length: 150 }, // 100 años atrás + 50 adelante
+    (_, i) => currentYear - 120 + i
   );
   const months = Array.from({ length: 12 }, (_, i) => i);
 

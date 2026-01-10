@@ -380,45 +380,48 @@ export const MemberForm: React.FC<MemberFormProps> = ({
               <CardTitle>Rol</CardTitle>
             </CardHeader>
             <CardContent>
-              <SelectField<FormValues>
-                name="role"
-                label="Rol"
-                control={control}
-                rules={{ required: 'El rol es requerido' }}
-                error={errors.role?.message}
-                options={[
-                  { value: 'MIEMBRO', label: 'Miembro' },
-                  { value: 'SUPERVISOR', label: 'Supervisor' },
-                  { value: 'LIDER', label: 'Líder' },
-                  { value: 'ANFITRION', label: 'Anfitrión' },
-                  { value: 'PASTOR', label: 'Pastor' },
-                  { value: 'TESORERO', label: 'Tesorero' },
-                ]}
-              />
-              <SelectField
-                name="network_id"
-                control={control}
-                label="Red"
-                options={networkOptions}
-                placeholder="Selecciona una red"
-                disabled={isLoadingNetworks}
-              />
-              <MultiSelectField
-                label="Ministerios"
-                options={ministryOptions}
-                value={currentMinistries}
-                onChange={handleMinistriesChange}
-                placeholder="Selecciona ministerios..."
-                isLoading={isLoadingMinistries}
-                error={errors.ministries?.message}
-              />
-              <div className="flex flex-wrap justify-start items-start gap-2 mt-2">
-                <p className="text-sm text-muted-foreground">
-                  ¿No se encuentra tu ministerio?
-                </p>
-                <Link href="/ministries" className="underline text-primary">
-                  Agreagar nuevo ministerio <FaLink className="inline-block" />
-                </Link>
+              <div className="space-y-4">
+                <SelectField<FormValues>
+                  name="role"
+                  label="Rol"
+                  control={control}
+                  rules={{ required: 'El rol es requerido' }}
+                  error={errors.role?.message}
+                  options={[
+                    { value: 'MIEMBRO', label: 'Miembro' },
+                    { value: 'SUPERVISOR', label: 'Supervisor' },
+                    { value: 'LIDER', label: 'Líder' },
+                    { value: 'ANFITRION', label: 'Anfitrión' },
+                    { value: 'PASTOR', label: 'Pastor' },
+                    { value: 'TESORERO', label: 'Tesorero' },
+                  ]}
+                />
+                <SelectField
+                  name="network_id"
+                  control={control}
+                  label="Red"
+                  options={networkOptions}
+                  placeholder="Selecciona una red"
+                  disabled={isLoadingNetworks}
+                />
+                <MultiSelectField
+                  label="Ministerios"
+                  options={ministryOptions}
+                  value={currentMinistries}
+                  onChange={handleMinistriesChange}
+                  placeholder="Selecciona ministerios..."
+                  isLoading={isLoadingMinistries}
+                  error={errors.ministries?.message}
+                />
+                <div className="flex flex-wrap justify-start items-start gap-2 pt-2">
+                  <p className="text-sm text-muted-foreground">
+                    ¿No se encuentra tu ministerio?
+                  </p>
+                  <Link href="/ministries" className="underline text-primary">
+                    Agreagar nuevo ministerio{' '}
+                    <FaLink className="inline-block" />
+                  </Link>
+                </div>
               </div>
             </CardContent>
           </Card>

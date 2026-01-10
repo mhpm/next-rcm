@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 import {
   FieldValues,
   Path,
@@ -8,13 +8,13 @@ import {
   UseFormSetValue,
   UseFormWatch,
   FieldPathValue,
-} from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
-import { useDebounce } from "@/hooks/useDebounce";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { Field, FieldLabel, FieldError } from "@/components/ui/field";
-import { Loader2, X } from "lucide-react";
+} from 'react-hook-form';
+import { useQuery } from '@tanstack/react-query';
+import { useDebounce } from '@/hooks/useDebounce';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import { Loader2, X } from 'lucide-react';
 
 type AutocompleteFieldProps<TForm extends FieldValues, TItem> = {
   name: Path<TForm>;
@@ -51,7 +51,7 @@ export function AutocompleteField<TForm extends FieldValues, TItem>({
   getItemLabel,
   renderItem,
 }: AutocompleteFieldProps<TForm, TItem>) {
-  const [searchText, setSearchText] = useState<string>("");
+  const [searchText, setSearchText] = useState<string>('');
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [hasTyped, setHasTyped] = useState<boolean>(false);
   const debouncedSearch = useDebounce(searchText, 300);
@@ -60,11 +60,11 @@ export function AutocompleteField<TForm extends FieldValues, TItem>({
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const selectedId = (watch(name) as string | null) || "";
+  const selectedId = (watch(name) as string | null) || '';
 
   // Resolve the selected item label on edit
   const { data: selectedItem } = useQuery({
-    queryKey: ["autocomplete", String(name), "resolve", selectedId],
+    queryKey: ['autocomplete', String(name), 'resolve', selectedId],
     queryFn: async () => {
       if (!resolveById || !selectedId) return null;
       return await resolveById(selectedId);
@@ -78,13 +78,13 @@ export function AutocompleteField<TForm extends FieldValues, TItem>({
       setSearchText(getItemLabel(selectedItem));
       setHasTyped(false);
     } else if (!selectedId) {
-      setSearchText("");
+      setSearchText('');
     }
   }, [selectedId, selectedItem, getItemLabel]);
 
   // Search query
   const { data: results, isLoading } = useQuery({
-    queryKey: ["autocomplete", String(name), "search", debouncedSearch],
+    queryKey: ['autocomplete', String(name), 'search', debouncedSearch],
     queryFn: async () => {
       const items = await search(debouncedSearch);
       return items;
@@ -94,7 +94,7 @@ export function AutocompleteField<TForm extends FieldValues, TItem>({
   });
 
   return (
-    <Field className="space-y-2" data-invalid={!!error}>
+    <Field data-invalid={!!error}>
       <FieldLabel htmlFor={String(name)}>{label}</FieldLabel>
 
       {/* Hidden value bound to RHF */}
@@ -106,8 +106,8 @@ export function AutocompleteField<TForm extends FieldValues, TItem>({
             ref={inputRef}
             type="text"
             className={cn(
-              "pr-10",
-              error && "border-destructive focus-visible:ring-destructive"
+              'pr-10',
+              error && 'border-destructive focus-visible:ring-destructive'
             )}
             placeholder={placeholder || label}
             value={searchText}
@@ -116,7 +116,7 @@ export function AutocompleteField<TForm extends FieldValues, TItem>({
             onChange={(e) => {
               setSearchText(e.target.value);
               setHasTyped(true);
-              if (e.target.value === "") {
+              if (e.target.value === '') {
                 setValue(name, null as FieldPathValue<TForm, Path<TForm>>);
               }
             }}
@@ -140,7 +140,7 @@ export function AutocompleteField<TForm extends FieldValues, TItem>({
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => {
                 setValue(name, null as FieldPathValue<TForm, Path<TForm>>);
-                setSearchText("");
+                setSearchText('');
                 setHasTyped(false);
                 inputRef.current?.focus();
               }}

@@ -31,7 +31,7 @@ export function RadioGroupField<T extends FieldValues>({
   return (
     <Field data-invalid={!!error}>
       <FieldLabel>{label}</FieldLabel>
-      <div className="flex items-center gap-4 mt-1">
+      <div className="flex items-center gap-4">
         {options.map((opt) => (
           <div key={opt.value} className="flex items-center gap-2">
             <input

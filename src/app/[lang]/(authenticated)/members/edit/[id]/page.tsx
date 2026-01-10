@@ -115,6 +115,17 @@ export default function EditMemberPage({
     );
   }
 
+  // Helper para convertir Date a YYYY-MM-DD usando UTC para evitar desfases
+  const toYMD = (date: Date | string | undefined | null) => {
+    if (!date) return '';
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '';
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const defaultValues: FormValues = {
     firstName: member.firstName,
     lastName: member.lastName,
@@ -126,12 +137,8 @@ export default function EditMemberPage({
     state: member.state || '',
     zip: member.zip || '',
     country: member.country || '',
-    birthDate: member.birthDate
-      ? member.birthDate.toISOString().split('T')[0]
-      : '',
-    baptismDate: member.baptismDate
-      ? member.baptismDate.toISOString().split('T')[0]
-      : '',
+    birthDate: toYMD(member.birthDate),
+    baptismDate: toYMD(member.baptismDate),
     role: member.role,
     gender: member.gender,
     pictureUrl: member.pictureUrl || '',

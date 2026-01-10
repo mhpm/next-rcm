@@ -22,11 +22,11 @@ export function ChoiceGroup({
   disabled,
 }: ChoiceGroupProps) {
   return (
-    <div className={cn('flex flex-col gap-3 w-full', className)}>
+    <div className={cn('flex flex-col gap-1.5 w-full', className)}>
       {label && (
         <label
           className={cn(
-            'text-base font-bold text-foreground mb-3 px-1 block',
+            'text-sm font-medium text-foreground px-1 block',
             error && 'text-destructive'
           )}
         >

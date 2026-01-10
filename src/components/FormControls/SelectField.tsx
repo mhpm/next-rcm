@@ -51,37 +51,43 @@ export function SelectField<T extends FieldValues>({
 
   return (
     <Field className={cn('w-full', className)} data-invalid={!!error}>
-      {label && (
-        <FieldLabel
-          className="mb-3 px-1 font-bold text-base text-foreground"
-          htmlFor={String(name)}
-        >
-          {label}
-        </FieldLabel>
-      )}
+      {label && <FieldLabel htmlFor={String(name)}>{label}</FieldLabel>}
       <Controller
         control={control}
         name={name}
         rules={rules}
         defaultValue={defaultValue as any}
-        render={({ field }) => (
-          <Select
-            onValueChange={(val) => {
-              const v = val === '__EMPTY__' ? '' : val;
-              field.onChange(v);
-            }}
-            value={field.value === '' ? '__EMPTY__' : (field.value as any)}
-            disabled={disabled}
-          >
-            <SelectTrigger
-              id={String(name)}
-              className={cn('w-full', variantClasses)}
-              aria-invalid={!!error}
+        render={({ field }) => {
+          // Asegurarnos de que el valor sea siempre un string y manejar nulos/undefined
+          const currentValue = field.value ?? '';
+          const safeValue =
+            currentValue === '' ? '__EMPTY__' : String(currentValue);
+
+          return (
+            <Select
+              onValueChange={(val) => {
+                const newValue = val === '__EMPTY__' ? '' : val;
+                if (newValue !== currentValue) {
+                  field.onChange(newValue);
+                }
+              }}
+              value={safeValue}
+              disabled={disabled}
             >
-              <SelectValue placeholder={placeholder} />
-            </SelectTrigger>
-            <SelectContent>
-              <div className="max-h-50 overflow-y-auto">
+              <SelectTrigger
+                id={String(name)}
+                className={cn('w-full', variantClasses)}
+                aria-invalid={!!error}
+              >
+                <SelectValue placeholder={placeholder} />
+              </SelectTrigger>
+              <SelectContent>
+                {/* Opción vacía si no existe en las opciones para evitar bucles de Radix */}
+                {!options.some((opt) => opt.value === '') && (
+                  <SelectItem value="__EMPTY__" className="hidden">
+                    {placeholder}
+                  </SelectItem>
+                )}
                 {options.map((opt) => {
                   const val = opt.value === '' ? '__EMPTY__' : opt.value;
                   return (
@@ -90,10 +96,10 @@ export function SelectField<T extends FieldValues>({
                     </SelectItem>
                   );
                 })}
-              </div>
-            </SelectContent>
-          </Select>
-        )}
+              </SelectContent>
+            </Select>
+          );
+        }}
       />
       {error && <FieldError>{error}</FieldError>}
     </Field>
