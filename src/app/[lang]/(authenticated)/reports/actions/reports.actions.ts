@@ -314,47 +314,18 @@ export async function updateReportEntry(input: UpdateReportEntryInput) {
 
   const { scope, cellId, groupId, sectorId, createdAt } = input;
   if (scope === 'CELL' && !cellId && !input.id)
-    // Only require cellId on create if scope is CELL
     throw new Error('Debes seleccionar una célula');
-  // if update, cellId might be undefined if not changing, but usually form sends it.
 
-  // Actually, updateReportEntry receives values.
-  // If cellId is not passed in input, we might need to fetch it from DB if scope is CELL.
-  let targetCellId = cellId;
-
-  if (scope === 'CELL' && !targetCellId) {
-    const existingEntry = await prisma.reportEntries.findUnique({
-      where: { id: input.id },
-      select: { cell_id: true },
-    });
-    targetCellId = existingEntry?.cell_id;
-  }
-
-  const connectByScope =
-    scope === 'CELL' && cellId // Only update relation if cellId is provided
-      ? { cell: { connect: { id: cellId! } } }
-      : scope === 'GROUP' && groupId
-      ? { group: { connect: { id: groupId! } } }
-      : scope === 'SECTOR' && sectorId
-      ? { sector: { connect: { id: sectorId! } } }
-      : {};
-
-  await prisma.reportEntries.update({
-    where: { id: input.id },
-    data: {
-      ...connectByScope,
-      ...(createdAt ? { createdAt } : {}),
-      status: input.status || undefined,
-    },
-  });
-
-  // Fetch report definition to get church_id if needed, or rely on getChurchId
-  // The entry already exists, so it's linked to church_id.
+  // Fetch report definition to get church_id
   const entryForChurch = await prisma.reportEntries.findUnique({
     where: { id: input.id },
-    select: { church_id: true },
+    select: { church_id: true, cell_id: true, report_id: true },
   });
-  const churchId = entryForChurch?.church_id || (await getChurchId());
+
+  if (!entryForChurch) throw new Error('Entrada no encontrada');
+
+  const churchId = entryForChurch.church_id || (await getChurchId());
+  let targetCellId = cellId || entryForChurch.cell_id;
 
   // Fetch field definitions to identify special types
   const fieldDefs = await prisma.reportFields.findMany({
@@ -364,80 +335,134 @@ export async function updateReportEntry(input: UpdateReportEntryInput) {
     select: { id: true, type: true },
   });
 
-  // Update values
-  // similar logic: delete values for fields not present? or just upsert?
-  // usually report entry values are simpler.
-  // We can delete all values for this entry and recreate? Or update individually.
-  // Recreating is easiest but loses history if we tracked that.
-  // Better: loop and upsert.
+  const connectByScope =
+    scope === 'CELL' && cellId
+      ? { cell: { connect: { id: cellId! } } }
+      : scope === 'GROUP' && groupId
+      ? { group: { connect: { id: groupId! } } }
+      : scope === 'SECTOR' && sectorId
+      ? { sector: { connect: { id: sectorId! } } }
+      : {};
 
-  for (const v of input.values) {
-    // Find existing value for this field and entry
-    const existing = await prisma.reportEntryValues.findFirst({
-      where: {
-        entry_id: input.id,
-        field: { id: v.fieldId },
+  await prisma.$transaction(async (tx) => {
+    // 1. Update Report Entry metadata
+    await tx.reportEntries.update({
+      where: { id: input.id },
+      data: {
+        ...connectByScope,
+        ...(createdAt ? { createdAt } : {}),
+        status: input.status || undefined,
+        updatedAt: new Date(),
       },
     });
 
-    const val =
-      typeof v.value === 'undefined'
-        ? Prisma.JsonNull
-        : (v.value as Prisma.InputJsonValue);
+    // 2. Update/Upsert values
+    for (const v of input.values) {
+      const val =
+        typeof v.value === 'undefined'
+          ? Prisma.JsonNull
+          : (v.value as Prisma.InputJsonValue);
 
-    if (existing) {
-      await prisma.reportEntryValues.update({
-        where: { id: existing.id },
-        data: { value: val },
-      });
-    } else {
-      await prisma.reportEntryValues.create({
-        data: {
-          entry: { connect: { id: input.id } },
-          field: { connect: { id: v.fieldId } },
-          value: val,
+      const existing = await tx.reportEntryValues.findFirst({
+        where: {
+          entry_id: input.id,
+          report_field_id: v.fieldId,
         },
       });
-    }
 
-    // Process FRIEND_REGISTRATION fields
-    if (scope === 'CELL' && targetCellId) {
-      const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
-      if (fieldDef?.type === 'FRIEND_REGISTRATION' && Array.isArray(v.value)) {
-        const friendsData = v.value as {
-          firstName: string;
-          lastName: string;
-          phone?: string;
-          spiritualFatherId?: string;
-        }[];
+      if (existing) {
+        await tx.reportEntryValues.update({
+          where: { id: existing.id },
+          data: { value: val },
+        });
+      } else {
+        await tx.reportEntryValues.create({
+          data: {
+            entry: { connect: { id: input.id } },
+            field: { connect: { id: v.fieldId } },
+            value: val,
+          },
+        });
+      }
 
-        for (const friend of friendsData) {
+      // Process side effects (only for non-drafts or as requested by harmony)
+      if (input.status === 'SUBMITTED' || !input.status) {
+        // Process FRIEND_REGISTRATION fields
+        if (scope === 'CELL' && targetCellId) {
+          const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
           if (
-            friend.firstName &&
-            friend.firstName.trim() &&
-            friend.lastName &&
-            friend.lastName.trim()
+            fieldDef?.type === 'FRIEND_REGISTRATION' &&
+            Array.isArray(v.value)
           ) {
-            const fullName = `${friend.firstName.trim()} ${friend.lastName.trim()}`;
+            const friendsData = v.value as {
+              firstName: string;
+              lastName: string;
+              phone?: string;
+              spiritualFatherId?: string;
+            }[];
 
-            // Check if friend already exists to avoid duplicates
-            // Using findFirst instead of tx.friends since we are not in transaction here
-            const existingFriend = await prisma.friends.findFirst({
+            for (const friend of friendsData) {
+              if (friend.firstName?.trim() && friend.lastName?.trim()) {
+                const fullName = `${friend.firstName.trim()} ${friend.lastName.trim()}`;
+
+                const existingFriend = await tx.friends.findFirst({
+                  where: {
+                    name: { equals: fullName, mode: 'insensitive' },
+                    cell_id: targetCellId,
+                    church_id: churchId,
+                  },
+                });
+
+                if (!existingFriend) {
+                  await tx.friends.create({
+                    data: {
+                      name: fullName,
+                      phone: friend.phone?.trim() || null,
+                      church_id: churchId,
+                      cell_id: targetCellId,
+                      spiritual_father_id: friend.spiritualFatherId || null,
+                    },
+                  });
+                }
+              }
+            }
+          }
+        }
+
+        // Process MEMBER_SELECT fields
+        if (scope === 'CELL' && targetCellId) {
+          const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
+          if (fieldDef?.type === 'MEMBER_SELECT' && Array.isArray(v.value)) {
+            const memberIds = v.value as string[];
+
+            const cell = await tx.cells.findUnique({
+              where: { id: targetCellId },
+              select: { leader_id: true },
+            });
+            const leaderId = cell?.leader_id;
+
+            await tx.members.updateMany({
               where: {
-                name: { equals: fullName, mode: 'insensitive' },
                 cell_id: targetCellId,
                 church_id: churchId,
+                id: {
+                  notIn: memberIds,
+                  ...(leaderId ? { not: leaderId } : {}),
+                },
+              },
+              data: {
+                cell_id: null,
               },
             });
 
-            if (!existingFriend) {
-              await prisma.friends.create({
-                data: {
-                  name: fullName,
-                  phone: friend.phone?.trim() || null,
+            if (memberIds.length > 0) {
+              await tx.members.updateMany({
+                where: {
+                  id: { in: memberIds },
                   church_id: churchId,
+                },
+                data: {
                   cell_id: targetCellId,
-                  spiritual_father_id: friend.spiritualFatherId || null,
                 },
               });
             }
@@ -445,60 +470,12 @@ export async function updateReportEntry(input: UpdateReportEntryInput) {
         }
       }
     }
-
-    // Process MEMBER_SELECT fields
-    if (scope === 'CELL' && targetCellId) {
-      const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
-      if (fieldDef?.type === 'MEMBER_SELECT' && Array.isArray(v.value)) {
-        const memberIds = v.value as string[];
-
-        // Fetch cell leader to protect them from being unlinked
-        const cell = await prisma.cells.findUnique({
-          where: { id: targetCellId },
-          select: { leader_id: true },
-        });
-        const leaderId = cell?.leader_id;
-
-        // Sync members:
-        // 1. Unlink members currently in the cell but not in the new list
-        // IMPORTANT: Never unlink the leader (leaderId)
-        await prisma.members.updateMany({
-          where: {
-            cell_id: targetCellId,
-            church_id: churchId,
-            id: {
-              notIn: memberIds,
-              ...(leaderId ? { not: leaderId } : {}),
-            },
-          },
-          data: {
-            cell_id: null,
-          },
-        });
-        // 2. Link members in the new list to the cell
-        if (memberIds.length > 0) {
-          await prisma.members.updateMany({
-            where: {
-              id: { in: memberIds },
-              church_id: churchId,
-            },
-            data: {
-              cell_id: targetCellId,
-            },
-          });
-        }
-      }
-    }
-  }
-
-  const existing = await prisma.reportEntries.findUnique({
-    where: { id: input.id },
-    select: { report_id: true },
   });
-  if (existing?.report_id) {
-    revalidatePath(`/reports/${existing.report_id}/entries`);
+
+  if (entryForChurch.report_id) {
+    revalidatePath(`/reports/${entryForChurch.report_id}/entries`);
   }
-  revalidatePath('/friends'); // Refresh friends list
+  revalidatePath('/friends');
   revalidateTag('cells', { expire: 0 });
 }
 
@@ -575,96 +552,94 @@ export async function createReportEntry(input: CreateReportEntryInput) {
       },
     });
 
-    // 2. Process FRIEND_REGISTRATION fields
-    if (cellId) {
-      for (const v of input.values) {
-        const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
-        if (
-          fieldDef?.type === 'FRIEND_REGISTRATION' &&
-          Array.isArray(v.value)
-        ) {
-          const friendsData = v.value as {
-            firstName: string;
-            lastName: string;
-            phone?: string;
-            spiritualFatherId?: string;
-          }[];
-          for (const friend of friendsData) {
-            if (
-              friend.firstName &&
-              friend.firstName.trim() &&
-              friend.lastName &&
-              friend.lastName.trim()
-            ) {
-              const fullName = `${friend.firstName.trim()} ${friend.lastName.trim()}`;
+    // 2. Process side effects (only if NOT a draft)
+    if (input.status !== 'DRAFT') {
+      // 2.1 Process FRIEND_REGISTRATION fields
+      if (cellId) {
+        for (const v of input.values) {
+          const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
+          if (
+            fieldDef?.type === 'FRIEND_REGISTRATION' &&
+            Array.isArray(v.value)
+          ) {
+            const friendsData = v.value as {
+              firstName: string;
+              lastName: string;
+              phone?: string;
+              spiritualFatherId?: string;
+            }[];
+            for (const friend of friendsData) {
+              if (friend.firstName?.trim() && friend.lastName?.trim()) {
+                const fullName = `${friend.firstName.trim()} ${friend.lastName.trim()}`;
 
-              // Check if friend already exists to avoid duplicates
-              const existingFriend = await tx.friends.findFirst({
-                where: {
-                  name: { equals: fullName, mode: 'insensitive' },
-                  cell_id: cellId,
-                  church_id: churchId,
-                },
-              });
-
-              if (!existingFriend) {
-                await tx.friends.create({
-                  data: {
-                    name: fullName,
-                    phone: friend.phone?.trim() || null,
-                    church_id: churchId,
+                // Check if friend already exists to avoid duplicates
+                const existingFriend = await tx.friends.findFirst({
+                  where: {
+                    name: { equals: fullName, mode: 'insensitive' },
                     cell_id: cellId,
-                    spiritual_father_id: friend.spiritualFatherId || null,
+                    church_id: churchId,
                   },
                 });
+
+                if (!existingFriend) {
+                  await tx.friends.create({
+                    data: {
+                      name: fullName,
+                      phone: friend.phone?.trim() || null,
+                      church_id: churchId,
+                      cell_id: cellId,
+                      spiritual_father_id: friend.spiritualFatherId || null,
+                    },
+                  });
+                }
               }
             }
           }
         }
       }
-    }
 
-    // 3. Process MEMBER_SELECT fields
-    if (cellId) {
-      for (const v of input.values) {
-        const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
-        if (fieldDef?.type === 'MEMBER_SELECT' && Array.isArray(v.value)) {
-          const memberIds = v.value as string[];
+      // 2.2 Process MEMBER_SELECT fields
+      if (cellId) {
+        for (const v of input.values) {
+          const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
+          if (fieldDef?.type === 'MEMBER_SELECT' && Array.isArray(v.value)) {
+            const memberIds = v.value as string[];
 
-          // Fetch cell leader to protect them from being unlinked
-          const cell = await tx.cells.findUnique({
-            where: { id: cellId },
-            select: { leader_id: true },
-          });
-          const leaderId = cell?.leader_id;
+            // Fetch cell leader to protect them from being unlinked
+            const cell = await tx.cells.findUnique({
+              where: { id: cellId },
+              select: { leader_id: true },
+            });
+            const leaderId = cell?.leader_id;
 
-          // Sync members:
-          // 1. Unlink members currently in the cell but not in the new list
-          // IMPORTANT: Never unlink the leader (leaderId)
-          await tx.members.updateMany({
-            where: {
-              cell_id: cellId,
-              church_id: churchId,
-              id: {
-                notIn: memberIds,
-                ...(leaderId ? { not: leaderId } : {}),
-              },
-            },
-            data: {
-              cell_id: null,
-            },
-          });
-          // 2. Link members in the new list to the cell
-          if (memberIds.length > 0) {
+            // Sync members:
+            // 1. Unlink members currently in the cell but not in the new list
+            // IMPORTANT: Never unlink the leader (leaderId)
             await tx.members.updateMany({
               where: {
-                id: { in: memberIds },
+                cell_id: cellId,
                 church_id: churchId,
+                id: {
+                  notIn: memberIds,
+                  ...(leaderId ? { not: leaderId } : {}),
+                },
               },
               data: {
-                cell_id: cellId,
+                cell_id: null,
               },
             });
+            // 2. Link members in the new list to the cell
+            if (memberIds.length > 0) {
+              await tx.members.updateMany({
+                where: {
+                  id: { in: memberIds },
+                  church_id: churchId,
+                },
+                data: {
+                  cell_id: cellId,
+                },
+              });
+            }
           }
         }
       }

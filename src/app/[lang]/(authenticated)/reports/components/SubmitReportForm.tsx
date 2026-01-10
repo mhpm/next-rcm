@@ -494,6 +494,7 @@ export default function SubmitReportForm({
               onChange={field.onChange}
               label={f.label || f.key}
               variant="filled"
+              members={[...cellMembers, ...unlinkedMembers]}
             />
           )}
         />

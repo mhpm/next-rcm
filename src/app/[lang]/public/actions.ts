@@ -404,19 +404,19 @@ export async function getPublicReportEntityMembers(
     return prisma.members.findMany({
       where: { cell_id: entityId },
       select: { id: true, firstName: true, lastName: true },
-      orderBy: { lastName: 'asc' },
+      orderBy: { firstName: 'asc' },
     });
   } else if (scope === 'GROUP') {
     return prisma.members.findMany({
       where: { groups: { some: { id: entityId } } },
       select: { id: true, firstName: true, lastName: true },
-      orderBy: { lastName: 'asc' },
+      orderBy: { firstName: 'asc' },
     });
   } else if (scope === 'SECTOR') {
     return prisma.members.findMany({
       where: { sector_id: entityId },
       select: { id: true, firstName: true, lastName: true },
-      orderBy: { lastName: 'asc' },
+      orderBy: { firstName: 'asc' },
     });
   }
 
