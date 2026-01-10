@@ -1,9 +1,13 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { getChurchPrisma, getChurchId } from '@/actions/churchContext';
 import { Prisma } from '@/generated/prisma/client';
-import type { ReportFieldType, ReportScope } from '@/generated/prisma/client';
+import {
+  ReportFieldType,
+  ReportScope,
+  ReportEntryStatus,
+} from '@/generated/prisma/client';
 import crypto from 'crypto';
 
 export type ReportFieldInput = {
@@ -302,6 +306,7 @@ export type UpdateReportEntryInput = {
   sectorId?: string | null;
   values: { fieldId: string; value?: unknown }[];
   createdAt?: Date;
+  status?: ReportEntryStatus;
 };
 
 export async function updateReportEntry(input: UpdateReportEntryInput) {
@@ -339,6 +344,7 @@ export async function updateReportEntry(input: UpdateReportEntryInput) {
     data: {
       ...connectByScope,
       ...(createdAt ? { createdAt } : {}),
+      status: input.status || undefined,
     },
   });
 
@@ -439,6 +445,25 @@ export async function updateReportEntry(input: UpdateReportEntryInput) {
         }
       }
     }
+
+    // Process MEMBER_SELECT fields
+    if (scope === 'CELL' && targetCellId) {
+      const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
+      if (fieldDef?.type === 'MEMBER_SELECT' && Array.isArray(v.value)) {
+        const memberIds = v.value as string[];
+        if (memberIds.length > 0) {
+          await prisma.members.updateMany({
+            where: {
+              id: { in: memberIds },
+              church_id: churchId,
+            },
+            data: {
+              cell_id: targetCellId,
+            },
+          });
+        }
+      }
+    }
   }
 
   const existing = await prisma.reportEntries.findUnique({
@@ -449,6 +474,7 @@ export async function updateReportEntry(input: UpdateReportEntryInput) {
     revalidatePath(`/reports/${existing.report_id}/entries`);
   }
   revalidatePath('/friends'); // Refresh friends list
+  revalidateTag('cells', { expire: 0 });
 }
 
 export type CreateReportEntryInput = {
@@ -459,6 +485,7 @@ export type CreateReportEntryInput = {
   sectorId?: string | null;
   values: { fieldId: string; value?: unknown }[];
   createdAt?: Date;
+  status?: ReportEntryStatus;
 };
 
 export async function createReportEntry(input: CreateReportEntryInput) {
@@ -515,6 +542,7 @@ export async function createReportEntry(input: CreateReportEntryInput) {
         church: { connect: { id: churchId } },
         report: { connect: { id: input.reportId } },
         createdAt: createdAt || new Date(), // Use provided date or now
+        status: input.status || 'SUBMITTED',
         ...connectByScope,
         values: {
           create: valuesCreate,
@@ -570,10 +598,46 @@ export async function createReportEntry(input: CreateReportEntryInput) {
         }
       }
     }
+
+    // 3. Process MEMBER_SELECT fields
+    if (cellId) {
+      for (const v of input.values) {
+        const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
+        if (fieldDef?.type === 'MEMBER_SELECT' && Array.isArray(v.value)) {
+          const memberIds = v.value as string[];
+          if (memberIds.length > 0) {
+            await tx.members.updateMany({
+              where: {
+                id: { in: memberIds },
+                church_id: churchId,
+              },
+              data: {
+                cell_id: cellId,
+              },
+            });
+          }
+        }
+      }
+    }
   });
 
   revalidatePath(`/reports/${input.reportId}/entries`);
   revalidatePath('/friends'); // Refresh friends list
+  revalidateTag('cells', { expire: 0 });
+}
+
+export async function getUnlinkedMembers() {
+  const prisma = await getChurchPrisma();
+  const churchId = await getChurchId();
+
+  return prisma.members.findMany({
+    where: {
+      church_id: churchId,
+      cell_id: null,
+    },
+    select: { id: true, firstName: true, lastName: true },
+    orderBy: { firstName: 'asc' },
+  });
 }
 
 export async function getReportEntityMembers(
@@ -611,6 +675,7 @@ export async function getReportEntityInfo(
             sector: { select: { name: true } },
           },
         },
+        leader_id: true,
         leader: { select: { firstName: true, lastName: true } },
         host: { select: { firstName: true, lastName: true } },
         assistant: { select: { firstName: true, lastName: true } },
@@ -626,6 +691,7 @@ export async function getReportEntityInfo(
       leader: cell.leader
         ? `${cell.leader.firstName} ${cell.leader.lastName}`
         : 'N/A',
+      leaderId: cell.leader_id,
       host: cell.host ? `${cell.host.firstName} ${cell.host.lastName}` : 'N/A',
       assistant: cell.assistant
         ? `${cell.assistant.firstName} ${cell.assistant.lastName}`

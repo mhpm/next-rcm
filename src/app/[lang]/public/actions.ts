@@ -2,7 +2,7 @@
 
 import prisma from '@/lib/prisma';
 import { ReportScope, Prisma } from '@/generated/prisma/client';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 export async function getPublicReport(token: string) {
   const report = await prisma.reports.findUnique({
@@ -23,7 +23,7 @@ export async function getPublicEntities(token: string) {
 
   if (!report) return null;
 
-  const [groups, sectors, members] = await Promise.all([
+  const [groups, sectors, members, unlinkedMembers] = await Promise.all([
     prisma.groups.findMany({
       where: { church_id: report.church_id },
       select: {
@@ -49,9 +49,21 @@ export async function getPublicEntities(token: string) {
       },
       orderBy: { firstName: 'asc' },
     }),
+    prisma.members.findMany({
+      where: {
+        church_id: report.church_id,
+        cell_id: null,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+      },
+      orderBy: { firstName: 'asc' },
+    }),
   ]);
 
-  return { groups, sectors, members };
+  return { groups, sectors, members, unlinkedMembers };
 }
 
 export async function verifyCellAccess(code: string) {
@@ -60,6 +72,7 @@ export async function verifyCellAccess(code: string) {
     select: {
       id: true,
       name: true,
+      leader_id: true,
       leader: {
         select: {
           firstName: true,
@@ -298,12 +311,29 @@ export async function submitPublicReportEntry(
               }
             }
           }
+
+          // Handle MEMBER_SELECT fields
+          if (fieldDef?.type === 'MEMBER_SELECT' && Array.isArray(v.value)) {
+            const memberIds = v.value as string[];
+            if (memberIds.length > 0) {
+              await tx.members.updateMany({
+                where: {
+                  id: { in: memberIds },
+                  church_id: report.church_id,
+                },
+                data: {
+                  cell_id: input.cellId,
+                },
+              });
+            }
+          }
         }
       }
     });
 
     revalidatePath(`/reports/${report.id}/entries`);
     revalidatePath('/friends');
+    revalidateTag('cells', { expire: 0 });
   }
 
   return { id: entryId };

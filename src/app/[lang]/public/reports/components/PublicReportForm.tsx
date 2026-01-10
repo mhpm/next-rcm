@@ -42,7 +42,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { ChevronDown, Loader2, Check } from 'lucide-react';
+import { ChevronDown, Loader2, Check, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type Option = { value: string; label: string };
@@ -82,6 +82,7 @@ export default function PublicReportForm({
   groups,
   sectors,
   members,
+  unlinkedMembers = [],
   churchName,
 }: {
   token: string;
@@ -92,6 +93,7 @@ export default function PublicReportForm({
   groups: Option[];
   sectors: Option[];
   members: Option[];
+  unlinkedMembers?: Option[];
   churchName: string;
 }) {
   const { showSuccess, showError } = useNotificationStore();
@@ -100,6 +102,7 @@ export default function PublicReportForm({
   const [cellInfo, setCellInfo] = useState<{
     name: string;
     leader?: string;
+    leaderId?: string | null;
     sector?: string;
     subSector?: string;
   } | null>(null);
@@ -120,6 +123,7 @@ export default function PublicReportForm({
     reset,
     watch,
     setValue,
+    getValues,
     trigger,
     control,
     formState: { isSubmitting, errors },
@@ -143,11 +147,23 @@ export default function PublicReportForm({
       // If we can't find the field, assume visible (or handle error)
       if (!controlField) return true;
 
-      const fieldValue = watchedValues[controlField.id];
-      const val =
-        fieldValue === undefined || fieldValue === null
-          ? ''
-          : String(fieldValue);
+      let val = '';
+
+      if (controlField.type === 'CYCLE_WEEK_INDICATOR') {
+        // For cycle indicators, we use the current verb as the value to compare
+        const state = calculateCycleState(
+          controlField.value,
+          controlField.options
+        );
+        val = state.verb || '';
+      } else {
+        const fieldValue = watchedValues[controlField.id];
+        val =
+          fieldValue === undefined || fieldValue === null
+            ? ''
+            : String(fieldValue);
+      }
+
       const target = rule.value;
 
       switch (rule.operator) {
@@ -363,17 +379,83 @@ export default function PublicReportForm({
             key={f.id}
             name={baseName}
             control={control}
-            rules={f.required ? { required: 'Requerido' } : undefined}
-            render={({ field, fieldState }) => (
-              <SearchableSelectField
-                label={f.label || f.key}
-                options={currentMembers}
-                value={field.value as string}
-                onChange={field.onChange}
-                error={fieldState.error?.message}
-                placeholder="Selecciona un miembro..."
-              />
-            )}
+            rules={
+              f.required
+                ? {
+                    validate: (val: unknown) =>
+                      (Array.isArray(val) && val.length > 0) ||
+                      'Selecciona al menos un miembro',
+                  }
+                : undefined
+            }
+            render={({ field, fieldState }) => {
+              const selectedIds = (field.value as string[]) || [];
+              // Combine cell members and unlinked members
+              const allAvailableMembers = [
+                ...currentMembers,
+                ...unlinkedMembers,
+              ];
+
+              const selectedMembers = allAvailableMembers.filter((m) =>
+                selectedIds.includes(m.value)
+              );
+
+              const handleAddMember = (id: string) => {
+                if (id && !selectedIds.includes(id)) {
+                  field.onChange([...selectedIds, id]);
+                }
+              };
+
+              const handleRemoveMember = (id: string) => {
+                field.onChange(selectedIds.filter((i) => i !== id));
+              };
+
+              return (
+                <div className="space-y-4">
+                  <SearchableSelectField
+                    label={f.label || f.key}
+                    options={allAvailableMembers.filter(
+                      (m) => !selectedIds.includes(m.value)
+                    )}
+                    value=""
+                    onChange={handleAddMember}
+                    error={fieldState.error?.message}
+                    placeholder="Busca y selecciona miembros..."
+                  />
+
+                  {selectedMembers.length > 0 && (
+                    <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-500">
+                      <div className="flex items-center justify-between px-1">
+                        <p className="text-[10px] font-black text-primary/70 uppercase tracking-widest">
+                          Miembros Seleccionados ({selectedMembers.length})
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-1 gap-2">
+                        {selectedMembers.map((member) => (
+                          <div
+                            key={member.value}
+                            className="flex items-center justify-between p-3 pl-4 rounded-2xl bg-primary/5 border border-primary/10 hover:border-primary/30 transition-all duration-200 group"
+                          >
+                            <span className="font-bold text-foreground/90">
+                              {member.label}
+                            </span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleRemoveMember(member.value)}
+                              className="h-10 w-10 rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            }}
           />
         );
       }
@@ -459,6 +541,7 @@ export default function PublicReportForm({
           leader: cell.leader
             ? `${cell.leader.firstName} ${cell.leader.lastName}`
             : undefined,
+          leaderId: cell.leader_id,
           sector: cell.subSector?.sector?.name,
           subSector: cell.subSector?.name,
         });
@@ -476,6 +559,25 @@ export default function PublicReportForm({
             label: `${m.firstName} ${m.lastName}`,
           }));
           setCurrentMembers(memberOptions);
+
+          // Default members for CELL scope (excluding leader)
+          if (scope === 'CELL' && entityMembers.length > 0) {
+            const filteredMemberIds = entityMembers
+              .filter((m) => m.id !== cell.leader_id)
+              .map((m) => m.id);
+
+            fields.forEach((f) => {
+              if (f.type === 'MEMBER_SELECT') {
+                // For public form, we check if there's already a value
+                // (could be from a draft)
+                const currentVal =
+                  (getValues(`values.${f.id}`) as string[]) || [];
+                if (currentVal.length === 0) {
+                  setValue(`values.${f.id}`, filteredMemberIds);
+                }
+              }
+            });
+          }
         } catch (error) {
           console.error('Error fetching members:', error);
         }
@@ -719,7 +821,7 @@ export default function PublicReportForm({
           {/* Auth Card Centered */}
           <div className="w-full max-w-md mx-auto">
             {scope === 'CELL' && (
-              <Card className="overflow-hidden border-2 transition-all duration-300 hover:shadow-lg bg-card">
+              <Card className="border-2 transition-all duration-300 hover:shadow-lg bg-card">
                 <div className="bg-primary/5 px-6 py-4 border-b">
                   <h3 className="text-xs font-black uppercase tracking-widest text-primary/70">
                     Seguridad y Acceso
@@ -910,7 +1012,7 @@ export default function PublicReportForm({
                           onOpenChange={(open) =>
                             setSectionOpen(sectionKey, open)
                           }
-                          className="bg-muted/30 rounded-3xl border border-border shadow-sm overflow-hidden transition-all duration-300"
+                          className="bg-muted/30 rounded-3xl border border-border shadow-sm transition-all duration-300"
                         >
                           <CollapsibleTrigger asChild>
                             <Button
@@ -931,7 +1033,7 @@ export default function PublicReportForm({
                               </div>
                             </Button>
                           </CollapsibleTrigger>
-                          <CollapsibleContent className="px-6 pb-8 data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
+                          <CollapsibleContent className="px-6 pb-8 data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-visible">
                             <div className="grid grid-cols-1 gap-8 pt-4">
                               {group.fields.map((f) => {
                                 if (!isFieldVisible(f)) return null;
@@ -963,7 +1065,7 @@ export default function PublicReportForm({
                 type="button"
                 variant="outline"
                 className="w-full md:w-auto gap-3 h-14 px-8 rounded-2xl border-border hover:bg-accent hover:text-accent-foreground text-muted-foreground font-semibold transition-all duration-200"
-                onClick={handleSubmit(onSaveDraft)}
+                onClick={() => onSaveDraft(getValues())}
                 disabled={isSavingDraft || isSubmitting}
               >
                 {isSavingDraft ? (

@@ -78,8 +78,8 @@ export default async function ReportEntriesPage({
     take: 5000,
   });
 
-  // Extract spiritualFatherIds from FRIEND_REGISTRATION fields to pre-fetch names
-  const spiritualFatherIds = new Set<string>();
+  // Extract member IDs from FRIEND_REGISTRATION and MEMBER_SELECT fields to pre-fetch names
+  const memberIds = new Set<string>();
   entries.forEach((entry) => {
     entry.values.forEach((val) => {
       if (
@@ -88,8 +88,15 @@ export default async function ReportEntriesPage({
       ) {
         (val.value as any[]).forEach((friend) => {
           if (friend.spiritualFatherId) {
-            spiritualFatherIds.add(friend.spiritualFatherId);
+            memberIds.add(friend.spiritualFatherId);
           }
+        });
+      } else if (
+        val.field.type === 'MEMBER_SELECT' &&
+        Array.isArray(val.value)
+      ) {
+        (val.value as string[]).forEach((id) => {
+          if (id) memberIds.add(id);
         });
       }
     });
@@ -97,7 +104,7 @@ export default async function ReportEntriesPage({
 
   // Fetch member names
   const members = await prisma.members.findMany({
-    where: { id: { in: Array.from(spiritualFatherIds) } },
+    where: { id: { in: Array.from(memberIds) } },
     select: { id: true, firstName: true, lastName: true },
   });
 
@@ -216,6 +223,10 @@ export default async function ReportEntriesPage({
             ? memberMap.get(friend.spiritualFatherId)
             : undefined,
         }));
+      } else if (f.type === 'MEMBER_SELECT' && Array.isArray(val)) {
+        display = (val as string[])
+          .map((id) => memberMap.get(id))
+          .filter(Boolean);
       }
       base[f.id] = display;
       base[`raw_${f.id}`] = val; // Store raw value for filtering

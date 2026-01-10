@@ -255,6 +255,49 @@ export default function ReportEntriesTable({
           },
         };
       }
+
+      if (fieldDef?.type === 'MEMBER_SELECT') {
+        return {
+          ...col,
+          render: (value: any) => {
+            if (!Array.isArray(value) || value.length === 0) {
+              return <span className="text-muted-foreground">-</span>;
+            }
+
+            return (
+              <TooltipProvider>
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <Badge
+                      variant="outline"
+                      className="cursor-help whitespace-nowrap border-primary/30 text-primary"
+                    >
+                      {value.length} miembro{value.length !== 1 ? 's' : ''}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="p-0">
+                    <div className="flex flex-col max-h-[300px] overflow-y-auto min-w-[180px]">
+                      <div className="bg-primary/5 px-3 py-2 text-xs font-bold text-primary border-b">
+                        Miembros Seleccionados
+                      </div>
+                      <div className="p-2 space-y-1">
+                        {value.map((name: string, i: number) => (
+                          <div
+                            key={i}
+                            className="text-sm px-2 py-1.5 rounded-md hover:bg-muted transition-colors"
+                          >
+                            {name}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            );
+          },
+        };
+      }
       return col;
     });
   }, [columns, fields]);

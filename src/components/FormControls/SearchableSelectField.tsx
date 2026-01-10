@@ -5,7 +5,7 @@ import { RiArrowDownSLine, RiCloseLine } from 'react-icons/ri';
 import { cn } from '@/lib/utils';
 import { Loader2, Check, Search } from 'lucide-react';
 
-import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import { FieldError } from '@/components/ui/field';
 
 export interface SelectOption {
   value: string;
@@ -92,15 +92,15 @@ export function SearchableSelectField({
   }, [isOpen]);
 
   return (
-    <Field data-invalid={!!error}>
+    <div className={cn('relative', isOpen && 'z-50')} ref={dropdownRef}>
       {label && (
-        <FieldLabel>
+        <label className="block text-sm font-bold text-foreground mb-2 px-1">
           {label}
           {required && <span className="text-destructive ml-1">*</span>}
-        </FieldLabel>
+        </label>
       )}
 
-      <div className="relative" ref={dropdownRef}>
+      <div className="relative">
         {/* Main input display */}
         <div
           className={cn(
@@ -142,7 +142,7 @@ export function SearchableSelectField({
 
         {/* Dropdown */}
         {isOpen && !disabled && (
-          <div className="absolute z-50 w-full mt-2 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95 overflow-hidden backdrop-blur-sm bg-popover/95">
+          <div className="absolute z-[100] w-full mt-2 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95 overflow-hidden backdrop-blur-sm bg-popover/95">
             {/* Search input */}
             <div className="p-2 border-b bg-muted/30">
               <div className="relative">
@@ -199,6 +199,6 @@ export function SearchableSelectField({
 
       {/* Error message */}
       {error && <FieldError>{error}</FieldError>}
-    </Field>
+    </div>
   );
 }

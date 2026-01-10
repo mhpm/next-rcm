@@ -7,6 +7,7 @@ import {
   SelectField,
   CycleWeekIndicator,
   DateField,
+  SearchableSelectField,
 } from '@/components/FormControls';
 import type { ReportFieldType, ReportScope } from '@/generated/prisma/client';
 import {
@@ -16,8 +17,9 @@ import {
 import {
   createReportEntry,
   updateReportEntry,
-  getReportEntityMembers,
   getReportEntityInfo,
+  getUnlinkedMembers,
+  getReportEntityMembers,
 } from '@/app/[lang]/(authenticated)/reports/actions/reports.actions';
 import { calculateCycleState } from '@/lib/cycleUtils';
 import { useRouter } from 'next/navigation';
@@ -40,6 +42,7 @@ import {
   UserCheck,
   Layers,
   Hash,
+  Trash2,
 } from 'lucide-react';
 
 type Option = { value: string; label: string };
@@ -100,6 +103,8 @@ export default function SubmitReportForm({
     watch,
     handleSubmit,
     control,
+    setValue,
+    getValues,
     formState: { isSubmitting },
   } = useForm<FormValues>({
     defaultValues: {
@@ -109,20 +114,26 @@ export default function SubmitReportForm({
     },
   });
 
-  const [members, setMembers] = React.useState<
-    { id: string; firstName: string; lastName: string }[]
+  const [unlinkedMembers, setUnlinkedMembers] = React.useState<
+    { value: string; label: string }[]
+  >([]);
+
+  const [cellMembers, setCellMembers] = React.useState<
+    { value: string; label: string }[]
   >([]);
 
   const [entityInfo, setEntityInfo] = React.useState<{
     sector: string;
     subSector: string;
     leader: string;
+    leaderId?: string | null;
     assistant: string;
     host: string;
     membersCount: number;
   } | null>(null);
 
   const [isLoadingInfo, setIsLoadingInfo] = React.useState(false);
+  const [isSavingDraft, setIsSavingDraft] = React.useState(false);
 
   const watchedCellId = watch('cellId');
   const watchedGroupId = watch('groupId');
@@ -155,11 +166,25 @@ export default function SubmitReportForm({
       // If we can't find the field, assume visible (or handle error)
       if (!controlField) return true;
 
-      const fieldValue = watchedValues[controlField.id];
-      const val =
-        fieldValue === undefined || fieldValue === null
-          ? ''
-          : String(fieldValue);
+      let val = '';
+
+      if (controlField.type === 'CYCLE_WEEK_INDICATOR') {
+        // For cycle indicators, we use the current verb as the value to compare
+        // We use the watchedCreatedAt to ensure visibility rules update if the report date changes
+        const state = calculateCycleState(
+          controlField.value,
+          controlField.options,
+          watchedCreatedAt
+        );
+        val = state.verb || '';
+      } else {
+        const fieldValue = watchedValues[controlField.id];
+        val =
+          fieldValue === undefined || fieldValue === null
+            ? ''
+            : String(fieldValue);
+      }
+
       const target = rule.value;
 
       switch (rule.operator) {
@@ -189,24 +214,57 @@ export default function SubmitReportForm({
       if (entityId) {
         setIsLoadingInfo(true);
         try {
-          // Parallel fetch: members + info
-          const [membersData, infoData] = await Promise.all([
-            getReportEntityMembers(scope, entityId),
+          // Parallel fetch: info + unlinked members + entity members
+          const [infoData, unlinkedData, entityMembers] = await Promise.all([
             getReportEntityInfo(scope, entityId),
+            getUnlinkedMembers(),
+            getReportEntityMembers(scope, entityId),
           ]);
 
-          setMembers(membersData);
           setEntityInfo(infoData);
+          setUnlinkedMembers(
+            unlinkedData.map((m) => ({
+              value: m.id,
+              label: `${m.firstName} ${m.lastName}`,
+            }))
+          );
+          setCellMembers(
+            entityMembers.map((m) => ({
+              value: m.id,
+              label: `${m.firstName} ${m.lastName}`,
+            }))
+          );
+
+          // Default members for CELL scope
+          if (scope === 'CELL' && infoData && entityMembers.length > 0) {
+            const filteredMemberIds = entityMembers
+              .filter((m) => m.id !== infoData.leaderId)
+              .map((m) => m.id);
+
+            // Only set defaults if we're not editing an existing entry,
+            // OR if the current values are empty
+            fields.forEach((f) => {
+              if (f.type === 'MEMBER_SELECT') {
+                const currentVal = getValues(`values.${f.id}`);
+                if (
+                  !currentVal ||
+                  (Array.isArray(currentVal) && currentVal.length === 0)
+                ) {
+                  setValue(`values.${f.id}`, filteredMemberIds);
+                }
+              }
+            });
+          }
         } catch (e) {
           console.error(e);
-          setMembers([]);
           setEntityInfo(null);
+          setUnlinkedMembers([]);
         } finally {
           setIsLoadingInfo(false);
         }
       } else {
-        setMembers([]);
         setEntityInfo(null);
+        setUnlinkedMembers([]);
         setIsLoadingInfo(false);
       }
     };
@@ -325,19 +383,82 @@ export default function SubmitReportForm({
     }
     if (f.type === 'MEMBER_SELECT') {
       return (
-        <SelectField<FormValues>
+        <Controller
           key={f.id}
           name={baseName}
-          label={f.label || f.key}
           control={control}
-          options={[
-            { value: '', label: 'Selecciona un miembro' },
-            ...members.map((m) => ({
-              value: m.id,
-              label: `${m.firstName} ${m.lastName}`,
-            })),
-          ]}
-          rules={f.required ? { required: 'Requerido' } : undefined}
+          rules={
+            f.required
+              ? {
+                  validate: (val: unknown) =>
+                    (Array.isArray(val) && val.length > 0) ||
+                    'Selecciona al menos un miembro',
+                }
+              : undefined
+          }
+          render={({ field, fieldState }) => {
+            const selectedIds = (field.value as string[]) || [];
+            // Combine both sources for available options
+            const allAvailableMembers = [...cellMembers, ...unlinkedMembers];
+
+            const selectedMembers = allAvailableMembers.filter((m) =>
+              selectedIds.includes(m.value)
+            );
+
+            const handleAddMember = (id: string) => {
+              if (id && !selectedIds.includes(id)) {
+                field.onChange([...selectedIds, id]);
+              }
+            };
+
+            const handleRemoveMember = (id: string) => {
+              field.onChange(selectedIds.filter((i) => i !== id));
+            };
+
+            return (
+              <div className="space-y-3">
+                <SearchableSelectField
+                  label={f.label || f.key}
+                  options={allAvailableMembers.filter(
+                    (m) => !selectedIds.includes(m.value)
+                  )}
+                  value=""
+                  onChange={handleAddMember}
+                  error={fieldState.error?.message}
+                  placeholder="Busca y selecciona miembros..."
+                />
+
+                {selectedMembers.length > 0 && (
+                  <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">
+                      Seleccionados ({selectedMembers.length})
+                    </p>
+                    <div className="grid grid-cols-1 gap-1.5">
+                      {selectedMembers.map((member) => (
+                        <div
+                          key={member.value}
+                          className="flex items-center justify-between p-2 pl-3 rounded-lg bg-muted/30 border border-border group"
+                        >
+                          <span className="text-sm font-medium">
+                            {member.label}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleRemoveMember(member.value)}
+                            className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          }}
         />
       );
     }
@@ -388,8 +509,13 @@ export default function SubmitReportForm({
     );
   };
 
-  const onSubmit = async (data: FormValues) => {
+  const handleFormSubmit = async (
+    data: FormValues,
+    isDraft: boolean = false
+  ) => {
     try {
+      if (isDraft) setIsSavingDraft(true);
+
       // Calculate cycle values to include in submission
       const cycleValues: Record<string, unknown> = {};
       fields.forEach((f) => {
@@ -425,9 +551,14 @@ export default function SubmitReportForm({
           sectorId: scope === 'SECTOR' ? data.sectorId : undefined,
           values,
           createdAt: data.createdAt ? new Date(data.createdAt) : undefined,
+          status: isDraft ? 'DRAFT' : 'SUBMITTED',
         });
-        showSuccess('Entrada actualizada exitosamente');
-        router.push(`/reports/${reportId}/entries`);
+        showSuccess(
+          isDraft
+            ? 'Borrador guardado exitosamente'
+            : 'Entrada actualizada exitosamente'
+        );
+        if (!isDraft) router.push(`/reports/${reportId}/entries`);
       } else {
         await createReportEntry({
           reportId: reportId,
@@ -437,15 +568,25 @@ export default function SubmitReportForm({
           sectorId: scope === 'SECTOR' ? data.sectorId : undefined,
           values,
           createdAt: data.createdAt ? new Date(data.createdAt) : undefined,
+          status: isDraft ? 'DRAFT' : 'SUBMITTED',
         });
-        showSuccess('Entrada creada exitosamente');
-        router.push(`/reports/${reportId}/entries`);
+        showSuccess(
+          isDraft
+            ? 'Borrador guardado exitosamente'
+            : 'Entrada creada exitosamente'
+        );
+        if (!isDraft) router.push(`/reports/${reportId}/entries`);
       }
     } catch (error) {
       console.error('Error al enviar reporte:', error);
       showError('Error al enviar el reporte');
+    } finally {
+      if (isDraft) setIsSavingDraft(false);
     }
   };
+
+  const onSubmit = (data: FormValues) => handleFormSubmit(data, false);
+  const onSaveDraft = (data: FormValues) => handleFormSubmit(data, true);
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
@@ -479,7 +620,7 @@ export default function SubmitReportForm({
                   </CardContent>
                 </Card>
               ) : entityInfo ? (
-                <Card className="bg-card border-border shadow-sm overflow-hidden">
+                <Card className="bg-card border-border shadow-sm">
                   <div className="bg-muted/40 px-4 py-3 border-b flex items-center gap-2">
                     <Hash className="h-4 w-4 text-primary" />
                     <span className="font-semibold text-sm">
@@ -638,7 +779,7 @@ export default function SubmitReportForm({
                         />
                       </Button>
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="px-4 pb-4 overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
+                    <CollapsibleContent className="px-4 pb-4 data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-visible">
                       <div className="grid grid-cols-1 gap-4 pt-2">
                         {group.fields.map((f) => {
                           if (!isFieldVisible(f)) return null;
@@ -666,16 +807,31 @@ export default function SubmitReportForm({
       <div className="flex justify-end gap-3">
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           onClick={() => router.push(`/reports/${reportId}/entries`)}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isSavingDraft}
         >
           Cancelar
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => onSaveDraft(getValues())}
+          disabled={isSubmitting || isSavingDraft}
+        >
+          {isSavingDraft ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Guardando...
+            </>
+          ) : (
+            'Guardar Borrador'
+          )}
+        </Button>
+        <Button type="submit" disabled={isSubmitting || isSavingDraft}>
           {isSubmitting ? (
             <>
-              <Loader2 className="animate-spin" />
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Enviando...
             </>
           ) : (

@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
-import { getPublicReport, getPublicEntities } from "../../actions";
-import PublicReportForm from "../components/PublicReportForm";
-import { connection } from "next/server";
+import { notFound } from 'next/navigation';
+import { getPublicReport, getPublicEntities } from '../../actions';
+import PublicReportForm from '../components/PublicReportForm';
+import { connection } from 'next/server';
 
 export default async function PublicReportPage({
   params,
@@ -51,16 +51,22 @@ export default async function PublicReportPage({
           groups={entities.groups.map((g) => ({
             value: g.id,
             label: `${g.name}${
-              g.leader ? ` - ${g.leader.firstName} ${g.leader.lastName}` : ""
+              g.leader ? ` - ${g.leader.firstName} ${g.leader.lastName}` : ''
             }`,
           }))}
           sectors={entities.sectors.map((s) => ({
             value: s.id,
             label: `${s.name}${
-              s.supervisor ? ` - ${s.supervisor.firstName} ${s.supervisor.lastName}` : ""
+              s.supervisor
+                ? ` - ${s.supervisor.firstName} ${s.supervisor.lastName}`
+                : ''
             }`,
           }))}
           members={entities.members.map((m) => ({
+            value: m.id,
+            label: `${m.firstName} ${m.lastName}`,
+          }))}
+          unlinkedMembers={entities.unlinkedMembers.map((m) => ({
             value: m.id,
             label: `${m.firstName} ${m.lastName}`,
           }))}
