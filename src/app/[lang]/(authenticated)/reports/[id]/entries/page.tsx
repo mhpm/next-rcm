@@ -32,7 +32,9 @@ export default async function ReportEntriesPage({
       values: { include: { field: true } },
       cell: {
         select: {
+          id: true,
           name: true,
+          leader_id: true,
           leader: { select: { firstName: true, lastName: true } },
           subSector: {
             select: {
@@ -224,9 +226,31 @@ export default async function ReportEntriesPage({
             : undefined,
         }));
       } else if (f.type === 'MEMBER_SELECT' && Array.isArray(val)) {
-        display = (val as string[])
+        const selectedNames = (val as string[])
           .map((id) => memberMap.get(id))
           .filter(Boolean);
+
+        // If it's a cell report and we have a leader, ensure leader is included in display
+        if (e.cell?.leader && !selectedNames.includes(lider)) {
+          selectedNames.unshift(`${lider} (Líder)`);
+        } else if (e.cell?.leader) {
+          // If already in list, just add the (Líder) suffix for clarity if not present
+          const leaderIndex = selectedNames.findIndex((n) => n === lider);
+          if (leaderIndex !== -1) {
+            selectedNames[leaderIndex] = `${lider} (Líder)`;
+          }
+        }
+        display = selectedNames;
+
+        // Also update raw_ value if needed for counts, but be careful with IDs vs names
+        // Actually, raw_ is used for counts in useReportData, so if we want the count to include leader
+        // even if not in IDs, we should probably add the leader ID to the raw array if missing.
+        if (
+          e.cell?.leader_id &&
+          !(val as string[]).includes(e.cell.leader_id)
+        ) {
+          val.unshift(e.cell.leader_id);
+        }
       }
       base[f.id] = display;
       base[`raw_${f.id}`] = val; // Store raw value for filtering

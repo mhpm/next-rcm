@@ -438,16 +438,23 @@ export default function PublicReportForm({
                           >
                             <span className="font-bold text-foreground/90">
                               {member.label}
+                              {member.value === cellInfo?.leaderId && (
+                                <span className="ml-2 text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-black uppercase tracking-tighter">
+                                  Líder
+                                </span>
+                              )}
                             </span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleRemoveMember(member.value)}
-                              className="h-10 w-10 rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
-                            >
-                              <Trash2 className="h-5 w-5" />
-                            </Button>
+                            {member.value !== cellInfo?.leaderId && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleRemoveMember(member.value)}
+                                className="h-10 w-10 rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
+                              >
+                                <Trash2 className="h-5 w-5" />
+                              </Button>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -560,11 +567,9 @@ export default function PublicReportForm({
           }));
           setCurrentMembers(memberOptions);
 
-          // Default members for CELL scope (excluding leader)
+          // Default members for CELL scope (including leader)
           if (scope === 'CELL' && entityMembers.length > 0) {
-            const filteredMemberIds = entityMembers
-              .filter((m) => m.id !== cell.leader_id)
-              .map((m) => m.id);
+            const allMemberIds = entityMembers.map((m) => m.id);
 
             fields.forEach((f) => {
               if (f.type === 'MEMBER_SELECT') {
@@ -573,7 +578,7 @@ export default function PublicReportForm({
                 const currentVal =
                   (getValues(`values.${f.id}`) as string[]) || [];
                 if (currentVal.length === 0) {
-                  setValue(`values.${f.id}`, filteredMemberIds);
+                  setValue(`values.${f.id}`, allMemberIds);
                 }
               }
             });

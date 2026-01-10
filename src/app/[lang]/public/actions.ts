@@ -315,6 +315,31 @@ export async function submitPublicReportEntry(
           // Handle MEMBER_SELECT fields
           if (fieldDef?.type === 'MEMBER_SELECT' && Array.isArray(v.value)) {
             const memberIds = v.value as string[];
+
+            // Fetch cell leader to protect them from being unlinked
+            const cell = await tx.cells.findUnique({
+              where: { id: input.cellId! },
+              select: { leader_id: true },
+            });
+            const leaderId = cell?.leader_id;
+
+            // Sync members:
+            // 1. Unlink members currently in the cell but not in the new list
+            // IMPORTANT: Never unlink the leader (leaderId)
+            await tx.members.updateMany({
+              where: {
+                cell_id: input.cellId,
+                church_id: report.church_id,
+                id: {
+                  notIn: memberIds,
+                  ...(leaderId ? { not: leaderId } : {}),
+                },
+              },
+              data: {
+                cell_id: null,
+              },
+            });
+            // 2. Link members in the new list to the cell
             if (memberIds.length > 0) {
               await tx.members.updateMany({
                 where: {

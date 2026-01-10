@@ -36,7 +36,8 @@ export function useReportData(
       (f) =>
         f.type === 'NUMBER' ||
         f.type === 'CURRENCY' ||
-        f.type === 'FRIEND_REGISTRATION'
+        f.type === 'FRIEND_REGISTRATION' ||
+        f.type === 'MEMBER_SELECT'
     );
   }, [fields]);
 
@@ -205,7 +206,7 @@ export function useReportData(
         const rawKey = `raw_${f.id}`;
         const val = row[rawKey] ?? row[f.id];
 
-        if (f.type === 'FRIEND_REGISTRATION') {
+        if (f.type === 'FRIEND_REGISTRATION' || f.type === 'MEMBER_SELECT') {
           if (Array.isArray(val)) {
             groups[key].values[f.id] += val.length;
           }

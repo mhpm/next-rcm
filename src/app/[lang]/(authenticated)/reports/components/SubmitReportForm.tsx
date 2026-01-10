@@ -237,9 +237,7 @@ export default function SubmitReportForm({
 
           // Default members for CELL scope
           if (scope === 'CELL' && infoData && entityMembers.length > 0) {
-            const filteredMemberIds = entityMembers
-              .filter((m) => m.id !== infoData.leaderId)
-              .map((m) => m.id);
+            const allMemberIds = entityMembers.map((m) => m.id);
 
             // Only set defaults if we're not editing an existing entry,
             // OR if the current values are empty
@@ -250,7 +248,7 @@ export default function SubmitReportForm({
                   !currentVal ||
                   (Array.isArray(currentVal) && currentVal.length === 0)
                 ) {
-                  setValue(`values.${f.id}`, filteredMemberIds);
+                  setValue(`values.${f.id}`, allMemberIds);
                 }
               }
             });
@@ -441,16 +439,23 @@ export default function SubmitReportForm({
                         >
                           <span className="text-sm font-medium">
                             {member.label}
+                            {member.value === entityInfo?.leaderId && (
+                              <span className="ml-2 text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase tracking-tighter">
+                                Líder
+                              </span>
+                            )}
                           </span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleRemoveMember(member.value)}
-                            className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          {member.value !== entityInfo?.leaderId && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleRemoveMember(member.value)}
+                              className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
                       ))}
                     </div>
