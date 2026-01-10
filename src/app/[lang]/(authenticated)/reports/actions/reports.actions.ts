@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { getChurchPrisma, getChurchId } from '@/actions/churchContext';
 import { Prisma } from '@/generated/prisma/client';
 import type { ReportFieldType, ReportScope } from '@/generated/prisma/client';
+import crypto from 'crypto';
 
 export type ReportFieldInput = {
   id?: string;
@@ -79,6 +80,7 @@ export async function createReport(input: CreateReportInput) {
       description: input.description,
       scope,
       color: input.color || '#4F46E5',
+      publicToken: crypto.randomBytes(16).toString('hex'),
       fields: {
         create: fieldsCreate,
       },
@@ -133,7 +135,13 @@ export async function updateReportWithFields(input: UpdateReportInput) {
 
   await prisma.$transaction(
     async (tx) => {
-      // 1. Update basic fields
+      // 1. Get current report to check for publicToken
+      const currentReport = await tx.reports.findUnique({
+        where: { id: input.id },
+        select: { publicToken: true },
+      });
+
+      // 2. Update basic fields
       await tx.reports.update({
         where: { id: input.id },
         data: {
@@ -141,10 +149,14 @@ export async function updateReportWithFields(input: UpdateReportInput) {
           description: input.description,
           scope: input.scope,
           color: input.color,
+          // Generate token if missing
+          ...(!currentReport?.publicToken
+            ? { publicToken: crypto.randomBytes(16).toString('hex') }
+            : {}),
         },
       });
 
-      // 2. Handle fields logic
+      // 3. Handle fields logic
       // Get current fields inside transaction to ensure consistency
       const currentFields = await tx.reportFields.findMany({
         where: { report_id: input.id },

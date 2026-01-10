@@ -6,6 +6,7 @@ import { connection } from 'next/server';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Locale } from '@/i18n/config';
+import crypto from 'crypto';
 
 export default async function ReportsPage({
   params,
@@ -15,7 +16,7 @@ export default async function ReportsPage({
   const { lang } = await params;
   await connection();
   const prisma = await getChurchPrisma();
-  const reports = await prisma.reports.findMany({
+  let reports = await prisma.reports.findMany({
     orderBy: { createdAt: 'desc' },
     take: 50,
     select: {
@@ -28,6 +29,33 @@ export default async function ReportsPage({
       publicToken: true,
     },
   });
+
+  // Auto-generate missing public tokens
+  const reportsToUpdate = reports.filter((r) => !r.publicToken);
+  if (reportsToUpdate.length > 0) {
+    await Promise.all(
+      reportsToUpdate.map((r) =>
+        prisma.reports.update({
+          where: { id: r.id },
+          data: { publicToken: crypto.randomBytes(16).toString('hex') },
+        })
+      )
+    );
+    // Fetch again to have the tokens
+    reports = await prisma.reports.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        scope: true,
+        createdAt: true,
+        color: true,
+        publicToken: true,
+      },
+    });
+  }
 
   return (
     <div className="p-4 space-y-6">
