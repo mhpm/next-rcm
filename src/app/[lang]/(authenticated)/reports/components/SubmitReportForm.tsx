@@ -68,6 +68,10 @@ type FieldDef = {
   visibilityRules?: VisibilityRule[];
 };
 
+const naturalSort = (a: string, b: string) => {
+  return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+};
+
 type FormValues = {
   scope: ReportScope;
   cellId?: string;
@@ -158,7 +162,7 @@ export default function SubmitReportForm({
     queryKey: ['zones', 'all'],
     queryFn: async () => {
       const zones = await getAllZones();
-      return [...zones].sort((a, b) => a.name.localeCompare(b.name));
+      return [...zones].sort((a, b) => naturalSort(a.name, b.name));
     },
     enabled: scope === 'CELL',
   });
@@ -176,14 +180,14 @@ export default function SubmitReportForm({
       ? sectorHierarchy.filter((s) => s.zone_id === selectedZone)
       : [];
 
-    return [...baseSectors].sort((a, b) => a.name.localeCompare(b.name));
+    return [...baseSectors].sort((a, b) => naturalSort(a.name, b.name));
   }, [sectorHierarchy, selectedZone, zonesData]);
 
   const filteredSubSectors = React.useMemo(() => {
     if (!filteredSectors || !selectedSector) return [];
     const sector = filteredSectors.find((s) => s.id === selectedSector);
     return [...(sector?.subSectors || [])].sort((a, b) =>
-      a.name.localeCompare(b.name)
+      naturalSort(a.name, b.name)
     );
   }, [filteredSectors, selectedSector]);
 
@@ -197,20 +201,20 @@ export default function SubmitReportForm({
         value: c.id,
         label: c.name,
       }))
-      .sort((a, b) => a.label.localeCompare(b.label));
+      .sort((a, b) => naturalSort(a.label, b.label));
   }, [filteredSubSectors, selectedSubSector]);
 
   // Memoized sorted props for fallbacks
   const sortedCells = React.useMemo(
-    () => [...cells].sort((a, b) => a.label.localeCompare(b.label)),
+    () => [...cells].sort((a, b) => naturalSort(a.label, b.label)),
     [cells]
   );
   const sortedGroups = React.useMemo(
-    () => [...groups].sort((a, b) => a.label.localeCompare(b.label)),
+    () => [...groups].sort((a, b) => naturalSort(a.label, b.label)),
     [groups]
   );
   const sortedSectors = React.useMemo(
-    () => [...sectors].sort((a, b) => a.label.localeCompare(b.label)),
+    () => [...sectors].sort((a, b) => naturalSort(a.label, b.label)),
     [sectors]
   );
 
