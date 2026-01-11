@@ -124,7 +124,7 @@ export default function SubmitReportForm({
     setValue,
     getValues,
     reset,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useForm<FormValues>({
     defaultValues: {
       scope,
@@ -356,6 +356,46 @@ export default function SubmitReportForm({
               setSelectedSubSector(infoData.subSectorId);
           }
 
+          // Initialize numeric fields to 0 and pre-fill members
+          const currentValues = getValues('values') || {};
+          let hasChanges = false;
+          const newValues = { ...currentValues };
+
+          fields.forEach((f) => {
+            // Initialize numeric fields with 0 if undefined, null or empty
+            if (
+              (f.type === 'NUMBER' || f.type === 'CURRENCY') &&
+              (newValues[f.id] === undefined ||
+                newValues[f.id] === null ||
+                newValues[f.id] === '')
+            ) {
+              newValues[f.id] = 0;
+              hasChanges = true;
+            }
+
+            // Pre-fill members for CELL scope
+            if (
+              scope === 'CELL' &&
+              infoData &&
+              entityMembers.length > 0 &&
+              f.type === 'MEMBER_SELECT'
+            ) {
+              const allMemberIds = entityMembers.map((m) => m.id);
+              if (
+                !newValues[f.id] ||
+                (Array.isArray(newValues[f.id]) &&
+                  (newValues[f.id] as any).length === 0)
+              ) {
+                newValues[f.id] = allMemberIds;
+                hasChanges = true;
+              }
+            }
+          });
+
+          if (hasChanges) {
+            setValue('values', newValues);
+          }
+
           setUnlinkedMembers(
             unlinkedData.map((m) => ({
               value: m.id,
@@ -452,8 +492,16 @@ export default function SubmitReportForm({
           type="number"
           step={f.type === 'CURRENCY' ? '0.01' : '1'}
           placeholder={f.type === 'CURRENCY' ? '0.00' : '0'}
+          error={(errors.values as any)?.[f.id]?.message}
           rules={{
-            ...(f.required ? { required: 'Requerido' } : {}),
+            validate: (v: any) => {
+              if (!f.required) return true;
+              if (typeof v === 'number' && !isNaN(v)) return true;
+              if (v === undefined || v === null || v === '') {
+                return 'Requerido';
+              }
+              return true;
+            },
             valueAsNumber: true,
           }}
           startIcon={
@@ -471,16 +519,23 @@ export default function SubmitReportForm({
           name={baseName}
           label={f.label || f.key}
           control={control}
+          error={(errors.values as any)?.[f.id]?.message}
           options={[
             { value: '', label: 'Selecciona' },
             { value: 'true', label: 'Sí' },
             { value: 'false', label: 'No' },
           ]}
           rules={{
-            ...(f.required ? { required: 'Requerido' } : {}),
+            validate: (v: any) => {
+              if (f.required && (v === undefined || v === null || v === '')) {
+                return 'Requerido';
+              }
+              return true;
+            },
             setValueAs: (v) =>
               v === 'true' ? true : v === 'false' ? false : undefined,
           }}
+          variant="filled"
         />
       );
     }
@@ -491,7 +546,15 @@ export default function SubmitReportForm({
           name={baseName}
           label={f.label || f.key}
           control={control}
-          rules={f.required ? { required: 'Requerido' } : undefined}
+          error={(errors.values as any)?.[f.id]?.message}
+          rules={{
+            validate: (v: any) => {
+              if (f.required && (v === undefined || v === null || v === '')) {
+                return 'Requerido';
+              }
+              return true;
+            },
+          }}
         />
       );
     }
@@ -502,6 +565,7 @@ export default function SubmitReportForm({
           name={baseName}
           label={f.label || f.key}
           control={control}
+          error={(errors.values as any)?.[f.id]?.message}
           options={[
             { value: '', label: 'Selecciona una opción' },
             ...(f.options || []).map((opt) => ({
@@ -509,7 +573,15 @@ export default function SubmitReportForm({
               label: opt,
             })),
           ]}
-          rules={f.required ? { required: 'Requerido' } : undefined}
+          rules={{
+            validate: (v: any) => {
+              if (f.required && (v === undefined || v === null || v === '')) {
+                return 'Requerido';
+              }
+              return true;
+            },
+          }}
+          variant="filled"
         />
       );
     }
@@ -663,7 +735,14 @@ export default function SubmitReportForm({
           key={f.id}
           name={baseName}
           control={control}
-          rules={f.required ? { required: 'Requerido' } : undefined}
+          rules={{
+            validate: (v: any) => {
+              if (f.required && (v === undefined || v === null || v === '')) {
+                return 'Requerido';
+              }
+              return true;
+            },
+          }}
           render={({ field }) => (
             <FriendRegistrationField
               value={(field.value as FriendRegistrationValue[]) || []}
@@ -686,7 +765,15 @@ export default function SubmitReportForm({
         name={baseName}
         label={f.label || f.key}
         register={register}
-        rules={f.required ? { required: 'Requerido' } : undefined}
+        error={(errors.values as any)?.[f.id]?.message}
+        rules={{
+          validate: (v: any) => {
+            if (f.required && (v === undefined || v === null || v === '')) {
+              return 'Requerido';
+            }
+            return true;
+          },
+        }}
       />
     );
   };
@@ -1050,9 +1137,9 @@ export default function SubmitReportForm({
                       <Button
                         type="button"
                         variant="ghost"
-                        className="w-full justify-between px-4 py-3"
+                        className="w-full justify-between px-4 py-3 h-auto whitespace-normal text-left flex items-center gap-2"
                       >
-                        <span className="text-base font-semibold">
+                        <span className="text-base font-semibold leading-tight break-words min-w-0 flex-1">
                           {sectionLabel}
                         </span>
                         <ChevronDown

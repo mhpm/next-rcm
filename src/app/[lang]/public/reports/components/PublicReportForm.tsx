@@ -225,7 +225,14 @@ export default function PublicReportForm({
             name={baseName}
             control={control}
             rules={{
-              ...(f.required ? { required: 'Requerido' } : {}),
+              validate: (v: any) => {
+                if (!f.required) return true;
+                if (typeof v === 'number' && !isNaN(v)) return true;
+                if (v === undefined || v === null || v === '') {
+                  return 'Requerido';
+                }
+                return true;
+              },
             }}
             render={({ field, fieldState }) => (
               <div className="space-y-6">
@@ -280,7 +287,14 @@ export default function PublicReportForm({
             name={baseName}
             control={control}
             rules={{
-              ...(f.required ? { required: 'Requerido' } : {}),
+              validate: (v: any) => {
+                if (!f.required) return true;
+                if (typeof v === 'number' && !isNaN(v)) return true;
+                if (v === undefined || v === null || v === '') {
+                  return 'Requerido';
+                }
+                return true;
+              },
             }}
             render={({ field, fieldState }) => (
               <NumberStepper
@@ -305,7 +319,12 @@ export default function PublicReportForm({
             name={baseName}
             control={control}
             rules={{
-              ...(f.required ? { required: 'Requerido' } : {}),
+              validate: (v: any) => {
+                if (f.required && (v === undefined || v === null || v === '')) {
+                  return 'Requerido';
+                }
+                return true;
+              },
             }}
             render={({ field, fieldState }) => (
               <ChoiceGroup
@@ -326,7 +345,14 @@ export default function PublicReportForm({
             name={baseName}
             label={f.label || f.key}
             control={control}
-            rules={f.required ? { required: 'Requerido' } : undefined}
+            rules={{
+              validate: (v: any) => {
+                if (f.required && (v === undefined || v === null || v === '')) {
+                  return 'Requerido';
+                }
+                return true;
+              },
+            }}
             error={(errors.values as any)?.[f.id]?.message}
           />
         );
@@ -343,7 +369,17 @@ export default function PublicReportForm({
               key={f.id}
               name={baseName}
               control={control}
-              rules={f.required ? { required: 'Requerido' } : undefined}
+              rules={{
+                validate: (v: any) => {
+                  if (
+                    f.required &&
+                    (v === undefined || v === null || v === '')
+                  ) {
+                    return 'Requerido';
+                  }
+                  return true;
+                },
+              }}
               render={({ field, fieldState }) => (
                 <ChoiceGroup
                   label={f.label || f.key}
@@ -363,7 +399,14 @@ export default function PublicReportForm({
             key={f.id}
             name={baseName}
             control={control}
-            rules={f.required ? { required: 'Requerido' } : undefined}
+            rules={{
+              validate: (v: any) => {
+                if (f.required && (v === undefined || v === null || v === '')) {
+                  return 'Requerido';
+                }
+                return true;
+              },
+            }}
             render={({ field, fieldState }) => (
               <SearchableSelectField
                 label={f.label || f.key}
@@ -530,7 +573,14 @@ export default function PublicReportForm({
             key={f.id}
             name={baseName}
             control={control}
-            rules={f.required ? { required: 'Requerido' } : undefined}
+            rules={{
+              validate: (v: any) => {
+                if (f.required && (v === undefined || v === null || v === '')) {
+                  return 'Requerido';
+                }
+                return true;
+              },
+            }}
             render={({ field }) => (
               <FriendRegistrationField
                 value={(field.value as FriendRegistrationValue[]) || []}
@@ -549,7 +599,14 @@ export default function PublicReportForm({
           name={baseName}
           label={f.label || f.key}
           register={register}
-          rules={f.required ? { required: 'Requerido' } : undefined}
+          rules={{
+            validate: (v: any) => {
+              if (f.required && (v === undefined || v === null || v === '')) {
+                return 'Requerido';
+              }
+              return true;
+            },
+          }}
         />
       );
     })();
@@ -623,12 +680,25 @@ export default function PublicReportForm({
           }));
           setCurrentMembers(memberOptions);
 
-          // Default members for CELL scope (including leader)
-          if (scope === 'CELL' && entityMembers.length > 0) {
+          // Initialize fields
+          if (entityMembers.length > 0) {
             const allMemberIds = entityMembers.map((m) => m.id);
 
             fields.forEach((f) => {
-              if (f.type === 'MEMBER_SELECT') {
+              // Initialize numeric fields to 0 if they don't have a value
+              if (f.type === 'NUMBER' || f.type === 'CURRENCY') {
+                const currentVal = getValues(`values.${f.id}`);
+                if (
+                  currentVal === undefined ||
+                  currentVal === null ||
+                  currentVal === ''
+                ) {
+                  setValue(`values.${f.id}`, 0);
+                }
+              }
+
+              // Default members for CELL scope (including leader)
+              if (scope === 'CELL' && f.type === 'MEMBER_SELECT') {
                 // For public form, we check if there's already a value
                 // (could be from a draft)
                 const currentVal =
@@ -1033,7 +1103,12 @@ export default function PublicReportForm({
                     { value: '', label: 'Selecciona un grupo' },
                     ...groups,
                   ]}
-                  rules={{ required: 'Requerido' }}
+                  rules={{
+                    validate: (v: any) => {
+                      if (!v) return 'Requerido';
+                      return true;
+                    },
+                  }}
                 />
               </div>
             )}
@@ -1047,7 +1122,12 @@ export default function PublicReportForm({
                     { value: '', label: 'Selecciona un sector' },
                     ...sectors,
                   ]}
-                  rules={{ required: 'Requerido' }}
+                  rules={{
+                    validate: (v: any) => {
+                      if (!v) return 'Requerido';
+                      return true;
+                    },
+                  }}
                 />
               </div>
             )}
@@ -1079,12 +1159,12 @@ export default function PublicReportForm({
                             <Button
                               type="button"
                               variant="ghost"
-                              className="w-full justify-between px-6 py-8 hover:bg-accent/50 transition-colors"
+                              className="w-full justify-between px-6 py-8 hover:bg-accent/50 transition-colors h-auto whitespace-normal text-left flex items-center gap-4"
                             >
-                              <span className="text-2xl font-extrabold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent tracking-tight">
+                              <span className="text-2xl font-extrabold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent tracking-tight break-words min-w-0 flex-1">
                                 {group.section.label || 'Sección'}
                               </span>
-                              <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center border border-primary/30 shadow-sm text-primary">
+                              <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center border border-primary/30 shadow-sm text-primary shrink-0">
                                 <ChevronDown
                                   className={cn(
                                     'h-5 w-5 transition-transform duration-300',
