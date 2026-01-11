@@ -37,6 +37,16 @@ import {
 } from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   ChevronDown,
   Loader2,
   MapPin,
@@ -113,6 +123,7 @@ export default function SubmitReportForm({
     control,
     setValue,
     getValues,
+    reset,
     formState: { isSubmitting },
   } = useForm<FormValues>({
     defaultValues: {
@@ -147,6 +158,8 @@ export default function SubmitReportForm({
 
   const [isLoadingInfo, setIsLoadingInfo] = React.useState(false);
   const [isSavingDraft, setIsSavingDraft] = React.useState(false);
+  const [showConfirmation, setShowConfirmation] = React.useState(false);
+  const [formKey, setFormKey] = React.useState(0);
 
   // --- Hierarchy Filters State ---
   const [selectedZone, setSelectedZone] = React.useState<string | undefined>();
@@ -156,6 +169,35 @@ export default function SubmitReportForm({
   const [selectedSubSector, setSelectedSubSector] = React.useState<
     string | undefined
   >();
+
+  const handleResetForm = () => {
+    // Save current values we want to preserve
+    const currentCreatedAt = getValues('createdAt');
+
+    // Reset local states first
+    setSelectedZone(undefined);
+    setSelectedSector(undefined);
+    setSelectedSubSector(undefined);
+    setEntityInfo(null);
+    setCellMembers([]);
+    setUnlinkedMembers([]);
+
+    // Use reset() with the preserved date
+    reset({
+      scope,
+      createdAt: currentCreatedAt,
+      values: {},
+      cellId: undefined,
+      groupId: undefined,
+      sectorId: undefined,
+    });
+
+    // Force re-mount of the form components by changing the key
+    setFormKey((prev) => prev + 1);
+
+    // Scroll to top of the form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Fetch all zones
   const { data: zonesData } = useQuery({
@@ -698,7 +740,9 @@ export default function SubmitReportForm({
             ? 'Borrador guardado exitosamente'
             : 'Entrada actualizada exitosamente'
         );
-        if (!isDraft) router.push(`/reports/${reportId}/entries`);
+        if (!isDraft) {
+          setShowConfirmation(true);
+        }
       } else {
         await createReportEntry({
           reportId: reportId,
@@ -715,7 +759,9 @@ export default function SubmitReportForm({
             ? 'Borrador guardado exitosamente'
             : 'Entrada creada exitosamente'
         );
-        if (!isDraft) router.push(`/reports/${reportId}/entries`);
+        if (!isDraft) {
+          setShowConfirmation(true);
+        }
       }
     } catch (error) {
       console.error('Error al enviar reporte:', error);
@@ -729,7 +775,7 @@ export default function SubmitReportForm({
   const onSaveDraft = (data: FormValues) => handleFormSubmit(data, true);
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+    <form key={formKey} className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="space-y-6">
         <div>
           <h2 className="text-xl font-semibold">{title}</h2>
@@ -1041,11 +1087,11 @@ export default function SubmitReportForm({
         </CardContent>
       </Card>
 
-      <div className="flex justify-end gap-3">
+      <div className="flex justify-end gap-3 pt-6 border-t border-border/50">
         <Button
           type="button"
           variant="ghost"
-          onClick={() => router.push(`/reports/${reportId}/entries`)}
+          onClick={() => router.back()}
           disabled={isSubmitting || isSavingDraft}
         >
           Cancelar
@@ -1053,8 +1099,9 @@ export default function SubmitReportForm({
         <Button
           type="button"
           variant="outline"
-          onClick={() => onSaveDraft(getValues())}
+          onClick={handleSubmit(onSaveDraft)}
           disabled={isSubmitting || isSavingDraft}
+          className="border-primary/20 hover:bg-primary/5 hover:text-primary transition-colors"
         >
           {isSavingDraft ? (
             <>
@@ -1065,7 +1112,11 @@ export default function SubmitReportForm({
             'Guardar Borrador'
           )}
         </Button>
-        <Button type="submit" disabled={isSubmitting || isSavingDraft}>
+        <Button
+          type="submit"
+          disabled={isSubmitting || isSavingDraft}
+          className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 min-w-[120px]"
+        >
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -1076,6 +1127,32 @@ export default function SubmitReportForm({
           )}
         </Button>
       </div>
+
+      <AlertDialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reporte enviado con éxito</AlertDialogTitle>
+            <AlertDialogDescription>
+              ¿Quieres enviar otro reporte para una célula diferente?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => router.push(`/reports/${reportId}/entries`)}
+            >
+              Ir a la lista
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                handleResetForm();
+                setShowConfirmation(false);
+              }}
+            >
+              Enviar otro reporte
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </form>
   );
 }

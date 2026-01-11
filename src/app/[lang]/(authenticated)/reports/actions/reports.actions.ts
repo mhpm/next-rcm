@@ -519,40 +519,37 @@ export async function createReportEntry(input: CreateReportEntryInput) {
       ? { sector: { connect: { id: sectorId! } } }
       : {};
 
-  const valuesCreate: Prisma.ReportEntryValuesCreateWithoutEntryInput[] = (
-    input.values || []
-  )
+  const valuesCreate = (input.values || [])
     .filter((v) => v.fieldId)
-    .map((v) => {
-      const base: Prisma.ReportEntryValuesCreateWithoutEntryInput = {
-        field: { connect: { id: v.fieldId } },
-      } as Prisma.ReportEntryValuesCreateWithoutEntryInput;
-
-      if (typeof v.value !== 'undefined') {
-        (base as any).value = v.value as Prisma.InputJsonValue;
-      } else {
-        (base as any).value = Prisma.JsonNull;
-      }
-      return base;
-    });
+    .map((v) => ({
+      report_field_id: v.fieldId,
+      value: typeof v.value !== 'undefined' ? (v.value as any) : null,
+    }));
 
   // Use transaction to create entry and friends
   await prisma.$transaction(async (tx) => {
     // 1. Create Report Entry
-    await tx.reportEntries.create({
+    const entry = await tx.reportEntries.create({
       data: {
         church: { connect: { id: churchId } },
         report: { connect: { id: input.reportId } },
         createdAt: createdAt || new Date(), // Use provided date or now
         status: input.status || 'SUBMITTED',
         ...connectByScope,
-        values: {
-          create: valuesCreate,
-        },
       },
     });
 
-    // 2. Process side effects (only if NOT a draft)
+    // 2. Create Values manually to avoid issues with nested create
+    if (valuesCreate.length > 0) {
+      await tx.reportEntryValues.createMany({
+        data: valuesCreate.map((v) => ({
+          ...v,
+          entry_id: entry.id,
+        })),
+      });
+    }
+
+    // 3. Process side effects (only if NOT a draft)
     if (input.status !== 'DRAFT') {
       // 2.1 Process FRIEND_REGISTRATION fields
       if (cellId) {
