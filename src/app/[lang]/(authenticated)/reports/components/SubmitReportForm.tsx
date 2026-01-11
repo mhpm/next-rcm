@@ -797,9 +797,15 @@ export default function SubmitReportForm({
           );
 
           if (state.status === 'active' && state.verb) {
-            cycleValues[f.id] = `Semana ${state.weekNumber}: ${state.verb}`;
+            cycleValues[f.id] = {
+              week: state.weekNumber,
+              verb: state.verb,
+            };
           } else {
-            cycleValues[f.id] = state.message || 'Estado desconocido';
+            cycleValues[f.id] = {
+              week: null,
+              verb: state.message || 'Estado desconocido',
+            };
           }
         }
       });
