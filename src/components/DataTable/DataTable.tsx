@@ -13,6 +13,9 @@ import {
   RiArrowDownSLine,
   RiSkipBackLine,
   RiSkipForwardLine,
+  RiDownloadLine,
+  RiFileExcel2Line,
+  RiFileTextLine,
 } from 'react-icons/ri';
 import { DataTableProps, PaginationInfo } from '@/types';
 import { ColumnVisibilityDropdown } from '../ColumnVisibilityDropdown';
@@ -314,6 +317,105 @@ function DataTable<T extends Record<string, unknown>>({
     }
   };
 
+  // Export to CSV
+  const handleExportCSV = () => {
+    const columnsToExport = visibleColumnsFiltered;
+
+    // Header
+    const headers = columnsToExport.map((col) => `"${col.label}"`).join(',');
+
+    // Rows
+    const rows = filteredData.map((row) => {
+      return columnsToExport
+        .map((col) => {
+          const value = row[col.key];
+          let stringValue = '';
+
+          if (value === null || value === undefined) {
+            stringValue = '';
+          } else if (value instanceof Date) {
+            stringValue = value.toLocaleString();
+          } else if (typeof value === 'object') {
+            try {
+              stringValue = JSON.stringify(value);
+            } catch (e) {
+              stringValue = '[Object]';
+            }
+          } else {
+            stringValue = String(value);
+          }
+
+          // Escape quotes
+          return `"${stringValue.replace(/"/g, '""')}"`;
+        })
+        .join(',');
+    });
+
+    const csvContent = [headers, ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute(
+      'download',
+      `${title || 'export'}_${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Export to Excel
+  const handleExportExcel = async () => {
+    try {
+      const XLSX = await import('xlsx');
+      const columnsToExport = visibleColumnsFiltered;
+
+      const dataToExport = filteredData.map((row) => {
+        const newRow: Record<string, string | number | boolean | null> = {};
+        columnsToExport.forEach((col) => {
+          const value = row[col.key];
+          let cellValue: string | number | boolean | null = '';
+
+          if (value === null || value === undefined) {
+            cellValue = '';
+          } else if (value instanceof Date) {
+            cellValue = value.toLocaleString();
+          } else if (typeof value === 'object') {
+            try {
+              cellValue = JSON.stringify(value);
+            } catch (e) {
+              cellValue = '[Object]';
+            }
+          } else {
+            cellValue = value as string | number | boolean;
+          }
+
+          newRow[col.label] = cellValue;
+        });
+        return newRow;
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
+
+      // Auto-width columns (simple heuristic)
+      const colWidths = columnsToExport.map((col) => ({
+        wch: Math.max(col.label.length, 10),
+      }));
+      worksheet['!cols'] = colWidths;
+
+      XLSX.writeFile(
+        workbook,
+        `${title || 'export'}_${new Date().toISOString().slice(0, 10)}.xlsx`
+      );
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col justify-center items-center gap-3 h-64 text-muted-foreground">
@@ -367,6 +469,32 @@ function DataTable<T extends Record<string, unknown>>({
                     <span className="hidden sm:inline">{addButton.text}</span>
                   </Button>
                 ))}
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <RiDownloadLine className="w-4 h-4" />
+                    <span className="hidden sm:inline">Exportar</span>
+                    <RiArrowDownSLine className="w-3 h-3 opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={handleExportCSV}
+                    className="cursor-pointer"
+                  >
+                    <RiFileTextLine className="mr-2 h-4 w-4" />
+                    Exportar CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={handleExportExcel}
+                    className="cursor-pointer"
+                  >
+                    <RiFileExcel2Line className="mr-2 h-4 w-4" />
+                    Exportar Excel
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {showColumnVisibility &&
                 allColumns &&

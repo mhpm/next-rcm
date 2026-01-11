@@ -38,7 +38,13 @@ type Row = Record<string, unknown> & {
 import { usePersistentFilters } from '@/hooks/usePersistentFilters';
 import AdvancedFilterModal from './AdvancedFilterModal';
 import { Button } from '@/components/ui/button';
-import { RiFilter3Line } from 'react-icons/ri';
+import {
+  RiFilter3Line,
+  RiDownloadLine,
+  RiFileExcel2Line,
+  RiFileTextLine,
+  RiArrowDownSLine,
+} from 'react-icons/ri';
 import {
   Tooltip,
   TooltipContent,
@@ -393,12 +399,139 @@ export default function ConsolidatedReportView({
     );
   };
 
+  // Export functions
+  const getExportData = () => {
+    const headers = ['Grupo'];
+    if (visibleColumns.has('count')) headers.push('Registros');
+
+    const fieldsToExport: { id: string; label: string; isBoolean?: boolean }[] =
+      [];
+
+    numericFields.forEach((f) => {
+      if (visibleColumns.has(f.id)) {
+        headers.push(f.label || f.key);
+        fieldsToExport.push({ id: f.id, label: f.label || f.key });
+      }
+    });
+
+    booleanFields.forEach((f) => {
+      if (visibleColumns.has(f.id)) {
+        const label = `${f.label || f.key} (Sí)`;
+        headers.push(label);
+        fieldsToExport.push({ id: f.id, label, isBoolean: true });
+      }
+    });
+
+    const rows = consolidatedData.map((group: any) => {
+      const row: any = { Grupo: group.label };
+      if (visibleColumns.has('count')) row['Registros'] = group.count;
+
+      fieldsToExport.forEach((f) => {
+        row[f.label] = group.values[f.id];
+      });
+      return row;
+    });
+
+    // Add Total row
+    const totalRow: any = { Grupo: 'TOTAL GENERAL' };
+    if (visibleColumns.has('count')) totalRow['Registros'] = totals.count;
+
+    fieldsToExport.forEach((f) => {
+      totalRow[f.label] = totals[f.id];
+    });
+
+    rows.push(totalRow);
+
+    return { headers, rows };
+  };
+
+  const handleExportCSV = () => {
+    const { headers, rows } = getExportData();
+
+    const csvContent = [
+      headers.map((h) => `"${h}"`).join(','),
+      ...rows.map((row) =>
+        headers
+          .map((h) => {
+            const val = row[h];
+            return `"${val !== undefined && val !== null ? val : ''}"`;
+          })
+          .join(',')
+      ),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute(
+      'download',
+      `reporte_consolidado_${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      const XLSX = await import('xlsx');
+      const { rows } = getExportData();
+
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Totales');
+
+      // Auto-width columns
+      const colWidths = Object.keys(rows[0] || {}).map((key) => ({
+        wch: Math.max(key.length, 15),
+      }));
+      worksheet['!cols'] = colWidths;
+
+      XLSX.writeFile(
+        workbook,
+        `reporte_consolidado_${new Date().toISOString().slice(0, 10)}.xlsx`
+      );
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+    }
+  };
+
   return (
     <Card className="w-full border-0 sm:border shadow-none sm:shadow-sm">
       <CardHeader className="px-2 sm:px-6 py-3 sm:py-4 space-y-3">
-        <CardTitle className="text-base sm:text-xl font-bold">
-          Totales
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base sm:text-xl font-bold">
+            Totales
+          </CardTitle>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="h-9 gap-2">
+                <RiDownloadLine className="w-4 h-4" />
+                <span className="hidden sm:inline">Exportar</span>
+                <RiArrowDownSLine className="w-3 h-3 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={handleExportCSV}
+                className="cursor-pointer"
+              >
+                <RiFileTextLine className="mr-2 h-4 w-4" />
+                Exportar CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleExportExcel}
+                className="cursor-pointer"
+              >
+                <RiFileExcel2Line className="mr-2 h-4 w-4" />
+                Exportar Excel
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
         {/* Controls - Stacked on mobile */}
         <div className="space-y-2">

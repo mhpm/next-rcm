@@ -228,7 +228,18 @@ export default async function ReportEntriesPage({
           style: 'currency',
           currency: 'MXN',
         }).format(Number(val));
-      else if (f.type === 'FRIEND_REGISTRATION' && Array.isArray(val)) {
+      else if (
+        f.type === 'CYCLE_WEEK_INDICATOR' &&
+        val &&
+        typeof val === 'object'
+      ) {
+        const cycleVal = val as { week?: number; verb?: string };
+        if (cycleVal.week) {
+          display = `Semana ${cycleVal.week}: ${cycleVal.verb}`;
+        } else {
+          display = cycleVal.verb || '';
+        }
+      } else if (f.type === 'FRIEND_REGISTRATION' && Array.isArray(val)) {
         display = (val as any[]).map((friend) => ({
           ...friend,
           spiritualFatherName: friend.spiritualFatherId
