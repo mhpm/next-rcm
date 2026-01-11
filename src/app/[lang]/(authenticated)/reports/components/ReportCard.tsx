@@ -233,7 +233,7 @@ export default function ReportCard({ report }: ReportCardProps) {
           <DialogHeader>
             <DialogTitle>Código QR para compartir</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col items-center justify-center p-6 space-y-4">
+          <div className="flex flex-col items-center justify-center p-0 sm:p-6 space-y-4">
             {/* Printable Card Area */}
             <div
               ref={qrCardRef}
@@ -286,7 +286,7 @@ export default function ReportCard({ report }: ReportCardProps) {
               </div>
             </div>
 
-            <div className="flex gap-2 w-full items-center">
+            <div className="flex flex-col sm:flex-row gap-2 w-full items-stretch sm:items-center">
               <Button
                 variant="outline"
                 className="flex-1"
@@ -298,18 +298,20 @@ export default function ReportCard({ report }: ReportCardProps) {
               >
                 Copiar enlace
               </Button>
-              <Button className="flex-1" onClick={handleDownloadImage}>
-                Descargar imagen
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleCopyImage}
-                title="Copiar imagen al portapapeles"
-                className="shrink-0"
-              >
-                <FaRegCopy />
-              </Button>
+              <div className="flex gap-2 flex-1">
+                <Button className="flex-1" onClick={handleDownloadImage}>
+                  Descargar imagen
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleCopyImage}
+                  title="Copiar imagen al portapapeles"
+                  className="shrink-0"
+                >
+                  <FaRegCopy />
+                </Button>
+              </div>
             </div>
           </div>
         </DialogContent>
