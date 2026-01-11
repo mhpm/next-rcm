@@ -156,7 +156,10 @@ export default function SubmitReportForm({
   // Fetch all zones
   const { data: zonesData } = useQuery({
     queryKey: ['zones', 'all'],
-    queryFn: () => getAllZones(),
+    queryFn: async () => {
+      const zones = await getAllZones();
+      return [...zones].sort((a, b) => a.name.localeCompare(b.name));
+    },
     enabled: scope === 'CELL',
   });
 
@@ -167,15 +170,21 @@ export default function SubmitReportForm({
   const filteredSectors = React.useMemo(() => {
     if (!sectorHierarchy) return [];
     const hasZones = zonesData && zonesData.length > 0;
-    if (!hasZones) return sectorHierarchy;
-    if (!selectedZone) return [];
-    return sectorHierarchy.filter((s) => s.zone_id === selectedZone);
+    const baseSectors = !hasZones
+      ? sectorHierarchy
+      : selectedZone
+      ? sectorHierarchy.filter((s) => s.zone_id === selectedZone)
+      : [];
+
+    return [...baseSectors].sort((a, b) => a.name.localeCompare(b.name));
   }, [sectorHierarchy, selectedZone, zonesData]);
 
   const filteredSubSectors = React.useMemo(() => {
     if (!filteredSectors || !selectedSector) return [];
     const sector = filteredSectors.find((s) => s.id === selectedSector);
-    return sector?.subSectors || [];
+    return [...(sector?.subSectors || [])].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
   }, [filteredSectors, selectedSector]);
 
   const filteredCells = React.useMemo(() => {
@@ -183,11 +192,27 @@ export default function SubmitReportForm({
     const subSector = filteredSubSectors.find(
       (ss) => ss.id === selectedSubSector
     );
-    return (subSector?.cells || []).map((c) => ({
-      value: c.id,
-      label: c.name,
-    }));
+    return (subSector?.cells || [])
+      .map((c) => ({
+        value: c.id,
+        label: c.name,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
   }, [filteredSubSectors, selectedSubSector]);
+
+  // Memoized sorted props for fallbacks
+  const sortedCells = React.useMemo(
+    () => [...cells].sort((a, b) => a.label.localeCompare(b.label)),
+    [cells]
+  );
+  const sortedGroups = React.useMemo(
+    () => [...groups].sort((a, b) => a.label.localeCompare(b.label)),
+    [groups]
+  );
+  const sortedSectors = React.useMemo(
+    () => [...sectors].sort((a, b) => a.label.localeCompare(b.label)),
+    [sectors]
+  );
 
   const watchedCellId = watch('cellId');
   const watchedGroupId = watch('groupId');
@@ -711,7 +736,14 @@ export default function SubmitReportForm({
         <div>
           {scope === 'CELL' && (
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div
+                className={cn(
+                  'grid grid-cols-1 gap-4',
+                  zonesData && zonesData.length > 0
+                    ? 'md:grid-cols-3'
+                    : 'md:grid-cols-2'
+                )}
+              >
                 {zonesData && zonesData.length > 0 && (
                   <SearchableSelectField
                     label="Zona"
@@ -722,8 +754,8 @@ export default function SubmitReportForm({
                     value={selectedZone}
                     onChange={(val) => {
                       setSelectedZone(val);
-                      setSelectedSector(undefined);
-                      setSelectedSubSector(undefined);
+                      setSelectedSector('');
+                      setSelectedSubSector('');
                       setValue('cellId', '');
                     }}
                     placeholder="Busca y selecciona una zona"
@@ -740,7 +772,7 @@ export default function SubmitReportForm({
                   value={selectedSector}
                   onChange={(val) => {
                     setSelectedSector(val);
-                    setSelectedSubSector(undefined);
+                    setSelectedSubSector('');
                     setValue('cellId', '');
                   }}
                   disabled={zonesData && zonesData.length > 0 && !selectedZone}
@@ -786,7 +818,7 @@ export default function SubmitReportForm({
                 render={({ field, fieldState }) => (
                   <SearchableSelectField
                     label="Célula"
-                    options={selectedSubSector ? filteredCells : cells}
+                    options={selectedSubSector ? filteredCells : sortedCells}
                     value={field.value}
                     onChange={field.onChange}
                     error={fieldState.error?.message}
@@ -906,7 +938,7 @@ export default function SubmitReportForm({
               render={({ field, fieldState }) => (
                 <SearchableSelectField
                   label="Grupo"
-                  options={groups}
+                  options={sortedGroups}
                   value={field.value}
                   onChange={field.onChange}
                   error={fieldState.error?.message}
@@ -924,7 +956,7 @@ export default function SubmitReportForm({
               render={({ field, fieldState }) => (
                 <SearchableSelectField
                   label="Sector"
-                  options={sectors}
+                  options={sortedSectors}
                   value={field.value}
                   onChange={field.onChange}
                   error={fieldState.error?.message}
