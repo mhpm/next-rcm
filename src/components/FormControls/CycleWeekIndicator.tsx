@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { calculateCycleState, VerbOption } from '@/lib/cycleUtils';
+import { calculateCycleState, getCycleStateForWeek, VerbOption } from '@/lib/cycleUtils';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -15,6 +15,7 @@ interface CycleWeekIndicatorProps {
   verbs?: VerbOption[];
   reportDate?: string | Date | null;
   onStartDateChange?: (date: string) => void;
+  forcedWeek?: number;
 }
 
 export function CycleWeekIndicator({
@@ -24,10 +25,14 @@ export function CycleWeekIndicator({
   verbs,
   reportDate,
   onStartDateChange,
+  forcedWeek,
 }: CycleWeekIndicatorProps) {
   const state = useMemo(() => {
+    if (forcedWeek) {
+      return getCycleStateForWeek(forcedWeek, startDate, verbs);
+    }
     return calculateCycleState(startDate, verbs, reportDate);
-  }, [startDate, verbs, reportDate]);
+  }, [startDate, verbs, reportDate, forcedWeek]);
 
   return (
     <div className={cn('space-y-1.5', className)}>

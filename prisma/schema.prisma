@@ -359,6 +359,7 @@ model ReportFields {
   type      ReportFieldType @default(TEXT)
   value     Json?
   options   Json? // Para almacenar opciones de SELECT (array de strings o objetos)
+  validation Json? // Para validaciones extra (regex, min/max) o configuraciones
   visibilityRules Json? @map("visibility_rules")
   required  Boolean         @default(false)
   order     Int             @default(0)

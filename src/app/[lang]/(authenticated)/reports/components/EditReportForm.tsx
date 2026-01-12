@@ -9,6 +9,7 @@ import { ReportFormValues, FieldItem, ReportBuilder } from './form-builder';
 import { useNotificationStore } from '@/store/NotificationStore';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { BackLink, Breadcrumbs } from '@/components';
 
 export default function EditReportForm({
   initial,
@@ -76,6 +77,7 @@ export default function EditReportForm({
             ...(f.value !== undefined ? { value: f.value } : {}),
             options: f.options,
             visibilityRules: f.visibilityRules,
+            validation: f.validation,
             width: 12, // Default width
             order: index, // Send order just in case we add it later
           };
@@ -91,6 +93,10 @@ export default function EditReportForm({
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <BackLink fallbackHref="/reports" />
+        <Breadcrumbs />
+      </div>
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold">Editar Formulario</h1>

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { ReportFormValues, ReportBuilder } from './form-builder';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { BackLink, Breadcrumbs } from '@/components';
 
 export default function NewReportForm() {
   const router = useRouter();
@@ -64,6 +65,10 @@ export default function NewReportForm() {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <BackLink fallbackHref="/reports" />
+        <Breadcrumbs />
+      </div>
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold">Crear Nuevo Formulario</h1>

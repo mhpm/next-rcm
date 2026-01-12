@@ -165,6 +165,23 @@ export const FieldEditor = React.memo(function FieldEditor({
             <p className="text-xs text-muted-foreground">
               El ciclo de 16 semanas comenzará a contar a partir de esta fecha.
             </p>
+
+            <div className="flex items-center gap-2 pt-2">
+              <Controller
+                control={control}
+                name={`fields.${index}.validation.publicEditPermission`}
+                render={({ field: rhfField }) => (
+                  <Checkbox
+                    checked={!!rhfField.value}
+                    onCheckedChange={(checked) => rhfField.onChange(!!checked)}
+                  />
+                )}
+              />
+              <Label className="text-xs">
+                Permitir modificar la semana en el reporte público
+              </Label>
+            </div>
+
             <CycleVerbsEditor
               nestIndex={index}
               control={control}

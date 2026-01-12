@@ -62,6 +62,7 @@ type FieldDef = {
   options?: string[];
   value?: any;
   visibilityRules?: VisibilityRule[];
+  validation?: any;
 };
 
 type FormValues = {
@@ -154,12 +155,20 @@ export default function PublicReportForm({
       let val = '';
 
       if (controlField.type === 'CYCLE_WEEK_INDICATOR') {
-        // For cycle indicators, we use the current verb as the value to compare
-        const state = calculateCycleState(
-          controlField.value,
-          controlField.options
-        );
-        val = state.verb || '';
+        // First check if there is a value in the form (could be manually selected)
+        const formValue = watchedValues[controlField.id];
+
+        if (typeof formValue === 'string' && formValue.includes(': ')) {
+          // Extract the verb from "Semana X: Verb"
+          val = formValue.split(': ')[1] || '';
+        } else {
+          // Fallback to calculation if no form value yet
+          const state = calculateCycleState(
+            controlField.value,
+            controlField.options
+          );
+          val = state.verb || '';
+        }
       } else {
         const fieldValue = watchedValues[controlField.id];
         val =
@@ -558,12 +567,71 @@ export default function PublicReportForm({
         );
       }
       if (f.type === 'CYCLE_WEEK_INDICATOR') {
+        const canEdit = f.validation?.publicEditPermission;
+        const watchedValue = watch(baseName as any);
+
+        // Extract week number from watchedValue (e.g., "Semana 2: Anotar")
+        const forcedWeek =
+          typeof watchedValue === 'string' && watchedValue.startsWith('Semana ')
+            ? parseInt(watchedValue.split(' ')[1])
+            : undefined;
+
+        if (canEdit) {
+          const calculatedState = calculateCycleState(f.value, f.options);
+          const defaultVal =
+            calculatedState.status === 'active' && calculatedState.verb
+              ? `Semana ${calculatedState.weekNumber}: ${calculatedState.verb}`
+              : '';
+
+          const weekOptions = (f.options || []).map(
+            (verb: any, index: number) => {
+              const verbStr = typeof verb === 'string' ? verb : verb.value;
+              return {
+                value: `Semana ${index + 1}: ${verbStr}`,
+                label: `Semana ${index + 1}: ${verbStr}`,
+              };
+            }
+          );
+
+          return (
+            <div key={f.id} className="space-y-6">
+              <CycleWeekIndicator
+                label={f.label || f.key}
+                startDate={f.value}
+                verbs={f.options}
+                forcedWeek={forcedWeek}
+              />
+              <div className="pt-4 border-t border-dashed space-y-2">
+                <Controller
+                  name={baseName}
+                  control={control}
+                  defaultValue={defaultVal}
+                  render={({ field }) => (
+                    <SearchableSelectField
+                      label="Modificar Semana (Opcional)"
+                      placeholder="Seleccionar semana..."
+                      options={weekOptions}
+                      value={field.value as string}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Puedes seleccionar manualmente la semana si la calculada no es
+                  correcta.
+                </p>
+              </div>
+            </div>
+          );
+        }
+
         return (
           <CycleWeekIndicator
             key={f.id}
             label={f.label || f.key}
             startDate={f.value}
             verbs={f.options}
+            forcedWeek={forcedWeek}
           />
         );
       }
@@ -794,11 +862,16 @@ export default function PublicReportForm({
           let val: unknown;
 
           if (f.type === 'CYCLE_WEEK_INDICATOR') {
-            const state = calculateCycleState(f.value, f.options);
-            if (state.status === 'active' && state.verb) {
-              val = `Semana ${state.weekNumber}: ${state.verb}`;
+            const userVal = data.values[f.id];
+            if (userVal) {
+              val = userVal;
             } else {
-              val = state.message || 'Estado desconocido';
+              const state = calculateCycleState(f.value, f.options);
+              if (state.status === 'active' && state.verb) {
+                val = `Semana ${state.weekNumber}: ${state.verb}`;
+              } else {
+                val = state.message || 'Estado desconocido';
+              }
             }
           } else {
             val = data.values[f.id];

@@ -11,6 +11,7 @@ export type FieldItem = {
   options?: { value: string; description?: string }[];
   required?: boolean;
   visibilityRules?: VisibilityRule[];
+  validation?: any;
 };
 
 export type VisibilityRule = {

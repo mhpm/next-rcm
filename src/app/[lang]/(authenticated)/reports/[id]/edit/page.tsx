@@ -1,7 +1,7 @@
-import { getChurchPrisma } from "@/actions/churchContext";
-import { notFound } from "next/navigation";
-import EditReportForm from "../../components/EditReportForm";
-import { connection } from "next/server";
+import { getChurchPrisma } from '@/actions/churchContext';
+import { notFound } from 'next/navigation';
+import EditReportForm from '../../components/EditReportForm';
+import { connection } from 'next/server';
 
 export default async function EditReportPage({
   params,
@@ -13,12 +13,12 @@ export default async function EditReportPage({
   const prisma = await getChurchPrisma();
   const report = await prisma.reports.findUnique({
     where: { id },
-    include: { fields: { orderBy: [{ order: "asc" }, { createdAt: "asc" }] } },
+    include: { fields: { orderBy: [{ order: 'asc' }, { createdAt: 'asc' }] } },
   });
   if (!report) notFound();
 
   return (
-    <div className="p-6">
+    <div className="p-4">
       <EditReportForm
         initial={{
           id: report.id,
@@ -42,6 +42,7 @@ export default async function EditReportPage({
                 })
               : undefined,
             visibilityRules: (f as any).visibilityRules,
+            validation: (f as any).validation ?? {},
             required: f.required,
           })),
         }}

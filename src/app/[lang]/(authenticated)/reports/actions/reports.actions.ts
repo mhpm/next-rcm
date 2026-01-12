@@ -18,6 +18,7 @@ export type ReportFieldInput = {
   value?: unknown;
   options?: string[] | any[]; // Add options
   visibilityRules?: any;
+  validation?: any;
   required?: boolean;
 };
 
@@ -72,6 +73,9 @@ export async function createReport(input: CreateReportInput) {
     if (f.visibilityRules) {
       (base as any).visibilityRules =
         f.visibilityRules as Prisma.InputJsonValue;
+    }
+    if (f.validation) {
+      (base as any).validation = f.validation as Prisma.InputJsonValue;
     }
 
     return base;
@@ -232,6 +236,9 @@ export async function updateReportWithFields(input: UpdateReportInput) {
           (base as any).visibilityRules =
             f.visibilityRules as Prisma.InputJsonValue;
         }
+        if (f.validation) {
+          (base as any).validation = f.validation as Prisma.InputJsonValue;
+        }
 
         await tx.reportFields.update({
           where: { id: f.id! },
@@ -259,12 +266,16 @@ export async function updateReportWithFields(input: UpdateReportInput) {
           (createData as any).visibilityRules =
             f.visibilityRules as Prisma.InputJsonValue;
         }
+        if (f.validation) {
+          (createData as any).validation =
+            f.validation as Prisma.InputJsonValue;
+        }
         await tx.reportFields.create({ data: createData });
       }
     },
     {
-      maxWait: 5000,
-      timeout: 20000,
+      maxWait: 10000,
+      timeout: 60000,
     }
   );
 
@@ -344,133 +355,139 @@ export async function updateReportEntry(input: UpdateReportEntryInput) {
       ? { sector: { connect: { id: sectorId! } } }
       : {};
 
-  await prisma.$transaction(async (tx) => {
-    // 1. Update Report Entry metadata
-    await tx.reportEntries.update({
-      where: { id: input.id },
-      data: {
-        ...connectByScope,
-        ...(createdAt ? { createdAt } : {}),
-        status: input.status || undefined,
-        updatedAt: new Date(),
-      },
-    });
-
-    // 2. Update/Upsert values
-    for (const v of input.values) {
-      const val =
-        typeof v.value === 'undefined'
-          ? Prisma.JsonNull
-          : (v.value as Prisma.InputJsonValue);
-
-      const existing = await tx.reportEntryValues.findFirst({
-        where: {
-          entry_id: input.id,
-          report_field_id: v.fieldId,
+  await prisma.$transaction(
+    async (tx) => {
+      // 1. Update Report Entry metadata
+      await tx.reportEntries.update({
+        where: { id: input.id },
+        data: {
+          ...connectByScope,
+          ...(createdAt ? { createdAt } : {}),
+          status: input.status || undefined,
+          updatedAt: new Date(),
         },
       });
 
-      if (existing) {
-        await tx.reportEntryValues.update({
-          where: { id: existing.id },
-          data: { value: val },
-        });
-      } else {
-        await tx.reportEntryValues.create({
-          data: {
-            entry: { connect: { id: input.id } },
-            field: { connect: { id: v.fieldId } },
-            value: val,
+      // 2. Update/Upsert values
+      for (const v of input.values) {
+        const val =
+          typeof v.value === 'undefined'
+            ? Prisma.JsonNull
+            : (v.value as Prisma.InputJsonValue);
+
+        const existing = await tx.reportEntryValues.findFirst({
+          where: {
+            entry_id: input.id,
+            report_field_id: v.fieldId,
           },
         });
-      }
 
-      // Process side effects (only for non-drafts or as requested by harmony)
-      if (input.status === 'SUBMITTED' || !input.status) {
-        // Process FRIEND_REGISTRATION fields
-        if (scope === 'CELL' && targetCellId) {
-          const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
-          if (
-            fieldDef?.type === 'FRIEND_REGISTRATION' &&
-            Array.isArray(v.value)
-          ) {
-            const friendsData = v.value as {
-              firstName: string;
-              lastName: string;
-              phone?: string;
-              spiritualFatherId?: string;
-            }[];
+        if (existing) {
+          await tx.reportEntryValues.update({
+            where: { id: existing.id },
+            data: { value: val },
+          });
+        } else {
+          await tx.reportEntryValues.create({
+            data: {
+              entry: { connect: { id: input.id } },
+              field: { connect: { id: v.fieldId } },
+              value: val,
+            },
+          });
+        }
 
-            for (const friend of friendsData) {
-              if (friend.firstName?.trim() && friend.lastName?.trim()) {
-                const fullName = `${friend.firstName.trim()} ${friend.lastName.trim()}`;
+        // Process side effects (only for non-drafts or as requested by harmony)
+        if (input.status === 'SUBMITTED' || !input.status) {
+          // Process FRIEND_REGISTRATION fields
+          if (scope === 'CELL' && targetCellId) {
+            const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
+            if (
+              fieldDef?.type === 'FRIEND_REGISTRATION' &&
+              Array.isArray(v.value)
+            ) {
+              const friendsData = v.value as {
+                firstName: string;
+                lastName: string;
+                phone?: string;
+                spiritualFatherId?: string;
+              }[];
 
-                const existingFriend = await tx.friends.findFirst({
-                  where: {
-                    name: { equals: fullName, mode: 'insensitive' },
-                    cell_id: targetCellId,
-                    church_id: churchId,
-                  },
-                });
+              for (const friend of friendsData) {
+                if (friend.firstName?.trim() && friend.lastName?.trim()) {
+                  const fullName = `${friend.firstName.trim()} ${friend.lastName.trim()}`;
 
-                if (!existingFriend) {
-                  await tx.friends.create({
-                    data: {
-                      name: fullName,
-                      phone: friend.phone?.trim() || null,
-                      church_id: churchId,
+                  const existingFriend = await tx.friends.findFirst({
+                    where: {
+                      name: { equals: fullName, mode: 'insensitive' },
                       cell_id: targetCellId,
-                      spiritual_father_id: friend.spiritualFatherId || null,
+                      church_id: churchId,
                     },
                   });
+
+                  if (!existingFriend) {
+                    await tx.friends.create({
+                      data: {
+                        name: fullName,
+                        phone: friend.phone?.trim() || null,
+                        church_id: churchId,
+                        cell_id: targetCellId,
+                        spiritual_father_id: friend.spiritualFatherId || null,
+                      },
+                    });
+                  }
                 }
               }
             }
           }
-        }
 
-        // Process MEMBER_SELECT fields
-        if (scope === 'CELL' && targetCellId) {
-          const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
-          if (fieldDef?.type === 'MEMBER_SELECT' && Array.isArray(v.value)) {
-            const memberIds = v.value as string[];
+          // Process MEMBER_SELECT fields
+          if (scope === 'CELL' && targetCellId) {
+            const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
+            if (fieldDef?.type === 'MEMBER_SELECT' && Array.isArray(v.value)) {
+              const memberIds = v.value as string[];
 
-            const cell = await tx.cells.findUnique({
-              where: { id: targetCellId },
-              select: { leader_id: true },
-            });
-            const leaderId = cell?.leader_id;
+              const cell = await tx.cells.findUnique({
+                where: { id: targetCellId },
+                select: { leader_id: true },
+              });
+              const leaderId = cell?.leader_id;
 
-            await tx.members.updateMany({
-              where: {
-                cell_id: targetCellId,
-                church_id: churchId,
-                id: {
-                  notIn: memberIds,
-                  ...(leaderId ? { not: leaderId } : {}),
-                },
-              },
-              data: {
-                cell_id: null,
-              },
-            });
-
-            if (memberIds.length > 0) {
               await tx.members.updateMany({
                 where: {
-                  id: { in: memberIds },
+                  cell_id: targetCellId,
                   church_id: churchId,
+                  id: {
+                    notIn: memberIds,
+                    ...(leaderId ? { not: leaderId } : {}),
+                  },
                 },
                 data: {
-                  cell_id: targetCellId,
+                  cell_id: null,
                 },
               });
+
+              if (memberIds.length > 0) {
+                await tx.members.updateMany({
+                  where: {
+                    id: { in: memberIds },
+                    church_id: churchId,
+                  },
+                  data: {
+                    cell_id: targetCellId,
+                  },
+                });
+              }
             }
           }
         }
       }
+    },
+    {
+      maxWait: 10000,
+      timeout: 60000,
     }
-  });
+  );
 
   if (entryForChurch.report_id) {
     revalidatePath(`/reports/${entryForChurch.report_id}/entries`);
@@ -527,121 +544,127 @@ export async function createReportEntry(input: CreateReportEntryInput) {
     }));
 
   // Use transaction to create entry and friends
-  await prisma.$transaction(async (tx) => {
-    // 1. Create Report Entry
-    const entry = await tx.reportEntries.create({
-      data: {
-        church: { connect: { id: churchId } },
-        report: { connect: { id: input.reportId } },
-        createdAt: createdAt || new Date(), // Use provided date or now
-        status: input.status || 'SUBMITTED',
-        ...connectByScope,
-      },
-    });
-
-    // 2. Create Values manually to avoid issues with nested create
-    if (valuesCreate.length > 0) {
-      await tx.reportEntryValues.createMany({
-        data: valuesCreate.map((v) => ({
-          ...v,
-          entry_id: entry.id,
-        })),
+  await prisma.$transaction(
+    async (tx) => {
+      // 1. Create Report Entry
+      const entry = await tx.reportEntries.create({
+        data: {
+          church: { connect: { id: churchId } },
+          report: { connect: { id: input.reportId } },
+          createdAt: createdAt || new Date(), // Use provided date or now
+          status: input.status || 'SUBMITTED',
+          ...connectByScope,
+        },
       });
-    }
 
-    // 3. Process side effects (only if NOT a draft)
-    if (input.status !== 'DRAFT') {
-      // 2.1 Process FRIEND_REGISTRATION fields
-      if (cellId) {
-        for (const v of input.values) {
-          const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
-          if (
-            fieldDef?.type === 'FRIEND_REGISTRATION' &&
-            Array.isArray(v.value)
-          ) {
-            const friendsData = v.value as {
-              firstName: string;
-              lastName: string;
-              phone?: string;
-              spiritualFatherId?: string;
-            }[];
-            for (const friend of friendsData) {
-              if (friend.firstName?.trim() && friend.lastName?.trim()) {
-                const fullName = `${friend.firstName.trim()} ${friend.lastName.trim()}`;
+      // 2. Create Values manually to avoid issues with nested create
+      if (valuesCreate.length > 0) {
+        await tx.reportEntryValues.createMany({
+          data: valuesCreate.map((v) => ({
+            ...v,
+            entry_id: entry.id,
+          })),
+        });
+      }
 
-                // Check if friend already exists to avoid duplicates
-                const existingFriend = await tx.friends.findFirst({
-                  where: {
-                    name: { equals: fullName, mode: 'insensitive' },
-                    cell_id: cellId,
-                    church_id: churchId,
-                  },
-                });
+      // 3. Process side effects (only if NOT a draft)
+      if (input.status !== 'DRAFT') {
+        // 2.1 Process FRIEND_REGISTRATION fields
+        if (cellId) {
+          for (const v of input.values) {
+            const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
+            if (
+              fieldDef?.type === 'FRIEND_REGISTRATION' &&
+              Array.isArray(v.value)
+            ) {
+              const friendsData = v.value as {
+                firstName: string;
+                lastName: string;
+                phone?: string;
+                spiritualFatherId?: string;
+              }[];
+              for (const friend of friendsData) {
+                if (friend.firstName?.trim() && friend.lastName?.trim()) {
+                  const fullName = `${friend.firstName.trim()} ${friend.lastName.trim()}`;
 
-                if (!existingFriend) {
-                  await tx.friends.create({
-                    data: {
-                      name: fullName,
-                      phone: friend.phone?.trim() || null,
-                      church_id: churchId,
+                  // Check if friend already exists to avoid duplicates
+                  const existingFriend = await tx.friends.findFirst({
+                    where: {
+                      name: { equals: fullName, mode: 'insensitive' },
                       cell_id: cellId,
-                      spiritual_father_id: friend.spiritualFatherId || null,
+                      church_id: churchId,
                     },
                   });
+
+                  if (!existingFriend) {
+                    await tx.friends.create({
+                      data: {
+                        name: fullName,
+                        phone: friend.phone?.trim() || null,
+                        church_id: churchId,
+                        cell_id: cellId,
+                        spiritual_father_id: friend.spiritualFatherId || null,
+                      },
+                    });
+                  }
                 }
               }
             }
           }
         }
-      }
 
-      // 2.2 Process MEMBER_SELECT fields
-      if (cellId) {
-        for (const v of input.values) {
-          const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
-          if (fieldDef?.type === 'MEMBER_SELECT' && Array.isArray(v.value)) {
-            const memberIds = v.value as string[];
+        // 2.2 Process MEMBER_SELECT fields
+        if (cellId) {
+          for (const v of input.values) {
+            const fieldDef = fieldDefs.find((f) => f.id === v.fieldId);
+            if (fieldDef?.type === 'MEMBER_SELECT' && Array.isArray(v.value)) {
+              const memberIds = v.value as string[];
 
-            // Fetch cell leader to protect them from being unlinked
-            const cell = await tx.cells.findUnique({
-              where: { id: cellId },
-              select: { leader_id: true },
-            });
-            const leaderId = cell?.leader_id;
+              // Fetch cell leader to protect them from being unlinked
+              const cell = await tx.cells.findUnique({
+                where: { id: cellId },
+                select: { leader_id: true },
+              });
+              const leaderId = cell?.leader_id;
 
-            // Sync members:
-            // 1. Unlink members currently in the cell but not in the new list
-            // IMPORTANT: Never unlink the leader (leaderId)
-            await tx.members.updateMany({
-              where: {
-                cell_id: cellId,
-                church_id: churchId,
-                id: {
-                  notIn: memberIds,
-                  ...(leaderId ? { not: leaderId } : {}),
-                },
-              },
-              data: {
-                cell_id: null,
-              },
-            });
-            // 2. Link members in the new list to the cell
-            if (memberIds.length > 0) {
+              // Sync members:
+              // 1. Unlink members currently in the cell but not in the new list
+              // IMPORTANT: Never unlink the leader (leaderId)
               await tx.members.updateMany({
                 where: {
-                  id: { in: memberIds },
+                  cell_id: cellId,
                   church_id: churchId,
+                  id: {
+                    notIn: memberIds,
+                    ...(leaderId ? { not: leaderId } : {}),
+                  },
                 },
                 data: {
-                  cell_id: cellId,
+                  cell_id: null,
                 },
               });
+              // 2. Link members in the new list to the cell
+              if (memberIds.length > 0) {
+                await tx.members.updateMany({
+                  where: {
+                    id: { in: memberIds },
+                    church_id: churchId,
+                  },
+                  data: {
+                    cell_id: cellId,
+                  },
+                });
+              }
             }
           }
         }
       }
+    },
+    {
+      maxWait: 10000,
+      timeout: 60000,
     }
-  });
+  );
 
   revalidatePath(`/reports/${input.reportId}/entries`);
   revalidatePath('/friends'); // Refresh friends list
