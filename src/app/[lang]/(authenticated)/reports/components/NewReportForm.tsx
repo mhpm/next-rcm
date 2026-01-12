@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { createReport } from '../actions/reports.actions';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { ReportFormValues, ReportBuilder } from './form-builder';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -11,6 +11,8 @@ import { BackLink, Breadcrumbs } from '@/components';
 
 export default function NewReportForm() {
   const router = useRouter();
+  const params = useParams();
+  const lang = params?.lang as string;
   const {
     control,
     register,
@@ -54,7 +56,7 @@ export default function NewReportForm() {
           };
         }),
       });
-      router.push(`/reports`);
+      router.push(`/${lang}/reports`);
     } catch (error) {
       console.error(error);
       alert(
@@ -66,7 +68,7 @@ export default function NewReportForm() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <BackLink fallbackHref="/reports" />
+        <BackLink fallbackHref={`/${lang}/reports`} />
         <Breadcrumbs />
       </div>
       <div className="flex items-center justify-between">

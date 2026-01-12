@@ -16,6 +16,7 @@ import { useDeleteCell } from './hooks/useCells';
 import { useNotificationStore } from '@/store/NotificationStore';
 import { usePersistentFilters } from '@/hooks/usePersistentFilters';
 import { Button } from '@/components/ui/button';
+import { naturalSort } from '@/lib/utils';
 
 export default function CellsPage() {
   const router = useRouter();
@@ -43,7 +44,12 @@ export default function CellsPage() {
   });
 
   const cells = useMemo(
-    () => (data?.cells ? transformCellsToTableData(data.cells) : []),
+    () =>
+      data?.cells
+        ? transformCellsToTableData(data.cells).sort((a, b) =>
+            naturalSort(a.name, b.name)
+          )
+        : [],
     [data?.cells]
   );
 

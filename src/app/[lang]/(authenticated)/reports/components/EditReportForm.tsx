@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import type { ReportScope } from '@/generated/prisma/client';
 import { updateReportWithFields } from '../actions/reports.actions';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { ReportFormValues, FieldItem, ReportBuilder } from './form-builder';
 import { useNotificationStore } from '@/store/NotificationStore';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,8 @@ export default function EditReportForm({
   };
 }) {
   const router = useRouter();
+  const params = useParams();
+  const lang = params?.lang as string;
   const { showSuccess, showError } = useNotificationStore();
   const {
     control,
@@ -94,7 +96,7 @@ export default function EditReportForm({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <BackLink fallbackHref="/reports" />
+        <BackLink fallbackHref={`/${lang}/reports`} />
         <Breadcrumbs />
       </div>
       <div className="flex items-center justify-between">

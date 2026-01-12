@@ -8,10 +8,10 @@ import { connection } from 'next/server';
 export default async function EditReportEntryPage({
   params,
 }: {
-  params: Promise<{ id: string; entryId: string }>;
+  params: Promise<{ lang: string; id: string; entryId: string }>;
 }) {
   await connection();
-  const { id, entryId } = await params;
+  const { id, entryId, lang } = await params;
   const prisma = await getChurchPrisma();
 
   const report = await prisma.reports.findUnique({
@@ -71,7 +71,7 @@ export default async function EditReportEntryPage({
       <div className="flex items-center justify-between">
         <BackLink
           text="Volver a entradas"
-          fallbackHref={`/reports/${id}/entries`}
+          fallbackHref={`/${lang}/reports/${id}/entries`}
         />
         <Breadcrumbs />
       </div>

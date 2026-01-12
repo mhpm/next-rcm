@@ -21,7 +21,12 @@ import { ReportFields } from '@/generated/prisma/client';
 import { usePersistentFilters } from '@/hooks/usePersistentFilters';
 import AdvancedFilterModal, { FilterField } from './AdvancedFilterModal';
 import { Button } from '@/components/ui/button';
-import { RiFilter3Line } from 'react-icons/ri';
+import {
+  RiFilter3Line,
+  RiArrowUpSLine,
+  RiArrowDownSLine,
+} from 'react-icons/ri';
+import { naturalSort } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
@@ -349,8 +354,79 @@ export default function ComparisonReportView({
         itemA: dataA.find((d) => d.key === key),
         itemB: dataB.find((d) => d.key === key),
       }))
-      .sort((a, b) => a.label.localeCompare(b.label));
+      .sort((a, b) => naturalSort(a.label, b.label));
   }, [dataA, dataB]);
+
+  // Sorting logic
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: 'asc' | 'desc';
+  }>({
+    key: 'label',
+    direction: 'asc',
+  });
+
+  const handleSort = (key: string) => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        return { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      return { key, direction: 'asc' };
+    });
+  };
+
+  const sortedData = useMemo(() => {
+    const data = [...comparisonData];
+    if (!sortConfig.key) return data;
+
+    return data.sort((a, b) => {
+      let aValue: any;
+      let bValue: any;
+
+      if (sortConfig.key === 'label') {
+        aValue = a.label;
+        bValue = b.label;
+      } else if (sortConfig.key === 'count') {
+        // Compare the difference or one of the periods?
+        // Let's compare the Period A values for now, or maybe the sum?
+        // Actually, it's better to compare the specific value being looked at.
+        // For comparison view, let's compare by Period A (itemA)
+        aValue = a.itemA?.count || 0;
+        bValue = b.itemA?.count || 0;
+      } else {
+        aValue = a.itemA?.values[sortConfig.key] || 0;
+        bValue = b.itemA?.values[sortConfig.key] || 0;
+      }
+
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        const cmp = naturalSort(aValue, bValue);
+        return sortConfig.direction === 'asc' ? cmp : -cmp;
+      }
+
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        const cmp = aValue - bValue;
+        return sortConfig.direction === 'asc' ? cmp : -cmp;
+      }
+
+      return 0;
+    });
+  }, [comparisonData, sortConfig]);
+
+  const getSortIcon = (key: string) => {
+    if (sortConfig.key !== key) {
+      return (
+        <div className="flex flex-col opacity-0 group-hover:opacity-50 transition-opacity">
+          <RiArrowUpSLine className="h-2.5 w-2.5 -mb-1" />
+          <RiArrowDownSLine className="h-2.5 w-2.5" />
+        </div>
+      );
+    }
+    return sortConfig.direction === 'asc' ? (
+      <RiArrowUpSLine className="h-3.5 w-3.5 text-primary" />
+    ) : (
+      <RiArrowDownSLine className="h-3.5 w-3.5 text-primary" />
+    );
+  };
 
   // ============================================
   //  CÁLCULOS DE METRICAS (Dashboard Pastoral)
@@ -890,11 +966,25 @@ export default function ComparisonReportView({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[200px]">Grupo</TableHead>
+                <TableHead
+                  className="w-[300px] whitespace-nowrap sticky left-0 bg-muted/10 border-r z-20 cursor-pointer group select-none"
+                  onClick={() => handleSort('label')}
+                >
+                  <div className="flex items-center gap-1 justify-center">
+                    Grupo
+                    {getSortIcon('label')}
+                  </div>
+                </TableHead>
 
                 {visibleColumns.has('count') && (
-                  <TableHead className="text-center bg-muted/30 border-l border-r">
-                    Registros
+                  <TableHead
+                    className="text-center min-w-[120px] bg-muted/10 border-r cursor-pointer group select-none"
+                    onClick={() => handleSort('count')}
+                  >
+                    <div className="flex items-center gap-1 justify-center">
+                      Registros
+                      {getSortIcon('count')}
+                    </div>
                   </TableHead>
                 )}
 
@@ -903,9 +993,13 @@ export default function ComparisonReportView({
                   .map((f) => (
                     <TableHead
                       key={f.id}
-                      className="text-center min-w-[120px] bg-muted/10 border-r"
+                      className="text-center min-w-[120px] bg-muted/10 border-r cursor-pointer group select-none"
+                      onClick={() => handleSort(f.id)}
                     >
-                      {f.label}
+                      <div className="flex items-center gap-1 justify-center">
+                        {f.label}
+                        {getSortIcon(f.id)}
+                      </div>
                     </TableHead>
                   ))}
 
@@ -914,16 +1008,20 @@ export default function ComparisonReportView({
                   .map((f) => (
                     <TableHead
                       key={f.id}
-                      className="text-center min-w-[120px] bg-muted/10 border-r"
+                      className="text-center min-w-[120px] bg-muted/10 border-r cursor-pointer group select-none"
+                      onClick={() => handleSort(f.id)}
                     >
-                      {f.label} (Sí)
+                      <div className="flex items-center gap-1 justify-center">
+                        {f.label} (Sí)
+                        {getSortIcon(f.id)}
+                      </div>
                     </TableHead>
                   ))}
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {comparisonData.map((row) => (
+              {sortedData.map((row) => (
                 <TableRow key={row.key}>
                   <TableCell className="font-medium whitespace-nowrap sticky left-0 bg-background z-10 border-r py-2">
                     {row.label}

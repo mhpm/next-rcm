@@ -19,6 +19,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ReportFields } from '@/generated/prisma/client';
 import { ColumnVisibilityDropdown } from '@/components/ColumnVisibilityDropdown/ColumnVisibilityDropdown';
+import { naturalSort } from '@/lib/utils';
 
 type Row = Record<string, unknown> & {
   id: string;
@@ -44,6 +45,7 @@ import {
   RiFileExcel2Line,
   RiFileTextLine,
   RiArrowDownSLine,
+  RiArrowUpSLine,
 } from 'react-icons/ri';
 import {
   Tooltip,
@@ -301,9 +303,59 @@ export default function ConsolidatedReportView({
     setInsightConfig(defaults);
   }, [fields, insightConfig.length, setInsightConfig]);
 
-  // Use shared hook for data processing
   const { consolidatedData, totals, numericFields, booleanFields } =
     useReportData(rows, fields, activeFilters, groupBy);
+
+  // Sorting logic
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: 'asc' | 'desc';
+  }>({
+    key: 'label',
+    direction: 'asc',
+  });
+
+  const handleSort = (key: string) => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        return { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      return { key, direction: 'asc' };
+    });
+  };
+
+  const sortedData = useMemo(() => {
+    const data = [...consolidatedData];
+    if (!sortConfig.key) return data;
+
+    return data.sort((a: any, b: any) => {
+      let aValue: any;
+      let bValue: any;
+
+      if (sortConfig.key === 'label') {
+        aValue = a.label;
+        bValue = b.label;
+      } else if (sortConfig.key === 'count') {
+        aValue = a.count;
+        bValue = b.count;
+      } else {
+        aValue = a.values[sortConfig.key] ?? 0;
+        bValue = b.values[sortConfig.key] ?? 0;
+      }
+
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        const cmp = naturalSort(aValue, bValue);
+        return sortConfig.direction === 'asc' ? cmp : -cmp;
+      }
+
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        const cmp = aValue - bValue;
+        return sortConfig.direction === 'asc' ? cmp : -cmp;
+      }
+
+      return 0;
+    });
+  }, [consolidatedData, sortConfig]);
 
   // Column visibility state (scoped to consolidated view)
   const allColumns = useMemo(() => {
@@ -396,6 +448,22 @@ export default function ConsolidatedReportView({
   const isInsightActive = (fieldId: string, type: 'max' | 'min') => {
     return insightConfig.some(
       (c) => c.fieldId === fieldId && c.type === type && c.enabled
+    );
+  };
+
+  const getSortIcon = (key: string) => {
+    if (sortConfig.key !== key) {
+      return (
+        <div className="flex flex-col opacity-0 group-hover:opacity-50 transition-opacity">
+          <RiArrowUpSLine className="h-2.5 w-2.5 -mb-1" />
+          <RiArrowDownSLine className="h-2.5 w-2.5" />
+        </div>
+      );
+    }
+    return sortConfig.direction === 'asc' ? (
+      <RiArrowUpSLine className="h-3.5 w-3.5 text-primary" />
+    ) : (
+      <RiArrowDownSLine className="h-3.5 w-3.5 text-primary" />
     );
   };
 
@@ -816,19 +884,32 @@ export default function ConsolidatedReportView({
             <Table className="w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-50 whitespace-nowrap py-2 sticky left-0 bg-background z-20 border-r">
-                    Grupo
+                  <TableHead
+                    className="w-50 whitespace-nowrap py-2 sticky left-0 bg-background z-20 border-r cursor-pointer group select-none"
+                    onClick={() => handleSort('label')}
+                  >
+                    <div className="flex items-center gap-1">
+                      Grupo
+                      {getSortIcon('label')}
+                    </div>
                   </TableHead>
                   {visibleColumns.has('count') && (
-                    <TableHead className="whitespace-nowrap py-2 group">
-                      <div className="flex items-center gap-1">
-                        Registros
+                    <TableHead
+                      className="whitespace-nowrap py-2 group cursor-pointer select-none"
+                      onClick={() => handleSort('count')}
+                    >
+                      <div className="flex items-center gap-1 justify-between">
+                        <div className="flex items-center gap-1">
+                          Registros
+                          {getSortIcon('count')}
+                        </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
                               variant="ghost"
                               size="icon"
                               className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <MoreVertical className="h-3 w-3" />
                             </Button>
@@ -890,16 +971,21 @@ export default function ConsolidatedReportView({
                     .map((f) => (
                       <TableHead
                         key={f.id}
-                        className="whitespace-nowrap py-2 group"
+                        className="whitespace-nowrap py-2 group cursor-pointer select-none"
+                        onClick={() => handleSort(f.id)}
                       >
-                        <div className="flex items-center gap-1">
-                          {f.label || 'Campo'}
+                        <div className="flex items-center gap-1 justify-between">
+                          <div className="flex items-center gap-1">
+                            {f.label || 'Campo'}
+                            {getSortIcon(f.id)}
+                          </div>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={(e) => e.stopPropagation()}
                               >
                                 <MoreVertical className="h-3 w-3" />
                               </Button>
@@ -959,14 +1045,21 @@ export default function ConsolidatedReportView({
                   {booleanFields
                     .filter((f) => visibleColumns.has(f.id))
                     .map((f) => (
-                      <TableHead key={f.id} className="whitespace-nowrap py-2">
-                        {f.label || 'Campo'} (Sí)
+                      <TableHead
+                        key={f.id}
+                        className="whitespace-nowrap py-2 cursor-pointer group select-none"
+                        onClick={() => handleSort(f.id)}
+                      >
+                        <div className="flex items-center gap-1">
+                          {f.label || 'Campo'} (Sí)
+                          {getSortIcon(f.id)}
+                        </div>
                       </TableHead>
                     ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {consolidatedData.map((group: any) => (
+                {sortedData.map((group: any) => (
                   <TableRow key={group.key}>
                     <TableCell className="font-medium whitespace-nowrap py-2 sticky left-0 bg-background z-10 border-r">
                       {group.label}

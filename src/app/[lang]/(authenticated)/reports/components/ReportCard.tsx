@@ -63,7 +63,7 @@ export default function ReportCard({ report }: ReportCardProps) {
 
   const handleCopyLink = () => {
     if (!report.publicToken) return;
-    const url = `${window.location.origin}/public/reports/${report.publicToken}`;
+    const url = `${window.location.origin}/${lang}/public/reports/${report.publicToken}`;
     navigator.clipboard.writeText(url);
     showSuccess('Enlace copiado al portapapeles');
   };
@@ -134,7 +134,7 @@ export default function ReportCard({ report }: ReportCardProps) {
                   title="Ir al reporte público"
                 >
                   <Link
-                    href={`/public/reports/${report.publicToken}`}
+                    href={`/${lang}/public/reports/${report.publicToken}`}
                     target="_blank"
                   >
                     <FaArrowUpRightFromSquare className="text-lg" />
@@ -169,7 +169,7 @@ export default function ReportCard({ report }: ReportCardProps) {
               className="h-9 w-9 text-white hover:bg-white/20"
               title="Editar"
             >
-              <Link href={`/reports/${report.id}/edit`}>
+              <Link href={`/${lang}/reports/${report.id}/edit`}>
                 <FaPenToSquare className="text-lg" />
               </Link>
             </Button>
@@ -180,7 +180,7 @@ export default function ReportCard({ report }: ReportCardProps) {
               className="h-9 w-9 text-white hover:bg-white/20"
               title="Ver entradas"
             >
-              <Link href={`/reports/${report.id}/entries`}>
+              <Link href={`/${lang}/reports/${report.id}/entries`}>
                 <FaTable className="text-lg" />
               </Link>
             </Button>

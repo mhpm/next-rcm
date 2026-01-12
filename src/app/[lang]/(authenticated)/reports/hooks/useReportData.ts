@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { ReportFields } from '@/generated/prisma/client';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { naturalSort } from '@/lib/utils';
 
 // Type definition for Row (copied from ConsolidatedReportView for now, should be shared)
 export type Row = Record<string, unknown> & {
@@ -230,7 +231,7 @@ export function useReportData(
     });
 
     return Object.values(groups).sort((a: any, b: any) =>
-      a.label.localeCompare(b.label)
+      naturalSort(a.label, b.label)
     );
   }, [filteredRows, groupBy, numericFields, booleanFields]);
 

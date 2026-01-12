@@ -9,7 +9,7 @@ import { PrintReportButton } from '@/app/[lang]/(authenticated)/reports/componen
 export default async function ViewReportEntryPage({
   params,
 }: {
-  params: Promise<{ id: string; entryId: string }>;
+  params: Promise<{ lang: string; id: string; entryId: string }>;
 }) {
   const { id, entryId } = await params;
   const prisma = await getChurchPrisma();

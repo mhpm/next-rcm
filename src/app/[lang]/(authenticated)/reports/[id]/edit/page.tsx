@@ -6,7 +6,7 @@ import { connection } from 'next/server';
 export default async function EditReportPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ lang: string; id: string }>;
 }) {
   await connection();
   const { id } = await params;

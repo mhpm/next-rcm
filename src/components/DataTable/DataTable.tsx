@@ -44,7 +44,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2, MoreHorizontal } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, naturalSort } from '@/lib/utils';
 
 function DataTable<T extends Record<string, unknown>>({
   data,
@@ -138,9 +138,7 @@ function DataTable<T extends Record<string, unknown>>({
 
       // Handle different data types
       if (typeof aValue === 'string' && typeof bValue === 'string') {
-        const comparison = aValue
-          .toLowerCase()
-          .localeCompare(bValue.toLowerCase());
+        const comparison = naturalSort(aValue, bValue);
         return sortConfig.direction === 'asc' ? comparison : -comparison;
       }
 
@@ -156,9 +154,9 @@ function DataTable<T extends Record<string, unknown>>({
       }
 
       // Convert to string for comparison as fallback
-      const aStr = String(aValue).toLowerCase();
-      const bStr = String(bValue).toLowerCase();
-      const comparison = aStr.localeCompare(bStr);
+      const aStr = String(aValue);
+      const bStr = String(bValue);
+      const comparison = naturalSort(aStr, bStr);
       return sortConfig.direction === 'asc' ? comparison : -comparison;
     });
   }, [data, sortConfig]);
