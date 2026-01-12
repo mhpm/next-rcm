@@ -93,7 +93,14 @@ export function DateField<T extends FieldValues>({
 
     // Si es un string de fecha simple (YYYY-MM-DD), parseISO lo trata como local
     try {
-      return parseISO(value);
+      const parsed = parseISO(value);
+      // Aseguramos que parseISO no haya fallado
+      if (isNaN(parsed.getTime())) return undefined;
+
+      // Ajuste para evitar desfase de zona horaria al mostrar
+      return new Date(
+        parsed.valueOf() + parsed.getTimezoneOffset() * 60 * 1000
+      );
     } catch {
       return new Date(value);
     }
@@ -118,7 +125,15 @@ export function DateField<T extends FieldValues>({
           >
             <CalendarIcon className="mr-2 h-5 w-5 sm:h-4 sm:w-4 text-muted-foreground" />
             {safeValue ? (
-              format(safeValue, 'PPP', { locale: es })
+              // Usamos format de date-fns con locale es para consistencia visual "d 'de' MMMM 'de' yyyy" o similar
+              // O mejor, usamos toLocaleDateString() para respetar configuración del sistema del usuario como pidió
+              <span suppressHydrationWarning>
+                {safeValue.toLocaleDateString(undefined, {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                })}
+              </span>
             ) : (
               <span>{placeholder}</span>
             )}

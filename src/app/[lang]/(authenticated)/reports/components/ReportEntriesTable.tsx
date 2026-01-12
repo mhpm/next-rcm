@@ -10,9 +10,14 @@ import {
   deleteReportEntryAction,
   deleteReportEntriesAction,
 } from '@/app/[lang]/(authenticated)/reports/actions/reports.actions';
-import { RiFilter3Line, RiDeleteBinLine } from 'react-icons/ri';
+import {
+  RiFilter3Line,
+  RiDeleteBinLine,
+  RiUploadCloud2Line,
+} from 'react-icons/ri';
 import { RefreshCcw } from 'lucide-react';
 import AdvancedFilterModal, { FilterField } from './AdvancedFilterModal';
+import ImportReportModal from './ImportReportModal';
 import { usePersistentFilters } from '@/hooks/usePersistentFilters';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import { Button } from '@/components/ui/button';
@@ -99,9 +104,6 @@ function useReportColumnVisibility(
   };
 
   const hideAllColumns = (columnKeys: string[]) => {
-    // Keep at least one or allow empty?
-    // The store implementation kept 'firstName' if present.
-    // Here we can just allow empty or keep 'entidad'.
     const next = new Set<string>();
     // Optional: keep 'entidad' visible always?
     if (columnKeys.includes('entidad')) {
@@ -132,6 +134,7 @@ type ReportEntriesTableProps = {
   subTitle?: string;
   reportId: string;
   fields?: FilterField[];
+  availableEntities?: string[];
 };
 
 const parseLocalFilterDate = (dateStr: string) => {
@@ -146,6 +149,7 @@ export default function ReportEntriesTable({
   subTitle,
   reportId,
   fields = [],
+  availableEntities,
 }: ReportEntriesTableProps) {
   const router = useRouter();
 
@@ -158,6 +162,7 @@ export default function ReportEntriesTable({
   const [isDeleting, setIsDeleting] = useState(false);
   const [entryToDelete, setEntryToDelete] = useState<Row | null>(null);
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   const handleSelectRow = (id: string, checked: boolean) => {
@@ -198,7 +203,50 @@ export default function ReportEntriesTable({
   // Enhance columns with custom renderers based on field types
   const enhancedColumns = useMemo(() => {
     return columns.map((col) => {
+      // 1. Handle createdAt (System Date Field)
+      if (col.key === 'createdAt') {
+        return {
+          ...col,
+          render: (value: any) => {
+            if (!value) return '-';
+            // Use client-side locale string. suppressHydrationWarning is needed if used directly in JSX
+            // but since this render function is called by DataTable (likely client-side only), it might be safe.
+            // If SSR mismatch occurs, we might need a small wrapper component.
+            return (
+              <span suppressHydrationWarning>
+                {new Date(value).toLocaleString(undefined, {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </span>
+            );
+          },
+        };
+      }
+
       const fieldDef = fields.find((f) => f.id === col.key);
+
+      if (fieldDef?.type === 'DATE') {
+        return {
+          ...col,
+          render: (value: any) => {
+            if (!value) return '-';
+            // Assuming value comes as ISO string or Date object from server/row
+            return (
+              <span suppressHydrationWarning>
+                {new Date(value).toLocaleDateString(undefined, {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                })}
+              </span>
+            );
+          },
+        };
+      }
 
       if (fieldDef?.type === 'FRIEND_REGISTRATION') {
         return {
@@ -322,7 +370,7 @@ export default function ReportEntriesTable({
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
-      // Entidad
+      // Entidad (Célula, Grupo, etc.)
       if (
         activeFilters.entidad &&
         !String(row.entidad || '')
@@ -673,6 +721,24 @@ export default function ReportEntriesTable({
         onShowAllColumns={showAllColumns}
         onHideAllColumns={hideAllColumns}
         showColumnVisibility={true}
+        headerActions={
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => setIsImportModalOpen(true)}
+                >
+                  <RiUploadCloud2Line className="w-4 h-4" />
+                  <span className="hidden sm:inline">Importar</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Importar datos</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        }
         searchEndContent={
           <div className="space-y-2 w-full sm:w-auto">
             <div className="flex flex-wrap items-center gap-2">
@@ -808,6 +874,21 @@ export default function ReportEntriesTable({
         onClear={clearFilters}
         fields={fields}
         activeFilters={activeFilters}
+      />
+
+      <ImportReportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        reportId={reportId}
+        fields={fields}
+        entityLabel={
+          columns.find((c) => c.key === 'entidad')?.label || 'Entidad'
+        }
+        availableEntities={availableEntities}
+        onSuccess={() => {
+          router.refresh();
+          showSuccess('Datos importados correctamente');
+        }}
       />
 
       <DeleteConfirmationModal

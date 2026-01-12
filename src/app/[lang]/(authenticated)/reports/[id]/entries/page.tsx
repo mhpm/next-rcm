@@ -116,6 +116,38 @@ export default async function ReportEntriesPage({
     members.map((m) => [m.id, `${m.firstName} ${m.lastName}`])
   );
 
+  // Fetch available entities based on scope for import validation
+  let availableEntities: string[] = [];
+  if (report.scope === 'CELL') {
+    const cells = await prisma.cells.findMany({
+      where: { church_id: report.church_id },
+      select: { name: true },
+      orderBy: { name: 'asc' },
+    });
+    availableEntities = cells.map((c) => c.name);
+  } else if (report.scope === 'GROUP') {
+    const groups = await prisma.groups.findMany({
+      where: { church_id: report.church_id },
+      select: { name: true },
+      orderBy: { name: 'asc' },
+    });
+    availableEntities = groups.map((g) => g.name);
+  } else if (report.scope === 'SECTOR') {
+    const sectors = await prisma.sectors.findMany({
+      where: { church_id: report.church_id },
+      select: { name: true },
+      orderBy: { name: 'asc' },
+    });
+    availableEntities = sectors.map((s) => s.name);
+  } else if (report.scope === 'ZONE') {
+    const zones = await prisma.zones.findMany({
+      where: { church_id: report.church_id },
+      select: { name: true },
+      orderBy: { name: 'asc' },
+    });
+    availableEntities = zones.map((z) => z.name);
+  }
+
   type Row = Record<string, unknown> & {
     id: string;
     createdAt: string;
@@ -203,7 +235,7 @@ export default async function ReportEntriesPage({
 
     const base: Row = {
       id: e.id,
-      createdAt: new Date(e.createdAt).toLocaleString(),
+      createdAt: e.createdAt.toISOString(), // Send ISO string to client
       raw_createdAt: e.createdAt.toISOString(),
       entidad,
       supervisor,
@@ -319,8 +351,27 @@ export default async function ReportEntriesPage({
     return base;
   });
 
+  const getEntityLabel = (scope: string) => {
+    switch (scope) {
+      case 'CELL':
+        return 'Célula';
+      case 'GROUP':
+        return 'Grupo';
+      case 'SECTOR':
+        return 'Sector';
+      case 'SUBSECTOR':
+        return 'Sub-Sector';
+      case 'ZONE':
+        return 'Zona';
+      case 'CHURCH':
+        return 'Iglesia';
+      default:
+        return 'Entidad';
+    }
+  };
+
   const columns: TableColumn<Row>[] = [
-    { key: 'entidad', label: 'Entidad', sortable: true },
+    { key: 'entidad', label: getEntityLabel(report.scope), sortable: true },
     { key: 'supervisor', label: 'Supervisor', sortable: true },
     { key: 'lider', label: 'Líder', sortable: true },
     { key: 'createdAt', label: 'Fecha', sortable: true },
@@ -359,6 +410,7 @@ export default async function ReportEntriesPage({
                   ? (f.options as string[])
                   : undefined,
               }))}
+            availableEntities={availableEntities}
           />
         </TabsContent>
 

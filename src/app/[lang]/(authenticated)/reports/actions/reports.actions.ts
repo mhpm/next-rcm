@@ -774,3 +774,154 @@ function slugify(text: string) {
     .replace(/^-+/, '')
     .replace(/-+$/, '');
 }
+
+export type ImportReportEntryInput = {
+  reportId: string;
+  rows: { entidad: string; fecha?: string; values: Record<string, any> }[];
+};
+
+export async function importReportEntriesAction(input: ImportReportEntryInput) {
+  const prisma = await getChurchPrisma();
+  const churchId = await getChurchId();
+
+  const report = await prisma.reports.findUnique({
+    where: { id: input.reportId },
+    include: { fields: true },
+  });
+
+  if (!report) throw new Error('Reporte no encontrado');
+
+  // Fetch entities based on scope
+  const entityMap = new Map<string, any>();
+
+  if (report.scope === 'CELL') {
+    const cells = await prisma.cells.findMany({
+      where: { church_id: churchId },
+      select: {
+        id: true,
+        name: true,
+        subSector: {
+          select: {
+            sector_id: true,
+            id: true,
+            sector: { select: { zone_id: true } },
+          },
+        },
+      },
+    });
+    cells.forEach((c) => entityMap.set(c.name.toLowerCase().trim(), c));
+  } else if (report.scope === 'GROUP') {
+    const groups = await prisma.groups.findMany({
+      where: { church_id: churchId },
+      select: { id: true, name: true },
+    });
+    groups.forEach((g) => entityMap.set(g.name.toLowerCase().trim(), g));
+  } else if (report.scope === 'SECTOR') {
+    const sectors = await prisma.sectors.findMany({
+      where: { church_id: churchId },
+      select: {
+        id: true,
+        name: true,
+        zone_id: true,
+      },
+    });
+    sectors.forEach((s) => entityMap.set(s.name.toLowerCase().trim(), s));
+  } else if (report.scope === 'ZONE') {
+    const zones = await prisma.zones.findMany({
+      where: { church_id: churchId },
+      select: { id: true, name: true },
+    });
+    zones.forEach((z) => entityMap.set(z.name.toLowerCase().trim(), z));
+  }
+
+  let successCount = 0;
+  const errors: string[] = [];
+
+  // Prepare data for transaction
+  const entriesToCreate = [];
+
+  for (const row of input.rows) {
+    if (!row.entidad) continue;
+
+    const entityName = row.entidad.toLowerCase().trim();
+    const entity = entityMap.get(entityName);
+
+    if (!entity) {
+      errors.push(`Entidad no encontrada: ${row.entidad}`);
+      continue;
+    }
+
+    // Determine scope IDs
+    const scopeData: any = {};
+    if (report.scope === 'CELL') {
+      scopeData.cell = { connect: { id: entity.id } };
+      // scopeData.sub_sector_id = entity.subSector?.id; // These might be auto-resolved or need explicit connect if relations exist
+      // Usually only the direct relation is needed for connect: { id }
+    } else if (report.scope === 'GROUP') {
+      scopeData.group = { connect: { id: entity.id } };
+    } else if (report.scope === 'SECTOR') {
+      scopeData.sector = { connect: { id: entity.id } };
+    } else if (report.scope === 'ZONE') {
+      // Zone connection might be different if it's top level, check schema if needed
+      // Assuming similar pattern
+      // scopeData.zone = { connect: { id: entity.id } }; // If zone relation exists on ReportEntries
+    }
+
+    // Prepare values
+    const reportValues = [];
+    for (const [key, value] of Object.entries(row.values)) {
+      const field = report.fields.find((f) => f.id === key);
+      if (field) {
+        reportValues.push({
+          report_field_id: field.id,
+          value: value,
+        });
+      }
+    }
+
+    entriesToCreate.push({
+      scope: report.scope,
+      status: ReportEntryStatus.SUBMITTED,
+      createdAt: row.fecha ? new Date(row.fecha) : new Date(),
+      ...scopeData,
+      values: {
+        create: reportValues,
+      },
+      church: {
+        connect: { id: churchId },
+      },
+      report: {
+        connect: { id: report.id },
+      },
+    });
+  }
+
+  if (entriesToCreate.length === 0) {
+    return {
+      success: false,
+      error: 'No se encontraron entradas válidas para importar.',
+      errors,
+    };
+  }
+
+  try {
+    const chunkSize = 50;
+    for (let i = 0; i < entriesToCreate.length; i += chunkSize) {
+      const chunk = entriesToCreate.slice(i, i + chunkSize);
+      await prisma.$transaction(
+        chunk.map((data) => prisma.reportEntries.create({ data }))
+      );
+    }
+
+    successCount = entriesToCreate.length;
+  } catch (e: any) {
+    console.error('Import transaction error', e);
+    return {
+      success: false,
+      error: 'Error guardando datos en base de datos: ' + e.message,
+    };
+  }
+
+  revalidatePath(`/reports/${input.reportId}/entries`);
+  return { success: true, count: successCount, errors };
+}

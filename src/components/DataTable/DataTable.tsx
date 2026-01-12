@@ -69,6 +69,7 @@ function DataTable<T extends Record<string, unknown>>({
   onShowAllColumns,
   onHideAllColumns,
   showColumnVisibility = false,
+  headerActions,
   searchEndContent,
   selectedRows: selectedRowsProp,
   onSelectRow: onSelectRowProp,
@@ -493,6 +494,8 @@ function DataTable<T extends Record<string, unknown>>({
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {headerActions}
 
               {showColumnVisibility &&
                 allColumns &&

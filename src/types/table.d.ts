@@ -874,6 +874,11 @@ export interface DataTableProps<T = Record<string, unknown>> {
    * @default false
    */
   showColumnVisibility?: boolean;
+
+  /**
+   * Additional actions to display in the header, typically next to the export/visibility controls.
+   */
+  headerActions?: React.ReactNode;
 }
 
 /**
