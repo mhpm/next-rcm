@@ -31,6 +31,27 @@
       "description": "Get valuable insights on the growth and health of your church with intuitive and exportable charts."
     }
   },
+  "testimonials": {
+    "title": "What our leaders say",
+    "subtitle": "Pastors and leaders around the world trust MultiplyNet.",
+    "list": [
+      {
+        "name": "Pastor Carlos Méndez",
+        "role": "New Life Church",
+        "content": "Since using MultiplyNet, we have doubled our number of cells in just one year. The organization and tracking are impeccable."
+      },
+      {
+        "name": "Leader Ana Torres",
+        "role": "Youth Ministry",
+        "content": "The ease of reporting attendance and seeing the progress of my disciples has transformed my leadership. It is an essential tool!"
+      },
+      {
+        "name": "Bishop David Ruiz",
+        "role": "International Apostolic Network",
+        "content": "Having a global view of all our churches in a single dashboard has allowed us to make much more accurate strategic decisions."
+      }
+    ]
+  },
   "pricing": {
     "title": "Simple & Transparent Pricing",
     "subtitle": "Choose the perfect plan for your ministry's growth.",

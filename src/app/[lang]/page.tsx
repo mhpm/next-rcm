@@ -12,6 +12,47 @@ import { getDictionary } from '@/i18n/get-dictionary';
 import { Locale } from '@/i18n/config';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { Logo } from '@/components/Logo';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: Locale }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  const dict = await getDictionary(lang);
+
+  return {
+    title: `${dict.hero.title} - ${dict.hero.subtitle}`,
+    description: dict.hero.description,
+    openGraph: {
+      title: `${dict.hero.title} - ${dict.hero.subtitle}`,
+      description: dict.hero.description,
+      type: 'website',
+      locale: lang,
+      images: [
+        {
+          url: '/icon.svg',
+          width: 512,
+          height: 512,
+          alt: 'MultiplyNet Logo',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: dict.hero.title,
+      description: dict.hero.subtitle,
+      images: ['/icon.svg'],
+    },
+    alternates: {
+      languages: {
+        'en-US': '/en',
+        'es-ES': '/es',
+      },
+    },
+  };
+}
 
 export default async function LandingPage({
   params,
@@ -22,8 +63,30 @@ export default async function LandingPage({
   const dict = await getDictionary(lang);
   const user = await stackServerApp.getUser();
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'MultiplyNet',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    description: dict.hero.description,
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    author: {
+      '@type': 'Organization',
+      name: 'MultiplyNet',
+    },
+  };
+
   return (
-    <div className="flex flex-col min-h-screen bg-slate-950 text-slate-200 selection:bg-primary/30 overflow-hidden relative">
+    <div className="flex flex-col min-h-screen bg-slate-950 text-slate-200 selection:bg-primary/30 overflow-x-hidden relative">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Background Gradients/Blobs */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-125 h-125 bg-primary/20 rounded-full blur-[120px] mix-blend-screen animate-pulse" />
@@ -40,13 +103,13 @@ export default async function LandingPage({
         </div>
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
           <Link
-            href="#"
+            href="#features"
             className="hover:text-white transition-colors duration-200"
           >
             {dict.nav.features}
           </Link>
           <Link
-            href="#"
+            href="#testimonials"
             className="hover:text-white transition-colors duration-200"
           >
             {dict.nav.testimonials}
@@ -101,7 +164,7 @@ export default async function LandingPage({
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150">
             {user ? (
-              <Link href="/dashboard">
+              <Link href={`/${lang}/dashboard`}>
                 <Button
                   size="lg"
                   className="h-14 px-10 text-lg rounded-full bg-white text-slate-900 hover:bg-slate-200 font-bold shadow-xl shadow-white/10 transition-transform hover:scale-105"
@@ -110,7 +173,7 @@ export default async function LandingPage({
                 </Button>
               </Link>
             ) : (
-              <Link href="/sign-in">
+              <Link href={`/${lang}/sign-in`}>
                 <Button
                   size="lg"
                   className="h-14 px-10 text-lg rounded-full bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold shadow-xl shadow-purple-500/30 transition-transform hover:scale-105 border-0"
@@ -153,7 +216,7 @@ export default async function LandingPage({
           </div>
         </section>
 
-        <section className="py-24 relative">
+        <section id="features" className="py-24 relative">
           <div className="absolute inset-0 bg-slate-950/50 backdrop-blur-3xl z-0" />
           <div className="container px-6 mx-auto relative z-10">
             <div className="text-center mb-16 space-y-4">
@@ -185,7 +248,31 @@ export default async function LandingPage({
           </div>
         </section>
 
-        <section id="pricing" className="py-24 relative bg-slate-900/30">
+        <section id="testimonials" className="py-24 relative bg-slate-900/30">
+          <div className="container px-6 mx-auto relative z-10">
+            <div className="text-center mb-16 space-y-4">
+              <h2 className="text-3xl md:text-5xl font-bold text-white">
+                {dict.testimonials.title}
+              </h2>
+              <p className="text-slate-400 max-w-2xl mx-auto">
+                {dict.testimonials.subtitle}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {dict.testimonials.list.map((testimonial, i) => (
+                <TestimonialCard
+                  key={i}
+                  name={testimonial.name}
+                  role={testimonial.role}
+                  content={testimonial.content}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="pricing" className="py-24 relative">
           <div className="container px-6 mx-auto relative z-10">
             <div className="text-center mb-16 space-y-4">
               <h2 className="text-3xl md:text-5xl font-bold text-white">
@@ -240,17 +327,6 @@ export default async function LandingPage({
       </main>
 
       <footer className="py-12 px-6 border-t border-white/5 bg-slate-950/80 backdrop-blur-xl text-center text-slate-500 text-sm relative z-10">
-        <div className="flex justify-center gap-6 mb-8">
-          {['Twitter', 'GitHub', 'Discord'].map((social) => (
-            <a
-              key={social}
-              href="#"
-              className="hover:text-white transition-colors"
-            >
-              {social}
-            </a>
-          ))}
-        </div>
         <p>
           &copy; {new Date().getFullYear()} MultiplyNet. {dict.footer.rights}
         </p>
@@ -279,6 +355,31 @@ function FeatureCard({
       <p className="text-slate-400 leading-relaxed group-hover:text-slate-300 transition-colors">
         {description}
       </p>
+    </div>
+  );
+}
+
+function TestimonialCard({
+  name,
+  role,
+  content,
+}: {
+  name: string;
+  role: string;
+  content: string;
+}) {
+  return (
+    <div className="p-8 rounded-3xl border border-white/5 bg-white/5 hover:bg-white/[0.08] transition-all duration-300 backdrop-blur-sm flex flex-col gap-4">
+      <div className="flex items-center gap-4 mb-2">
+        <div className="h-10 w-10 rounded-full bg-linear-to-tr from-primary to-purple-500 flex items-center justify-center font-bold text-white text-lg">
+          {name.charAt(0)}
+        </div>
+        <div>
+          <h4 className="font-bold text-white">{name}</h4>
+          <p className="text-sm text-slate-400">{role}</p>
+        </div>
+      </div>
+      <p className="text-slate-300 leading-relaxed italic">"{content}"</p>
     </div>
   );
 }

@@ -25,6 +25,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        <link
+          rel="icon"
+          href="/icon?<generated>"
+          type="image/<generated>"
+          sizes="<generated>"
+        />
+      </head>
       <body
         suppressHydrationWarning
         className={`${inter.variable} font-sans antialiased`}

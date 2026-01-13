@@ -31,6 +31,27 @@
       "description": "Obtén insights valiosos sobre el crecimiento y salud de tu iglesia con gráficos intuitivos y exportables."
     }
   },
+  "testimonials": {
+    "title": "Lo que dicen nuestros líderes",
+    "subtitle": "Pastores y líderes de todo el mundo confían en MultiplyNet.",
+    "list": [
+      {
+        "name": "Pastor Carlos Méndez",
+        "role": "Iglesia Vida Nueva",
+        "content": "Desde que usamos MultiplyNet, hemos duplicado nuestro número de células en solo un año. La organización y el seguimiento son impecables."
+      },
+      {
+        "name": "Líder Ana Torres",
+        "role": "Ministerio de Jóvenes",
+        "content": "La facilidad para reportar asistencias y ver el progreso de mis discípulos ha transformado mi liderazgo. ¡Es una herramienta esencial!"
+      },
+      {
+        "name": "Obispo David Ruiz",
+        "role": "Red Apostólica Internacional",
+        "content": "Tener una visión global de todas nuestras iglesias en un solo dashboard nos ha permitido tomar decisiones estratégicas mucho más acertadas."
+      }
+    ]
+  },
   "pricing": {
     "title": "Planes Simples y Transparentes",
     "subtitle": "Elige el plan perfecto para el crecimiento de tu ministerio.",
