@@ -262,18 +262,18 @@ export default async function Dashboard({
   }
 
   return (
-    <div className="space-y-8 p-4 md:p-8 animate-in fade-in duration-500">
+    <div className="space-y-4 md:space-y-8 p-3 md:p-8 animate-in fade-in duration-500">
       {/* Enhanced Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/5">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 pb-4 md:pb-6 border-b border-white/5">
+        <div className="space-y-1 md:space-y-2">
+          <div className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-primary uppercase tracking-widest">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             Live Dashboard
           </div>
-          <h1 className="text-4xl font-black tracking-tight text-foreground uppercase italic">
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground uppercase italic">
             {d.title}
           </h1>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+          <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground font-medium">
             <Clock className="w-3.5 h-3.5" />
             {d.lastUpdated.replace('{time}', '2 min')}
           </div>
@@ -281,7 +281,7 @@ export default async function Dashboard({
 
         <div className="flex items-center gap-3">
           <Select defaultValue="monthly">
-            <SelectTrigger className="w-[180px] bg-white/5 border-white/10 rounded-xl h-10 font-medium">
+            <SelectTrigger className="w-full md:w-[180px] bg-white/5 border-white/10 rounded-xl h-10 font-medium">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="rounded-xl border-white/10 bg-popover shadow-2xl">

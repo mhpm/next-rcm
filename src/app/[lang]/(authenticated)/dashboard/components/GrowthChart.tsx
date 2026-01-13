@@ -121,24 +121,24 @@ export default function GrowthChart({ data, slug, dict }: GrowthChartProps) {
 
   return (
     <Card className="col-span-4 border-none bg-white/[0.02] backdrop-blur-sm shadow-2xl">
-      <CardHeader className="flex flex-col md:flex-row items-start md:items-center gap-6 py-8 px-8">
+      <CardHeader className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 py-4 px-4 md:py-8 md:px-8">
         <div className="grid flex-1 gap-2">
           <div className="flex items-center gap-2">
             <div className="p-2 rounded-lg bg-primary/10 text-primary">
               <Users className="w-4 h-4" />
             </div>
-            <CardTitle className="text-xl font-black uppercase italic tracking-tight">
+            <CardTitle className="text-lg md:text-xl font-black uppercase italic tracking-tight">
               {dict.title}
             </CardTitle>
           </div>
-          <CardDescription className="text-sm font-medium text-muted-foreground/70">
+          <CardDescription className="text-xs md:text-sm font-medium text-muted-foreground/70">
             {dict.description}
           </CardDescription>
         </div>
 
         <div className="flex items-center gap-3 w-full md:w-auto">
           <Select value={period} onValueChange={handlePeriodChange}>
-            <SelectTrigger className="w-full md:w-[180px] bg-white/5 border-white/10 rounded-xl h-11 font-bold uppercase tracking-wider text-xs">
+            <SelectTrigger className="w-full md:w-[180px] bg-white/5 border-white/10 rounded-xl h-10 md:h-11 font-bold uppercase tracking-wider text-[10px] md:text-xs">
               <SelectValue placeholder={dict.placeholder} />
             </SelectTrigger>
             <SelectContent className="rounded-2xl border-white/10 bg-popover/95 backdrop-blur-xl shadow-2xl">
@@ -171,14 +171,14 @@ export default function GrowthChart({ data, slug, dict }: GrowthChartProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="px-4 pb-8 sm:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+      <CardContent className="px-4 pb-4 md:pb-8 sm:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-8 mb-6 md:mb-10">
           <div className="md:col-span-1 space-y-1">
             <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em]">
               Total Growth
             </p>
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-black tracking-tighter text-foreground italic">
+              <span className="text-3xl md:text-4xl font-black tracking-tighter text-foreground italic">
                 {totals.current}
               </span>
               <Badge
@@ -191,16 +191,16 @@ export default function GrowthChart({ data, slug, dict }: GrowthChartProps) {
             </div>
           </div>
 
-          <div className="md:col-span-3 flex items-center justify-end gap-6">
+          <div className="md:col-span-3 flex items-center justify-start md:justify-end gap-4 md:gap-6 flex-wrap">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-primary" />
-              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+              <span className="text-[10px] md:text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                 {dict.currentPeriod}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-muted-foreground/20" />
-              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+              <span className="text-[10px] md:text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                 {dict.previousPeriod}
               </span>
             </div>
@@ -210,7 +210,7 @@ export default function GrowthChart({ data, slug, dict }: GrowthChartProps) {
         <ChartContainer
           config={chartConfig}
           className={cn(
-            'aspect-auto h-[350px] w-full transition-opacity duration-500',
+            'aspect-auto h-[250px] md:h-[350px] w-full transition-opacity duration-500',
             loading ? 'opacity-30' : 'opacity-100'
           )}
         >

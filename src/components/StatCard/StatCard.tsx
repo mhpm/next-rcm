@@ -41,8 +41,8 @@ export const StatCard = ({
 }: StatCardProps) => {
   if (isLoading) {
     return (
-      <Card className="p-6 relative overflow-hidden group">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent -translate-x-full group-hover:animate-shimmer" />
+      <Card className="p-4 md:p-6 relative overflow-hidden group">
+        <div className="absolute inset-0 bg-linear-to-r from-transparent via-primary/5 to-transparent -translate-x-full group-hover:animate-shimmer" />
         <Skeleton className="h-4 w-24 mb-6" />
         <Skeleton className="h-10 w-20 mb-2" />
         <Skeleton className="h-4 w-32" />
@@ -53,7 +53,7 @@ export const StatCard = ({
   return (
     <Card
       className={cn(
-        'group relative flex flex-col items-center text-center py-6 h-full transition-all duration-300 ease-out',
+        'group relative flex flex-col items-center text-center py-5 md:py-6 h-full transition-all duration-300 ease-out',
         'hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1',
         'border-white/5 bg-card/50 backdrop-blur-sm overflow-hidden',
         isPrimary && 'border-primary/20 bg-primary/5 ring-1 ring-primary/10'
@@ -68,10 +68,10 @@ export const StatCard = ({
         )}
       />
 
-      <CardHeader className="flex flex-col items-center space-y-2 pb-2 relative z-10">
+      <CardHeader className="flex flex-col items-center space-y-2 pb-2 relative z-10 w-full">
         <div
           className={cn(
-            'p-3 rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-lg',
+            'p-2.5 md:p-3 rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-lg',
             isPrimary
               ? 'bg-primary text-primary-foreground shadow-primary/20'
               : 'bg-primary/10 text-primary shadow-black/5'
@@ -79,18 +79,18 @@ export const StatCard = ({
         >
           {icon}
         </div>
-        <div className="text-4xl font-black tracking-tight mt-2 bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/70">
+        <div className="text-3xl md:text-4xl font-black tracking-tight mt-2 bg-clip-text text-transparent bg-linear-to-br from-foreground to-foreground/70">
           {value}
         </div>
-        <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+        <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-2 truncate w-full">
           {title}
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="flex flex-col items-center w-full pb-2 flex-1 relative z-10">
+      <CardContent className="flex flex-col items-center w-full pb-2 flex-1 relative z-10 px-3 md:px-6">
         <div
           className={cn(
-            'flex items-center px-2 py-1 rounded-full text-[10px] font-bold mt-1 transition-colors duration-300',
+            'flex items-center px-2 py-1 rounded-full text-[10px] font-bold mt-1 transition-colors duration-300 whitespace-nowrap',
             changeType === 'increase'
               ? 'bg-green-500/10 text-green-500 group-hover:bg-green-500/20'
               : 'bg-red-500/10 text-red-500 group-hover:bg-red-500/20'
@@ -107,16 +107,16 @@ export const StatCard = ({
         </div>
 
         {extraStats && extraStats.length > 0 && (
-          <div className="mt-6 grid gap-2 w-full border-t border-white/5 pt-4 px-4">
+          <div className="mt-4 md:mt-6 grid gap-2 w-full border-t border-white/5 pt-4">
             {extraStats.map((item) => (
               <div
                 key={item.label}
-                className="flex items-center justify-between text-[11px] group/item"
+                className="flex items-center justify-between text-[10px] md:text-[11px] group/item gap-2"
               >
-                <span className="font-medium text-muted-foreground group-hover/item:text-foreground transition-colors">
+                <span className="font-medium text-muted-foreground group-hover/item:text-foreground transition-colors truncate text-left flex-1">
                   {item.label}
                 </span>
-                <span className="font-bold bg-secondary/50 backdrop-blur-md px-2 py-0.5 rounded-lg border border-white/5 group-hover/item:border-primary/20 transition-all">
+                <span className="font-bold bg-secondary/50 backdrop-blur-md px-2 py-0.5 rounded-lg border border-white/5 group-hover/item:border-primary/20 transition-all whitespace-nowrap">
                   {item.value}
                 </span>
               </div>
@@ -126,8 +126,8 @@ export const StatCard = ({
       </CardContent>
 
       {action && (
-        <CardFooter className="w-full pt-4 pb-0 mt-auto px-4 relative z-10">
-          <div className="w-full transform transition-all duration-300 group-hover:translate-y-[-2px]">
+        <CardFooter className="w-full pt-4 pb-0 mt-auto px-4 md:px-6 relative z-10">
+          <div className="w-full transform transition-all duration-300 group-hover:-translate-y-0.5">
             {action}
           </div>
         </CardFooter>

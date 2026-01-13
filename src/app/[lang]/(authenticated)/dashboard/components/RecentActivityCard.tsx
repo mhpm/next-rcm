@@ -36,7 +36,7 @@ export function RecentActivityCard({
 
   return (
     <Card className="col-span-1 lg:col-span-3 border-white/5 bg-card/50 backdrop-blur-sm overflow-hidden group transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5">
-      <CardHeader className="flex flex-row items-center justify-between pb-4">
+      <CardHeader className="flex flex-row items-center justify-between pb-4 px-4 md:px-6">
         <div className="space-y-1">
           <CardTitle className="text-xl font-black tracking-tight uppercase italic flex items-center gap-2">
             <Clock className="w-5 h-5 text-primary" />
@@ -64,7 +64,7 @@ export function RecentActivityCard({
               <div
                 key={activity.id}
                 className={cn(
-                  'group/item relative flex items-center gap-4 px-6 py-4 transition-all duration-300 hover:bg-white/5',
+                  'group/item relative flex items-center gap-3 md:gap-4 px-4 md:px-6 py-3 md:py-4 transition-all duration-300 hover:bg-white/5',
                   index !== activities.length - 1 && 'border-b border-white/5'
                 )}
               >
@@ -72,36 +72,36 @@ export function RecentActivityCard({
 
                 <div
                   className={cn(
-                    'p-3 rounded-2xl transition-all duration-300 group-hover/item:scale-110 group-hover/item:rotate-3 shadow-lg',
+                    'p-2.5 md:p-3 rounded-2xl transition-all duration-300 group-hover/item:scale-110 group-hover/item:rotate-3 shadow-lg shrink-0',
                     activity.type === 'member'
                       ? 'bg-blue-500/10 text-blue-500 shadow-blue-500/5'
                       : 'bg-emerald-500/10 text-emerald-500 shadow-emerald-500/5'
                   )}
                 >
                   {activity.type === 'member' ? (
-                    <User className="w-5 h-5" />
+                    <User className="w-4 h-4 md:w-5 md:h-5" />
                   ) : (
-                    <FileText className="w-5 h-5" />
+                    <FileText className="w-4 h-4 md:w-5 md:h-5" />
                   )}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-0.5">
-                    <p className="text-sm font-black tracking-tight text-foreground/90 truncate group-hover/item:text-primary transition-colors">
+                    <p className="text-xs md:text-sm font-black tracking-tight text-foreground/90 truncate group-hover/item:text-primary transition-colors">
                       {activity.title}
                     </p>
-                    <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-wider shrink-0 ml-2">
                       {formatDistanceToNow(activity.date, {
                         addSuffix: true,
                         locale: dateLocale,
                       })}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-xs font-medium text-muted-foreground truncate">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-[10px] md:text-xs font-medium text-muted-foreground truncate max-w-[150px] md:max-w-none">
                       {activity.subtitle}
                     </p>
-                    <span className="w-1 h-1 rounded-full bg-white/10" />
+                    <span className="hidden md:inline w-1 h-1 rounded-full bg-white/10" />
                     <span
                       className={cn(
                         'text-[10px] font-bold uppercase tracking-widest',
@@ -116,7 +116,7 @@ export function RecentActivityCard({
                   </div>
                 </div>
 
-                <button className="opacity-0 group-hover/item:opacity-100 p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 translate-x-4 group-hover/item:translate-x-0">
+                <button className="opacity-0 group-hover/item:opacity-100 p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 translate-x-4 group-hover/item:translate-x-0 hidden md:block">
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
