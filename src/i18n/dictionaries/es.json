@@ -3,17 +3,19 @@
     "features": "Características",
     "testimonials": "Testimonios",
     "pricing": "Precios",
+    "security": "Seguridad",
+    "docs": "Docs",
     "dashboard": "Ir al Dashboard",
     "signIn": "Iniciar Sesión"
   },
   "hero": {
     "newVersion": "Nueva versión 2.0 disponible",
-    "title": "MultiplyNet",
-    "subtitle": "El sistema para multiplicar células y gestionar iglesias",
-    "description": "Gestiona células, sectores y redes completas con una facilidad sin precedentes. MultiplyNet simplifica el seguimiento de asistencia, la consolidación de nuevos creyentes y la generación de reportes estadísticos en tiempo real, permitiendo a los líderes enfocarse en lo que realmente importa: las personas.",
-    "cta": "Comenzar Ahora",
+    "title": "El Sistema Operativo para el Crecimiento de la Iglesia",
+    "subtitle": "Gestiona células, líderes y redes enteras con claridad y control en tiempo real.",
+    "description": "La plataforma todo-en-uno para la multiplicación de la iglesia moderna.",
+    "cta": "Ir al Dashboard",
     "demo": "Ver Demo",
-    "preview": "Vista previa del Dashboard"
+    "preview": "Dashboard en vivo. Datos reales. Crecimiento real."
   },
   "features": {
     "title": "Todo lo que necesitas",
@@ -55,7 +57,10 @@
   "pricing": {
     "title": "Planes Simples y Transparentes",
     "subtitle": "Elige el plan perfecto para el crecimiento de tu ministerio.",
-    "monthly": "/mes",
+    "monthly": "mes",
+    "yearly": "año",
+    "yearlyDiscount": "20% DTO",
+    "microcopy": "Cancela en cualquier momento. Sin contratos.",
     "free": {
       "name": "Gratis",
       "description": "Ideal para comenzar a organizar tus células.",
@@ -103,9 +108,146 @@
   "footer": {
     "rights": "Todos los derechos reservados."
   },
+  "finalCta": {
+    "title": "Lidera tu iglesia con claridad y confianza.",
+    "subtitle": "Comienza a usar MultiplyNet hoy mismo.",
+    "primary": "Empezar Gratis",
+    "secondary": "Ver Demo"
+  },
+  "security": {
+    "title": "Seguridad en la que puedes confiar",
+    "subtitle": "Diseñado para iglesias modernas. MultiplyNet protege tus datos con seguridad de grado empresarial, encriptación y mejores prácticas.",
+    "dataProtection": {
+      "title": "Protección de Datos",
+      "description": "Todos los datos están encriptados en tránsito y en reposo utilizando protocolos estándar de la industria.",
+      "bullets": [
+        "Datos en tránsito (TLS / HTTPS)",
+        "Datos en reposo (AES-256)",
+        "Aislamiento de datos por organización"
+      ]
+    },
+    "accessControl": {
+      "title": "Control de Acceso",
+      "description": "El acceso basado en roles garantiza que los líderes solo vean lo que están autorizados a gestionar.",
+      "bullets": [
+        "Roles y permisos granulares",
+        "Acceso por nivel (pastor, líder, admin)",
+        "Control de acciones sensibles"
+      ]
+    },
+    "infrastructure": {
+      "title": "Infraestructura y Hosting",
+      "description": "MultiplyNet se ejecuta en una infraestructura de nube segura y escalable con copias de seguridad automáticas y alta disponibilidad.",
+      "bullets": [
+        "Proveedor de nube líder",
+        "Alta disponibilidad y redundancia",
+        "Backups automáticos diarios"
+      ]
+    },
+    "reliability": {
+      "title": "Confiabilidad",
+      "description": "Monitoreo continuo y recuperación ante fallos para asegurar que tu ministerio nunca se detenga.",
+      "bullets": [
+        "Uptime objetivo del 99.9%",
+        "Monitoreo 24/7",
+        "Planes de recuperación ante desastres"
+      ]
+    },
+    "privacy": {
+      "title": "Privacidad y Cumplimiento",
+      "description": "Cumplimos con las mejores prácticas para proteger la información personal de tus miembros.",
+      "bullets": [
+        "Protección de datos personales",
+        "Política de privacidad transparente",
+        "Cumplimiento de estándares éticos"
+      ]
+    },
+    "contact": {
+      "title": "Contacto de Seguridad",
+      "description": "Para cualquier duda o reporte relacionado con la seguridad, contáctanos en:",
+      "email": "security@multiplynet.app"
+    }
+  },
+  "docs": {
+    "title": "Documentación de MultiplyNet",
+    "subtitle": "Todo lo que necesitas para gestionar y hacer crecer tu iglesia.",
+    "search": "Buscar en la documentación...",
+    "categories": {
+      "gettingStarted": {
+        "title": "📘 Primeros Pasos",
+        "items": {
+          "introduction": "Qué es MultiplyNet?",
+          "createChurch": "Crea tu primera iglesia",
+          "inviteLeaders": "Invita a tus líderes",
+          "setupCell": "Configuración de tu primera célula"
+        }
+      },
+      "coreFeatures": {
+        "title": "🧩 Características Principales",
+        "items": {
+          "cells": "Gestión de Células",
+          "events": "Seguimiento de Eventos",
+          "reports": "Reportes",
+          "leaders": "Gestión de Líderes",
+          "attendance": "Asistencia",
+          "metrics": "Métricas"
+        }
+      },
+      "roles": {
+        "title": "👤 Roles y Permisos",
+        "items": {
+          "pastor": "Pastor Principal",
+          "leader": "Líder de Célula",
+          "admin": "Administrador"
+        }
+      },
+      "metrics": {
+        "title": "📊 Reportes y Métricas",
+        "items": {
+          "reading": "Cómo leer los reportes",
+          "important": "Qué métricas importan",
+          "examples": "Ejemplos prácticos"
+        }
+      },
+      "settings": {
+        "title": "⚙️ Configuración",
+        "items": {
+          "zones": "Zonas",
+          "languages": "Idiomas",
+          "dates": "Fechas",
+          "structure": "Estructura organizacional"
+        }
+      },
+      "integrations": {
+        "title": "🔌 Integraciones",
+        "items": {
+          "export": "Exportación de datos",
+          "api": "API",
+          "webhooks": "Webhooks"
+        }
+      },
+      "faq": {
+        "title": "❓ FAQ / Resolución de Problemas",
+        "items": {
+          "common": "Problemas comunes",
+          "errors": "Errores frecuentes",
+          "bestPractices": "Buenas prácticas"
+        }
+      },
+      "support": {
+        "title": "📬 Soporte",
+        "items": {
+          "contact": "Cómo contactar soporte",
+          "sla": "SLA",
+          "demo": "Ayuda directa / Demo"
+        }
+      }
+    }
+  },
   "sidebar": {
     "home": "Inicio",
     "dashboard": "Tablero",
+    "administration": "Administración",
     "members": "Miembros",
     "cells": "Células",
     "sectors": "Sectores",
@@ -129,39 +271,57 @@
   },
   "dashboard": {
     "title": "Panel de Control",
+    "lastUpdated": "Actualizado hace {time}",
+    "periods": {
+      "monthly": "Mensual",
+      "quarterly": "Trimestral",
+      "custom": "Personalizado"
+    },
+    "insights": {
+      "title": "Insights Clave",
+      "noCell": "{count} miembros aún no están en una célula",
+      "negativeGrowth": "Crecimiento negativo en el Sector Norte",
+      "healthyGrowth": "Crecimiento saludable detectado en 5 células"
+    },
     "ministries": {
       "title": "Ministerios",
-      "activeMembers": "Miembros activos:",
-      "membersWithoutMinistry": "Miembros sin ministerio:",
-      "viewDetails": "Ver más detalles"
+      "activeMembers": "Activos",
+      "membersWithoutMinistry": "Sin Ministerio",
+      "viewDetails": "Asignar Miembros"
     },
     "cells": {
       "title": "Células",
-      "membersInCells": "Miembros en células:",
-      "membersWithoutCell": "Miembros sin célula:",
-      "viewDetails": "Ver más detalles"
+      "membersInCells": "En Células",
+      "membersWithoutCell": "Sin Célula",
+      "viewDetails": "Gestionar Células"
     },
     "members": {
       "title": "Miembros",
-      "supervisors": "Supervisors:",
-      "leaders": "Líderes:",
-      "viewDetails": "Ver más detalles"
+      "supervisors": "Supervisores",
+      "leaders": "Líderes",
+      "viewDetails": "Ver Miembros"
     },
     "sectors": {
       "title": "Sectores",
-      "subSectors": "Sub-sectores:",
-      "cells": "Células:",
-      "members": "Miembros:",
-      "viewDetails": "Ver más detalles"
+      "subSectors": "Sub-sectores",
+      "cells": "Células",
+      "members": "Miembros",
+      "viewDetails": "Ver Sectores"
     },
     "stats": {
       "vsLastPeriod": "vs. último cuatrimestre",
       "vsLast3Periods": "vs. 3 últimos cuatrimestres",
       "vsLast12Periods": "vs. 12 últimos cuatrimestres"
-    }
+    },
+    "recentActivity": "Actividad Reciente",
+    "latestUpdates": "Últimas actualizaciones de tu iglesia",
+    "noActivity": "No hay actividad reciente",
+    "viewAllActivity": "Ver toda la actividad"
   },
   "chart": {
     "label": "Miembros",
+    "currentPeriod": "Periodo Actual",
+    "previousPeriod": "Periodo Anterior",
     "title": "Crecimiento de la Iglesia",
     "description": "Mostrando nuevos miembros por periodo",
     "placeholder": "Seleccionar periodo",

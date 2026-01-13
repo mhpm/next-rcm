@@ -10,6 +10,7 @@
 
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
+  --primary-rgb: 99, 102, 241; /* Indigo default */
 
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
@@ -35,21 +36,29 @@
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-bounce-slow: bounce-slow 4s infinite;
+  --animate-float: float 6s ease-in-out infinite;
 
-  @keyframes accordion-down {
-    from {
-      height: 0;
+  @keyframes bounce-slow {
+    0%,
+    100% {
+      transform: translateY(-5%);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
     }
-    to {
-      height: var(--radix-accordion-content-height);
+    50% {
+      transform: translateY(0);
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
     }
   }
-  @keyframes accordion-up {
-    from {
-      height: var(--radix-accordion-content-height);
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
     }
-    to {
-      height: 0;
+    50% {
+      transform: translateY(-20px);
+    }
+    100% {
+      transform: translateY(0px);
     }
   }
 

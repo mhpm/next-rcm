@@ -6,6 +6,7 @@ interface DashboardGridProps {
   membersCard: React.ReactNode;
   sectorsCard: React.ReactNode;
   chartCard: React.ReactNode;
+  recentActivityCard?: React.ReactNode;
 }
 
 export function DashboardGrid({
@@ -14,6 +15,7 @@ export function DashboardGrid({
   membersCard,
   sectorsCard,
   chartCard,
+  recentActivityCard,
 }: DashboardGridProps) {
   return (
     <div className="space-y-4">
@@ -24,7 +26,10 @@ export function DashboardGrid({
         {sectorsCard}
       </div>
       <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-7">
-        <div className="col-span-7">{chartCard}</div>
+        <div className="lg:col-span-4">{chartCard}</div>
+        {recentActivityCard && (
+          <div className="lg:col-span-3">{recentActivityCard}</div>
+        )}
       </div>
     </div>
   );

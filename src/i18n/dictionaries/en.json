@@ -3,17 +3,19 @@
     "features": "Features",
     "testimonials": "Testimonials",
     "pricing": "Pricing",
+    "security": "Security",
+    "docs": "Docs",
     "dashboard": "Go to Dashboard",
     "signIn": "Sign In"
   },
   "hero": {
     "newVersion": "New version 2.0 available",
-    "title": "MultiplyNet",
-    "subtitle": "The System for Cell Multiplication & Church Management",
-    "description": "Manage cells, sectors, and entire networks with unprecedented ease. MultiplyNet simplifies attendance tracking, new believer consolidation, and real-time statistical reporting, allowing leaders to focus on what truly matters: people.",
-    "cta": "Get Started",
+    "title": "The Operating System for Church Growth",
+    "subtitle": "Manage cells, leaders, and entire church networks with real-time clarity and control.",
+    "description": "The all-in-one platform for modern church multiplication.",
+    "cta": "Go to Dashboard",
     "demo": "View Demo",
-    "preview": "Dashboard Preview"
+    "preview": "Live dashboard. Real data. Real growth."
   },
   "features": {
     "title": "Everything you need",
@@ -55,7 +57,10 @@
   "pricing": {
     "title": "Simple & Transparent Pricing",
     "subtitle": "Choose the perfect plan for your ministry's growth.",
-    "monthly": "/month",
+    "monthly": "month",
+    "yearly": "year",
+    "yearlyDiscount": "20% OFF",
+    "microcopy": "Cancel anytime. No contracts.",
     "free": {
       "name": "Free",
       "description": "Ideal for starting to organize your cells.",
@@ -103,9 +108,146 @@
   "footer": {
     "rights": "All rights reserved."
   },
+  "finalCta": {
+    "title": "Lead your church with clarity and confidence.",
+    "subtitle": "Start using MultiplyNet today.",
+    "primary": "Start Free",
+    "secondary": "Watch Demo"
+  },
+  "security": {
+    "title": "Security you can trust",
+    "subtitle": "Built for modern churches. MultiplyNet protects your data with enterprise-grade security, encryption, and best practices.",
+    "dataProtection": {
+      "title": "Data Protection",
+      "description": "All data is encrypted in transit and at rest using industry-standard protocols.",
+      "bullets": [
+        "Data in transit (TLS / HTTPS)",
+        "Data at rest (AES-256)",
+        "Data isolation per organization"
+      ]
+    },
+    "accessControl": {
+      "title": "Access Control",
+      "description": "Role-based access ensures leaders only see what they’re authorized to manage.",
+      "bullets": [
+        "Granular roles and permissions",
+        "Level-based access (pastor, leader, admin)",
+        "Control of sensitive actions"
+      ]
+    },
+    "infrastructure": {
+      "title": "Infrastructure & Hosting",
+      "description": "MultiplyNet runs on secure, scalable cloud infrastructure with automated backups and high availability.",
+      "bullets": [
+        "Leading cloud provider",
+        "High availability and redundancy",
+        "Daily automated backups"
+      ]
+    },
+    "reliability": {
+      "title": "Reliability",
+      "description": "Continuous monitoring and failover recovery to ensure your ministry never stops.",
+      "bullets": [
+        "99.9% target uptime",
+        "24/7 monitoring",
+        "Disaster recovery plans"
+      ]
+    },
+    "privacy": {
+      "title": "Privacy & Compliance",
+      "description": "We comply with best practices to protect your members' personal information.",
+      "bullets": [
+        "Personal data protection",
+        "Transparent privacy policy",
+        "Ethical standards compliance"
+      ]
+    },
+    "contact": {
+      "title": "Contact Security",
+      "description": "For any questions or security-related reports, contact us at:",
+      "email": "security@multiplynet.app"
+    }
+  },
+  "docs": {
+    "title": "MultiplyNet Documentation",
+    "subtitle": "Everything you need to manage and grow your church.",
+    "search": "Search documentation...",
+    "categories": {
+      "gettingStarted": {
+        "title": "📘 Getting Started",
+        "items": {
+          "introduction": "What is MultiplyNet?",
+          "createChurch": "Create your first church",
+          "inviteLeaders": "Invite your leaders",
+          "setupCell": "Setting up your first cell"
+        }
+      },
+      "coreFeatures": {
+        "title": "🧩 Core Features",
+        "items": {
+          "cells": "Cell Management",
+          "events": "Event Tracking",
+          "reports": "Reports",
+          "leaders": "Leader Management",
+          "attendance": "Attendance",
+          "metrics": "Metrics"
+        }
+      },
+      "roles": {
+        "title": "👤 Roles & Permissions",
+        "items": {
+          "pastor": "Main Pastor",
+          "leader": "Cell Leader",
+          "admin": "Administrator"
+        }
+      },
+      "metrics": {
+        "title": "📊 Reports & Metrics",
+        "items": {
+          "reading": "How to read reports",
+          "important": "What metrics matter",
+          "examples": "Practical examples"
+        }
+      },
+      "settings": {
+        "title": "⚙️ Settings & Configuration",
+        "items": {
+          "zones": "Zones",
+          "languages": "Languages",
+          "dates": "Dates",
+          "structure": "Organizational structure"
+        }
+      },
+      "integrations": {
+        "title": "🔌 Integrations",
+        "items": {
+          "export": "Data export",
+          "api": "API",
+          "webhooks": "Webhooks"
+        }
+      },
+      "faq": {
+        "title": "❓ FAQ / Troubleshooting",
+        "items": {
+          "common": "Common problems",
+          "errors": "Frequent errors",
+          "bestPractices": "Best practices"
+        }
+      },
+      "support": {
+        "title": "📬 Support",
+        "items": {
+          "contact": "How to contact support",
+          "sla": "SLA",
+          "demo": "Direct help / Demo"
+        }
+      }
+    }
+  },
   "sidebar": {
     "home": "Home",
     "dashboard": "Dashboard",
+    "administration": "Administration",
     "members": "Members",
     "cells": "Cells",
     "sectors": "Sectors",
@@ -129,39 +271,57 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "lastUpdated": "Updated {time} ago",
+    "periods": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "custom": "Custom"
+    },
+    "insights": {
+      "title": "Insights & Alerts",
+      "noCell": "{count} members without a cell",
+      "negativeGrowth": "One sector shows negative growth",
+      "healthyGrowth": "Cell growth is healthy this period"
+    },
     "ministries": {
       "title": "Ministries",
-      "activeMembers": "Active Members:",
-      "membersWithoutMinistry": "Members without Ministry:",
-      "viewDetails": "View Details"
+      "activeMembers": "Active",
+      "membersWithoutMinistry": "Without Ministry",
+      "viewDetails": "Assign Members"
     },
     "cells": {
       "title": "Cells",
-      "membersInCells": "Members in Cells:",
-      "membersWithoutCell": "Members without Cell:",
-      "viewDetails": "View Details"
+      "membersInCells": "In Cells",
+      "membersWithoutCell": "Without Cell",
+      "viewDetails": "Manage Cells"
     },
     "members": {
       "title": "Members",
-      "supervisors": "Supervisors:",
-      "leaders": "Leaders:",
-      "viewDetails": "View Details"
+      "supervisors": "Supervisors",
+      "leaders": "Leaders",
+      "viewDetails": "View Members"
     },
     "sectors": {
       "title": "Sectors",
-      "subSectors": "Sub-sectors:",
-      "cells": "Cells:",
-      "members": "Members:",
-      "viewDetails": "View Details"
+      "subSectors": "Sub-sectors",
+      "cells": "Cells",
+      "members": "Members",
+      "viewDetails": "View Sectors"
     },
     "stats": {
       "vsLastPeriod": "vs. last period",
       "vsLast3Periods": "vs. last 3 periods",
       "vsLast12Periods": "vs. last 12 periods"
-    }
+    },
+    "recentActivity": "Recent Activity",
+    "latestUpdates": "Latest updates from your church",
+    "noActivity": "No recent activity",
+    "viewAllActivity": "View All Activity"
   },
   "chart": {
     "label": "Members",
+    "currentPeriod": "Current Period",
+    "previousPeriod": "Previous Period",
     "title": "Church Growth",
     "description": "Showing new members per period",
     "placeholder": "Select period",
