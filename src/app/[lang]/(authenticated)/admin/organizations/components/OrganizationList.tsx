@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import {
   addAdminToOrganization,
   removeAdminFromOrganization,
@@ -26,15 +27,19 @@ import {
   resendInvitation,
 } from '../actions';
 import { useNotificationStore } from '@/store/NotificationStore';
-import { Mail, Copy } from 'lucide-react';
+import { Mail, Copy, Pencil } from 'lucide-react';
+import { EditAdminDialog } from './EditAdminDialog';
+import { useRouter } from 'next/navigation';
 
 // Types from actions (inferred or explicit)
 type Organization = any; // TODO: Define proper type
 
 export function OrganizationList({
   organizations,
+  user,
 }: {
   organizations: Organization[];
+  user?: any;
 }) {
   if (organizations.length === 0) {
     return (
@@ -48,16 +53,57 @@ export function OrganizationList({
     );
   }
 
+  // Determine if this is the "primary" organization (the oldest one owned by the user)
+  // We assume organizations are passed in some order or we can infer it, but the most robust way
+  // is to check if this org is the one that would be selected by default (oldest).
+  // However, in the list view, we might just want to highlight ALL owned organizations as "Owned"
+  // or specifically the first one created.
+  // For now, let's stick to "Principal" for owned churches, but maybe we should refine this if the user has multiple.
+  // The user asked for "Principal" to be unique (the first one created).
+
+  // To do this correctly in the list, we need to know WHICH one is the oldest owned.
+  // Since we don't have that info easily here without sorting, let's rely on the backend sorting passed down?
+  // Or we can just check if it's the oldest among the owned ones in the current list.
+
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {organizations.map((org) => (
-        <OrganizationCard key={org.id} org={org} />
+        <OrganizationCard
+          key={org.id}
+          org={org}
+          user={user}
+          isOldestOwned={
+            user &&
+            organizations
+              .filter(
+                (o) =>
+                  o.owner_id === user.id ||
+                  (o.owner_id &&
+                    user.primaryEmail &&
+                    o.owner_id.toLowerCase() ===
+                      user.primaryEmail.toLowerCase())
+              )
+              .sort(
+                (a, b) =>
+                  new Date(a.createdAt).getTime() -
+                  new Date(b.createdAt).getTime()
+              )[0]?.id === org.id
+          }
+        />
       ))}
     </div>
   );
 }
 
-function OrganizationCard({ org }: { org: Organization }) {
+function OrganizationCard({
+  org,
+  user,
+  isOldestOwned,
+}: {
+  org: Organization;
+  user?: any;
+  isOldestOwned?: boolean;
+}) {
   const [manageOpen, setManageOpen] = useState(false);
   const [switching, setSwitching] = useState(false);
   const { showSuccess, showError } = useNotificationStore();
@@ -67,6 +113,8 @@ function OrganizationCard({ org }: { org: Organization }) {
     try {
       await switchOrganization(org.slug);
       showSuccess(`Switched to ${org.name}`);
+      // Force a hard reload to ensure all contexts are updated
+      window.location.href = window.location.href;
     } catch (error) {
       showError('Failed to switch organization');
     } finally {
@@ -75,10 +123,19 @@ function OrganizationCard({ org }: { org: Organization }) {
   };
 
   return (
-    <Card>
+    <Card className={isOldestOwned ? 'border-primary ring-1 ring-primary' : ''}>
       <CardHeader>
-        <CardTitle>{org.name}</CardTitle>
-        <CardDescription>{org.slug}</CardDescription>
+        <div className="flex justify-between items-start">
+          <div className="space-y-1.5">
+            <CardTitle>{org.name}</CardTitle>
+            <CardDescription>{org.slug}</CardDescription>
+          </div>
+          {isOldestOwned && (
+            <Badge variant="default" className="ml-2">
+              Principal
+            </Badge>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
         <div className="flex gap-4 text-sm text-muted-foreground">
@@ -109,18 +166,47 @@ function OrganizationCard({ org }: { org: Organization }) {
           org={org}
           open={manageOpen}
           onOpenChange={setManageOpen}
+          user={user}
         />
       </CardFooter>
     </Card>
   );
 }
 
-function ManageOrganizationDialog({ org, open, onOpenChange }: any) {
+function ManageOrganizationDialog({
+  org,
+  open,
+  onOpenChange,
+  user,
+}: {
+  org: any;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  user?: any;
+}) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [inputError, setInputError] = useState<string | null>(null);
   const { showSuccess, showError } = useNotificationStore();
+
+  // Determine if current user is OWNER
+  const isOwner =
+    user &&
+    (org.owner_id === user.id ||
+      (org.owner_id &&
+        user.primaryEmail &&
+        org.owner_id.toLowerCase() === user.primaryEmail.toLowerCase()) ||
+      org.admins.some(
+        (a: any) =>
+          (a.user_id === user.id || a.email === user.primaryEmail) &&
+          a.role === 'OWNER'
+      ));
+
+  // Edit admin state
+  const [editAdmin, setEditAdmin] = useState<any>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const router = useRouter();
 
   const handleAddAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,119 +261,193 @@ function ManageOrganizationDialog({ org, open, onOpenChange }: any) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Manage {org.name}</DialogTitle>
-          <DialogDescription>
-            Manage administrators for this organization.
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Manage {org.name}</DialogTitle>
+            <DialogDescription>
+              Manage administrators for this organization.
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="space-y-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium">Add Administrator</h3>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleCopyLink}
-                className="h-8 text-xs"
-              >
-                <Copy className="mr-2 h-3 w-3" />
-                Copiar enlace de invitación
-              </Button>
-            </div>
-            <form onSubmit={handleAddAdmin} className="space-y-2">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="admin@example.com"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (inputError) setInputError(null);
-                  }}
-                  required
-                  type="email"
-                  className={inputError ? 'border-destructive' : ''}
-                />
-                <Button type="submit" disabled={loading}>
-                  {loading ? (
-                    <>
-                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      Enviando...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Invitar
-                    </>
+          <div className="space-y-6">
+            {isOwner && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-medium">Add Administrator</h3>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCopyLink}
+                    className="h-8 text-xs"
+                  >
+                    <Copy className="mr-2 h-3 w-3" />
+                    Copiar enlace de invitación
+                  </Button>
+                </div>
+                <form onSubmit={handleAddAdmin} className="space-y-2">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="admin@example.com"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (inputError) setInputError(null);
+                      }}
+                      required
+                      type="email"
+                      className={inputError ? 'border-destructive' : ''}
+                    />
+                    <Button type="submit" disabled={loading}>
+                      {loading ? (
+                        <>
+                          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                          Enviando...
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="mr-2 h-4 w-4" />
+                          Invitar
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  {inputError && (
+                    <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">
+                      {inputError}
+                    </p>
                   )}
-                </Button>
+                </form>
               </div>
-              {inputError && (
-                <p className="text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">
-                  {inputError}
-                </p>
-              )}
-            </form>
-          </div>
+            )}
 
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium">Administrators</h3>
-            <div className="border rounded-md divide-y">
-              {org.admins.length === 0 && (
-                <div className="p-4 text-center text-sm text-muted-foreground">
-                  No additional admins.
-                </div>
-              )}
-              {org.admins.map((admin: any) => (
-                <div
-                  key={admin.id}
-                  className="p-3 flex items-center justify-between"
-                >
-                  <div className="flex flex-col">
-                    <span className="font-medium">{admin.email}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {admin.role}
-                    </span>
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium">Administrators</h3>
+              <div className="border rounded-md divide-y">
+                {org.admins.length === 0 && (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    No additional admins.
                   </div>
-                  <div className="flex items-center gap-2">
-                    {/* Botón de reenviar siempre visible para todos los usuarios (excepto quizás uno mismo, pero lo dejaremos simple) */}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleResend(admin.email)}
-                      title="Reenviar invitación"
-                      disabled={!!actionLoading}
-                    >
-                      {actionLoading === `resend-${admin.email}` ? (
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      ) : (
-                        <Mail className="h-4 w-4" />
-                      )}
-                    </Button>
+                )}
+                {org.admins
+                  .slice()
+                  .sort((a: any, b: any) =>
+                    a.role === 'OWNER' ? -1 : b.role === 'OWNER' ? 1 : 0
+                  )
+                  .map((admin: any) => {
+                    const isSelf =
+                      user &&
+                      (admin.user_id === user.id ||
+                        (admin.email &&
+                          user.primaryEmail &&
+                          admin.email.toLowerCase() ===
+                            user.primaryEmail.toLowerCase()));
 
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveAdmin(admin.id)}
-                      className="text-destructive hover:text-destructive/90"
-                      disabled={!!actionLoading}
-                    >
-                      {actionLoading === admin.id ? (
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-destructive border-t-transparent" />
-                      ) : (
-                        <Trash2 className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                    return (
+                      <div
+                        key={admin.id}
+                        className="p-3 flex items-center justify-between"
+                      >
+                        <div className="flex flex-col">
+                          <span className="font-medium">
+                            {admin.name || admin.email}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {admin.role}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {admin.role === 'OWNER' ? (
+                            <div className="flex flex-col items-end">
+                              <Badge
+                                variant="default"
+                                className="text-[10px] h-5"
+                              >
+                                Iglesia Madre
+                              </Badge>
+                              {org.ownerPrincipalChurchName && (
+                                <span className="text-[10px] text-muted-foreground mt-0.5">
+                                  {org.ownerPrincipalChurchName}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <>
+                              {(isOwner || isSelf) && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    setEditAdmin(admin);
+                                    setEditOpen(true);
+                                  }}
+                                  title={
+                                    isOwner
+                                      ? 'Editar permisos'
+                                      : 'Editar nombre'
+                                  }
+                                  disabled={!!actionLoading}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                              )}
+
+                              {isOwner && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleRemoveAdmin(admin.id)}
+                                  className="text-destructive hover:text-destructive/90"
+                                  disabled={!!actionLoading}
+                                >
+                                  {actionLoading === admin.id ? (
+                                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-destructive border-t-transparent" />
+                                  ) : (
+                                    <Trash2 className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              )}
+                            </>
+                          )}
+
+                          {isOwner && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleResend(admin.email)}
+                              title="Reenviar invitación"
+                              disabled={!!actionLoading}
+                            >
+                              {actionLoading === `resend-${admin.email}` ? (
+                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                              ) : (
+                                <Mail className="h-4 w-4" />
+                              )}
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      {editAdmin && (
+        <EditAdminDialog
+          key={editAdmin.id}
+          admin={editAdmin}
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          isOwner={isOwner}
+          onUpdated={() => {
+            router.refresh();
+          }}
+        />
+      )}
+    </>
   );
 }

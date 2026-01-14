@@ -253,6 +253,7 @@
     "sectors": "Sectores",
     "ministries": "Ministerios",
     "networks": "Redes",
+    "organizations": "Organizaciones",
     "metrics": "Métricas",
     "tracking": "Seguimiento",
     "friends": "Amigos",
@@ -268,6 +269,17 @@
     "settings": "Configuración",
     "support": "Soporte",
     "logout": "Cerrar Sesión"
+  },
+  "settingsPage": {
+    "churchDetails": "Detalles de la Iglesia",
+    "churchDetailsDescription": "Información básica de tu iglesia.",
+    "churchName": "Nombre de la Iglesia",
+    "churchId": "ID de la Iglesia",
+    "churchSlug": "Slug de la Iglesia",
+    "saveChanges": "Guardar Cambios",
+    "readOnly": "Solo lectura",
+    "updateSuccess": "Nombre de la iglesia actualizado correctamente",
+    "updateError": "Error al actualizar el nombre de la iglesia"
   },
   "dashboard": {
     "title": "Panel de Control",

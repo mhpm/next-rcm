@@ -628,8 +628,41 @@ export async function getUserChurchSlug(): Promise<string | null> {
     const user = await stackServerApp.getUser();
     if (!user) return null;
 
-    // Buscar iglesia asociada al usuario
-    const church = await prisma.churches.findFirst({
+    // 0. Revisar si hay una cookie de selección manual
+    const cookieStore = await cookies();
+    const currentSlug = cookieStore.get('church_slug')?.value;
+
+    if (currentSlug) {
+      // Verificar que el usuario tenga acceso a esta iglesia
+      const selectedChurch = await prisma.churches.findFirst({
+        where: {
+          slug: currentSlug,
+          OR: [
+            { owner_id: user.id },
+            { owner_id: { equals: user.primaryEmail, mode: 'insensitive' } },
+            {
+              admins: {
+                some: {
+                  OR: [
+                    { email: user.primaryEmail || '' },
+                    { user_id: user.id },
+                  ],
+                },
+              },
+            },
+          ],
+        },
+        select: { slug: true },
+      });
+
+      if (selectedChurch) {
+        return selectedChurch.slug;
+      }
+    }
+
+    // 1. Intentar encontrar la iglesia donde el usuario es DUEÑO (prioridad máxima)
+    // Se ordena por fecha de creación ascendente para tomar la primera creada
+    let church = await prisma.churches.findFirst({
       where: {
         OR: [
           { owner_id: user.id },
@@ -639,17 +672,27 @@ export async function getUserChurchSlug(): Promise<string | null> {
               mode: 'insensitive',
             },
           },
-          {
-            admins: {
-              some: {
-                OR: [{ email: user.primaryEmail || '' }, { user_id: user.id }],
-              },
-            },
-          },
         ],
+      },
+      orderBy: {
+        createdAt: 'asc',
       },
       select: { slug: true },
     });
+
+    // 2. Si no es dueño de ninguna, buscar donde es ADMIN
+    if (!church) {
+      church = await prisma.churches.findFirst({
+        where: {
+          admins: {
+            some: {
+              OR: [{ email: user.primaryEmail || '' }, { user_id: user.id }],
+            },
+          },
+        },
+        select: { slug: true },
+      });
+    }
 
     return church?.slug ?? null;
   } catch (error) {
@@ -663,8 +706,41 @@ export async function getUserChurchName(): Promise<string | null> {
     const user = await stackServerApp.getUser();
     if (!user) return null;
 
-    // Buscar iglesia asociada al usuario
-    const church = await prisma.churches.findFirst({
+    // 0. Revisar si hay una cookie de selección manual
+    const cookieStore = await cookies();
+    const currentSlug = cookieStore.get('church_slug')?.value;
+
+    if (currentSlug) {
+      // Verificar que el usuario tenga acceso a esta iglesia
+      const selectedChurch = await prisma.churches.findFirst({
+        where: {
+          slug: currentSlug,
+          OR: [
+            { owner_id: user.id },
+            { owner_id: { equals: user.primaryEmail, mode: 'insensitive' } },
+            {
+              admins: {
+                some: {
+                  OR: [
+                    { email: user.primaryEmail || '' },
+                    { user_id: user.id },
+                  ],
+                },
+              },
+            },
+          ],
+        },
+        select: { name: true },
+      });
+
+      if (selectedChurch) {
+        return selectedChurch.name;
+      }
+    }
+
+    // 1. Intentar encontrar la iglesia donde el usuario es DUEÑO (prioridad máxima)
+    // Se ordena por fecha de creación ascendente para tomar la primera creada
+    let church = await prisma.churches.findFirst({
       where: {
         OR: [
           { owner_id: user.id },
@@ -674,17 +750,27 @@ export async function getUserChurchName(): Promise<string | null> {
               mode: 'insensitive',
             },
           },
-          {
-            admins: {
-              some: {
-                OR: [{ email: user.primaryEmail || '' }, { user_id: user.id }],
-              },
-            },
-          },
         ],
+      },
+      orderBy: {
+        createdAt: 'asc',
       },
       select: { name: true },
     });
+
+    // 2. Si no es dueño de ninguna, buscar donde es ADMIN
+    if (!church) {
+      church = await prisma.churches.findFirst({
+        where: {
+          admins: {
+            some: {
+              OR: [{ email: user.primaryEmail || '' }, { user_id: user.id }],
+            },
+          },
+        },
+        select: { name: true },
+      });
+    }
 
     return church?.name ?? null;
   } catch (error) {

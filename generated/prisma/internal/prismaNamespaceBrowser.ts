@@ -107,7 +107,9 @@ export const ChurchAdminsScalarFieldEnum = {
   church_id: 'church_id',
   user_id: 'user_id',
   email: 'email',
+  name: 'name',
   role: 'role',
+  permissions: 'permissions',
   createdAt: 'createdAt'
 } as const
 

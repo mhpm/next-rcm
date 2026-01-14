@@ -10,6 +10,7 @@ import {
   BookOpen,
   FileText,
   Network,
+  Building,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -66,6 +67,11 @@ export function AppSidebar({
           title: dict.sidebar.networks,
           href: `/${lang}/networks`,
           icon: Network,
+        },
+        {
+          title: dict.sidebar.organizations,
+          href: `/${lang}/admin/organizations`,
+          icon: Building,
         },
       ],
     },

@@ -2034,7 +2034,9 @@ export const ChurchAdminsScalarFieldEnum = {
   church_id: 'church_id',
   user_id: 'user_id',
   email: 'email',
+  name: 'name',
   role: 'role',
+  permissions: 'permissions',
   createdAt: 'createdAt'
 } as const
 
@@ -2404,6 +2406,20 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -2456,20 +2472,6 @@ export type EnumGroupFieldTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$P
  * Reference to a field of type 'GroupFieldType[]'
  */
 export type ListEnumGroupFieldTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GroupFieldType[]'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 

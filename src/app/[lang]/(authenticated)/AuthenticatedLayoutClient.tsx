@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useUser } from '@stackframe/stack';
 import { usePersistentFilters } from '@/hooks/usePersistentFilters';
+import Link from 'next/link';
 
 import { LanguageToggle } from '@/components/LanguageToggle';
 
@@ -112,7 +113,9 @@ export default function AuthenticatedLayoutClient({
                   {user?.displayName || dict.header.myAccount}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>{dict.header.settings}</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={`/${lang}/settings`}>{dict.header.settings}</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>{dict.header.support}</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => user?.signOut()}>

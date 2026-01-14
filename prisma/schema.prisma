@@ -45,7 +45,9 @@ model ChurchAdmins {
   church_id String
   user_id   String?  // External Auth ID (Stack/Neon user)
   email     String   // For display or invitation
+  name      String?  // Nombre opcional para identificar al admin
   role      String   @default("ADMIN") // ADMIN, OWNER
+  permissions Json?  @default("{}") // Permisos adicionales: { can_create_church: boolean, etc }
   createdAt DateTime @default(now()) @map("created_at")
 
   church    Churches @relation(fields: [church_id], references: [id], onDelete: Cascade)

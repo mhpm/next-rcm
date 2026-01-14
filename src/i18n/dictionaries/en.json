@@ -253,6 +253,7 @@
     "sectors": "Sectors",
     "ministries": "Ministries",
     "networks": "Networks",
+    "organizations": "Organizations",
     "metrics": "Metrics",
     "tracking": "Tracking",
     "friends": "Friends",
@@ -268,6 +269,17 @@
     "settings": "Settings",
     "support": "Support",
     "logout": "Logout"
+  },
+  "settingsPage": {
+    "churchDetails": "Church Details",
+    "churchDetailsDescription": "Basic information about your church.",
+    "churchName": "Church Name",
+    "churchId": "Church ID",
+    "churchSlug": "Church Slug",
+    "saveChanges": "Save Changes",
+    "readOnly": "Read only",
+    "updateSuccess": "Church name updated successfully",
+    "updateError": "Error updating church name"
   },
   "dashboard": {
     "title": "Dashboard",
