@@ -32,6 +32,7 @@ const nextConfig: NextConfig = {
   },
   // Compresión mejorada
   compress: true,
+  // Sin rewrites: /handler/** no debe pasar por i18n ni transformaciones
   // Optimización de chunks y configuración de Prisma para Vercel
   webpack: (config, { isServer }) => {
     // Configuración específica para Prisma en Vercel

@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   Churches: 'Churches',
+  ChurchAdmins: 'ChurchAdmins',
   Networks: 'Networks',
   Members: 'Members',
   Ministries: 'Ministries',
@@ -99,6 +100,18 @@ export const ChurchesScalarFieldEnum = {
 } as const
 
 export type ChurchesScalarFieldEnum = (typeof ChurchesScalarFieldEnum)[keyof typeof ChurchesScalarFieldEnum]
+
+
+export const ChurchAdminsScalarFieldEnum = {
+  id: 'id',
+  church_id: 'church_id',
+  user_id: 'user_id',
+  email: 'email',
+  role: 'role',
+  createdAt: 'createdAt'
+} as const
+
+export type ChurchAdminsScalarFieldEnum = (typeof ChurchAdminsScalarFieldEnum)[keyof typeof ChurchAdminsScalarFieldEnum]
 
 
 export const NetworksScalarFieldEnum = {

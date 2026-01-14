@@ -1,4 +1,4 @@
-import { CredentialSignIn } from '@stackframe/stack';
+import { SignIn } from '@stackframe/stack';
 import {
   Card,
   CardContent,
@@ -36,7 +36,7 @@ export default async function SignInPage({
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="[&_input]:h-11 [&_input]:bg-slate-950/50 [&_input]:border-white/10 [&_input]:text-white [&_input]:placeholder:text-slate-500 [&_input]:focus:border-primary [&_button]:h-11 [&_button]:text-base [&_label]:text-slate-300 [&_button[type=submit]]:bg-linear-to-r [&_button[type=submit]]:from-primary [&_button[type=submit]]:to-primary/80 [&_button[type=submit]]:border-0 [&_button[type=submit]]:hover:from-primary/90 [&_button[type=submit]]:hover:to-primary/70 [&_button[type=submit]]:text-white [&_button[type=submit]]:shadow-lg [&_button[type=submit]]:shadow-primary/25">
-            <CredentialSignIn />
+            <SignIn />
           </div>
           <div className="text-center pt-2">
             <Link

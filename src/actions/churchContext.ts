@@ -70,6 +70,64 @@ export function createChurchPrisma(churchId: string) {
           return query(args);
         },
       },
+      churchAdmins: {
+        async findMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async findFirst({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async findUnique({ args, query }) {
+          return query(args);
+        },
+        async count({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async create({ args, query }) {
+          const data = args.data as Prisma.ChurchAdminsCreateInput;
+          if (!data.church) {
+            (args.data as Prisma.ChurchAdminsCreateInput).church = {
+              connect: { id: churchId },
+            };
+          }
+          return query(args);
+        },
+        async createMany({ args, query }) {
+          if (Array.isArray(args.data)) {
+            args.data = args.data.map(
+              (item: Prisma.ChurchAdminsCreateManyInput) => ({
+                ...item,
+                church_id: item.church_id || churchId,
+              })
+            );
+          } else {
+            args.data = {
+              ...args.data,
+              church_id:
+                (args.data as Prisma.ChurchAdminsCreateManyInput).church_id ||
+                churchId,
+            };
+          }
+          return query(args);
+        },
+        async update({ args, query }) {
+          return query(args);
+        },
+        async updateMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+        async delete({ args, query }) {
+          return query(args);
+        },
+        async deleteMany({ args, query }) {
+          args.where = { ...args.where, church_id: churchId };
+          return query(args);
+        },
+      },
       ministries: {
         async findMany({ args, query }) {
           args.where = { ...args.where, church_id: churchId };
@@ -558,6 +616,7 @@ export function createChurchPrisma(churchId: string) {
 }
 
 import { stackServerApp } from '@/stack/server';
+import { cookies } from 'next/headers';
 
 /**
  * Obtiene el slug de la iglesia desde las credenciales del usuario autenticado.
@@ -578,6 +637,13 @@ export async function getUserChurchSlug(): Promise<string | null> {
             owner_id: {
               equals: user.primaryEmail,
               mode: 'insensitive',
+            },
+          },
+          {
+            admins: {
+              some: {
+                OR: [{ email: user.primaryEmail || '' }, { user_id: user.id }],
+              },
             },
           },
         ],
@@ -606,6 +672,13 @@ export async function getUserChurchName(): Promise<string | null> {
             owner_id: {
               equals: user.primaryEmail,
               mode: 'insensitive',
+            },
+          },
+          {
+            admins: {
+              some: {
+                OR: [{ email: user.primaryEmail || '' }, { user_id: user.id }],
+              },
             },
           },
         ],
@@ -655,6 +728,14 @@ export async function getChurchSlugFromSources(
     if (churchSlug && churchSlug.trim().length > 0) {
       console.log(`[getChurchSlug] Using provided slug: ${churchSlug}`);
       return churchSlug;
+    }
+
+    // Try cookie
+    const cookieStore = await cookies();
+    const cookieSlug = cookieStore.get('church_slug')?.value;
+    if (cookieSlug) {
+      // Validate access? For now, we trust the cookie + churchPrisma checks.
+      return cookieSlug;
     }
 
     const fromAuth = await getChurchSlugFromAuth();

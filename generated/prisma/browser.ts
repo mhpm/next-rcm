@@ -23,6 +23,11 @@ export * from './enums';
  */
 export type Churches = Prisma.ChurchesModel
 /**
+ * Model ChurchAdmins
+ * 
+ */
+export type ChurchAdmins = Prisma.ChurchAdminsModel
+/**
  * Model Networks
  * 
  */

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getChurchSlugFromHost, isValidChurchSlug } from "@/lib/church-context";
+import { NextRequest, NextResponse } from 'next/server';
+import { getChurchSlugFromHost, isValidChurchSlug } from '@/lib/church-context';
 import { i18n } from '@/i18n/config';
 import { match as matchLocale } from '@formatjs/intl-localematcher';
 import Negotiator from 'negotiator';
@@ -16,7 +16,7 @@ function getLocale(request: NextRequest): string {
 }
 
 // Proxy function to handle multi-church routing and headers
-export function proxy(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // 1. i18n Routing
@@ -39,20 +39,20 @@ export function proxy(request: NextRequest) {
     );
   }
 
-  const host = request.headers.get("host") || "localhost:3000";
+  const host = request.headers.get('host') || 'localhost:3000';
 
   // Get church slug from the host
   const churchSlug = getChurchSlugFromHost(host);
 
   // For localhost development, use path-based or parameter-based routing
-  if (host.startsWith("localhost") || host.startsWith("127.0.0.1")) {
-    let selectedChurchSlug = "demo"; // default
+  if (host.startsWith('localhost') || host.startsWith('127.0.0.1')) {
+    let selectedChurchSlug = 'demo'; // default
 
     // Check multiple sources for church slug in priority order:
     const url = new URL(request.url);
-    const churchParam = url.searchParams.get("church");
-    const cookieChurchSlug = request.cookies.get("church-slug")?.value;
-    const headerChurchSlug = request.headers.get("x-church-slug");
+    const churchParam = url.searchParams.get('church');
+    const cookieChurchSlug = request.cookies.get('church_slug')?.value;
+    const headerChurchSlug = request.headers.get('x-church-slug');
 
     // Priority: URL param > Header > Cookie > Default
     if (churchParam && isValidChurchSlug(churchParam)) {
@@ -65,16 +65,16 @@ export function proxy(request: NextRequest) {
 
     // Create response with headers and cookies
     const response = NextResponse.next();
-    response.headers.set("x-church-slug", selectedChurchSlug);
+    response.headers.set('x-church-slug', selectedChurchSlug);
 
     // Update cookie if needed
     if (cookieChurchSlug !== selectedChurchSlug) {
-      response.cookies.set("church-slug", selectedChurchSlug, {
+      response.cookies.set('church_slug', selectedChurchSlug, {
         httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 30, // 30 days
-        path: "/",
+        path: '/',
       });
     }
 
@@ -84,17 +84,17 @@ export function proxy(request: NextRequest) {
   // Validate church slug for production domains
   if (!isValidChurchSlug(churchSlug)) {
     return NextResponse.redirect(
-      new URL("/error?code=invalid-church", request.url)
+      new URL('/error?code=invalid-church', request.url)
     );
   }
 
   // Set headers and cookies for valid church
   const response = NextResponse.next();
-  response.headers.set("x-church-slug", churchSlug);
-  response.cookies.set("church-slug", churchSlug, {
+  response.headers.set('x-church-slug', churchSlug);
+  response.cookies.set('church_slug', churchSlug, {
     httpOnly: false,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 30, // 30 days
   });
 
@@ -111,6 +111,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - api routes that don't need church context
      */
-    "/((?!_next/static|_next/image|favicon.ico|api/health).*)",
+    '/((?!_next/static|_next/image|favicon.ico|api/health).*)',
   ],
 };

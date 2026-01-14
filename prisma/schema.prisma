@@ -20,6 +20,7 @@ model Churches {
   // Vamos a permitir que una iglesia tenga un owner_id opcional por ahora
   owner_id         String?            @map("owner_id") 
 
+  admins           ChurchAdmins[]
   memberMinistries MemberMinistry[]
   members          Members[]
   ministries       Ministries[]
@@ -37,6 +38,20 @@ model Churches {
   networks         Networks[]
 
   @@map("churches")
+}
+
+model ChurchAdmins {
+  id        String   @id @default(cuid())
+  church_id String
+  user_id   String?  // External Auth ID (Stack/Neon user)
+  email     String   // For display or invitation
+  role      String   @default("ADMIN") // ADMIN, OWNER
+  createdAt DateTime @default(now()) @map("created_at")
+
+  church    Churches @relation(fields: [church_id], references: [id], onDelete: Cascade)
+
+  @@unique([church_id, email])
+  @@map("church_admins")
 }
 
 model Networks {

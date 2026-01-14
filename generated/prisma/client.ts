@@ -45,6 +45,11 @@ export { Prisma }
  */
 export type Churches = Prisma.ChurchesModel
 /**
+ * Model ChurchAdmins
+ * 
+ */
+export type ChurchAdmins = Prisma.ChurchAdminsModel
+/**
  * Model Networks
  * 
  */
