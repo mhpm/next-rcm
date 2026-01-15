@@ -145,9 +145,10 @@ export function CreateOrganizationButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="w-full sm:w-auto shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all">
           <Plus className="mr-2 h-4 w-4" />
-          New Organization
+          <span className="hidden sm:inline">New Organization</span>
+          <span className="sm:hidden">New</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

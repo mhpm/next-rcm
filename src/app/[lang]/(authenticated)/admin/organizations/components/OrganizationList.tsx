@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import {
   addAdminToOrganization,
   removeAdminFromOrganization,
@@ -123,22 +124,27 @@ function OrganizationCard({
   };
 
   return (
-    <Card className={isOldestOwned ? 'border-primary ring-1 ring-primary' : ''}>
+    <Card
+      className={cn(
+        'transition-all duration-300 hover:shadow-lg',
+        isOldestOwned ? 'border-primary ring-1 ring-primary/20' : ''
+      )}
+    >
       <CardHeader>
-        <div className="flex justify-between items-start">
-          <div className="space-y-1.5">
-            <CardTitle>{org.name}</CardTitle>
-            <CardDescription>{org.slug}</CardDescription>
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
+          <div className="space-y-1.5 min-w-0 flex-1">
+            <CardTitle className="truncate">{org.name}</CardTitle>
+            <CardDescription className="truncate">{org.slug}</CardDescription>
           </div>
           {isOldestOwned && (
-            <Badge variant="default" className="ml-2">
+            <Badge variant="default" className="shrink-0">
               Principal
             </Badge>
           )}
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-4 text-sm text-muted-foreground">
+        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Users className="h-4 w-4" />
             <span>{org._count.members} Members</span>
@@ -149,16 +155,20 @@ function OrganizationCard({
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between gap-2">
+      <CardFooter className="flex flex-col sm:flex-row justify-between gap-3 pt-4">
         <Button
           variant="default"
-          className="flex-1"
+          className="w-full sm:flex-1 shadow-sm hover:shadow-md transition-all"
           onClick={handleSwitch}
           disabled={switching}
         >
           {switching ? 'Switching...' : 'Switch'}
         </Button>
-        <Button variant="outline" size="sm" onClick={() => setManageOpen(true)}>
+        <Button
+          variant="outline"
+          className="w-full sm:w-auto shadow-sm hover:bg-muted transition-all"
+          onClick={() => setManageOpen(true)}
+        >
           <Settings className="mr-2 h-4 w-4" />
           Manage
         </Button>
@@ -263,7 +273,7 @@ function ManageOrganizationDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl w-[95vw] sm:w-full overflow-y-auto max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>Manage {org.name}</DialogTitle>
             <DialogDescription>
@@ -274,20 +284,20 @@ function ManageOrganizationDialog({
           <div className="space-y-6">
             {isOwner && (
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <h3 className="text-sm font-medium">Add Administrator</h3>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleCopyLink}
-                    className="h-8 text-xs"
+                    className="h-8 text-xs w-full sm:w-auto"
                   >
                     <Copy className="mr-2 h-3 w-3" />
                     Copiar enlace de invitación
                   </Button>
                 </div>
                 <form onSubmit={handleAddAdmin} className="space-y-2">
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Input
                       placeholder="admin@example.com"
                       value={email}
@@ -297,9 +307,16 @@ function ManageOrganizationDialog({
                       }}
                       required
                       type="email"
-                      className={inputError ? 'border-destructive' : ''}
+                      className={cn(
+                        'flex-1',
+                        inputError ? 'border-destructive' : ''
+                      )}
                     />
-                    <Button type="submit" disabled={loading}>
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full sm:w-auto"
+                    >
                       {loading ? (
                         <>
                           <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -324,7 +341,7 @@ function ManageOrganizationDialog({
 
             <div className="space-y-4">
               <h3 className="text-sm font-medium">Administrators</h3>
-              <div className="border rounded-md divide-y">
+              <div className="border rounded-md divide-y overflow-hidden">
                 {org.admins.length === 0 && (
                   <div className="p-4 text-center text-sm text-muted-foreground">
                     No additional admins.
@@ -347,27 +364,27 @@ function ManageOrganizationDialog({
                     return (
                       <div
                         key={admin.id}
-                        className="p-3 flex items-center justify-between"
+                        className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                       >
-                        <div className="flex flex-col">
-                          <span className="font-medium">
+                        <div className="flex flex-col min-w-0 flex-1">
+                          <span className="font-medium truncate">
                             {admin.name || admin.email}
                           </span>
                           <span className="text-xs text-muted-foreground">
                             {admin.role}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-end gap-1 sm:gap-2 shrink-0">
                           {admin.role === 'OWNER' ? (
                             <div className="flex flex-col items-end">
                               <Badge
                                 variant="default"
-                                className="text-[10px] h-5"
+                                className="text-[10px] h-5 whitespace-nowrap"
                               >
                                 Iglesia Madre
                               </Badge>
                               {org.ownerPrincipalChurchName && (
-                                <span className="text-[10px] text-muted-foreground mt-0.5">
+                                <span className="text-[10px] text-muted-foreground mt-0.5 truncate max-w-[120px]">
                                   {org.ownerPrincipalChurchName}
                                 </span>
                               )}
@@ -377,7 +394,8 @@ function ManageOrganizationDialog({
                               {(isOwner || isSelf) && (
                                 <Button
                                   variant="ghost"
-                                  size="sm"
+                                  size="icon"
+                                  className="h-8 w-8"
                                   onClick={() => {
                                     setEditAdmin(admin);
                                     setEditOpen(true);
@@ -396,9 +414,9 @@ function ManageOrganizationDialog({
                               {isOwner && (
                                 <Button
                                   variant="ghost"
-                                  size="sm"
+                                  size="icon"
+                                  className="h-8 w-8 text-destructive hover:text-destructive/90"
                                   onClick={() => handleRemoveAdmin(admin.id)}
-                                  className="text-destructive hover:text-destructive/90"
                                   disabled={!!actionLoading}
                                 >
                                   {actionLoading === admin.id ? (
@@ -414,7 +432,8 @@ function ManageOrganizationDialog({
                           {isOwner && (
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="icon"
+                              className="h-8 w-8"
                               onClick={() => handleResend(admin.email)}
                               title="Reenviar invitación"
                               disabled={!!actionLoading}
