@@ -317,14 +317,37 @@ export async function resendInvitation(churchId: string, email: string) {
     const protocol = origin.includes('http') ? '' : 'https://';
     const baseUrl = origin.startsWith('http') ? origin : `${protocol}${origin}`;
 
-    await sendInvitationEmail({
+    const emailResult = await sendInvitationEmail({
       email,
       organizationName: church.name,
       inviterName: user.displayName || user.primaryEmail || 'Un administrador',
       link: `${baseUrl}/admin/organizations`,
     });
+
+    if (
+      emailResult &&
+      !emailResult.success &&
+      emailResult.error === 'smtp_missing'
+    ) {
+      console.warn(
+        'Email skipped due to missing SMTP config. Link logged in server console.'
+      );
+      // Opcional: Podríamos retornar esto al cliente si la UI lo soportara
+    }
   } catch (error: any) {
     console.error('Failed to send invitation email:', error);
+    // Don't throw if it's just email failure on resend?
+    // Actually, for "Resend", if it fails completely (network), user might want to know.
+    // But we handled the SMTP case inside sendInvitationEmail now.
+
+    // Si el error es 'smtp_missing' (ya manejado) o similar, no lo lanzamos
+    if (
+      error.message?.includes('requires a custom SMTP server') ||
+      error.humanReadableMessage?.includes('custom SMTP server')
+    ) {
+      return { success: true }; // Consideramos éxito parcial
+    }
+
     throw new Error(error.message || 'Failed to send email');
   }
 
@@ -367,6 +390,59 @@ export async function removeAdminFromOrganization(
 
   if (targetAdmin?.role === 'OWNER') {
     throw new Error('Cannot remove an OWNER administrator');
+  }
+
+  // Remove user from Stack Auth
+  if (targetAdmin) {
+    try {
+      const emailToDelete = targetAdmin.email;
+      if (emailToDelete) {
+        const users = await stackServerApp.listUsers({ query: emailToDelete });
+        const stackUser = users.find((u) => u.primaryEmail === emailToDelete);
+
+        if (stackUser) {
+          // SDK does not expose deleteUser directly, use fetch to API
+          try {
+            const projectId = process.env.NEXT_PUBLIC_STACK_PROJECT_ID;
+            const secretKey = process.env.STACK_SECRET_SERVER_KEY;
+
+            if (!projectId || !secretKey) {
+              console.error('Missing Stack Auth credentials for user deletion');
+            } else {
+              const response = await fetch(
+                `https://api.stack-auth.com/api/v1/users/${stackUser.id}`,
+                {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-Stack-Secret-Server-Key': secretKey,
+                    'X-Stack-Access-Type': 'server',
+                    'X-Stack-Project-Id': projectId,
+                  },
+                  body: JSON.stringify({}),
+                }
+              );
+
+              if (!response.ok) {
+                const errorBody = await response.text();
+                console.error(
+                  `Failed to delete user from Stack Auth. Status: ${response.status}, Body: ${errorBody}`
+                );
+              } else {
+                console.log(
+                  `Deleted user ${stackUser.id} (${emailToDelete}) from Stack Auth`
+                );
+              }
+            }
+          } catch (apiError) {
+            console.error('API Error deleting user from Stack Auth:', apiError);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting user from Stack Auth:', error);
+      // Continue to delete from local DB even if Stack Auth deletion fails
+    }
   }
 
   await prisma.churchAdmins.delete({

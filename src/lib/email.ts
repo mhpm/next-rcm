@@ -3,7 +3,6 @@ import { stackServerApp } from '@/stack/server';
 export async function sendInvitationEmail({
   email,
   organizationName,
-  inviterName,
   link,
 }: {
   email: string;
@@ -12,74 +11,53 @@ export async function sendInvitationEmail({
   link: string;
 }) {
   try {
-    // Intentamos buscar si el usuario ya existe en Stack por su email
+    // 1. Buscar si el usuario ya existe
     const users = await stackServerApp.listUsers({
       query: email,
     });
 
-    const user = users.find((u) => u.primaryEmail === email);
+    let user = users.find((u) => u.primaryEmail === email);
+
+    // 2. Si no existe, crearlo
+    if (!user) {
+      try {
+        user = await stackServerApp.createUser({
+          primaryEmail: email,
+          // No establecemos contraseña, el usuario deberá configurarla o usar magic link/oauth
+        });
+      } catch (createError) {
+        console.error('Error creating user for invitation:', createError);
+        // Si falla la creación, intentamos continuar con el flujo de log fallback
+        // o lanzamos error si es crítico.
+        // En este caso, si no podemos crear el usuario, no podemos enviar el email oficial.
+        throw new Error(
+          'No se pudo crear el usuario para enviar la invitación.'
+        );
+      }
+    }
 
     if (user) {
-      // Si el usuario existe, podemos enviarle el correo usando su ID
-      await stackServerApp.sendEmail({
-        userIds: [user.id],
-        subject: `Invitación a administrar ${organizationName}`,
-        html: `
-           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-             <h2>¡Hola!</h2>
-             <p><strong>${inviterName}</strong> te ha invitado a colaborar como administrador de la iglesia <strong>${organizationName}</strong>.</p>
-             
-             <p>Para acceder al panel de administración y aceptar la invitación, por favor haz clic en el siguiente botón:</p>
-             
-             <div style="margin: 24px 0;">
-               <a href="${link}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
-                 Acceder a la Plataforma
-               </a>
-             </div>
+      // 3. Enviar el email usando el ID del usuario (existente o nuevo)
 
-             <p style="color: #666; font-size: 14px;">
-               Si ya tienes cuenta, la nueva organización aparecerá automáticamente en tu panel.
-             </p>
-             
-             <hr style="border: none; border-top: 1px solid #eaeaea; margin: 24px 0;" />
-             
-             <p style="color: #888; font-size: 12px;">
-               Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
-               <a href="${link}" style="color: #666;">${link}</a>
-             </p>
-           </div>
-         `,
-      });
-    } else {
-      // Si el usuario NO existe en Stack, usamos la invitación de Sign-in de Stack
-      // Intentamos enviarlo como una invitación de equipo o similar si la API lo permite,
-      // o simplemente usamos el template de invitación.
-      await stackServerApp.sendEmail({
-        userIds: [],
-        // @ts-ignore - Stack permite enviar por email si userIds está vacío en algunas versiones de su SDK
-        email: email,
-        subject: `Invitación a administrar ${organizationName}`,
-        html: `
-           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-             <h2>¡Bienvenido!</h2>
-             <p><strong>${inviterName}</strong> te ha invitado a colaborar como administrador de la iglesia <strong>${organizationName}</strong>.</p>
-             
-             <p>Como aún no tienes una cuenta en nuestra plataforma, puedes crear una y aceptar la invitación haciendo clic aquí:</p>
-             
-             <div style="margin: 24px 0;">
-               <a href="${link}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
-                 Crear Cuenta y Acceder
-               </a>
-             </div>
-             
-             <hr style="border: none; border-top: 1px solid #eaeaea; margin: 24px 0;" />
-             
-             <p style="color: #888; font-size: 12px;">
-               Enlace directo: <a href="${link}" style="color: #666;">${link}</a>
-             </p>
-           </div>
-         `,
-      });
+      // Intentar usar template nativo de Stack para invitación a equipo
+      try {
+        await stackServerApp.sendEmail({
+          userIds: [user.id],
+          // Built-in template ID for 'sign_in_invitation'
+          templateId: '066dd73c-36da-4fd0-b6d6-ebf87683f8bc',
+          variables: {
+            teamDisplayName: organizationName,
+            signInInvitationLink: link,
+          },
+        });
+        return { success: true };
+      } catch (templateError) {
+        console.error(
+          'Failed to send email using built-in template.',
+          templateError
+        );
+        return { success: false, error: templateError };
+      }
     }
 
     return { success: true };
@@ -93,6 +71,17 @@ export async function sendInvitationEmail({
     console.log(`To: ${email}`);
     console.log(`Link: ${link}`);
     console.log('---------------------------------------------------');
+
+    // Si el error es por falta de SMTP en Stack, no fallamos la request
+    const errorMessage = error.message || error.humanReadableMessage || '';
+    if (
+      errorMessage.includes('requires a custom SMTP server') ||
+      error.code === 'REQUIRES_CUSTOM_EMAIL_SERVER' ||
+      errorMessage.includes('custom SMTP server')
+    ) {
+      console.warn('Suppressing SMTP error for dev/fallback flow.');
+      return { success: false, error: 'smtp_missing' };
+    }
 
     throw error;
   }

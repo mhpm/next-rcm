@@ -18,6 +18,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -216,6 +226,10 @@ function ManageOrganizationDialog({
   // Edit admin state
   const [editAdmin, setEditAdmin] = useState<any>(null);
   const [editOpen, setEditOpen] = useState(false);
+
+  // Delete admin state
+  const [deleteAdmin, setDeleteAdmin] = useState<any>(null);
+
   const router = useRouter();
 
   const handleAddAdmin = async (e: React.FormEvent) => {
@@ -416,7 +430,7 @@ function ManageOrganizationDialog({
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8 text-destructive hover:text-destructive/90"
-                                  onClick={() => handleRemoveAdmin(admin.id)}
+                                  onClick={() => setDeleteAdmin(admin)}
                                   disabled={!!actionLoading}
                                 >
                                   {actionLoading === admin.id ? (
@@ -454,6 +468,38 @@ function ManageOrganizationDialog({
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={!!deleteAdmin}
+        onOpenChange={(open) => !open && setDeleteAdmin(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esto eliminará a{' '}
+              <span className="font-medium text-foreground">
+                {deleteAdmin?.name || deleteAdmin?.email}
+              </span>{' '}
+              de la organización y no podra acceder a ella.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (deleteAdmin) {
+                  handleRemoveAdmin(deleteAdmin.id);
+                  setDeleteAdmin(null);
+                }
+              }}
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {editAdmin && (
         <EditAdminDialog
