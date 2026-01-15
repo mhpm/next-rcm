@@ -4,17 +4,11 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import fs from 'fs';
 import path from 'path';
 
-// Create the adapter for PostgreSQL
-// Using the same pattern as seed.ts which seems to work with the installed version
-// Note: Although seed.ts passed connectionString directly to PrismaPg,
-// standard usage usually involves pg.Pool. If seed.ts works, it might be a specific version behavior
-// or I misread. However, to be safe and standard compliant with @prisma/adapter-pg,
-// we'll try the Pool approach which is standard, or fall back to seed.ts style if that fails.
-// Actually, let's stick to EXACTLY what seed.ts did to avoid version mismatch issues.
-// seed.ts: const adapter = new PrismaPg({ connectionString: ... });
+// Usamos DIRECT_URL para operaciones de backup/restore para evitar problemas de pooler
+const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
 
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
+  connectionString: connectionString!,
 });
 
 const prisma = new PrismaClient({ adapter });
@@ -24,6 +18,7 @@ async function backup() {
 
   const data = {
     churches: await prisma.churches.findMany(),
+    churchAdmins: await prisma.churchAdmins.findMany(),
     networks: await prisma.networks.findMany(),
     members: await prisma.members.findMany(),
     ministries: await prisma.ministries.findMany(),
@@ -35,8 +30,8 @@ async function backup() {
     groups: await prisma.groups.findMany(),
     groupFields: await prisma.groupFields.findMany(),
     friends: await prisma.friends.findMany(),
-    events: await prisma.events.findMany(),
     eventPhases: await prisma.eventPhases.findMany(),
+    events: await prisma.events.findMany(),
     eventAttendances: await prisma.eventAttendances.findMany(),
     cellGoals: await prisma.cellGoals.findMany(),
     reports: await prisma.reports.findMany(),
@@ -50,6 +45,7 @@ async function backup() {
 
   console.log(`✅ Backup created successfully at: ${backupPath}`);
   console.log(`   Churches: ${data.churches.length}`);
+  console.log(`   ChurchAdmins: ${data.churchAdmins.length}`);
   console.log(`   Networks: ${data.networks.length}`);
   console.log(`   Members: ${data.members.length}`);
   console.log(`   Ministries: ${data.ministries.length}`);
@@ -61,8 +57,8 @@ async function backup() {
   console.log(`   Groups: ${data.groups.length}`);
   console.log(`   GroupFields: ${data.groupFields.length}`);
   console.log(`   Friends: ${data.friends.length}`);
-  console.log(`   Events: ${data.events.length}`);
   console.log(`   EventPhases: ${data.eventPhases.length}`);
+  console.log(`   Events: ${data.events.length}`);
   console.log(`   EventAttendances: ${data.eventAttendances.length}`);
   console.log(`   CellGoals: ${data.cellGoals.length}`);
   console.log(`   Reports: ${data.reports.length}`);

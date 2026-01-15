@@ -2,6 +2,9 @@
   "mcpServers": {
     "stack-auth": {
       "url": "https://mcp.stack-auth.com/"
+    },
+    "supabase": {
+      "url": "https://mcp.supabase.com/mcp?project_ref=mfiaxuwbrrflfnzpsmkf"
     }
   }
 }

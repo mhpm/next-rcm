@@ -9,20 +9,81 @@
       "owner_id": null
     },
     {
-      "id": "clm4church006",
-      "name": "1ra IAFCJ Ensenada",
-      "slug": "1ra-iafcj-ensenada",
-      "createdAt": "2026-01-04T00:00:00.000Z",
-      "updatedAt": "2026-01-04T00:00:00.000Z",
-      "owner_id": "jcsantosr@gmail.com"
-    },
-    {
       "id": "clm5church005",
       "name": "IAFCJ Tecolutilla",
       "slug": "iafcj-tecolutilla",
       "createdAt": "2025-12-17T13:10:00.000Z",
       "updatedAt": "2025-12-17T13:10:00.000Z",
       "owner_id": "ing.santiago77@gmail.com"
+    },
+    {
+      "id": "cmkd9utkd0000s0b39vcs4sya",
+      "name": "2da IAFCJ Ensenada",
+      "slug": "2da-iafcj-ensenada",
+      "createdAt": "2026-01-14T00:17:51.549Z",
+      "updatedAt": "2026-01-14T00:17:51.549Z",
+      "owner_id": "49f4cd6d-0ff0-4731-8a97-20b82ca3ccb4"
+    },
+    {
+      "id": "clm4church006",
+      "name": "1ra IAFCJ Ensenada",
+      "slug": "1ra-iafcj-ensenada",
+      "createdAt": "2026-01-04T00:00:00.000Z",
+      "updatedAt": "2026-01-14T19:44:29.014Z",
+      "owner_id": "jcsantosr@gmail.com"
+    },
+    {
+      "id": "cmkeg36zv0001cgb3u3hgnh7a",
+      "name": "3ra IAFCJ Ensenada",
+      "slug": "3ra-iafcj-ensenada",
+      "createdAt": "2026-01-14T20:00:06.040Z",
+      "updatedAt": "2026-01-14T20:45:48.994Z",
+      "owner_id": "49f4cd6d-0ff0-4731-8a97-20b82ca3ccb4"
+    }
+  ],
+  "churchAdmins": [
+    {
+      "id": "cmkd9utno0001s0b3xg4p7z6f",
+      "church_id": "cmkd9utkd0000s0b39vcs4sya",
+      "user_id": "49f4cd6d-0ff0-4731-8a97-20b82ca3ccb4",
+      "email": "jcsantosr@gmail.com",
+      "name": null,
+      "role": "OWNER",
+      "permissions": {},
+      "createdAt": "2026-01-14T00:17:51.549Z"
+    },
+    {
+      "id": "cmkehpzjf000hcgb3tdbx0rsc",
+      "church_id": "cmkeg36zv0001cgb3u3hgnh7a",
+      "user_id": "49f4cd6d-0ff0-4731-8a97-20b82ca3ccb4",
+      "email": "jcsantosr@gmail.com",
+      "name": null,
+      "role": "OWNER",
+      "permissions": {},
+      "createdAt": "2026-01-14T20:45:49.227Z"
+    },
+    {
+      "id": "cmkevutde0000u8b3dbkjea0b",
+      "church_id": "clm4church006",
+      "user_id": null,
+      "email": "michelleeepm@gmail.com",
+      "name": null,
+      "role": "ADMIN",
+      "permissions": {},
+      "createdAt": "2026-01-15T03:21:29.138Z"
+    },
+    {
+      "id": "cmkdjftzg00003wb3fgsxfs9t",
+      "church_id": "cmkd9utkd0000s0b39vcs4sya",
+      "user_id": null,
+      "email": "seniordeloitte@gmail.com",
+      "name": "Senior",
+      "role": "ADMIN",
+      "permissions": {
+        "can_link_church": false,
+        "can_create_church": false
+      },
+      "createdAt": "2026-01-14T04:46:08.524Z"
     }
   ],
   "networks": [
@@ -102,6 +163,90 @@
       "church_id": "clm5church005",
       "createdAt": "2026-01-05T20:13:26.376Z",
       "updatedAt": "2026-01-05T20:13:26.376Z"
+    },
+    {
+      "id": "cmkeghgrm0003cgb3fktl2xey",
+      "name": "Varones",
+      "church_id": "cmkd9utkd0000s0b39vcs4sya",
+      "createdAt": "2026-01-14T20:11:11.735Z",
+      "updatedAt": "2026-01-14T20:11:11.735Z"
+    },
+    {
+      "id": "cmkeghhh90004cgb3aelq4ihu",
+      "name": "Damas",
+      "church_id": "cmkd9utkd0000s0b39vcs4sya",
+      "createdAt": "2026-01-14T20:11:12.593Z",
+      "updatedAt": "2026-01-14T20:11:12.593Z"
+    },
+    {
+      "id": "cmkeghi9p0005cgb3bigrrl9e",
+      "name": "Jovenes",
+      "church_id": "cmkd9utkd0000s0b39vcs4sya",
+      "createdAt": "2026-01-14T20:11:13.577Z",
+      "updatedAt": "2026-01-14T20:11:13.577Z"
+    },
+    {
+      "id": "cmkeghiyh0006cgb3mjfu6wpz",
+      "name": "Señoritas",
+      "church_id": "cmkd9utkd0000s0b39vcs4sya",
+      "createdAt": "2026-01-14T20:11:14.574Z",
+      "updatedAt": "2026-01-14T20:11:14.574Z"
+    },
+    {
+      "id": "cmkeghjje0007cgb35znh23fg",
+      "name": "DNA Adolescentes",
+      "church_id": "cmkd9utkd0000s0b39vcs4sya",
+      "createdAt": "2026-01-14T20:11:15.336Z",
+      "updatedAt": "2026-01-14T20:11:15.336Z"
+    },
+    {
+      "id": "cmkeghkbn0008cgb3pbki9o76",
+      "name": "DNA Niños",
+      "church_id": "cmkd9utkd0000s0b39vcs4sya",
+      "createdAt": "2026-01-14T20:11:16.240Z",
+      "updatedAt": "2026-01-14T20:11:16.240Z"
+    },
+    {
+      "id": "cmkehm5xv000acgb33u3tsww5",
+      "name": "Varones",
+      "church_id": "cmkeg36zv0001cgb3u3hgnh7a",
+      "createdAt": "2026-01-14T20:42:50.700Z",
+      "updatedAt": "2026-01-14T20:42:50.700Z"
+    },
+    {
+      "id": "cmkehm6cl000bcgb37howwp6j",
+      "name": "Damas",
+      "church_id": "cmkeg36zv0001cgb3u3hgnh7a",
+      "createdAt": "2026-01-14T20:42:51.226Z",
+      "updatedAt": "2026-01-14T20:42:51.226Z"
+    },
+    {
+      "id": "cmkehm6qq000ccgb367one5co",
+      "name": "Jovenes",
+      "church_id": "cmkeg36zv0001cgb3u3hgnh7a",
+      "createdAt": "2026-01-14T20:42:51.734Z",
+      "updatedAt": "2026-01-14T20:42:51.734Z"
+    },
+    {
+      "id": "cmkehm751000dcgb39uim5l3b",
+      "name": "Señoritas",
+      "church_id": "cmkeg36zv0001cgb3u3hgnh7a",
+      "createdAt": "2026-01-14T20:42:52.259Z",
+      "updatedAt": "2026-01-14T20:42:52.259Z"
+    },
+    {
+      "id": "cmkehm7jk000ecgb39bzus434",
+      "name": "DNA Adolescentes",
+      "church_id": "cmkeg36zv0001cgb3u3hgnh7a",
+      "createdAt": "2026-01-14T20:42:52.779Z",
+      "updatedAt": "2026-01-14T20:42:52.779Z"
+    },
+    {
+      "id": "cmkehm7y7000fcgb393vci82t",
+      "name": "DNA Niños",
+      "church_id": "cmkeg36zv0001cgb3u3hgnh7a",
+      "createdAt": "2026-01-14T20:42:53.292Z",
+      "updatedAt": "2026-01-14T20:42:53.292Z"
     }
   ],
   "members": [
@@ -54454,6 +54599,34 @@
       "updatedAt": "2026-01-13T05:48:10.901Z"
     },
     {
+      "id": "cmkegi7yf0009cgb3f2n8ew3v",
+      "firstName": "test",
+      "lastName": "test lastname",
+      "email": null,
+      "phone": null,
+      "age": null,
+      "street": null,
+      "city": null,
+      "state": null,
+      "zip": null,
+      "country": "México",
+      "birthDate": null,
+      "baptismDate": null,
+      "role": "MIEMBRO",
+      "gender": "MASCULINO",
+      "pictureUrl": null,
+      "notes": null,
+      "passwordHash": null,
+      "church_id": "cmkd9utkd0000s0b39vcs4sya",
+      "zone_id": null,
+      "sector_id": null,
+      "sub_sector_id": null,
+      "cell_id": null,
+      "network_id": null,
+      "createdAt": "2026-01-14T20:11:46.870Z",
+      "updatedAt": "2026-01-14T20:11:46.870Z"
+    },
+    {
       "id": "cmk1tl1lj000104l2so2xw9pb",
       "firstName": "GRISELDA",
       "lastName": "CANDELERO JIMENEZ",
@@ -54564,6 +54737,34 @@
       "network_id": null,
       "createdAt": "2026-01-05T03:57:35.591Z",
       "updatedAt": "2026-01-07T23:14:21.150Z"
+    },
+    {
+      "id": "cmkehn777000gcgb384ftmzos",
+      "firstName": "Pablo",
+      "lastName": "Apostol de la tercera",
+      "email": null,
+      "phone": null,
+      "age": null,
+      "street": null,
+      "city": null,
+      "state": null,
+      "zip": null,
+      "country": "México",
+      "birthDate": null,
+      "baptismDate": null,
+      "role": "MIEMBRO",
+      "gender": "MASCULINO",
+      "pictureUrl": null,
+      "notes": null,
+      "passwordHash": null,
+      "church_id": "cmkeg36zv0001cgb3u3hgnh7a",
+      "zone_id": null,
+      "sector_id": null,
+      "sub_sector_id": null,
+      "cell_id": null,
+      "network_id": null,
+      "createdAt": "2026-01-14T20:43:38.976Z",
+      "updatedAt": "2026-01-14T20:43:38.976Z"
     },
     {
       "id": "cmk0mor5900dog8b3efyyjh3w",
@@ -63071,32 +63272,6 @@
       "updatedAt": "2026-01-13T05:46:42.825Z"
     }
   ],
-  "events": [
-    {
-      "id": "cmk1zgjcy004ja4b36icyhgeb",
-      "church_id": "clm5church005",
-      "name": "Levantate Parte 2",
-      "date": "2026-02-16T00:00:00.000Z",
-      "type": "Campaña",
-      "friendAttendanceGoal": null,
-      "memberAttendanceGoal": null,
-      "phase_id": "cmjmc7vu20000p8b3dn62000w",
-      "createdAt": "2026-01-06T02:41:21.154Z",
-      "updatedAt": "2026-01-06T03:24:52.949Z"
-    },
-    {
-      "id": "cmk211mq9004ma4b3fo03yrcg",
-      "church_id": "clm5church005",
-      "name": "Levantate Parte 1",
-      "date": "2026-02-15T00:00:00.000Z",
-      "type": "Campaña",
-      "friendAttendanceGoal": null,
-      "memberAttendanceGoal": null,
-      "phase_id": "cmjmc7vu20000p8b3dn62000w",
-      "createdAt": "2026-01-06T03:25:44.912Z",
-      "updatedAt": "2026-01-06T03:26:03.954Z"
-    }
-  ],
   "eventPhases": [
     {
       "id": "cmjmc7vu20000p8b3dn62000w",
@@ -63121,6 +63296,32 @@
       "church_id": null,
       "createdAt": "2025-12-26T03:54:13.934Z",
       "updatedAt": "2025-12-26T04:09:16.660Z"
+    }
+  ],
+  "events": [
+    {
+      "id": "cmk1zgjcy004ja4b36icyhgeb",
+      "church_id": "clm5church005",
+      "name": "Levantate Parte 2",
+      "date": "2026-02-16T00:00:00.000Z",
+      "type": "Campaña",
+      "friendAttendanceGoal": null,
+      "memberAttendanceGoal": null,
+      "phase_id": "cmjmc7vu20000p8b3dn62000w",
+      "createdAt": "2026-01-06T02:41:21.154Z",
+      "updatedAt": "2026-01-06T03:24:52.949Z"
+    },
+    {
+      "id": "cmk211mq9004ma4b3fo03yrcg",
+      "church_id": "clm5church005",
+      "name": "Levantate Parte 1",
+      "date": "2026-02-15T00:00:00.000Z",
+      "type": "Campaña",
+      "friendAttendanceGoal": null,
+      "memberAttendanceGoal": null,
+      "phase_id": "cmjmc7vu20000p8b3dn62000w",
+      "createdAt": "2026-01-06T03:25:44.912Z",
+      "updatedAt": "2026-01-06T03:26:03.954Z"
     }
   ],
   "eventAttendances": [],
@@ -65216,6 +65417,20 @@
       "status": "SUBMITTED",
       "createdAt": "2026-01-13T17:29:49.045Z",
       "updatedAt": "2026-01-13T17:29:49.402Z"
+    },
+    {
+      "id": "cmkdd73r1000004jgm6kyjmx1",
+      "church_id": "clm5church005",
+      "report_id": "cmjayvt8q0003rcxrxe1d6ojn",
+      "scope": "CELL",
+      "cell_id": "cmjbu0quo001awkxrk2zrle87",
+      "group_id": null,
+      "zone_id": null,
+      "sector_id": null,
+      "sub_sector_id": null,
+      "status": "DRAFT",
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
     }
   ],
   "reportEntryValues": [
@@ -70748,6 +70963,210 @@
       "value": "Semana 1: Orar",
       "createdAt": "2026-01-13T17:29:49.045Z",
       "updatedAt": "2026-01-13T17:29:49.045Z"
+    },
+    {
+      "id": "cmkdd73rv000104jg4p94ujxr",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6k5d00db6gb3dunfvzq2",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73sa000204jg6jpfr4gw",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6jxt00da6gb37lr530ek",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73se000304jgd75msb52",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6jq500d96gb33qpwaqkv",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73si000404jgudukyiy5",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6j3b00d66gb3b6oj0c0c",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73sm000504jgp07tjvcb",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6ivq00d56gb31yruh529",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73sp000604jgyak3x652",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6iod00d46gb3y6izydlx",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73st000704jg33xeusy5",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6ih200d36gb3mrbucw2z",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73sw000804jgzrf0nroi",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6i9r00d26gb3t9lh7v75",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73sz000904jgmevz7vhv",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6hnm00cz6gb3muys9d6r",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73t3000a04jgvx08t4wf",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6hgb00cy6gb3wc2l0avl",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73t7000b04jgwrhwj3fz",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6gn500cu6gb3blex0wgc",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73ta000c04jgo2xb20j2",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6gfm00ct6gb3479a4kln",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73td000d04jgi4gh4x5o",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6g8400cs6gb3usc7jwlf",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73th000e04jgojaiqrq7",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6g0q00cr6gb3sd9aizm9",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73tk000f04jgy875siai",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6ft400cq6gb3pidamts1",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73to000g04jgxnn77ytj",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6flj00cp6gb36ry6abnz",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73u3000h04jgcskxudql",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6fdu00co6gb3qebnbfdg",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73ud000i04jg352m9el2",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6f6a00cn6gb3nwug7lf9",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73uh000j04jghu8x7twu",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6ebr00cj6gb30xa38k0p",
+      "value": true,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73v3000k04jg4qx5ygcr",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6e4800ci6gb3fv3msuyj",
+      "value": 9,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73v8000l04jgs92r56iq",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6dwd00ch6gb33sbkngkg",
+      "value": 0,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73vf000m04jgtdiwd52e",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6doq00cg6gb33hkc1orh",
+      "value": 9,
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73vi000n04jgozzh6ahg",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk8s2l96003uu0b3e98a5p1z",
+      "value": [
+        "cmk0mqkxf011xg8b3b3jzxq4g",
+        "cmk0mnq330008g8b32xy3elol",
+        "cmk0moaid007mg8b3by6vg3da",
+        "cmk0mp3vs00icg8b3m8ia0kkr",
+        "cmk1slq7y000004k1p81zbkdq",
+        "cmk0mofzp009mg8b3ypcrwzuh",
+        "cmk0mofdd009eg8b35phsedu6",
+        "cmk0mnvoe0027g8b3mxtb2amh",
+        "cmk1ly4x30008lob36qxjv7j3",
+        "cmk0mqqkl013yg8b3z4ckoa8e",
+        "cmk0mr0s1017pg8b3zwhr9u82"
+      ],
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
+    },
+    {
+      "id": "cmkdd73vl000o04jglc5tdvwu",
+      "entry_id": "cmkdd73r1000004jgm6kyjmx1",
+      "report_field_id": "cmk5p6d9m00ce6gb3u02vz7xh",
+      "value": "Semana 2: Anotar",
+      "createdAt": "2026-01-14T01:51:23.546Z",
+      "updatedAt": "2026-01-14T01:51:23.546Z"
     }
   ]
 }
