@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 import {
   getPublicReport,
   getPublicEntities,
@@ -8,11 +9,55 @@ import {
 import PublicReportForm from '../components/PublicReportForm';
 import { connection } from 'next/server';
 
-export default async function PublicReportPage({
-  params,
-}: {
+type Props = {
   params: Promise<{ lang: string; slug: string[] }>;
-}) {
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  let report = null;
+
+  if (slug.length === 1) {
+    report = await getPublicReport(slug[0]);
+  } else if (slug.length === 2) {
+    report = await getPublicReportBySlugs(slug[0], slug[1]);
+  }
+
+  if (!report) {
+    return {
+      title: 'Reporte no encontrado',
+    };
+  }
+
+  return {
+    title: report.title,
+    description:
+      report.description || `Reporte público de ${report.church.name}`,
+    openGraph: {
+      title: report.title,
+      description:
+        report.description || `Reporte público de ${report.church.name}`,
+      type: 'website',
+      images: [
+        {
+          url: '/icon.svg',
+          width: 512,
+          height: 512,
+          alt: 'MultiplyNet Logo',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: report.title,
+      description:
+        report.description || `Reporte público de ${report.church.name}`,
+      images: ['/icon.svg'],
+    },
+  };
+}
+
+export default async function PublicReportPage({ params }: Props) {
   await connection();
   const { slug } = await params;
 
