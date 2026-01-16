@@ -14,6 +14,7 @@ export type ReportFieldInput = {
   id?: string;
   key: string;
   label?: string | null;
+  description?: string | null;
   type: ReportFieldType;
   value?: unknown;
   options?: string[] | any[]; // Add options
@@ -60,6 +61,7 @@ export async function createReport(input: CreateReportInput) {
     const base: Prisma.ReportFieldsCreateWithoutReportInput = {
       key,
       label: f.label ?? null,
+      description: f.description ?? null,
       type: f.type,
       required: !!f.required,
     };
@@ -221,6 +223,7 @@ export async function updateReportWithFields(input: UpdateReportInput) {
         const base: Prisma.ReportFieldsUncheckedUpdateInput = {
           key: f.key,
           label: f.label ?? null,
+          description: f.description ?? null,
           type: f.type,
           required: !!f.required,
           order: f.order,
@@ -251,6 +254,7 @@ export async function updateReportWithFields(input: UpdateReportInput) {
         const createData: Prisma.ReportFieldsCreateInput = {
           key: f.key,
           label: f.label ?? null,
+          description: f.description ?? null,
           type: f.type,
           required: !!f.required,
           order: f.order,

@@ -73,6 +73,7 @@ export default function EditReportForm({
             id: f.fieldId,
             key: key,
             label: f.label ?? null,
+            description: f.description ?? null,
             type: f.type,
             required: f.required ?? false,
             // value is optional in schema, send if present

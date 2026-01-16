@@ -31,6 +31,7 @@ export default async function EditReportPage({
             fieldId: f.id, // Guardar el ID real de la BD
             key: f.key,
             label: f.label ?? undefined,
+            description: f.description ?? undefined,
             type: f.type,
             value: (f as any).value,
             options: Array.isArray((f as any).options)

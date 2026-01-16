@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import {
   InputField,
@@ -57,6 +57,7 @@ type FieldDef = {
   id: string;
   key: string;
   label?: string | null;
+  description?: string | null;
   type: ReportFieldType;
   required?: boolean;
   options?: string[];
@@ -197,7 +198,7 @@ export default function PublicReportForm({
   };
 
   // Helper to group fields by section
-  const [groupedFields] = useState(() => {
+  const groupedFields = useMemo(() => {
     // This is static, but we can memoize if fields change (they don't in this component)
     const groups: { section: FieldDef | null; fields: FieldDef[] }[] = [];
     (fields || []).forEach((f) => {
@@ -221,7 +222,7 @@ export default function PublicReportForm({
       }
     });
     return groups;
-  });
+  }, [fields]);
 
   const renderField = (f: FieldDef) => {
     const baseName = `values.${f.id}` as const;
@@ -695,6 +696,11 @@ export default function PublicReportForm({
           )}
         >
           {content}
+          {f.description && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              {f.description}
+            </p>
+          )}
         </div>
       </div>
     );
@@ -1232,12 +1238,19 @@ export default function PublicReportForm({
                             <Button
                               type="button"
                               variant="ghost"
-                              className="w-full justify-between px-6 py-8 hover:bg-accent/50 transition-colors h-auto whitespace-normal text-left flex items-center gap-4"
+                              className="w-full justify-between px-6 py-6 hover:bg-accent/50 transition-colors h-auto whitespace-normal text-left items-start gap-4 group"
                             >
-                              <span className="text-2xl font-extrabold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent tracking-tight break-words min-w-0 flex-1">
-                                {group.section.label || 'Sección'}
-                              </span>
-                              <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center border border-primary/30 shadow-sm text-primary shrink-0">
+                              <div className="flex flex-col gap-2 flex-1 mr-4">
+                                <span className="text-2xl font-extrabold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent tracking-tight break-words">
+                                  {group.section.label || 'Sección'}
+                                </span>
+                                {group.section.description && (
+                                  <span className="text-base font-medium text-muted-foreground/80 leading-relaxed">
+                                    {group.section.description}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="h-8 w-8 rounded-full bg-background/50 group-hover:bg-background flex items-center justify-center border border-primary/20 group-hover:border-primary/40 shadow-sm text-primary transition-all duration-300 shrink-0 mt-1">
                                 <ChevronDown
                                   className={cn(
                                     'h-5 w-5 transition-transform duration-300',
@@ -1248,7 +1261,7 @@ export default function PublicReportForm({
                             </Button>
                           </CollapsibleTrigger>
                           <CollapsibleContent className="px-6 pb-8 data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-visible">
-                            <div className="grid grid-cols-1 gap-8 pt-4">
+                            <div className="grid grid-cols-1 gap-8 pt-2">
                               {group.fields.map((f) => {
                                 if (!isFieldVisible(f)) return null;
                                 return renderField(f);

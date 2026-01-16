@@ -40,6 +40,7 @@ export default async function PublicReportPage({
             id: f.id,
             key: f.key,
             label: f.label,
+            description: f.description,
             type: f.type,
             required: f.required,
             value: f.value,

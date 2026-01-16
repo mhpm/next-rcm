@@ -6,6 +6,7 @@ export type FieldItem = {
   fieldId?: string; // Only for edit mode (existing DB id)
   key: string;
   label?: string | null;
+  description?: string | null;
   type: ReportFieldType;
   value?: unknown;
   options?: { value: string; description?: string }[];

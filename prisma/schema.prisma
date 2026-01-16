@@ -373,6 +373,7 @@ model ReportFields {
   report_id String
   key       String
   label     String?
+  description String?
   type      ReportFieldType @default(TEXT)
   value     Json?
   options   Json? // Para almacenar opciones de SELECT (array de strings o objetos)

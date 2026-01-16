@@ -101,7 +101,7 @@ export const FieldEditor = React.memo(function FieldEditor({
       {/* Field Inputs */}
       <div className="space-y-3">
         <div className="flex gap-4">
-          <div className="flex-1">
+          <div className="flex-1 space-y-2">
             <Input
               {...register(`fields.${index}.label` as const, {
                 required: field.type !== 'SECTION',
@@ -116,6 +116,15 @@ export const FieldEditor = React.memo(function FieldEditor({
                 field.type === 'SECTION'
                   ? 'Título de la sección...'
                   : 'Escribe tu pregunta aquí...'
+              }
+            />
+            <Input
+              {...register(`fields.${index}.description` as const)}
+              className="text-sm text-muted-foreground"
+              placeholder={
+                field.type === 'SECTION'
+                  ? 'Descripción de la sección (opcional)'
+                  : 'Descripción del campo (opcional)'
               }
             />
           </div>

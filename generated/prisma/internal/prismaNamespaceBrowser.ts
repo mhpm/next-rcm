@@ -291,6 +291,7 @@ export const ReportFieldsScalarFieldEnum = {
   report_id: 'report_id',
   key: 'key',
   label: 'label',
+  description: 'description',
   type: 'type',
   value: 'value',
   options: 'options',

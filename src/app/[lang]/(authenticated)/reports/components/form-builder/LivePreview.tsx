@@ -224,6 +224,11 @@ export function LivePreview({
         )}
       >
         {content}
+        {field.description && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            {field.description}
+          </p>
+        )}
       </div>
     );
   };
@@ -303,12 +308,19 @@ export function LivePreview({
                         <Button
                           type="button"
                           variant="ghost"
-                          className="w-full justify-between px-6 py-8 hover:bg-accent/50 transition-colors"
+                          className="w-full justify-between px-6 py-6 hover:bg-accent/50 transition-colors h-auto whitespace-normal text-left items-start group"
                         >
-                          <span className="text-2xl font-extrabold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent tracking-tight">
-                            {group.section.label || 'Sección'}
-                          </span>
-                          <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center border border-primary/30 shadow-sm text-primary">
+                          <div className="flex flex-col gap-2 flex-1 mr-4">
+                            <span className="text-2xl font-extrabold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent tracking-tight break-words">
+                              {group.section.label || 'Sección'}
+                            </span>
+                            {group.section.description && (
+                              <span className="text-base font-medium text-muted-foreground/80 leading-relaxed">
+                                {group.section.description}
+                              </span>
+                            )}
+                          </div>
+                          <div className="h-8 w-8 rounded-full bg-background/50 group-hover:bg-background flex items-center justify-center border border-primary/20 group-hover:border-primary/40 shadow-sm text-primary transition-all duration-300 shrink-0 mt-1">
                             <ChevronDown
                               className={cn(
                                 'h-5 w-5 transition-transform duration-300',
@@ -319,7 +331,7 @@ export function LivePreview({
                         </Button>
                       </CollapsibleTrigger>
                       <CollapsibleContent className="px-6 pb-8 data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-                        <div className="grid grid-cols-1 gap-8 pt-4">
+                        <div className="grid grid-cols-1 gap-8 pt-2">
                           {group.fields.map((f, idx) => renderField(f, idx))}
                         </div>
                       </CollapsibleContent>
