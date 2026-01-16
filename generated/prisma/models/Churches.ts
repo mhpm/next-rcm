@@ -30,6 +30,14 @@ export type ChurchesMinAggregateOutputType = {
   slug: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  email: string | null
+  phone: string | null
+  street: string | null
+  city: string | null
+  state: string | null
+  zip: string | null
+  country: string | null
+  typeId: string | null
   owner_id: string | null
 }
 
@@ -39,6 +47,14 @@ export type ChurchesMaxAggregateOutputType = {
   slug: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  email: string | null
+  phone: string | null
+  street: string | null
+  city: string | null
+  state: string | null
+  zip: string | null
+  country: string | null
+  typeId: string | null
   owner_id: string | null
 }
 
@@ -48,6 +64,14 @@ export type ChurchesCountAggregateOutputType = {
   slug: number
   createdAt: number
   updatedAt: number
+  email: number
+  phone: number
+  street: number
+  city: number
+  state: number
+  zip: number
+  country: number
+  typeId: number
   owner_id: number
   _all: number
 }
@@ -59,6 +83,14 @@ export type ChurchesMinAggregateInputType = {
   slug?: true
   createdAt?: true
   updatedAt?: true
+  email?: true
+  phone?: true
+  street?: true
+  city?: true
+  state?: true
+  zip?: true
+  country?: true
+  typeId?: true
   owner_id?: true
 }
 
@@ -68,6 +100,14 @@ export type ChurchesMaxAggregateInputType = {
   slug?: true
   createdAt?: true
   updatedAt?: true
+  email?: true
+  phone?: true
+  street?: true
+  city?: true
+  state?: true
+  zip?: true
+  country?: true
+  typeId?: true
   owner_id?: true
 }
 
@@ -77,6 +117,14 @@ export type ChurchesCountAggregateInputType = {
   slug?: true
   createdAt?: true
   updatedAt?: true
+  email?: true
+  phone?: true
+  street?: true
+  city?: true
+  state?: true
+  zip?: true
+  country?: true
+  typeId?: true
   owner_id?: true
   _all?: true
 }
@@ -159,6 +207,14 @@ export type ChurchesGroupByOutputType = {
   slug: string
   createdAt: Date
   updatedAt: Date
+  email: string | null
+  phone: string | null
+  street: string | null
+  city: string | null
+  state: string | null
+  zip: string | null
+  country: string | null
+  typeId: string | null
   owner_id: string | null
   _count: ChurchesCountAggregateOutputType | null
   _min: ChurchesMinAggregateOutputType | null
@@ -189,7 +245,16 @@ export type ChurchesWhereInput = {
   slug?: Prisma.StringFilter<"Churches"> | string
   createdAt?: Prisma.DateTimeFilter<"Churches"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Churches"> | Date | string
+  email?: Prisma.StringNullableFilter<"Churches"> | string | null
+  phone?: Prisma.StringNullableFilter<"Churches"> | string | null
+  street?: Prisma.StringNullableFilter<"Churches"> | string | null
+  city?: Prisma.StringNullableFilter<"Churches"> | string | null
+  state?: Prisma.StringNullableFilter<"Churches"> | string | null
+  zip?: Prisma.StringNullableFilter<"Churches"> | string | null
+  country?: Prisma.StringNullableFilter<"Churches"> | string | null
+  typeId?: Prisma.StringNullableFilter<"Churches"> | string | null
   owner_id?: Prisma.StringNullableFilter<"Churches"> | string | null
+  type?: Prisma.XOR<Prisma.ChurchTypeNullableScalarRelationFilter, Prisma.ChurchTypeWhereInput> | null
   admins?: Prisma.ChurchAdminsListRelationFilter
   memberMinistries?: Prisma.MemberMinistryListRelationFilter
   members?: Prisma.MembersListRelationFilter
@@ -214,7 +279,16 @@ export type ChurchesOrderByWithRelationInput = {
   slug?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  street?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  state?: Prisma.SortOrderInput | Prisma.SortOrder
+  zip?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
+  typeId?: Prisma.SortOrderInput | Prisma.SortOrder
   owner_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  type?: Prisma.ChurchTypeOrderByWithRelationInput
   admins?: Prisma.ChurchAdminsOrderByRelationAggregateInput
   memberMinistries?: Prisma.MemberMinistryOrderByRelationAggregateInput
   members?: Prisma.MembersOrderByRelationAggregateInput
@@ -236,13 +310,22 @@ export type ChurchesOrderByWithRelationInput = {
 export type ChurchesWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   slug?: string
+  email?: string
   AND?: Prisma.ChurchesWhereInput | Prisma.ChurchesWhereInput[]
   OR?: Prisma.ChurchesWhereInput[]
   NOT?: Prisma.ChurchesWhereInput | Prisma.ChurchesWhereInput[]
   name?: Prisma.StringFilter<"Churches"> | string
   createdAt?: Prisma.DateTimeFilter<"Churches"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Churches"> | Date | string
+  phone?: Prisma.StringNullableFilter<"Churches"> | string | null
+  street?: Prisma.StringNullableFilter<"Churches"> | string | null
+  city?: Prisma.StringNullableFilter<"Churches"> | string | null
+  state?: Prisma.StringNullableFilter<"Churches"> | string | null
+  zip?: Prisma.StringNullableFilter<"Churches"> | string | null
+  country?: Prisma.StringNullableFilter<"Churches"> | string | null
+  typeId?: Prisma.StringNullableFilter<"Churches"> | string | null
   owner_id?: Prisma.StringNullableFilter<"Churches"> | string | null
+  type?: Prisma.XOR<Prisma.ChurchTypeNullableScalarRelationFilter, Prisma.ChurchTypeWhereInput> | null
   admins?: Prisma.ChurchAdminsListRelationFilter
   memberMinistries?: Prisma.MemberMinistryListRelationFilter
   members?: Prisma.MembersListRelationFilter
@@ -259,7 +342,7 @@ export type ChurchesWhereUniqueInput = Prisma.AtLeast<{
   eventAttendances?: Prisma.EventAttendancesListRelationFilter
   cellGoals?: Prisma.CellGoalsListRelationFilter
   networks?: Prisma.NetworksListRelationFilter
-}, "id" | "slug">
+}, "id" | "slug" | "email">
 
 export type ChurchesOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -267,6 +350,14 @@ export type ChurchesOrderByWithAggregationInput = {
   slug?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  street?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  state?: Prisma.SortOrderInput | Prisma.SortOrder
+  zip?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
+  typeId?: Prisma.SortOrderInput | Prisma.SortOrder
   owner_id?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ChurchesCountOrderByAggregateInput
   _max?: Prisma.ChurchesMaxOrderByAggregateInput
@@ -282,6 +373,14 @@ export type ChurchesScalarWhereWithAggregatesInput = {
   slug?: Prisma.StringWithAggregatesFilter<"Churches"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Churches"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Churches"> | Date | string
+  email?: Prisma.StringNullableWithAggregatesFilter<"Churches"> | string | null
+  phone?: Prisma.StringNullableWithAggregatesFilter<"Churches"> | string | null
+  street?: Prisma.StringNullableWithAggregatesFilter<"Churches"> | string | null
+  city?: Prisma.StringNullableWithAggregatesFilter<"Churches"> | string | null
+  state?: Prisma.StringNullableWithAggregatesFilter<"Churches"> | string | null
+  zip?: Prisma.StringNullableWithAggregatesFilter<"Churches"> | string | null
+  country?: Prisma.StringNullableWithAggregatesFilter<"Churches"> | string | null
+  typeId?: Prisma.StringNullableWithAggregatesFilter<"Churches"> | string | null
   owner_id?: Prisma.StringNullableWithAggregatesFilter<"Churches"> | string | null
 }
 
@@ -291,7 +390,15 @@ export type ChurchesCreateInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -316,6 +423,14 @@ export type ChurchesUncheckedCreateInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -341,7 +456,15 @@ export type ChurchesUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -366,6 +489,14 @@ export type ChurchesUncheckedUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -391,6 +522,14 @@ export type ChurchesCreateManyInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
 }
 
@@ -400,6 +539,13 @@ export type ChurchesUpdateManyMutationInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -409,6 +555,14 @@ export type ChurchesUncheckedUpdateManyInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -418,6 +572,14 @@ export type ChurchesCountOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  street?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  zip?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  typeId?: Prisma.SortOrder
   owner_id?: Prisma.SortOrder
 }
 
@@ -427,6 +589,14 @@ export type ChurchesMaxOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  street?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  zip?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  typeId?: Prisma.SortOrder
   owner_id?: Prisma.SortOrder
 }
 
@@ -436,12 +606,30 @@ export type ChurchesMinOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  street?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  zip?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  typeId?: Prisma.SortOrder
   owner_id?: Prisma.SortOrder
 }
 
 export type ChurchesScalarRelationFilter = {
   is?: Prisma.ChurchesWhereInput
   isNot?: Prisma.ChurchesWhereInput
+}
+
+export type ChurchesListRelationFilter = {
+  every?: Prisma.ChurchesWhereInput
+  some?: Prisma.ChurchesWhereInput
+  none?: Prisma.ChurchesWhereInput
+}
+
+export type ChurchesOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type ChurchesNullableScalarRelationFilter = {
@@ -473,6 +661,48 @@ export type ChurchesUpdateOneRequiredWithoutAdminsNestedInput = {
   upsert?: Prisma.ChurchesUpsertWithoutAdminsInput
   connect?: Prisma.ChurchesWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ChurchesUpdateToOneWithWhereWithoutAdminsInput, Prisma.ChurchesUpdateWithoutAdminsInput>, Prisma.ChurchesUncheckedUpdateWithoutAdminsInput>
+}
+
+export type ChurchesCreateNestedManyWithoutTypeInput = {
+  create?: Prisma.XOR<Prisma.ChurchesCreateWithoutTypeInput, Prisma.ChurchesUncheckedCreateWithoutTypeInput> | Prisma.ChurchesCreateWithoutTypeInput[] | Prisma.ChurchesUncheckedCreateWithoutTypeInput[]
+  connectOrCreate?: Prisma.ChurchesCreateOrConnectWithoutTypeInput | Prisma.ChurchesCreateOrConnectWithoutTypeInput[]
+  createMany?: Prisma.ChurchesCreateManyTypeInputEnvelope
+  connect?: Prisma.ChurchesWhereUniqueInput | Prisma.ChurchesWhereUniqueInput[]
+}
+
+export type ChurchesUncheckedCreateNestedManyWithoutTypeInput = {
+  create?: Prisma.XOR<Prisma.ChurchesCreateWithoutTypeInput, Prisma.ChurchesUncheckedCreateWithoutTypeInput> | Prisma.ChurchesCreateWithoutTypeInput[] | Prisma.ChurchesUncheckedCreateWithoutTypeInput[]
+  connectOrCreate?: Prisma.ChurchesCreateOrConnectWithoutTypeInput | Prisma.ChurchesCreateOrConnectWithoutTypeInput[]
+  createMany?: Prisma.ChurchesCreateManyTypeInputEnvelope
+  connect?: Prisma.ChurchesWhereUniqueInput | Prisma.ChurchesWhereUniqueInput[]
+}
+
+export type ChurchesUpdateManyWithoutTypeNestedInput = {
+  create?: Prisma.XOR<Prisma.ChurchesCreateWithoutTypeInput, Prisma.ChurchesUncheckedCreateWithoutTypeInput> | Prisma.ChurchesCreateWithoutTypeInput[] | Prisma.ChurchesUncheckedCreateWithoutTypeInput[]
+  connectOrCreate?: Prisma.ChurchesCreateOrConnectWithoutTypeInput | Prisma.ChurchesCreateOrConnectWithoutTypeInput[]
+  upsert?: Prisma.ChurchesUpsertWithWhereUniqueWithoutTypeInput | Prisma.ChurchesUpsertWithWhereUniqueWithoutTypeInput[]
+  createMany?: Prisma.ChurchesCreateManyTypeInputEnvelope
+  set?: Prisma.ChurchesWhereUniqueInput | Prisma.ChurchesWhereUniqueInput[]
+  disconnect?: Prisma.ChurchesWhereUniqueInput | Prisma.ChurchesWhereUniqueInput[]
+  delete?: Prisma.ChurchesWhereUniqueInput | Prisma.ChurchesWhereUniqueInput[]
+  connect?: Prisma.ChurchesWhereUniqueInput | Prisma.ChurchesWhereUniqueInput[]
+  update?: Prisma.ChurchesUpdateWithWhereUniqueWithoutTypeInput | Prisma.ChurchesUpdateWithWhereUniqueWithoutTypeInput[]
+  updateMany?: Prisma.ChurchesUpdateManyWithWhereWithoutTypeInput | Prisma.ChurchesUpdateManyWithWhereWithoutTypeInput[]
+  deleteMany?: Prisma.ChurchesScalarWhereInput | Prisma.ChurchesScalarWhereInput[]
+}
+
+export type ChurchesUncheckedUpdateManyWithoutTypeNestedInput = {
+  create?: Prisma.XOR<Prisma.ChurchesCreateWithoutTypeInput, Prisma.ChurchesUncheckedCreateWithoutTypeInput> | Prisma.ChurchesCreateWithoutTypeInput[] | Prisma.ChurchesUncheckedCreateWithoutTypeInput[]
+  connectOrCreate?: Prisma.ChurchesCreateOrConnectWithoutTypeInput | Prisma.ChurchesCreateOrConnectWithoutTypeInput[]
+  upsert?: Prisma.ChurchesUpsertWithWhereUniqueWithoutTypeInput | Prisma.ChurchesUpsertWithWhereUniqueWithoutTypeInput[]
+  createMany?: Prisma.ChurchesCreateManyTypeInputEnvelope
+  set?: Prisma.ChurchesWhereUniqueInput | Prisma.ChurchesWhereUniqueInput[]
+  disconnect?: Prisma.ChurchesWhereUniqueInput | Prisma.ChurchesWhereUniqueInput[]
+  delete?: Prisma.ChurchesWhereUniqueInput | Prisma.ChurchesWhereUniqueInput[]
+  connect?: Prisma.ChurchesWhereUniqueInput | Prisma.ChurchesWhereUniqueInput[]
+  update?: Prisma.ChurchesUpdateWithWhereUniqueWithoutTypeInput | Prisma.ChurchesUpdateWithWhereUniqueWithoutTypeInput[]
+  updateMany?: Prisma.ChurchesUpdateManyWithWhereWithoutTypeInput | Prisma.ChurchesUpdateManyWithWhereWithoutTypeInput[]
+  deleteMany?: Prisma.ChurchesScalarWhereInput | Prisma.ChurchesScalarWhereInput[]
 }
 
 export type ChurchesCreateNestedOneWithoutNetworksInput = {
@@ -693,7 +923,15 @@ export type ChurchesCreateWithoutAdminsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
   ministries?: Prisma.MinistriesCreateNestedManyWithoutChurchInput
@@ -717,6 +955,14 @@ export type ChurchesUncheckedCreateWithoutAdminsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersUncheckedCreateNestedManyWithoutChurchInput
@@ -757,7 +1003,15 @@ export type ChurchesUpdateWithoutAdminsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
   ministries?: Prisma.MinistriesUpdateManyWithoutChurchNestedInput
@@ -781,6 +1035,14 @@ export type ChurchesUncheckedUpdateWithoutAdminsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUncheckedUpdateManyWithoutChurchNestedInput
@@ -799,13 +1061,131 @@ export type ChurchesUncheckedUpdateWithoutAdminsInput = {
   networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
 }
 
+export type ChurchesCreateWithoutTypeInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  owner_id?: string | null
+  admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
+  memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
+  members?: Prisma.MembersCreateNestedManyWithoutChurchInput
+  ministries?: Prisma.MinistriesCreateNestedManyWithoutChurchInput
+  cells?: Prisma.CellsCreateNestedManyWithoutChurchInput
+  zones?: Prisma.ZonesCreateNestedManyWithoutChurchInput
+  sectors?: Prisma.SectorsCreateNestedManyWithoutChurchInput
+  groups?: Prisma.GroupsCreateNestedManyWithoutChurchInput
+  reports?: Prisma.ReportsCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesCreateNestedManyWithoutChurchInput
+  friends?: Prisma.FriendsCreateNestedManyWithoutChurchInput
+  events?: Prisma.EventsCreateNestedManyWithoutChurchInput
+  eventPhases?: Prisma.EventPhasesCreateNestedManyWithoutChurchInput
+  eventAttendances?: Prisma.EventAttendancesCreateNestedManyWithoutChurchInput
+  cellGoals?: Prisma.CellGoalsCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksCreateNestedManyWithoutChurchInput
+}
+
+export type ChurchesUncheckedCreateWithoutTypeInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  owner_id?: string | null
+  admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
+  memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
+  members?: Prisma.MembersUncheckedCreateNestedManyWithoutChurchInput
+  ministries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutChurchInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutChurchInput
+  zones?: Prisma.ZonesUncheckedCreateNestedManyWithoutChurchInput
+  sectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutChurchInput
+  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutChurchInput
+  reports?: Prisma.ReportsUncheckedCreateNestedManyWithoutChurchInput
+  reportEntries?: Prisma.ReportEntriesUncheckedCreateNestedManyWithoutChurchInput
+  friends?: Prisma.FriendsUncheckedCreateNestedManyWithoutChurchInput
+  events?: Prisma.EventsUncheckedCreateNestedManyWithoutChurchInput
+  eventPhases?: Prisma.EventPhasesUncheckedCreateNestedManyWithoutChurchInput
+  eventAttendances?: Prisma.EventAttendancesUncheckedCreateNestedManyWithoutChurchInput
+  cellGoals?: Prisma.CellGoalsUncheckedCreateNestedManyWithoutChurchInput
+  networks?: Prisma.NetworksUncheckedCreateNestedManyWithoutChurchInput
+}
+
+export type ChurchesCreateOrConnectWithoutTypeInput = {
+  where: Prisma.ChurchesWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChurchesCreateWithoutTypeInput, Prisma.ChurchesUncheckedCreateWithoutTypeInput>
+}
+
+export type ChurchesCreateManyTypeInputEnvelope = {
+  data: Prisma.ChurchesCreateManyTypeInput | Prisma.ChurchesCreateManyTypeInput[]
+  skipDuplicates?: boolean
+}
+
+export type ChurchesUpsertWithWhereUniqueWithoutTypeInput = {
+  where: Prisma.ChurchesWhereUniqueInput
+  update: Prisma.XOR<Prisma.ChurchesUpdateWithoutTypeInput, Prisma.ChurchesUncheckedUpdateWithoutTypeInput>
+  create: Prisma.XOR<Prisma.ChurchesCreateWithoutTypeInput, Prisma.ChurchesUncheckedCreateWithoutTypeInput>
+}
+
+export type ChurchesUpdateWithWhereUniqueWithoutTypeInput = {
+  where: Prisma.ChurchesWhereUniqueInput
+  data: Prisma.XOR<Prisma.ChurchesUpdateWithoutTypeInput, Prisma.ChurchesUncheckedUpdateWithoutTypeInput>
+}
+
+export type ChurchesUpdateManyWithWhereWithoutTypeInput = {
+  where: Prisma.ChurchesScalarWhereInput
+  data: Prisma.XOR<Prisma.ChurchesUpdateManyMutationInput, Prisma.ChurchesUncheckedUpdateManyWithoutTypeInput>
+}
+
+export type ChurchesScalarWhereInput = {
+  AND?: Prisma.ChurchesScalarWhereInput | Prisma.ChurchesScalarWhereInput[]
+  OR?: Prisma.ChurchesScalarWhereInput[]
+  NOT?: Prisma.ChurchesScalarWhereInput | Prisma.ChurchesScalarWhereInput[]
+  id?: Prisma.StringFilter<"Churches"> | string
+  name?: Prisma.StringFilter<"Churches"> | string
+  slug?: Prisma.StringFilter<"Churches"> | string
+  createdAt?: Prisma.DateTimeFilter<"Churches"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Churches"> | Date | string
+  email?: Prisma.StringNullableFilter<"Churches"> | string | null
+  phone?: Prisma.StringNullableFilter<"Churches"> | string | null
+  street?: Prisma.StringNullableFilter<"Churches"> | string | null
+  city?: Prisma.StringNullableFilter<"Churches"> | string | null
+  state?: Prisma.StringNullableFilter<"Churches"> | string | null
+  zip?: Prisma.StringNullableFilter<"Churches"> | string | null
+  country?: Prisma.StringNullableFilter<"Churches"> | string | null
+  typeId?: Prisma.StringNullableFilter<"Churches"> | string | null
+  owner_id?: Prisma.StringNullableFilter<"Churches"> | string | null
+}
+
 export type ChurchesCreateWithoutNetworksInput = {
   id?: string
   name: string
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -829,6 +1209,14 @@ export type ChurchesUncheckedCreateWithoutNetworksInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -869,7 +1257,15 @@ export type ChurchesUpdateWithoutNetworksInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -893,6 +1289,14 @@ export type ChurchesUncheckedUpdateWithoutNetworksInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -917,7 +1321,15 @@ export type ChurchesCreateWithoutMembersInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   ministries?: Prisma.MinistriesCreateNestedManyWithoutChurchInput
@@ -941,6 +1353,14 @@ export type ChurchesUncheckedCreateWithoutMembersInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -981,7 +1401,15 @@ export type ChurchesUpdateWithoutMembersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   ministries?: Prisma.MinistriesUpdateManyWithoutChurchNestedInput
@@ -1005,6 +1433,14 @@ export type ChurchesUncheckedUpdateWithoutMembersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -1029,7 +1465,15 @@ export type ChurchesCreateWithoutMinistriesInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -1053,6 +1497,14 @@ export type ChurchesUncheckedCreateWithoutMinistriesInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -1093,7 +1545,15 @@ export type ChurchesUpdateWithoutMinistriesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -1117,6 +1577,14 @@ export type ChurchesUncheckedUpdateWithoutMinistriesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -1141,7 +1609,15 @@ export type ChurchesCreateWithoutCellsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -1165,6 +1641,14 @@ export type ChurchesUncheckedCreateWithoutCellsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -1205,7 +1689,15 @@ export type ChurchesUpdateWithoutCellsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -1229,6 +1721,14 @@ export type ChurchesUncheckedUpdateWithoutCellsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -1253,7 +1753,15 @@ export type ChurchesCreateWithoutZonesInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -1277,6 +1785,14 @@ export type ChurchesUncheckedCreateWithoutZonesInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -1317,7 +1833,15 @@ export type ChurchesUpdateWithoutZonesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -1341,6 +1865,14 @@ export type ChurchesUncheckedUpdateWithoutZonesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -1365,7 +1897,15 @@ export type ChurchesCreateWithoutSectorsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -1389,6 +1929,14 @@ export type ChurchesUncheckedCreateWithoutSectorsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -1429,7 +1977,15 @@ export type ChurchesUpdateWithoutSectorsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -1453,6 +2009,14 @@ export type ChurchesUncheckedUpdateWithoutSectorsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -1477,7 +2041,15 @@ export type ChurchesCreateWithoutGroupsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -1501,6 +2073,14 @@ export type ChurchesUncheckedCreateWithoutGroupsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -1541,7 +2121,15 @@ export type ChurchesUpdateWithoutGroupsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -1565,6 +2153,14 @@ export type ChurchesUncheckedUpdateWithoutGroupsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -1589,7 +2185,15 @@ export type ChurchesCreateWithoutCellGoalsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -1613,6 +2217,14 @@ export type ChurchesUncheckedCreateWithoutCellGoalsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -1653,7 +2265,15 @@ export type ChurchesUpdateWithoutCellGoalsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -1677,6 +2297,14 @@ export type ChurchesUncheckedUpdateWithoutCellGoalsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -1701,7 +2329,15 @@ export type ChurchesCreateWithoutReportsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -1725,6 +2361,14 @@ export type ChurchesUncheckedCreateWithoutReportsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -1765,7 +2409,15 @@ export type ChurchesUpdateWithoutReportsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -1789,6 +2441,14 @@ export type ChurchesUncheckedUpdateWithoutReportsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -1813,7 +2473,15 @@ export type ChurchesCreateWithoutReportEntriesInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -1837,6 +2505,14 @@ export type ChurchesUncheckedCreateWithoutReportEntriesInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -1877,7 +2553,15 @@ export type ChurchesUpdateWithoutReportEntriesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -1901,6 +2585,14 @@ export type ChurchesUncheckedUpdateWithoutReportEntriesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -1925,7 +2617,15 @@ export type ChurchesCreateWithoutMemberMinistriesInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
   ministries?: Prisma.MinistriesCreateNestedManyWithoutChurchInput
@@ -1949,6 +2649,14 @@ export type ChurchesUncheckedCreateWithoutMemberMinistriesInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersUncheckedCreateNestedManyWithoutChurchInput
@@ -1989,7 +2697,15 @@ export type ChurchesUpdateWithoutMemberMinistriesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
   ministries?: Prisma.MinistriesUpdateManyWithoutChurchNestedInput
@@ -2013,6 +2729,14 @@ export type ChurchesUncheckedUpdateWithoutMemberMinistriesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUncheckedUpdateManyWithoutChurchNestedInput
@@ -2037,7 +2761,15 @@ export type ChurchesCreateWithoutFriendsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -2061,6 +2793,14 @@ export type ChurchesUncheckedCreateWithoutFriendsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -2101,7 +2841,15 @@ export type ChurchesUpdateWithoutFriendsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -2125,6 +2873,14 @@ export type ChurchesUncheckedUpdateWithoutFriendsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -2149,7 +2905,15 @@ export type ChurchesCreateWithoutEventsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -2173,6 +2937,14 @@ export type ChurchesUncheckedCreateWithoutEventsInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -2213,7 +2985,15 @@ export type ChurchesUpdateWithoutEventsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -2237,6 +3017,14 @@ export type ChurchesUncheckedUpdateWithoutEventsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -2261,7 +3049,15 @@ export type ChurchesCreateWithoutEventAttendancesInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -2285,6 +3081,14 @@ export type ChurchesUncheckedCreateWithoutEventAttendancesInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -2325,7 +3129,15 @@ export type ChurchesUpdateWithoutEventAttendancesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -2349,6 +3161,14 @@ export type ChurchesUncheckedUpdateWithoutEventAttendancesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -2373,7 +3193,15 @@ export type ChurchesCreateWithoutEventPhasesInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   owner_id?: string | null
+  type?: Prisma.ChurchTypeCreateNestedOneWithoutChurchesInput
   admins?: Prisma.ChurchAdminsCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryCreateNestedManyWithoutChurchInput
   members?: Prisma.MembersCreateNestedManyWithoutChurchInput
@@ -2397,6 +3225,14 @@ export type ChurchesUncheckedCreateWithoutEventPhasesInput = {
   slug: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  typeId?: string | null
   owner_id?: string | null
   admins?: Prisma.ChurchAdminsUncheckedCreateNestedManyWithoutChurchInput
   memberMinistries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutChurchInput
@@ -2437,7 +3273,15 @@ export type ChurchesUpdateWithoutEventPhasesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.ChurchTypeUpdateOneWithoutChurchesNestedInput
   admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
   members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
@@ -2461,6 +3305,14 @@ export type ChurchesUncheckedUpdateWithoutEventPhasesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  typeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
   memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
@@ -2477,6 +3329,102 @@ export type ChurchesUncheckedUpdateWithoutEventPhasesInput = {
   eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
   cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
   networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
+}
+
+export type ChurchesCreateManyTypeInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  email?: string | null
+  phone?: string | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  owner_id?: string | null
+}
+
+export type ChurchesUpdateWithoutTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admins?: Prisma.ChurchAdminsUpdateManyWithoutChurchNestedInput
+  memberMinistries?: Prisma.MemberMinistryUpdateManyWithoutChurchNestedInput
+  members?: Prisma.MembersUpdateManyWithoutChurchNestedInput
+  ministries?: Prisma.MinistriesUpdateManyWithoutChurchNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutChurchNestedInput
+  zones?: Prisma.ZonesUpdateManyWithoutChurchNestedInput
+  sectors?: Prisma.SectorsUpdateManyWithoutChurchNestedInput
+  groups?: Prisma.GroupsUpdateManyWithoutChurchNestedInput
+  reports?: Prisma.ReportsUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUpdateManyWithoutChurchNestedInput
+  friends?: Prisma.FriendsUpdateManyWithoutChurchNestedInput
+  events?: Prisma.EventsUpdateManyWithoutChurchNestedInput
+  eventPhases?: Prisma.EventPhasesUpdateManyWithoutChurchNestedInput
+  eventAttendances?: Prisma.EventAttendancesUpdateManyWithoutChurchNestedInput
+  cellGoals?: Prisma.CellGoalsUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUpdateManyWithoutChurchNestedInput
+}
+
+export type ChurchesUncheckedUpdateWithoutTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admins?: Prisma.ChurchAdminsUncheckedUpdateManyWithoutChurchNestedInput
+  memberMinistries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutChurchNestedInput
+  members?: Prisma.MembersUncheckedUpdateManyWithoutChurchNestedInput
+  ministries?: Prisma.MinistriesUncheckedUpdateManyWithoutChurchNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutChurchNestedInput
+  zones?: Prisma.ZonesUncheckedUpdateManyWithoutChurchNestedInput
+  sectors?: Prisma.SectorsUncheckedUpdateManyWithoutChurchNestedInput
+  groups?: Prisma.GroupsUncheckedUpdateManyWithoutChurchNestedInput
+  reports?: Prisma.ReportsUncheckedUpdateManyWithoutChurchNestedInput
+  reportEntries?: Prisma.ReportEntriesUncheckedUpdateManyWithoutChurchNestedInput
+  friends?: Prisma.FriendsUncheckedUpdateManyWithoutChurchNestedInput
+  events?: Prisma.EventsUncheckedUpdateManyWithoutChurchNestedInput
+  eventPhases?: Prisma.EventPhasesUncheckedUpdateManyWithoutChurchNestedInput
+  eventAttendances?: Prisma.EventAttendancesUncheckedUpdateManyWithoutChurchNestedInput
+  cellGoals?: Prisma.CellGoalsUncheckedUpdateManyWithoutChurchNestedInput
+  networks?: Prisma.NetworksUncheckedUpdateManyWithoutChurchNestedInput
+}
+
+export type ChurchesUncheckedUpdateManyWithoutTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -2651,7 +3599,16 @@ export type ChurchesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   slug?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  email?: boolean
+  phone?: boolean
+  street?: boolean
+  city?: boolean
+  state?: boolean
+  zip?: boolean
+  country?: boolean
+  typeId?: boolean
   owner_id?: boolean
+  type?: boolean | Prisma.Churches$typeArgs<ExtArgs>
   admins?: boolean | Prisma.Churches$adminsArgs<ExtArgs>
   memberMinistries?: boolean | Prisma.Churches$memberMinistriesArgs<ExtArgs>
   members?: boolean | Prisma.Churches$membersArgs<ExtArgs>
@@ -2677,7 +3634,16 @@ export type ChurchesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   slug?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  email?: boolean
+  phone?: boolean
+  street?: boolean
+  city?: boolean
+  state?: boolean
+  zip?: boolean
+  country?: boolean
+  typeId?: boolean
   owner_id?: boolean
+  type?: boolean | Prisma.Churches$typeArgs<ExtArgs>
 }, ExtArgs["result"]["churches"]>
 
 export type ChurchesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2686,7 +3652,16 @@ export type ChurchesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   slug?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  email?: boolean
+  phone?: boolean
+  street?: boolean
+  city?: boolean
+  state?: boolean
+  zip?: boolean
+  country?: boolean
+  typeId?: boolean
   owner_id?: boolean
+  type?: boolean | Prisma.Churches$typeArgs<ExtArgs>
 }, ExtArgs["result"]["churches"]>
 
 export type ChurchesSelectScalar = {
@@ -2695,11 +3670,20 @@ export type ChurchesSelectScalar = {
   slug?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  email?: boolean
+  phone?: boolean
+  street?: boolean
+  city?: boolean
+  state?: boolean
+  zip?: boolean
+  country?: boolean
+  typeId?: boolean
   owner_id?: boolean
 }
 
-export type ChurchesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "createdAt" | "updatedAt" | "owner_id", ExtArgs["result"]["churches"]>
+export type ChurchesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "createdAt" | "updatedAt" | "email" | "phone" | "street" | "city" | "state" | "zip" | "country" | "typeId" | "owner_id", ExtArgs["result"]["churches"]>
 export type ChurchesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  type?: boolean | Prisma.Churches$typeArgs<ExtArgs>
   admins?: boolean | Prisma.Churches$adminsArgs<ExtArgs>
   memberMinistries?: boolean | Prisma.Churches$memberMinistriesArgs<ExtArgs>
   members?: boolean | Prisma.Churches$membersArgs<ExtArgs>
@@ -2718,12 +3702,17 @@ export type ChurchesInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   networks?: boolean | Prisma.Churches$networksArgs<ExtArgs>
   _count?: boolean | Prisma.ChurchesCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type ChurchesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type ChurchesIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ChurchesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  type?: boolean | Prisma.Churches$typeArgs<ExtArgs>
+}
+export type ChurchesIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  type?: boolean | Prisma.Churches$typeArgs<ExtArgs>
+}
 
 export type $ChurchesPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Churches"
   objects: {
+    type: Prisma.$ChurchTypePayload<ExtArgs> | null
     admins: Prisma.$ChurchAdminsPayload<ExtArgs>[]
     memberMinistries: Prisma.$MemberMinistryPayload<ExtArgs>[]
     members: Prisma.$MembersPayload<ExtArgs>[]
@@ -2747,6 +3736,14 @@ export type $ChurchesPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     slug: string
     createdAt: Date
     updatedAt: Date
+    email: string | null
+    phone: string | null
+    street: string | null
+    city: string | null
+    state: string | null
+    zip: string | null
+    country: string | null
+    typeId: string | null
     owner_id: string | null
   }, ExtArgs["result"]["churches"]>
   composites: {}
@@ -3142,6 +4139,7 @@ readonly fields: ChurchesFieldRefs;
  */
 export interface Prisma__ChurchesClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  type<T extends Prisma.Churches$typeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Churches$typeArgs<ExtArgs>>): Prisma.Prisma__ChurchTypeClient<runtime.Types.Result.GetResult<Prisma.$ChurchTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   admins<T extends Prisma.Churches$adminsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Churches$adminsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChurchAdminsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   memberMinistries<T extends Prisma.Churches$memberMinistriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Churches$memberMinistriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberMinistryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   members<T extends Prisma.Churches$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Churches$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MembersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3192,6 +4190,14 @@ export interface ChurchesFieldRefs {
   readonly slug: Prisma.FieldRef<"Churches", 'String'>
   readonly createdAt: Prisma.FieldRef<"Churches", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Churches", 'DateTime'>
+  readonly email: Prisma.FieldRef<"Churches", 'String'>
+  readonly phone: Prisma.FieldRef<"Churches", 'String'>
+  readonly street: Prisma.FieldRef<"Churches", 'String'>
+  readonly city: Prisma.FieldRef<"Churches", 'String'>
+  readonly state: Prisma.FieldRef<"Churches", 'String'>
+  readonly zip: Prisma.FieldRef<"Churches", 'String'>
+  readonly country: Prisma.FieldRef<"Churches", 'String'>
+  readonly typeId: Prisma.FieldRef<"Churches", 'String'>
   readonly owner_id: Prisma.FieldRef<"Churches", 'String'>
 }
     
@@ -3442,6 +4448,10 @@ export type ChurchesCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    */
   data: Prisma.ChurchesCreateManyInput | Prisma.ChurchesCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChurchesIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -3512,6 +4522,10 @@ export type ChurchesUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    * Limit how many Churches to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChurchesIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -3578,6 +4592,25 @@ export type ChurchesDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many Churches to delete.
    */
   limit?: number
+}
+
+/**
+ * Churches.type
+ */
+export type Churches$typeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChurchType
+   */
+  select?: Prisma.ChurchTypeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ChurchType
+   */
+  omit?: Prisma.ChurchTypeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChurchTypeInclude<ExtArgs> | null
+  where?: Prisma.ChurchTypeWhereInput
 }
 
 /**

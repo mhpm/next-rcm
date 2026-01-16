@@ -14,6 +14,19 @@ model Churches {
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        DateTime           @updatedAt @map("updated_at")
   
+  // Contact & Address
+  email            String?            @unique
+  phone            String?
+  street           String?
+  city             String?
+  state            String?
+  zip              String?
+  country          String?            @default("México")
+
+  // Church Type
+  typeId           String?            @map("type_id")
+  type             ChurchType?        @relation(fields: [typeId], references: [id])
+
   // Relación con usuario autenticado (admin/pastor)
   // Un usuario de Neon puede administrar una o varias iglesias
   // O una iglesia puede tener un "owner" principal
@@ -54,6 +67,18 @@ model ChurchAdmins {
 
   @@unique([church_id, email])
   @@map("church_admins")
+}
+
+model ChurchType {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  description String?
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  
+  churches    Churches[]
+
+  @@map("church_types")
 }
 
 model Networks {
@@ -318,6 +343,7 @@ model Reports {
   title         String
   description   String?
   color         String?     @default("#3b82f6") // Default blue-500
+  slug          String?
   publicToken   String?     @unique
   cell_id       String?
   group_id      String?
@@ -342,6 +368,7 @@ model Reports {
   @@index([sector_id])
   @@index([sub_sector_id])
   @@index([zone_id])
+  @@unique([church_id, slug])
   @@map("reports")
 }
 

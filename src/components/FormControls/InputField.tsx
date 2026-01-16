@@ -30,6 +30,7 @@ type InputFieldProps<T extends FieldValues> = {
   startIcon?: React.ReactNode;
   step?: string;
   variant?: 'default' | 'filled';
+  description?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 export function InputField<T extends FieldValues>({
@@ -49,6 +50,7 @@ export function InputField<T extends FieldValues>({
   startIcon,
   step,
   variant = 'default',
+  description,
   ...rest
 }: InputFieldProps<T>) {
   const variantClasses =
@@ -94,6 +96,9 @@ export function InputField<T extends FieldValues>({
             )}
           />
         </div>
+        {description && (
+          <p className="text-xs text-muted-foreground mt-1">{description}</p>
+        )}
         {error && <FieldError>{error}</FieldError>}
       </Field>
     );
@@ -128,6 +133,9 @@ export function InputField<T extends FieldValues>({
           {...rest}
         />
       </div>
+      {description && (
+        <p className="text-xs text-muted-foreground mt-1">{description}</p>
+      )}
       {error && <FieldError>{error}</FieldError>}
     </Field>
   );

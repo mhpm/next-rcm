@@ -10,6 +10,7 @@
  */
 export type * from './models/Churches'
 export type * from './models/ChurchAdmins'
+export type * from './models/ChurchType'
 export type * from './models/Networks'
 export type * from './models/Members'
 export type * from './models/Ministries'

@@ -271,6 +271,7 @@
     "logout": "Logout"
   },
   "settingsPage": {
+    "title": "Church Settings",
     "churchDetails": "Church Details",
     "churchDetailsDescription": "Basic information about your church.",
     "churchName": "Church Name",

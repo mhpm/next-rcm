@@ -8,6 +8,7 @@ import {
   ReportScope,
   ReportEntryStatus,
 } from '@/generated/prisma/client';
+import { slugify } from '@/lib/utils';
 import crypto from 'crypto';
 
 export type ReportFieldInput = {
@@ -44,6 +45,19 @@ export async function createReport(input: CreateReportInput) {
 
   // Solo tipo (scope) en plantillas; no se vincula a una entidad aquí
   const { scope } = input;
+
+  const slug = slugify(input.title) || 'report';
+  let uniqueSlug = slug;
+  let counter = 1;
+
+  while (
+    await prisma.reports.findFirst({
+      where: { church_id: churchId, slug: uniqueSlug },
+    })
+  ) {
+    uniqueSlug = `${slug}-${counter}`;
+    counter++;
+  }
 
   const fieldsCreate: Prisma.ReportFieldsCreateWithoutReportInput[] = (
     input.fields || []
@@ -87,6 +101,7 @@ export async function createReport(input: CreateReportInput) {
     data: {
       church: { connect: { id: churchId } },
       title: input.title,
+      slug: uniqueSlug,
       description: input.description,
       scope,
       color: input.color || '#4F46E5',
@@ -134,6 +149,7 @@ export async function deleteReportEntriesAction(ids: string[]) {
 export type UpdateReportInput = {
   id: string;
   title: string;
+  slug?: string | null;
   description?: string | null;
   scope: ReportScope;
   color?: string | null;
@@ -145,17 +161,40 @@ export async function updateReportWithFields(input: UpdateReportInput) {
 
   await prisma.$transaction(
     async (tx) => {
-      // 1. Get current report to check for publicToken
+      // 1. Get current report to check for publicToken and church_id
       const currentReport = await tx.reports.findUnique({
         where: { id: input.id },
-        select: { publicToken: true },
+        select: { publicToken: true, church_id: true, slug: true },
       });
+
+      if (!currentReport) throw new Error('Reporte no encontrado');
+
+      // Validate Slug Uniqueness if changed
+      let uniqueSlug = input.slug;
+      if (uniqueSlug && uniqueSlug !== currentReport.slug) {
+        uniqueSlug = slugify(uniqueSlug);
+        // Ensure slug is not empty after slugify
+        if (!uniqueSlug) uniqueSlug = slugify(input.title) || 'report';
+
+        const existing = await tx.reports.findFirst({
+          where: {
+            church_id: currentReport.church_id,
+            slug: uniqueSlug,
+            id: { not: input.id },
+          },
+        });
+
+        if (existing) {
+          throw new Error(`La URL "${uniqueSlug}" ya está en uso.`);
+        }
+      }
 
       // 2. Update basic fields
       await tx.reports.update({
         where: { id: input.id },
         data: {
           title: input.title,
+          slug: uniqueSlug,
           description: input.description,
           scope: input.scope,
           color: input.color,
@@ -764,19 +803,6 @@ export async function getReportEntityInfo(
   }
 
   return null;
-}
-
-function slugify(text: string) {
-  return text
-    .toString()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, '_')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '_')
-    .replace(/^-+/, '')
-    .replace(/-+$/, '');
 }
 
 export type ImportReportEntryInput = {

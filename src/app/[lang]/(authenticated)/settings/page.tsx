@@ -27,6 +27,11 @@ export default async function SettingsPage({
   // Si hay una iglesia seleccionada en la cookie, intentamos cargar esa primero
   let church = null;
 
+  // Buscar tipos de iglesia
+  const churchTypes = await prisma.churchType.findMany({
+    orderBy: { name: 'asc' },
+  });
+
   if (currentChurchSlug) {
     church = await prisma.churches.findFirst({
       where: {
@@ -52,6 +57,14 @@ export default async function SettingsPage({
         id: true,
         name: true,
         slug: true,
+        email: true,
+        phone: true,
+        street: true,
+        city: true,
+        state: true,
+        zip: true,
+        country: true,
+        typeId: true,
       },
     });
   }
@@ -84,6 +97,14 @@ export default async function SettingsPage({
         id: true,
         name: true,
         slug: true,
+        email: true,
+        phone: true,
+        street: true,
+        city: true,
+        state: true,
+        zip: true,
+        country: true,
+        typeId: true,
       },
     });
   }
@@ -102,18 +123,9 @@ export default async function SettingsPage({
   }
 
   return (
-    <div className="container mx-auto py-10 max-w-4xl">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {dict.header.settings}
-          </h1>
-          <p className="text-muted-foreground">
-            {dict.settingsPage.churchDetailsDescription}
-          </p>
-        </div>
-        <SettingsForm church={church} lang={lang} dict={dict} />
-      </div>
+    <div className="max-w-2xl mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-8">{dict.settingsPage.title}</h1>
+      <SettingsForm church={church} churchTypes={churchTypes} dict={dict} />
     </div>
   );
 }

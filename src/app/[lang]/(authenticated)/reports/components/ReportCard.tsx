@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useEffect, useRef, useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition, useMemo } from 'react';
 import { toPng, toBlob } from 'html-to-image';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,8 @@ type ReportCardProps = {
     createdAt: string | Date;
     color?: string | null;
     publicToken?: string | null;
+    slug?: string | null;
+    church?: { slug: string } | null;
   };
 };
 
@@ -54,6 +56,14 @@ export default function ReportCard({ report }: ReportCardProps) {
     setOrigin(window.location.origin);
   }, []);
 
+  const publicUrl = useMemo(() => {
+    if (!origin || !report.publicToken) return '';
+    if (report.slug && report.church?.slug) {
+      return `${origin}/${lang}/public/reports/${report.church.slug}/${report.slug}`;
+    }
+    return `${origin}/${lang}/public/reports/${report.publicToken}`;
+  }, [origin, lang, report]);
+
   const onConfirm = () => {
     startTransition(() => {
       formRef.current?.requestSubmit();
@@ -62,9 +72,8 @@ export default function ReportCard({ report }: ReportCardProps) {
   };
 
   const handleCopyLink = () => {
-    if (!report.publicToken) return;
-    const url = `${window.location.origin}/${lang}/public/reports/${report.publicToken}`;
-    navigator.clipboard.writeText(url);
+    if (!publicUrl) return;
+    navigator.clipboard.writeText(publicUrl);
     showSuccess('Enlace copiado al portapapeles');
   };
 
@@ -134,8 +143,9 @@ export default function ReportCard({ report }: ReportCardProps) {
                   title="Ir al reporte público"
                 >
                   <Link
-                    href={`/${lang}/public/reports/${report.publicToken}`}
+                    href={publicUrl.replace(origin, '')}
                     target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <FaArrowUpRightFromSquare className="text-lg" />
                   </Link>
@@ -248,9 +258,9 @@ export default function ReportCard({ report }: ReportCardProps) {
               {/* QR Code Area */}
               <div className="w-full flex justify-center mt-4">
                 <div className="bg-white p-2 rounded-xl">
-                  {origin && report.publicToken && (
+                  {publicUrl && (
                     <QRCodeSVG
-                      value={`${origin}/public/reports/${report.publicToken}`}
+                      value={publicUrl}
                       size={140}
                       level="H"
                       fgColor="#000000"
@@ -281,7 +291,7 @@ export default function ReportCard({ report }: ReportCardProps) {
                   style={{ backgroundColor: report.color || '#3b82f6' }}
                 />
                 <p className="text-[8px] text-gray-600 font-mono break-all px-1 opacity-50 leading-tight">
-                  {origin}/public/reports/{report.publicToken}
+                  {publicUrl}
                 </p>
               </div>
             </div>
@@ -291,8 +301,8 @@ export default function ReportCard({ report }: ReportCardProps) {
                 variant="outline"
                 className="flex-1"
                 onClick={() => {
-                  const url = `${origin}/public/reports/${report.publicToken}`;
-                  navigator.clipboard.writeText(url);
+                  if (!publicUrl) return;
+                  navigator.clipboard.writeText(publicUrl);
                   showSuccess('Enlace copiado al portapapeles');
                 }}
               >

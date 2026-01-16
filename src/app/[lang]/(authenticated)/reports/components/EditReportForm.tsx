@@ -17,6 +17,7 @@ export default function EditReportForm({
   initial: {
     id: string;
     title: string;
+    slug?: string | null;
     description?: string | null;
     scope: ReportScope;
     fields: FieldItem[];
@@ -38,6 +39,7 @@ export default function EditReportForm({
   } = useForm<ReportFormValues>({
     defaultValues: {
       title: initial.title,
+      slug: initial.slug,
       description: initial.description ?? undefined,
       scope: initial.scope,
       fields: initial.fields,
@@ -49,6 +51,7 @@ export default function EditReportForm({
   useEffect(() => {
     reset({
       title: initial.title,
+      slug: initial.slug,
       description: initial.description ?? undefined,
       scope: initial.scope,
       fields: initial.fields,
@@ -61,6 +64,7 @@ export default function EditReportForm({
       await updateReportWithFields({
         id: initial.id,
         title: data.title,
+        slug: data.slug,
         description: data.description,
         scope: data.scope,
         color: data.color || '#3b82f6',

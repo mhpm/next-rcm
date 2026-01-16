@@ -41,6 +41,13 @@ export function GeneralSettingsForm({
             placeholder="ej. Reporte Semanal de Célula"
           />
           <InputField
+            name="slug"
+            label="URL Amigable (Slug)"
+            register={register}
+            placeholder="ej. reporte-semanal-celula"
+            description="Deja en blanco para generar automáticamente desde el título"
+          />
+          <InputField
             name="description"
             label="Descripción (Opcional)"
             register={register}

@@ -27,6 +27,12 @@ export default async function ReportsPage({
       createdAt: true,
       color: true,
       publicToken: true,
+      slug: true,
+      church: {
+        select: {
+          slug: true,
+        },
+      },
     },
   });
 
@@ -53,6 +59,12 @@ export default async function ReportsPage({
         createdAt: true,
         color: true,
         publicToken: true,
+        slug: true,
+        church: {
+          select: {
+            slug: true,
+          },
+        },
       },
     });
   }

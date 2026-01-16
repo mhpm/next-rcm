@@ -271,6 +271,7 @@
     "logout": "Cerrar Sesión"
   },
   "settingsPage": {
+    "title": "Configuración de la Iglesia",
     "churchDetails": "Detalles de la Iglesia",
     "churchDetailsDescription": "Información básica de tu iglesia.",
     "churchName": "Nombre de la Iglesia",

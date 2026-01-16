@@ -32,6 +32,7 @@ export type GroupItem = {
 
 export type ReportFormValues = {
   title: string;
+  slug?: string | null;
   description?: string | null;
   scope: ReportScope;
   fields: FieldItem[];

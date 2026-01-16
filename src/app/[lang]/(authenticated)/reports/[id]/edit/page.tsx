@@ -23,6 +23,7 @@ export default async function EditReportPage({
         initial={{
           id: report.id,
           title: report.title,
+          slug: report.slug,
           description: report.description ?? undefined,
           scope: report.scope,
           color: report.color,

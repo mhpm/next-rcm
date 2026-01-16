@@ -28,6 +28,11 @@ export type Churches = Prisma.ChurchesModel
  */
 export type ChurchAdmins = Prisma.ChurchAdminsModel
 /**
+ * Model ChurchType
+ * 
+ */
+export type ChurchType = Prisma.ChurchTypeModel
+/**
  * Model Networks
  * 
  */

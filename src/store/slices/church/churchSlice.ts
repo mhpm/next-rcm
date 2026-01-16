@@ -70,6 +70,14 @@ const churchSlice = createSlice({
           createdAt: now,
           updatedAt: now,
           owner_id: null,
+          email: null,
+          phone: null,
+          street: null,
+          city: null,
+          state: null,
+          zip: null,
+          country: null,
+          typeId: null,
         };
       }
     },

@@ -1,22 +1,44 @@
 import { notFound } from 'next/navigation';
-import { getPublicReport, getPublicEntities } from '../../actions';
+import {
+  getPublicReport,
+  getPublicEntities,
+  getPublicReportBySlugs,
+  getPublicEntitiesBySlugs,
+} from '../../actions';
 import PublicReportForm from '../components/PublicReportForm';
 import { connection } from 'next/server';
 
 export default async function PublicReportPage({
   params,
 }: {
-  params: Promise<{ lang: string; token: string }>;
+  params: Promise<{ lang: string; slug: string[] }>;
 }) {
   await connection();
-  const { token } = await params;
-  const report = await getPublicReport(token);
+  const { slug } = await params;
 
-  if (!report) notFound();
+  let report = null;
+  let entities = null;
+  let token = '';
 
-  const entities = await getPublicEntities(token);
+  // Case 1: Legacy URL /public/reports/[token]
+  if (slug.length === 1) {
+    token = slug[0];
+    report = await getPublicReport(token);
+    if (report) {
+      entities = await getPublicEntities(token);
+    }
+  }
+  // Case 2: Friendly URL /public/reports/[churchSlug]/[reportSlug]
+  else if (slug.length === 2) {
+    const [churchSlug, reportSlug] = slug;
+    report = await getPublicReportBySlugs(churchSlug, reportSlug);
+    if (report) {
+      token = report.publicToken || '';
+      entities = await getPublicEntitiesBySlugs(churchSlug, reportSlug);
+    }
+  }
 
-  if (!entities) notFound(); // Should not happen if report exists, but good for safety
+  if (!report || !entities || !token) notFound();
 
   return (
     <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">

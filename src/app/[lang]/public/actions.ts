@@ -15,6 +15,30 @@ export async function getPublicReport(token: string) {
   return report;
 }
 
+export async function getPublicReportBySlugs(
+  churchSlug: string,
+  reportSlug: string
+) {
+  const church = await prisma.churches.findUnique({
+    where: { slug: churchSlug },
+    select: { id: true },
+  });
+
+  if (!church) return null;
+
+  const report = await prisma.reports.findFirst({
+    where: {
+      church_id: church.id,
+      slug: reportSlug,
+    },
+    include: {
+      fields: { orderBy: [{ order: 'asc' }, { createdAt: 'asc' }] },
+      church: { select: { name: true } },
+    },
+  });
+  return report;
+}
+
 export async function getPublicEntities(token: string) {
   const report = await prisma.reports.findUnique({
     where: { publicToken: token },
@@ -52,6 +76,71 @@ export async function getPublicEntities(token: string) {
     prisma.members.findMany({
       where: {
         church_id: report.church_id,
+        cell_id: null,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+      },
+      orderBy: { firstName: 'asc' },
+    }),
+  ]);
+
+  return { groups, sectors, members, unlinkedMembers };
+}
+
+export async function getPublicEntitiesBySlugs(
+  churchSlug: string,
+  reportSlug: string
+) {
+  const church = await prisma.churches.findUnique({
+    where: { slug: churchSlug },
+    select: { id: true },
+  });
+
+  if (!church) return null;
+
+  // Verify report exists for this church
+  const report = await prisma.reports.findFirst({
+    where: {
+      church_id: church.id,
+      slug: reportSlug,
+    },
+    select: { id: true },
+  });
+
+  if (!report) return null;
+
+  const [groups, sectors, members, unlinkedMembers] = await Promise.all([
+    prisma.groups.findMany({
+      where: { church_id: church.id },
+      select: {
+        id: true,
+        name: true,
+        leader: { select: { firstName: true, lastName: true } },
+      },
+    }),
+    prisma.sectors.findMany({
+      where: { church_id: church.id },
+      select: {
+        id: true,
+        name: true,
+        supervisor: { select: { firstName: true, lastName: true } },
+      },
+    }),
+    prisma.members.findMany({
+      where: { church_id: church.id },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+      },
+      orderBy: { firstName: 'asc' },
+    }),
+    prisma.members.findMany({
+      where: {
+        church_id: church.id,
         cell_id: null,
       },
       select: {
