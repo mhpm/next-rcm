@@ -13,8 +13,6 @@ model Churches {
   slug             String             @unique
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        DateTime           @updatedAt @map("updated_at")
-  
-  // Contact & Address
   email            String?            @unique
   phone            String?
   street           String?
@@ -22,48 +20,39 @@ model Churches {
   state            String?
   zip              String?
   country          String?            @default("México")
-
-  // Church Type
   typeId           String?            @map("type_id")
-  type             ChurchType?        @relation(fields: [typeId], references: [id])
-
-  // Relación con usuario autenticado (admin/pastor)
-  // Un usuario de Neon puede administrar una o varias iglesias
-  // O una iglesia puede tener un "owner" principal
-  // Vamos a permitir que una iglesia tenga un owner_id opcional por ahora
-  owner_id         String?            @map("owner_id") 
-
+  owner_id         String?            @map("owner_id")
+  cells            Cells[]
+  cellGoals        CellGoals[]
   admins           ChurchAdmins[]
+  type             ChurchType?        @relation(fields: [typeId], references: [id])
+  eventAttendances EventAttendances[]
+  eventPhases      EventPhases[]
+  events           Events[]
+  friends          Friends[]
+  groups           Groups[]
   memberMinistries MemberMinistry[]
   members          Members[]
   ministries       Ministries[]
-  cells            Cells[]
-  zones            Zones[]
-  sectors          Sectors[]
-  groups           Groups[]
-  reports          Reports[]
-  reportEntries    ReportEntries[]
-  friends          Friends[]
-  events           Events[]
-  eventPhases      EventPhases[]
-  eventAttendances EventAttendances[]
-  cellGoals        CellGoals[]
   networks         Networks[]
+  reportEntries    ReportEntries[]
+  reports          Reports[]
+  sectors          Sectors[]
+  zones            Zones[]
 
   @@map("churches")
 }
 
 model ChurchAdmins {
-  id        String   @id @default(cuid())
-  church_id String
-  user_id   String?  // External Auth ID (Stack/Neon user)
-  email     String   // For display or invitation
-  name      String?  // Nombre opcional para identificar al admin
-  role      String   @default("ADMIN") // ADMIN, OWNER
-  permissions Json?  @default("{}") // Permisos adicionales: { can_create_church: boolean, etc }
-  createdAt DateTime @default(now()) @map("created_at")
-
-  church    Churches @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  church_id   String
+  user_id     String?
+  email       String
+  name        String?
+  role        String   @default("ADMIN")
+  permissions Json?    @default("{}")
+  createdAt   DateTime @default(now()) @map("created_at")
+  church      Churches @relation(fields: [church_id], references: [id], onDelete: Cascade)
 
   @@unique([church_id, email])
   @@map("church_admins")
@@ -75,21 +64,19 @@ model ChurchType {
   description String?
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
-  
   churches    Churches[]
 
   @@map("church_types")
 }
 
 model Networks {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   name      String
   church_id String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  church  Churches  @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  members Members[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  members   Members[]
+  church    Churches  @relation(fields: [church_id], references: [id], onDelete: Cascade)
 
   @@unique([name, church_id])
   @@index([church_id])
@@ -97,51 +84,50 @@ model Networks {
 }
 
 model Members {
-  id            String           @id @default(cuid())
-  firstName     String           @map("first_name")
-  lastName      String           @map("last_name")
-  email         String?          @unique
-  phone         String?
-  age           Int?
-  street        String?
-  city          String?
-  state         String?
-  zip           String?
-  country       String?          @default("México")
-  birthDate     DateTime?        @map("birth_date")
-  baptismDate   DateTime?        @map("baptism_date")
-  role          MemberRole       @default(MIEMBRO)
-  gender        Gender           @default(MASCULINO)
-  pictureUrl    String?          @map("picture_url")
-  notes         String?
-  passwordHash  String?          @map("password_hash")
-  church_id     String
-  zone_id       String?
-  sector_id     String?
-  sub_sector_id String?
-  cell_id       String?
-  network_id    String?          @map("network_id")
-  createdAt     DateTime         @default(now()) @map("created_at")
-  updatedAt     DateTime         @updatedAt @map("updated_at")
-  ministries    MemberMinistry[]
-
-  church           Churches     @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  network          Networks?    @relation(fields: [network_id], references: [id], onDelete: SetNull)
-  ledMinistries    Ministries[] @relation("MinistryLeader")
-  cells            Cells[]      @relation("CellLeader")
-  hostedCells      Cells[]      @relation("CellHost")
-  assistedCells    Cells[]      @relation("CellAssistant")
-  invitedFriends   Friends[]    @relation("FriendInvitedBy")
-  spiritualFriends Friends[]    @relation("FriendSpiritualFather")
-  cell             Cells?       @relation("MemberCell", fields: [cell_id], references: [id], onDelete: SetNull)
-  zone             Zones?       @relation("MemberZone", fields: [zone_id], references: [id], onDelete: SetNull)
-  sector           Sectors?     @relation("MemberSector", fields: [sector_id], references: [id], onDelete: SetNull)
-  subSector        SubSectors?  @relation("MemberSubSector", fields: [sub_sector_id], references: [id], onDelete: SetNull)
-  ledZones         Zones[]      @relation("ZoneSupervisor")
-  ledSectors       Sectors[]    @relation("SectorSupervisor")
-  ledSubSectors    SubSectors[] @relation("SubSectorSupervisor")
-  groups           Groups[]     @relation("MemberGroup")
-  ledGroups        Groups[]     @relation("GroupLeader")
+  id               String           @id @default(cuid())
+  firstName        String           @map("first_name")
+  lastName         String           @map("last_name")
+  email            String?          @unique
+  phone            String?
+  age              Int?
+  street           String?
+  city             String?
+  state            String?
+  zip              String?
+  country          String?          @default("México")
+  birthDate        DateTime?        @map("birth_date")
+  baptismDate      DateTime?        @map("baptism_date")
+  role             MemberRole       @default(MIEMBRO)
+  gender           Gender           @default(MASCULINO)
+  pictureUrl       String?          @map("picture_url")
+  notes            String?
+  passwordHash     String?          @map("password_hash")
+  church_id        String
+  zone_id          String?
+  sector_id        String?
+  sub_sector_id    String?
+  cell_id          String?
+  network_id       String?          @map("network_id")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  assistedCells    Cells[]          @relation("CellAssistant")
+  hostedCells      Cells[]          @relation("CellHost")
+  cells            Cells[]          @relation("CellLeader")
+  invitedFriends   Friends[]        @relation("FriendInvitedBy")
+  spiritualFriends Friends[]        @relation("FriendSpiritualFather")
+  ledGroups        Groups[]         @relation("GroupLeader")
+  ministries       MemberMinistry[]
+  cell             Cells?           @relation("MemberCell", fields: [cell_id], references: [id])
+  church           Churches         @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  network          Networks?        @relation(fields: [network_id], references: [id])
+  sector           Sectors?         @relation("MemberSector", fields: [sector_id], references: [id])
+  subSector        SubSectors?      @relation("MemberSubSector", fields: [sub_sector_id], references: [id])
+  zone             Zones?           @relation("MemberZone", fields: [zone_id], references: [id])
+  ledMinistries    Ministries[]     @relation("MinistryLeader")
+  ledSectors       Sectors[]        @relation("SectorSupervisor")
+  ledSubSectors    SubSectors[]     @relation("SubSectorSupervisor")
+  ledZones         Zones[]          @relation("ZoneSupervisor")
+  groups           Groups[]         @relation("MemberGroup")
 
   @@index([email])
   @@index([role])
@@ -174,27 +160,26 @@ model Ministries {
 }
 
 model Cells {
-  id            String   @id @default(cuid())
+  id            String          @id @default(cuid())
   name          String
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
   church_id     String
   sub_sector_id String?
   leader_id     String?
   host_id       String?
   assistant_id  String?
-  accessCode    String?  @unique // Unique code for public access (drafts/submit)
-
-  church        Churches        @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  subSector     SubSectors?     @relation(fields: [sub_sector_id], references: [id], onDelete: SetNull)
-  leader        Members?        @relation("CellLeader", fields: [leader_id], references: [id])
-  host          Members?        @relation("CellHost", fields: [host_id], references: [id])
+  accessCode    String?         @unique
   assistant     Members?        @relation("CellAssistant", fields: [assistant_id], references: [id])
-  members       Members[]       @relation("MemberCell")
-  friends       Friends[]
+  church        Churches        @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  host          Members?        @relation("CellHost", fields: [host_id], references: [id])
+  leader        Members?        @relation("CellLeader", fields: [leader_id], references: [id])
+  subSector     SubSectors?     @relation(fields: [sub_sector_id], references: [id])
   goals         CellGoals[]
-  reports       Reports[]
+  friends       Friends[]
+  members       Members[]       @relation("MemberCell")
   reportEntries ReportEntries[]
+  reports       Reports[]
 
   @@index([church_id])
   @@index([sub_sector_id])
@@ -203,19 +188,18 @@ model Cells {
 }
 
 model Zones {
-  id            String   @id @default(cuid())
+  id            String          @id @default(cuid())
   name          String
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
   church_id     String
   supervisor_id String?
-
-  church        Churches        @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  sectors       Sectors[]
-  supervisor    Members?        @relation("ZoneSupervisor", fields: [supervisor_id], references: [id])
   members       Members[]       @relation("MemberZone")
-  reports       Reports[]
   reportEntries ReportEntries[]
+  reports       Reports[]
+  sectors       Sectors[]
+  church        Churches        @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  supervisor    Members?        @relation("ZoneSupervisor", fields: [supervisor_id], references: [id])
 
   @@index([church_id])
   @@index([supervisor_id])
@@ -223,21 +207,20 @@ model Zones {
 }
 
 model Sectors {
-  id            String   @id @default(cuid())
+  id            String          @id @default(cuid())
   name          String
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
   church_id     String
   zone_id       String?
   supervisor_id String?
-
-  church        Churches        @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  zone          Zones?          @relation(fields: [zone_id], references: [id], onDelete: SetNull)
-  subSectors    SubSectors[]
-  supervisor    Members?        @relation("SectorSupervisor", fields: [supervisor_id], references: [id])
   members       Members[]       @relation("MemberSector")
-  reports       Reports[]
   reportEntries ReportEntries[]
+  reports       Reports[]
+  church        Churches        @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  supervisor    Members?        @relation("SectorSupervisor", fields: [supervisor_id], references: [id])
+  zone          Zones?          @relation(fields: [zone_id], references: [id])
+  subSectors    SubSectors[]
 
   @@index([church_id])
   @@index([zone_id])
@@ -246,19 +229,18 @@ model Sectors {
 }
 
 model SubSectors {
-  id            String   @id @default(cuid())
+  id            String          @id @default(cuid())
   name          String
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
   sector_id     String?
   supervisor_id String?
-
-  sector        Sectors?        @relation(fields: [sector_id], references: [id], onDelete: SetNull)
   cells         Cells[]
-  supervisor    Members?        @relation("SubSectorSupervisor", fields: [supervisor_id], references: [id])
   members       Members[]       @relation("MemberSubSector")
-  reports       Reports[]
   reportEntries ReportEntries[]
+  reports       Reports[]
+  sector        Sectors?        @relation(fields: [sector_id], references: [id])
+  supervisor    Members?        @relation("SubSectorSupervisor", fields: [supervisor_id], references: [id])
 
   @@index([sector_id])
   @@index([supervisor_id])
@@ -266,35 +248,26 @@ model SubSectors {
 }
 
 model Groups {
-  id        String   @id @default(cuid())
-  name      String
-  leader_id String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  church_id String
-  parent_id String?
-
-  leader        Members?        @relation("GroupLeader", fields: [leader_id], references: [id])
-  church        Churches        @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  members       Members[]       @relation("MemberGroup")
-  parent        Groups?         @relation("GroupHierarchy", fields: [parent_id], references: [id], onDelete: SetNull)
-  subgroups     Groups[]        @relation("GroupHierarchy")
+  id            String          @id @default(cuid())
+  name          String
+  leader_id     String?
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  church_id     String
+  parent_id     String?
   fields        GroupFields[]
-  reports       Reports[]
+  church        Churches        @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  leader        Members?        @relation("GroupLeader", fields: [leader_id], references: [id])
+  parent        Groups?         @relation("GroupHierarchy", fields: [parent_id], references: [id])
+  subgroups     Groups[]        @relation("GroupHierarchy")
   reportEntries ReportEntries[]
+  reports       Reports[]
+  members       Members[]       @relation("MemberGroup")
 
   @@index([church_id])
   @@index([leader_id])
   @@index([parent_id])
   @@map("groups")
-}
-
-enum GroupFieldType {
-  TEXT
-  NUMBER
-  BOOLEAN
-  DATE
-  JSON
 }
 
 model GroupFields {
@@ -307,8 +280,7 @@ model GroupFields {
   required  Boolean        @default(false)
   createdAt DateTime       @default(now()) @map("created_at")
   updatedAt DateTime       @updatedAt @map("updated_at")
-
-  group Groups @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  group     Groups         @relation(fields: [group_id], references: [id], onDelete: Cascade)
 
   @@unique([group_id, key])
   @@index([group_id])
@@ -323,10 +295,9 @@ model CellGoals {
   target    Int      @default(0)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-
-  church Churches @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  cell   Cells    @relation(fields: [cell_id], references: [id], onDelete: Cascade)
-  event  Events   @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  cell      Cells    @relation(fields: [cell_id], references: [id], onDelete: Cascade)
+  church    Churches @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  event     Events   @relation(fields: [event_id], references: [id], onDelete: Cascade)
 
   @@unique([cell_id, event_id])
   @@index([church_id])
@@ -335,41 +306,210 @@ model CellGoals {
   @@map("cell_goals")
 }
 
-// Reports: reportes personalizados ligados a una célula y a una iglesia
 model Reports {
-  id            String      @id @default(cuid())
+  id            String          @id @default(cuid())
   church_id     String
-  scope         ReportScope @default(CELL)
+  scope         ReportScope     @default(CELL)
   title         String
   description   String?
-  color         String?     @default("#3b82f6") // Default blue-500
+  color         String?         @default("#3b82f6")
   slug          String?
-  publicToken   String?     @unique
+  publicToken   String?         @unique
   cell_id       String?
   group_id      String?
   zone_id       String?
   sector_id     String?
   sub_sector_id String?
-  createdAt     DateTime    @default(now()) @map("created_at")
-  updatedAt     DateTime    @updatedAt @map("updated_at")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  entries       ReportEntries[]
+  fields        ReportFields[]
+  cell          Cells?          @relation(fields: [cell_id], references: [id], onDelete: Cascade)
+  church        Churches        @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  group         Groups?         @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  sector        Sectors?        @relation(fields: [sector_id], references: [id], onDelete: Cascade)
+  subSector     SubSectors?     @relation(fields: [sub_sector_id], references: [id], onDelete: Cascade)
+  zone          Zones?          @relation(fields: [zone_id], references: [id], onDelete: Cascade)
 
-  church    Churches        @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  cell      Cells?          @relation(fields: [cell_id], references: [id], onDelete: Cascade)
-  group     Groups?         @relation(fields: [group_id], references: [id], onDelete: Cascade)
-  sector    Sectors?        @relation(fields: [sector_id], references: [id], onDelete: Cascade)
-  subSector SubSectors?     @relation(fields: [sub_sector_id], references: [id], onDelete: Cascade)
-  zone      Zones?          @relation(fields: [zone_id], references: [id], onDelete: Cascade)
-  fields    ReportFields[]
-  entries   ReportEntries[]
-
+  @@unique([church_id, slug])
   @@index([church_id])
   @@index([cell_id])
   @@index([group_id])
   @@index([sector_id])
   @@index([sub_sector_id])
   @@index([zone_id])
-  @@unique([church_id, slug])
   @@map("reports")
+}
+
+model ReportFields {
+  id              String              @id @default(cuid())
+  report_id       String
+  key             String
+  label           String?
+  description     String?
+  type            ReportFieldType     @default(TEXT)
+  value           Json?
+  options         Json?
+  validation      Json?
+  visibilityRules Json?               @map("visibility_rules")
+  required        Boolean             @default(false)
+  order           Int                 @default(0)
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+  entryValues     ReportEntryValues[]
+  report          Reports             @relation(fields: [report_id], references: [id], onDelete: Cascade)
+
+  @@unique([report_id, key])
+  @@index([report_id])
+  @@map("report_fields")
+}
+
+model ReportEntries {
+  id            String              @id @default(cuid())
+  church_id     String
+  report_id     String
+  scope         ReportScope         @default(CELL)
+  cell_id       String?
+  group_id      String?
+  zone_id       String?
+  sector_id     String?
+  sub_sector_id String?
+  status        ReportEntryStatus   @default(SUBMITTED)
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @updatedAt @map("updated_at")
+  cell          Cells?              @relation(fields: [cell_id], references: [id], onDelete: Cascade)
+  church        Churches            @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  group         Groups?             @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  report        Reports             @relation(fields: [report_id], references: [id], onDelete: Cascade)
+  sector        Sectors?            @relation(fields: [sector_id], references: [id], onDelete: Cascade)
+  subSector     SubSectors?         @relation(fields: [sub_sector_id], references: [id], onDelete: Cascade)
+  zone          Zones?              @relation(fields: [zone_id], references: [id], onDelete: Cascade)
+  values        ReportEntryValues[]
+
+  @@index([church_id])
+  @@index([report_id])
+  @@index([cell_id])
+  @@index([group_id])
+  @@index([sector_id])
+  @@index([sub_sector_id])
+  @@index([zone_id])
+  @@map("report_entries")
+}
+
+model ReportEntryValues {
+  id              String        @id @default(cuid())
+  entry_id        String
+  report_field_id String
+  value           Json?
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  entry           ReportEntries @relation(fields: [entry_id], references: [id], onDelete: Cascade)
+  field           ReportFields  @relation(fields: [report_field_id], references: [id], onDelete: Cascade)
+
+  @@index([entry_id])
+  @@index([report_field_id])
+  @@map("report_entry_values")
+}
+
+model MemberMinistry {
+  id         String     @id @default(cuid())
+  memberId   String     @map("member_id")
+  ministryId String     @map("ministry_id")
+  church_id  String
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+  church     Churches   @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  member     Members    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  ministry   Ministries @relation(fields: [ministryId], references: [id], onDelete: Cascade)
+
+  @@unique([memberId, ministryId])
+  @@index([church_id])
+  @@map("member_ministries")
+}
+
+model Friends {
+  id                  String             @id @default(cuid())
+  church_id           String
+  name                String
+  phone               String?
+  cell_id             String
+  invited_by_id       String?
+  spiritual_father_id String?
+  isBaptized          Boolean            @default(false) @map("is_baptized")
+  createdAt           DateTime           @default(now()) @map("created_at")
+  updatedAt           DateTime           @updatedAt @map("updated_at")
+  attendances         EventAttendances[]
+  cell                Cells              @relation(fields: [cell_id], references: [id], onDelete: Cascade)
+  church              Churches           @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  invitedBy           Members?           @relation("FriendInvitedBy", fields: [invited_by_id], references: [id])
+  spiritualFather     Members?           @relation("FriendSpiritualFather", fields: [spiritual_father_id], references: [id], onDelete: Restrict)
+
+  @@index([church_id])
+  @@index([cell_id])
+  @@index([invited_by_id])
+  @@index([spiritual_father_id])
+  @@map("friends")
+}
+
+model Events {
+  id                   String             @id @default(cuid())
+  church_id            String
+  name                 String
+  date                 DateTime
+  type                 String
+  friendAttendanceGoal Int?               @map("friend_attendance_goal")
+  memberAttendanceGoal Int?               @map("member_attendance_goal")
+  phase_id             String?
+  createdAt            DateTime           @default(now()) @map("created_at")
+  updatedAt            DateTime           @updatedAt @map("updated_at")
+  goals                CellGoals[]
+  attendances          EventAttendances[]
+  church               Churches           @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  phase                EventPhases?       @relation(fields: [phase_id], references: [id])
+
+  @@index([church_id])
+  @@index([phase_id])
+  @@map("events")
+}
+
+model EventAttendances {
+  id        String   @id @default(cuid())
+  church_id String
+  friend_id String
+  event_id  String
+  attended  Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  church    Churches @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  event     Events   @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  friend    Friends  @relation(fields: [friend_id], references: [id], onDelete: Cascade)
+
+  @@unique([friend_id, event_id])
+  @@index([church_id])
+  @@index([friend_id])
+  @@index([event_id])
+  @@map("event_attendances")
+}
+
+model EventPhases {
+  id        String    @id @default(cuid())
+  name      String
+  color     String?
+  church_id String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  church    Churches? @relation(fields: [church_id], references: [id], onDelete: Cascade)
+  events    Events[]
+
+  @@index([church_id])
+  @@map("event_phases")
+}
+
+enum GroupFieldType {
+  TEXT
+  NUMBER
+  BOOLEAN
+  DATE
+  JSON
 }
 
 enum ReportFieldType {
@@ -395,99 +535,9 @@ enum ReportScope {
   CHURCH
 }
 
-model ReportFields {
-  id        String          @id @default(cuid())
-  report_id String
-  key       String
-  label     String?
-  description String?
-  type      ReportFieldType @default(TEXT)
-  value     Json?
-  options   Json? // Para almacenar opciones de SELECT (array de strings o objetos)
-  validation Json? // Para validaciones extra (regex, min/max) o configuraciones
-  visibilityRules Json? @map("visibility_rules")
-  required  Boolean         @default(false)
-  order     Int             @default(0)
-  createdAt DateTime        @default(now()) @map("created_at")
-  updatedAt DateTime        @updatedAt @map("updated_at")
-
-  report      Reports             @relation(fields: [report_id], references: [id], onDelete: Cascade)
-  entryValues ReportEntryValues[]
-
-  @@unique([report_id, key])
-  @@index([report_id])
-  @@map("report_fields")
-}
-
 enum ReportEntryStatus {
   DRAFT
   SUBMITTED
-}
-
-// Entradas/respuestas de un reporte (como Google Forms)
-model ReportEntries {
-  id            String            @id @default(cuid())
-  church_id     String
-  report_id     String
-  scope         ReportScope       @default(CELL)
-  cell_id       String?
-  group_id      String?
-  zone_id       String?
-  sector_id     String?
-  sub_sector_id String?
-  status        ReportEntryStatus @default(SUBMITTED)
-  createdAt     DateTime          @default(now()) @map("created_at")
-  updatedAt     DateTime          @updatedAt @map("updated_at")
-
-  church    Churches            @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  report    Reports             @relation(fields: [report_id], references: [id], onDelete: Cascade)
-  cell      Cells?              @relation(fields: [cell_id], references: [id], onDelete: Cascade)
-  group     Groups?             @relation(fields: [group_id], references: [id], onDelete: Cascade)
-  sector    Sectors?            @relation(fields: [sector_id], references: [id], onDelete: Cascade)
-  subSector SubSectors?         @relation(fields: [sub_sector_id], references: [id], onDelete: Cascade)
-  zone      Zones?              @relation(fields: [zone_id], references: [id], onDelete: Cascade)
-  values    ReportEntryValues[]
-
-  @@index([church_id])
-  @@index([report_id])
-  @@index([cell_id])
-  @@index([group_id])
-  @@index([sector_id])
-  @@index([sub_sector_id])
-  @@index([zone_id])
-  @@map("report_entries")
-}
-
-model ReportEntryValues {
-  id              String   @id @default(cuid())
-  entry_id        String
-  report_field_id String
-  value           Json?
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-
-  entry ReportEntries @relation(fields: [entry_id], references: [id], onDelete: Cascade)
-  field ReportFields  @relation(fields: [report_field_id], references: [id], onDelete: Cascade)
-
-  @@index([entry_id])
-  @@index([report_field_id])
-  @@map("report_entry_values")
-}
-
-model MemberMinistry {
-  id         String     @id @default(cuid())
-  memberId   String     @map("member_id")
-  ministryId String     @map("ministry_id")
-  church_id  String
-  createdAt  DateTime   @default(now()) @map("created_at")
-  updatedAt  DateTime   @updatedAt @map("updated_at")
-  church     Churches   @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  member     Members    @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  ministry   Ministries @relation(fields: [ministryId], references: [id], onDelete: Cascade)
-
-  @@unique([memberId, ministryId])
-  @@index([church_id])
-  @@map("member_ministries")
 }
 
 enum MemberRole {
@@ -506,85 +556,4 @@ enum Gender {
   FEMENINO
 
   @@map("gender")
-}
-
-model Friends {
-  id                  String   @id @default(cuid())
-  church_id           String
-  name                String
-  phone               String?
-  cell_id             String
-  invited_by_id       String?
-  spiritual_father_id String?
-  isBaptized          Boolean  @default(false) @map("is_baptized")
-  createdAt           DateTime @default(now()) @map("created_at")
-  updatedAt           DateTime @updatedAt @map("updated_at")
-
-  church          Churches           @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  cell            Cells              @relation(fields: [cell_id], references: [id], onDelete: Cascade)
-  invitedBy       Members?           @relation("FriendInvitedBy", fields: [invited_by_id], references: [id], onDelete: SetNull)
-  spiritualFather Members?           @relation("FriendSpiritualFather", fields: [spiritual_father_id], references: [id], onDelete: Restrict)
-  attendances     EventAttendances[]
-
-  @@index([church_id])
-  @@index([cell_id])
-  @@index([invited_by_id])
-  @@index([spiritual_father_id])
-  @@map("friends")
-}
-
-model Events {
-  id                   String   @id @default(cuid())
-  church_id            String
-  name                 String
-  date                 DateTime
-  type                 String
-  friendAttendanceGoal Int?     @map("friend_attendance_goal")
-  memberAttendanceGoal Int?     @map("member_attendance_goal")
-  phase_id             String?
-  createdAt            DateTime @default(now()) @map("created_at")
-  updatedAt            DateTime @updatedAt @map("updated_at")
-
-  church      Churches           @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  phase       EventPhases?       @relation(fields: [phase_id], references: [id], onDelete: SetNull)
-  attendances EventAttendances[]
-  goals       CellGoals[]
-
-  @@index([church_id])
-  @@index([phase_id])
-  @@map("events")
-}
-
-model EventAttendances {
-  id        String   @id @default(cuid())
-  church_id String
-  friend_id String
-  event_id  String
-  attended  Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at")
-
-  church Churches @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  friend Friends  @relation(fields: [friend_id], references: [id], onDelete: Cascade)
-  event  Events   @relation(fields: [event_id], references: [id], onDelete: Cascade)
-
-  @@unique([friend_id, event_id])
-  @@index([church_id])
-  @@index([friend_id])
-  @@index([event_id])
-  @@map("event_attendances")
-}
-
-model EventPhases {
-  id        String   @id @default(cuid())
-  name      String
-  color     String?
-  church_id String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  church Churches? @relation(fields: [church_id], references: [id], onDelete: Cascade)
-  events Events[]
-
-  @@index([church_id])
-  @@map("event_phases")
 }

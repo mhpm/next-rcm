@@ -384,24 +384,24 @@ export type MembersWhereInput = {
   network_id?: Prisma.StringNullableFilter<"Members"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Members"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Members"> | Date | string
-  ministries?: Prisma.MemberMinistryListRelationFilter
-  church?: Prisma.XOR<Prisma.ChurchesScalarRelationFilter, Prisma.ChurchesWhereInput>
-  network?: Prisma.XOR<Prisma.NetworksNullableScalarRelationFilter, Prisma.NetworksWhereInput> | null
-  ledMinistries?: Prisma.MinistriesListRelationFilter
-  cells?: Prisma.CellsListRelationFilter
-  hostedCells?: Prisma.CellsListRelationFilter
   assistedCells?: Prisma.CellsListRelationFilter
+  hostedCells?: Prisma.CellsListRelationFilter
+  cells?: Prisma.CellsListRelationFilter
   invitedFriends?: Prisma.FriendsListRelationFilter
   spiritualFriends?: Prisma.FriendsListRelationFilter
+  ledGroups?: Prisma.GroupsListRelationFilter
+  ministries?: Prisma.MemberMinistryListRelationFilter
   cell?: Prisma.XOR<Prisma.CellsNullableScalarRelationFilter, Prisma.CellsWhereInput> | null
-  zone?: Prisma.XOR<Prisma.ZonesNullableScalarRelationFilter, Prisma.ZonesWhereInput> | null
+  church?: Prisma.XOR<Prisma.ChurchesScalarRelationFilter, Prisma.ChurchesWhereInput>
+  network?: Prisma.XOR<Prisma.NetworksNullableScalarRelationFilter, Prisma.NetworksWhereInput> | null
   sector?: Prisma.XOR<Prisma.SectorsNullableScalarRelationFilter, Prisma.SectorsWhereInput> | null
   subSector?: Prisma.XOR<Prisma.SubSectorsNullableScalarRelationFilter, Prisma.SubSectorsWhereInput> | null
-  ledZones?: Prisma.ZonesListRelationFilter
+  zone?: Prisma.XOR<Prisma.ZonesNullableScalarRelationFilter, Prisma.ZonesWhereInput> | null
+  ledMinistries?: Prisma.MinistriesListRelationFilter
   ledSectors?: Prisma.SectorsListRelationFilter
   ledSubSectors?: Prisma.SubSectorsListRelationFilter
+  ledZones?: Prisma.ZonesListRelationFilter
   groups?: Prisma.GroupsListRelationFilter
-  ledGroups?: Prisma.GroupsListRelationFilter
 }
 
 export type MembersOrderByWithRelationInput = {
@@ -431,24 +431,24 @@ export type MembersOrderByWithRelationInput = {
   network_id?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  ministries?: Prisma.MemberMinistryOrderByRelationAggregateInput
-  church?: Prisma.ChurchesOrderByWithRelationInput
-  network?: Prisma.NetworksOrderByWithRelationInput
-  ledMinistries?: Prisma.MinistriesOrderByRelationAggregateInput
-  cells?: Prisma.CellsOrderByRelationAggregateInput
-  hostedCells?: Prisma.CellsOrderByRelationAggregateInput
   assistedCells?: Prisma.CellsOrderByRelationAggregateInput
+  hostedCells?: Prisma.CellsOrderByRelationAggregateInput
+  cells?: Prisma.CellsOrderByRelationAggregateInput
   invitedFriends?: Prisma.FriendsOrderByRelationAggregateInput
   spiritualFriends?: Prisma.FriendsOrderByRelationAggregateInput
+  ledGroups?: Prisma.GroupsOrderByRelationAggregateInput
+  ministries?: Prisma.MemberMinistryOrderByRelationAggregateInput
   cell?: Prisma.CellsOrderByWithRelationInput
-  zone?: Prisma.ZonesOrderByWithRelationInput
+  church?: Prisma.ChurchesOrderByWithRelationInput
+  network?: Prisma.NetworksOrderByWithRelationInput
   sector?: Prisma.SectorsOrderByWithRelationInput
   subSector?: Prisma.SubSectorsOrderByWithRelationInput
-  ledZones?: Prisma.ZonesOrderByRelationAggregateInput
+  zone?: Prisma.ZonesOrderByWithRelationInput
+  ledMinistries?: Prisma.MinistriesOrderByRelationAggregateInput
   ledSectors?: Prisma.SectorsOrderByRelationAggregateInput
   ledSubSectors?: Prisma.SubSectorsOrderByRelationAggregateInput
+  ledZones?: Prisma.ZonesOrderByRelationAggregateInput
   groups?: Prisma.GroupsOrderByRelationAggregateInput
-  ledGroups?: Prisma.GroupsOrderByRelationAggregateInput
 }
 
 export type MembersWhereUniqueInput = Prisma.AtLeast<{
@@ -481,24 +481,24 @@ export type MembersWhereUniqueInput = Prisma.AtLeast<{
   network_id?: Prisma.StringNullableFilter<"Members"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Members"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Members"> | Date | string
-  ministries?: Prisma.MemberMinistryListRelationFilter
-  church?: Prisma.XOR<Prisma.ChurchesScalarRelationFilter, Prisma.ChurchesWhereInput>
-  network?: Prisma.XOR<Prisma.NetworksNullableScalarRelationFilter, Prisma.NetworksWhereInput> | null
-  ledMinistries?: Prisma.MinistriesListRelationFilter
-  cells?: Prisma.CellsListRelationFilter
-  hostedCells?: Prisma.CellsListRelationFilter
   assistedCells?: Prisma.CellsListRelationFilter
+  hostedCells?: Prisma.CellsListRelationFilter
+  cells?: Prisma.CellsListRelationFilter
   invitedFriends?: Prisma.FriendsListRelationFilter
   spiritualFriends?: Prisma.FriendsListRelationFilter
+  ledGroups?: Prisma.GroupsListRelationFilter
+  ministries?: Prisma.MemberMinistryListRelationFilter
   cell?: Prisma.XOR<Prisma.CellsNullableScalarRelationFilter, Prisma.CellsWhereInput> | null
-  zone?: Prisma.XOR<Prisma.ZonesNullableScalarRelationFilter, Prisma.ZonesWhereInput> | null
+  church?: Prisma.XOR<Prisma.ChurchesScalarRelationFilter, Prisma.ChurchesWhereInput>
+  network?: Prisma.XOR<Prisma.NetworksNullableScalarRelationFilter, Prisma.NetworksWhereInput> | null
   sector?: Prisma.XOR<Prisma.SectorsNullableScalarRelationFilter, Prisma.SectorsWhereInput> | null
   subSector?: Prisma.XOR<Prisma.SubSectorsNullableScalarRelationFilter, Prisma.SubSectorsWhereInput> | null
-  ledZones?: Prisma.ZonesListRelationFilter
+  zone?: Prisma.XOR<Prisma.ZonesNullableScalarRelationFilter, Prisma.ZonesWhereInput> | null
+  ledMinistries?: Prisma.MinistriesListRelationFilter
   ledSectors?: Prisma.SectorsListRelationFilter
   ledSubSectors?: Prisma.SubSectorsListRelationFilter
+  ledZones?: Prisma.ZonesListRelationFilter
   groups?: Prisma.GroupsListRelationFilter
-  ledGroups?: Prisma.GroupsListRelationFilter
 }, "id" | "email">
 
 export type MembersOrderByWithAggregationInput = {
@@ -588,24 +588,24 @@ export type MembersCreateInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateInput = {
@@ -635,18 +635,18 @@ export type MembersUncheckedCreateInput = {
   network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUpdateInput = {
@@ -670,24 +670,24 @@ export type MembersUpdateInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateInput = {
@@ -717,18 +717,18 @@ export type MembersUncheckedUpdateInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersCreateManyInput = {
@@ -1047,9 +1047,9 @@ export type MembersUpdateOneWithoutLedMinistriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutLedMinistriesInput, Prisma.MembersUpdateWithoutLedMinistriesInput>, Prisma.MembersUncheckedUpdateWithoutLedMinistriesInput>
 }
 
-export type MembersCreateNestedOneWithoutCellsInput = {
-  create?: Prisma.XOR<Prisma.MembersCreateWithoutCellsInput, Prisma.MembersUncheckedCreateWithoutCellsInput>
-  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutCellsInput
+export type MembersCreateNestedOneWithoutAssistedCellsInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutAssistedCellsInput, Prisma.MembersUncheckedCreateWithoutAssistedCellsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutAssistedCellsInput
   connect?: Prisma.MembersWhereUniqueInput
 }
 
@@ -1059,9 +1059,9 @@ export type MembersCreateNestedOneWithoutHostedCellsInput = {
   connect?: Prisma.MembersWhereUniqueInput
 }
 
-export type MembersCreateNestedOneWithoutAssistedCellsInput = {
-  create?: Prisma.XOR<Prisma.MembersCreateWithoutAssistedCellsInput, Prisma.MembersUncheckedCreateWithoutAssistedCellsInput>
-  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutAssistedCellsInput
+export type MembersCreateNestedOneWithoutCellsInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutCellsInput, Prisma.MembersUncheckedCreateWithoutCellsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutCellsInput
   connect?: Prisma.MembersWhereUniqueInput
 }
 
@@ -1079,14 +1079,14 @@ export type MembersUncheckedCreateNestedManyWithoutCellInput = {
   connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
 }
 
-export type MembersUpdateOneWithoutCellsNestedInput = {
-  create?: Prisma.XOR<Prisma.MembersCreateWithoutCellsInput, Prisma.MembersUncheckedCreateWithoutCellsInput>
-  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutCellsInput
-  upsert?: Prisma.MembersUpsertWithoutCellsInput
+export type MembersUpdateOneWithoutAssistedCellsNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutAssistedCellsInput, Prisma.MembersUncheckedCreateWithoutAssistedCellsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutAssistedCellsInput
+  upsert?: Prisma.MembersUpsertWithoutAssistedCellsInput
   disconnect?: Prisma.MembersWhereInput | boolean
   delete?: Prisma.MembersWhereInput | boolean
   connect?: Prisma.MembersWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutCellsInput, Prisma.MembersUpdateWithoutCellsInput>, Prisma.MembersUncheckedUpdateWithoutCellsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutAssistedCellsInput, Prisma.MembersUpdateWithoutAssistedCellsInput>, Prisma.MembersUncheckedUpdateWithoutAssistedCellsInput>
 }
 
 export type MembersUpdateOneWithoutHostedCellsNestedInput = {
@@ -1099,14 +1099,14 @@ export type MembersUpdateOneWithoutHostedCellsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutHostedCellsInput, Prisma.MembersUpdateWithoutHostedCellsInput>, Prisma.MembersUncheckedUpdateWithoutHostedCellsInput>
 }
 
-export type MembersUpdateOneWithoutAssistedCellsNestedInput = {
-  create?: Prisma.XOR<Prisma.MembersCreateWithoutAssistedCellsInput, Prisma.MembersUncheckedCreateWithoutAssistedCellsInput>
-  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutAssistedCellsInput
-  upsert?: Prisma.MembersUpsertWithoutAssistedCellsInput
+export type MembersUpdateOneWithoutCellsNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutCellsInput, Prisma.MembersUncheckedCreateWithoutCellsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutCellsInput
+  upsert?: Prisma.MembersUpsertWithoutCellsInput
   disconnect?: Prisma.MembersWhereInput | boolean
   delete?: Prisma.MembersWhereInput | boolean
   connect?: Prisma.MembersWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutAssistedCellsInput, Prisma.MembersUpdateWithoutAssistedCellsInput>, Prisma.MembersUncheckedUpdateWithoutAssistedCellsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutCellsInput, Prisma.MembersUpdateWithoutCellsInput>, Prisma.MembersUncheckedUpdateWithoutCellsInput>
 }
 
 export type MembersUpdateManyWithoutCellNestedInput = {
@@ -1137,12 +1137,6 @@ export type MembersUncheckedUpdateManyWithoutCellNestedInput = {
   deleteMany?: Prisma.MembersScalarWhereInput | Prisma.MembersScalarWhereInput[]
 }
 
-export type MembersCreateNestedOneWithoutLedZonesInput = {
-  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedZonesInput, Prisma.MembersUncheckedCreateWithoutLedZonesInput>
-  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedZonesInput
-  connect?: Prisma.MembersWhereUniqueInput
-}
-
 export type MembersCreateNestedManyWithoutZoneInput = {
   create?: Prisma.XOR<Prisma.MembersCreateWithoutZoneInput, Prisma.MembersUncheckedCreateWithoutZoneInput> | Prisma.MembersCreateWithoutZoneInput[] | Prisma.MembersUncheckedCreateWithoutZoneInput[]
   connectOrCreate?: Prisma.MembersCreateOrConnectWithoutZoneInput | Prisma.MembersCreateOrConnectWithoutZoneInput[]
@@ -1150,21 +1144,17 @@ export type MembersCreateNestedManyWithoutZoneInput = {
   connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
 }
 
+export type MembersCreateNestedOneWithoutLedZonesInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedZonesInput, Prisma.MembersUncheckedCreateWithoutLedZonesInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedZonesInput
+  connect?: Prisma.MembersWhereUniqueInput
+}
+
 export type MembersUncheckedCreateNestedManyWithoutZoneInput = {
   create?: Prisma.XOR<Prisma.MembersCreateWithoutZoneInput, Prisma.MembersUncheckedCreateWithoutZoneInput> | Prisma.MembersCreateWithoutZoneInput[] | Prisma.MembersUncheckedCreateWithoutZoneInput[]
   connectOrCreate?: Prisma.MembersCreateOrConnectWithoutZoneInput | Prisma.MembersCreateOrConnectWithoutZoneInput[]
   createMany?: Prisma.MembersCreateManyZoneInputEnvelope
   connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
-}
-
-export type MembersUpdateOneWithoutLedZonesNestedInput = {
-  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedZonesInput, Prisma.MembersUncheckedCreateWithoutLedZonesInput>
-  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedZonesInput
-  upsert?: Prisma.MembersUpsertWithoutLedZonesInput
-  disconnect?: Prisma.MembersWhereInput | boolean
-  delete?: Prisma.MembersWhereInput | boolean
-  connect?: Prisma.MembersWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutLedZonesInput, Prisma.MembersUpdateWithoutLedZonesInput>, Prisma.MembersUncheckedUpdateWithoutLedZonesInput>
 }
 
 export type MembersUpdateManyWithoutZoneNestedInput = {
@@ -1181,6 +1171,16 @@ export type MembersUpdateManyWithoutZoneNestedInput = {
   deleteMany?: Prisma.MembersScalarWhereInput | Prisma.MembersScalarWhereInput[]
 }
 
+export type MembersUpdateOneWithoutLedZonesNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedZonesInput, Prisma.MembersUncheckedCreateWithoutLedZonesInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedZonesInput
+  upsert?: Prisma.MembersUpsertWithoutLedZonesInput
+  disconnect?: Prisma.MembersWhereInput | boolean
+  delete?: Prisma.MembersWhereInput | boolean
+  connect?: Prisma.MembersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutLedZonesInput, Prisma.MembersUpdateWithoutLedZonesInput>, Prisma.MembersUncheckedUpdateWithoutLedZonesInput>
+}
+
 export type MembersUncheckedUpdateManyWithoutZoneNestedInput = {
   create?: Prisma.XOR<Prisma.MembersCreateWithoutZoneInput, Prisma.MembersUncheckedCreateWithoutZoneInput> | Prisma.MembersCreateWithoutZoneInput[] | Prisma.MembersUncheckedCreateWithoutZoneInput[]
   connectOrCreate?: Prisma.MembersCreateOrConnectWithoutZoneInput | Prisma.MembersCreateOrConnectWithoutZoneInput[]
@@ -1195,12 +1195,6 @@ export type MembersUncheckedUpdateManyWithoutZoneNestedInput = {
   deleteMany?: Prisma.MembersScalarWhereInput | Prisma.MembersScalarWhereInput[]
 }
 
-export type MembersCreateNestedOneWithoutLedSectorsInput = {
-  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSectorsInput>
-  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedSectorsInput
-  connect?: Prisma.MembersWhereUniqueInput
-}
-
 export type MembersCreateNestedManyWithoutSectorInput = {
   create?: Prisma.XOR<Prisma.MembersCreateWithoutSectorInput, Prisma.MembersUncheckedCreateWithoutSectorInput> | Prisma.MembersCreateWithoutSectorInput[] | Prisma.MembersUncheckedCreateWithoutSectorInput[]
   connectOrCreate?: Prisma.MembersCreateOrConnectWithoutSectorInput | Prisma.MembersCreateOrConnectWithoutSectorInput[]
@@ -1208,21 +1202,17 @@ export type MembersCreateNestedManyWithoutSectorInput = {
   connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
 }
 
+export type MembersCreateNestedOneWithoutLedSectorsInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSectorsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedSectorsInput
+  connect?: Prisma.MembersWhereUniqueInput
+}
+
 export type MembersUncheckedCreateNestedManyWithoutSectorInput = {
   create?: Prisma.XOR<Prisma.MembersCreateWithoutSectorInput, Prisma.MembersUncheckedCreateWithoutSectorInput> | Prisma.MembersCreateWithoutSectorInput[] | Prisma.MembersUncheckedCreateWithoutSectorInput[]
   connectOrCreate?: Prisma.MembersCreateOrConnectWithoutSectorInput | Prisma.MembersCreateOrConnectWithoutSectorInput[]
   createMany?: Prisma.MembersCreateManySectorInputEnvelope
   connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
-}
-
-export type MembersUpdateOneWithoutLedSectorsNestedInput = {
-  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSectorsInput>
-  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedSectorsInput
-  upsert?: Prisma.MembersUpsertWithoutLedSectorsInput
-  disconnect?: Prisma.MembersWhereInput | boolean
-  delete?: Prisma.MembersWhereInput | boolean
-  connect?: Prisma.MembersWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutLedSectorsInput, Prisma.MembersUpdateWithoutLedSectorsInput>, Prisma.MembersUncheckedUpdateWithoutLedSectorsInput>
 }
 
 export type MembersUpdateManyWithoutSectorNestedInput = {
@@ -1239,6 +1229,16 @@ export type MembersUpdateManyWithoutSectorNestedInput = {
   deleteMany?: Prisma.MembersScalarWhereInput | Prisma.MembersScalarWhereInput[]
 }
 
+export type MembersUpdateOneWithoutLedSectorsNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSectorsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedSectorsInput
+  upsert?: Prisma.MembersUpsertWithoutLedSectorsInput
+  disconnect?: Prisma.MembersWhereInput | boolean
+  delete?: Prisma.MembersWhereInput | boolean
+  connect?: Prisma.MembersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutLedSectorsInput, Prisma.MembersUpdateWithoutLedSectorsInput>, Prisma.MembersUncheckedUpdateWithoutLedSectorsInput>
+}
+
 export type MembersUncheckedUpdateManyWithoutSectorNestedInput = {
   create?: Prisma.XOR<Prisma.MembersCreateWithoutSectorInput, Prisma.MembersUncheckedCreateWithoutSectorInput> | Prisma.MembersCreateWithoutSectorInput[] | Prisma.MembersUncheckedCreateWithoutSectorInput[]
   connectOrCreate?: Prisma.MembersCreateOrConnectWithoutSectorInput | Prisma.MembersCreateOrConnectWithoutSectorInput[]
@@ -1253,12 +1253,6 @@ export type MembersUncheckedUpdateManyWithoutSectorNestedInput = {
   deleteMany?: Prisma.MembersScalarWhereInput | Prisma.MembersScalarWhereInput[]
 }
 
-export type MembersCreateNestedOneWithoutLedSubSectorsInput = {
-  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedSubSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSubSectorsInput>
-  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedSubSectorsInput
-  connect?: Prisma.MembersWhereUniqueInput
-}
-
 export type MembersCreateNestedManyWithoutSubSectorInput = {
   create?: Prisma.XOR<Prisma.MembersCreateWithoutSubSectorInput, Prisma.MembersUncheckedCreateWithoutSubSectorInput> | Prisma.MembersCreateWithoutSubSectorInput[] | Prisma.MembersUncheckedCreateWithoutSubSectorInput[]
   connectOrCreate?: Prisma.MembersCreateOrConnectWithoutSubSectorInput | Prisma.MembersCreateOrConnectWithoutSubSectorInput[]
@@ -1266,21 +1260,17 @@ export type MembersCreateNestedManyWithoutSubSectorInput = {
   connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
 }
 
+export type MembersCreateNestedOneWithoutLedSubSectorsInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedSubSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSubSectorsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedSubSectorsInput
+  connect?: Prisma.MembersWhereUniqueInput
+}
+
 export type MembersUncheckedCreateNestedManyWithoutSubSectorInput = {
   create?: Prisma.XOR<Prisma.MembersCreateWithoutSubSectorInput, Prisma.MembersUncheckedCreateWithoutSubSectorInput> | Prisma.MembersCreateWithoutSubSectorInput[] | Prisma.MembersUncheckedCreateWithoutSubSectorInput[]
   connectOrCreate?: Prisma.MembersCreateOrConnectWithoutSubSectorInput | Prisma.MembersCreateOrConnectWithoutSubSectorInput[]
   createMany?: Prisma.MembersCreateManySubSectorInputEnvelope
   connect?: Prisma.MembersWhereUniqueInput | Prisma.MembersWhereUniqueInput[]
-}
-
-export type MembersUpdateOneWithoutLedSubSectorsNestedInput = {
-  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedSubSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSubSectorsInput>
-  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedSubSectorsInput
-  upsert?: Prisma.MembersUpsertWithoutLedSubSectorsInput
-  disconnect?: Prisma.MembersWhereInput | boolean
-  delete?: Prisma.MembersWhereInput | boolean
-  connect?: Prisma.MembersWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutLedSubSectorsInput, Prisma.MembersUpdateWithoutLedSubSectorsInput>, Prisma.MembersUncheckedUpdateWithoutLedSubSectorsInput>
 }
 
 export type MembersUpdateManyWithoutSubSectorNestedInput = {
@@ -1295,6 +1285,16 @@ export type MembersUpdateManyWithoutSubSectorNestedInput = {
   update?: Prisma.MembersUpdateWithWhereUniqueWithoutSubSectorInput | Prisma.MembersUpdateWithWhereUniqueWithoutSubSectorInput[]
   updateMany?: Prisma.MembersUpdateManyWithWhereWithoutSubSectorInput | Prisma.MembersUpdateManyWithWhereWithoutSubSectorInput[]
   deleteMany?: Prisma.MembersScalarWhereInput | Prisma.MembersScalarWhereInput[]
+}
+
+export type MembersUpdateOneWithoutLedSubSectorsNestedInput = {
+  create?: Prisma.XOR<Prisma.MembersCreateWithoutLedSubSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSubSectorsInput>
+  connectOrCreate?: Prisma.MembersCreateOrConnectWithoutLedSubSectorsInput
+  upsert?: Prisma.MembersUpsertWithoutLedSubSectorsInput
+  disconnect?: Prisma.MembersWhereInput | boolean
+  delete?: Prisma.MembersWhereInput | boolean
+  connect?: Prisma.MembersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MembersUpdateToOneWithWhereWithoutLedSubSectorsInput, Prisma.MembersUpdateWithoutLedSubSectorsInput>, Prisma.MembersUncheckedUpdateWithoutLedSubSectorsInput>
 }
 
 export type MembersUncheckedUpdateManyWithoutSubSectorNestedInput = {
@@ -1432,23 +1432,23 @@ export type MembersCreateWithoutChurchInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutChurchInput = {
@@ -1477,18 +1477,18 @@ export type MembersUncheckedCreateWithoutChurchInput = {
   network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersCreateOrConnectWithoutChurchInput = {
@@ -1570,23 +1570,23 @@ export type MembersCreateWithoutNetworkInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutNetworkInput = {
@@ -1615,18 +1615,18 @@ export type MembersUncheckedCreateWithoutNetworkInput = {
   cell_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersCreateOrConnectWithoutNetworkInput = {
@@ -1676,23 +1676,23 @@ export type MembersCreateWithoutLedMinistriesInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
   ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutLedMinistriesInput = {
@@ -1722,17 +1722,17 @@ export type MembersUncheckedCreateWithoutLedMinistriesInput = {
   network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
   ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersCreateOrConnectWithoutLedMinistriesInput = {
@@ -1772,23 +1772,23 @@ export type MembersUpdateWithoutLedMinistriesInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutLedMinistriesInput = {
@@ -1818,187 +1818,17 @@ export type MembersUncheckedUpdateWithoutLedMinistriesInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
-}
-
-export type MembersCreateWithoutCellsInput = {
-  id?: string
-  firstName: string
-  lastName: string
-  email?: string | null
-  phone?: string | null
-  age?: number | null
-  street?: string | null
-  city?: string | null
-  state?: string | null
-  zip?: string | null
-  country?: string | null
-  birthDate?: Date | string | null
-  baptismDate?: Date | string | null
-  role?: $Enums.MemberRole
-  gender?: $Enums.Gender
-  pictureUrl?: string | null
-  notes?: string | null
-  passwordHash?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
-  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
-  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
-  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
-  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
-  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
-  subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
-  ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
-  ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
-  groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
-}
-
-export type MembersUncheckedCreateWithoutCellsInput = {
-  id?: string
-  firstName: string
-  lastName: string
-  email?: string | null
-  phone?: string | null
-  age?: number | null
-  street?: string | null
-  city?: string | null
-  state?: string | null
-  zip?: string | null
-  country?: string | null
-  birthDate?: Date | string | null
-  baptismDate?: Date | string | null
-  role?: $Enums.MemberRole
-  gender?: $Enums.Gender
-  pictureUrl?: string | null
-  notes?: string | null
-  passwordHash?: string | null
-  church_id: string
-  zone_id?: string | null
-  sector_id?: string | null
-  sub_sector_id?: string | null
-  cell_id?: string | null
-  network_id?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
-  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
-  invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
-  spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
-  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
-  ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
-  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
-}
-
-export type MembersCreateOrConnectWithoutCellsInput = {
-  where: Prisma.MembersWhereUniqueInput
-  create: Prisma.XOR<Prisma.MembersCreateWithoutCellsInput, Prisma.MembersUncheckedCreateWithoutCellsInput>
-}
-
-export type MembersCreateWithoutHostedCellsInput = {
-  id?: string
-  firstName: string
-  lastName: string
-  email?: string | null
-  phone?: string | null
-  age?: number | null
-  street?: string | null
-  city?: string | null
-  state?: string | null
-  zip?: string | null
-  country?: string | null
-  birthDate?: Date | string | null
-  baptismDate?: Date | string | null
-  role?: $Enums.MemberRole
-  gender?: $Enums.Gender
-  pictureUrl?: string | null
-  notes?: string | null
-  passwordHash?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
-  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
-  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
-  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
-  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
-  subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
-  ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
-  ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
-  groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
-}
-
-export type MembersUncheckedCreateWithoutHostedCellsInput = {
-  id?: string
-  firstName: string
-  lastName: string
-  email?: string | null
-  phone?: string | null
-  age?: number | null
-  street?: string | null
-  city?: string | null
-  state?: string | null
-  zip?: string | null
-  country?: string | null
-  birthDate?: Date | string | null
-  baptismDate?: Date | string | null
-  role?: $Enums.MemberRole
-  gender?: $Enums.Gender
-  pictureUrl?: string | null
-  notes?: string | null
-  passwordHash?: string | null
-  church_id: string
-  zone_id?: string | null
-  sector_id?: string | null
-  sub_sector_id?: string | null
-  cell_id?: string | null
-  network_id?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
-  invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
-  spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
-  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
-  ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
-  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
-}
-
-export type MembersCreateOrConnectWithoutHostedCellsInput = {
-  where: Prisma.MembersWhereUniqueInput
-  create: Prisma.XOR<Prisma.MembersCreateWithoutHostedCellsInput, Prisma.MembersUncheckedCreateWithoutHostedCellsInput>
 }
 
 export type MembersCreateWithoutAssistedCellsInput = {
@@ -2022,23 +1852,23 @@ export type MembersCreateWithoutAssistedCellsInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutAssistedCellsInput = {
@@ -2068,22 +1898,192 @@ export type MembersUncheckedCreateWithoutAssistedCellsInput = {
   network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
   hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersCreateOrConnectWithoutAssistedCellsInput = {
   where: Prisma.MembersWhereUniqueInput
   create: Prisma.XOR<Prisma.MembersCreateWithoutAssistedCellsInput, Prisma.MembersUncheckedCreateWithoutAssistedCellsInput>
+}
+
+export type MembersCreateWithoutHostedCellsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email?: string | null
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
+  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
+  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
+  subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
+  ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
+}
+
+export type MembersUncheckedCreateWithoutHostedCellsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email?: string | null
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  zone_id?: string | null
+  sector_id?: string | null
+  sub_sector_id?: string | null
+  cell_id?: string | null
+  network_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
+  spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
+}
+
+export type MembersCreateOrConnectWithoutHostedCellsInput = {
+  where: Prisma.MembersWhereUniqueInput
+  create: Prisma.XOR<Prisma.MembersCreateWithoutHostedCellsInput, Prisma.MembersUncheckedCreateWithoutHostedCellsInput>
+}
+
+export type MembersCreateWithoutCellsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email?: string | null
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
+  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
+  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
+  subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
+  ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
+}
+
+export type MembersUncheckedCreateWithoutCellsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email?: string | null
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  zone_id?: string | null
+  sector_id?: string | null
+  sub_sector_id?: string | null
+  cell_id?: string | null
+  network_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
+  spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
+}
+
+export type MembersCreateOrConnectWithoutCellsInput = {
+  where: Prisma.MembersWhereUniqueInput
+  create: Prisma.XOR<Prisma.MembersCreateWithoutCellsInput, Prisma.MembersUncheckedCreateWithoutCellsInput>
 }
 
 export type MembersCreateWithoutCellInput = {
@@ -2107,23 +2107,23 @@ export type MembersCreateWithoutCellInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
+  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
   network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
-  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
-  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
-  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutCellInput = {
@@ -2152,18 +2152,18 @@ export type MembersUncheckedCreateWithoutCellInput = {
   network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersCreateOrConnectWithoutCellInput = {
@@ -2174,188 +2174,6 @@ export type MembersCreateOrConnectWithoutCellInput = {
 export type MembersCreateManyCellInputEnvelope = {
   data: Prisma.MembersCreateManyCellInput | Prisma.MembersCreateManyCellInput[]
   skipDuplicates?: boolean
-}
-
-export type MembersUpsertWithoutCellsInput = {
-  update: Prisma.XOR<Prisma.MembersUpdateWithoutCellsInput, Prisma.MembersUncheckedUpdateWithoutCellsInput>
-  create: Prisma.XOR<Prisma.MembersCreateWithoutCellsInput, Prisma.MembersUncheckedCreateWithoutCellsInput>
-  where?: Prisma.MembersWhereInput
-}
-
-export type MembersUpdateToOneWithWhereWithoutCellsInput = {
-  where?: Prisma.MembersWhereInput
-  data: Prisma.XOR<Prisma.MembersUpdateWithoutCellsInput, Prisma.MembersUncheckedUpdateWithoutCellsInput>
-}
-
-export type MembersUpdateWithoutCellsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
-  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
-  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
-  assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
-  invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
-  spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
-  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
-  sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
-  subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
-  ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
-  ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
-  groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
-}
-
-export type MembersUncheckedUpdateWithoutCellsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
-  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
-  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  church_id?: Prisma.StringFieldUpdateOperationsInput | string
-  zone_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
-  assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
-  invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
-  spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
-  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
-  ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
-  groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
-}
-
-export type MembersUpsertWithoutHostedCellsInput = {
-  update: Prisma.XOR<Prisma.MembersUpdateWithoutHostedCellsInput, Prisma.MembersUncheckedUpdateWithoutHostedCellsInput>
-  create: Prisma.XOR<Prisma.MembersCreateWithoutHostedCellsInput, Prisma.MembersUncheckedCreateWithoutHostedCellsInput>
-  where?: Prisma.MembersWhereInput
-}
-
-export type MembersUpdateToOneWithWhereWithoutHostedCellsInput = {
-  where?: Prisma.MembersWhereInput
-  data: Prisma.XOR<Prisma.MembersUpdateWithoutHostedCellsInput, Prisma.MembersUncheckedUpdateWithoutHostedCellsInput>
-}
-
-export type MembersUpdateWithoutHostedCellsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
-  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
-  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
-  invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
-  spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
-  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
-  sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
-  subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
-  ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
-  ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
-  groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
-}
-
-export type MembersUncheckedUpdateWithoutHostedCellsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
-  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
-  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  church_id?: Prisma.StringFieldUpdateOperationsInput | string
-  zone_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
-  invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
-  spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
-  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
-  ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
-  groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUpsertWithoutAssistedCellsInput = {
@@ -2390,23 +2208,23 @@ export type MembersUpdateWithoutAssistedCellsInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutAssistedCellsInput = {
@@ -2436,17 +2254,199 @@ export type MembersUncheckedUpdateWithoutAssistedCellsInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
+  invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
+  spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
   ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
+  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
+}
+
+export type MembersUpsertWithoutHostedCellsInput = {
+  update: Prisma.XOR<Prisma.MembersUpdateWithoutHostedCellsInput, Prisma.MembersUncheckedUpdateWithoutHostedCellsInput>
+  create: Prisma.XOR<Prisma.MembersCreateWithoutHostedCellsInput, Prisma.MembersUncheckedCreateWithoutHostedCellsInput>
+  where?: Prisma.MembersWhereInput
+}
+
+export type MembersUpdateToOneWithWhereWithoutHostedCellsInput = {
+  where?: Prisma.MembersWhereInput
+  data: Prisma.XOR<Prisma.MembersUpdateWithoutHostedCellsInput, Prisma.MembersUncheckedUpdateWithoutHostedCellsInput>
+}
+
+export type MembersUpdateWithoutHostedCellsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
+  invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
+  spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
+  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
+  sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
+  subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
+  ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
+  ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
+}
+
+export type MembersUncheckedUpdateWithoutHostedCellsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  zone_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
   cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
+  invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
+  spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
+  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
+}
+
+export type MembersUpsertWithoutCellsInput = {
+  update: Prisma.XOR<Prisma.MembersUpdateWithoutCellsInput, Prisma.MembersUncheckedUpdateWithoutCellsInput>
+  create: Prisma.XOR<Prisma.MembersCreateWithoutCellsInput, Prisma.MembersUncheckedCreateWithoutCellsInput>
+  where?: Prisma.MembersWhereInput
+}
+
+export type MembersUpdateToOneWithWhereWithoutCellsInput = {
+  where?: Prisma.MembersWhereInput
+  data: Prisma.XOR<Prisma.MembersUpdateWithoutCellsInput, Prisma.MembersUncheckedUpdateWithoutCellsInput>
+}
+
+export type MembersUpdateWithoutCellsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
+  spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
+  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
+  sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
+  subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
+  ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
+  ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
+}
+
+export type MembersUncheckedUpdateWithoutCellsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  baptismDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  pictureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  church_id?: Prisma.StringFieldUpdateOperationsInput | string
+  zone_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sub_sector_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
   hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUpsertWithWhereUniqueWithoutCellInput = {
@@ -2463,6 +2463,96 @@ export type MembersUpdateWithWhereUniqueWithoutCellInput = {
 export type MembersUpdateManyWithWhereWithoutCellInput = {
   where: Prisma.MembersScalarWhereInput
   data: Prisma.XOR<Prisma.MembersUpdateManyMutationInput, Prisma.MembersUncheckedUpdateManyWithoutCellInput>
+}
+
+export type MembersCreateWithoutZoneInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email?: string | null
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
+  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
+  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
+  subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
+  ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
+}
+
+export type MembersUncheckedCreateWithoutZoneInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email?: string | null
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  sector_id?: string | null
+  sub_sector_id?: string | null
+  cell_id?: string | null
+  network_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
+  spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
+}
+
+export type MembersCreateOrConnectWithoutZoneInput = {
+  where: Prisma.MembersWhereUniqueInput
+  create: Prisma.XOR<Prisma.MembersCreateWithoutZoneInput, Prisma.MembersUncheckedCreateWithoutZoneInput>
+}
+
+export type MembersCreateManyZoneInputEnvelope = {
+  data: Prisma.MembersCreateManyZoneInput | Prisma.MembersCreateManyZoneInput[]
+  skipDuplicates?: boolean
 }
 
 export type MembersCreateWithoutLedZonesInput = {
@@ -2486,23 +2576,23 @@ export type MembersCreateWithoutLedZonesInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutLedZonesInput = {
@@ -2532,17 +2622,17 @@ export type MembersUncheckedCreateWithoutLedZonesInput = {
   network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersCreateOrConnectWithoutLedZonesInput = {
@@ -2550,94 +2640,20 @@ export type MembersCreateOrConnectWithoutLedZonesInput = {
   create: Prisma.XOR<Prisma.MembersCreateWithoutLedZonesInput, Prisma.MembersUncheckedCreateWithoutLedZonesInput>
 }
 
-export type MembersCreateWithoutZoneInput = {
-  id?: string
-  firstName: string
-  lastName: string
-  email?: string | null
-  phone?: string | null
-  age?: number | null
-  street?: string | null
-  city?: string | null
-  state?: string | null
-  zip?: string | null
-  country?: string | null
-  birthDate?: Date | string | null
-  baptismDate?: Date | string | null
-  role?: $Enums.MemberRole
-  gender?: $Enums.Gender
-  pictureUrl?: string | null
-  notes?: string | null
-  passwordHash?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
-  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
-  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
-  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
-  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
-  subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
-  ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
-  ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
-  groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
-}
-
-export type MembersUncheckedCreateWithoutZoneInput = {
-  id?: string
-  firstName: string
-  lastName: string
-  email?: string | null
-  phone?: string | null
-  age?: number | null
-  street?: string | null
-  city?: string | null
-  state?: string | null
-  zip?: string | null
-  country?: string | null
-  birthDate?: Date | string | null
-  baptismDate?: Date | string | null
-  role?: $Enums.MemberRole
-  gender?: $Enums.Gender
-  pictureUrl?: string | null
-  notes?: string | null
-  passwordHash?: string | null
-  church_id: string
-  sector_id?: string | null
-  sub_sector_id?: string | null
-  cell_id?: string | null
-  network_id?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
-  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
-  invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
-  spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
-  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
-  ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
-  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
-}
-
-export type MembersCreateOrConnectWithoutZoneInput = {
+export type MembersUpsertWithWhereUniqueWithoutZoneInput = {
   where: Prisma.MembersWhereUniqueInput
+  update: Prisma.XOR<Prisma.MembersUpdateWithoutZoneInput, Prisma.MembersUncheckedUpdateWithoutZoneInput>
   create: Prisma.XOR<Prisma.MembersCreateWithoutZoneInput, Prisma.MembersUncheckedCreateWithoutZoneInput>
 }
 
-export type MembersCreateManyZoneInputEnvelope = {
-  data: Prisma.MembersCreateManyZoneInput | Prisma.MembersCreateManyZoneInput[]
-  skipDuplicates?: boolean
+export type MembersUpdateWithWhereUniqueWithoutZoneInput = {
+  where: Prisma.MembersWhereUniqueInput
+  data: Prisma.XOR<Prisma.MembersUpdateWithoutZoneInput, Prisma.MembersUncheckedUpdateWithoutZoneInput>
+}
+
+export type MembersUpdateManyWithWhereWithoutZoneInput = {
+  where: Prisma.MembersScalarWhereInput
+  data: Prisma.XOR<Prisma.MembersUpdateManyMutationInput, Prisma.MembersUncheckedUpdateManyWithoutZoneInput>
 }
 
 export type MembersUpsertWithoutLedZonesInput = {
@@ -2672,23 +2688,23 @@ export type MembersUpdateWithoutLedZonesInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutLedZonesInput = {
@@ -2718,33 +2734,107 @@ export type MembersUncheckedUpdateWithoutLedZonesInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
-export type MembersUpsertWithWhereUniqueWithoutZoneInput = {
+export type MembersCreateWithoutSectorInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email?: string | null
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
+  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
+  subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
+  ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
+}
+
+export type MembersUncheckedCreateWithoutSectorInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email?: string | null
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  zone_id?: string | null
+  sub_sector_id?: string | null
+  cell_id?: string | null
+  network_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
+  spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
+}
+
+export type MembersCreateOrConnectWithoutSectorInput = {
   where: Prisma.MembersWhereUniqueInput
-  update: Prisma.XOR<Prisma.MembersUpdateWithoutZoneInput, Prisma.MembersUncheckedUpdateWithoutZoneInput>
-  create: Prisma.XOR<Prisma.MembersCreateWithoutZoneInput, Prisma.MembersUncheckedCreateWithoutZoneInput>
+  create: Prisma.XOR<Prisma.MembersCreateWithoutSectorInput, Prisma.MembersUncheckedCreateWithoutSectorInput>
 }
 
-export type MembersUpdateWithWhereUniqueWithoutZoneInput = {
-  where: Prisma.MembersWhereUniqueInput
-  data: Prisma.XOR<Prisma.MembersUpdateWithoutZoneInput, Prisma.MembersUncheckedUpdateWithoutZoneInput>
-}
-
-export type MembersUpdateManyWithWhereWithoutZoneInput = {
-  where: Prisma.MembersScalarWhereInput
-  data: Prisma.XOR<Prisma.MembersUpdateManyMutationInput, Prisma.MembersUncheckedUpdateManyWithoutZoneInput>
+export type MembersCreateManySectorInputEnvelope = {
+  data: Prisma.MembersCreateManySectorInput | Prisma.MembersCreateManySectorInput[]
+  skipDuplicates?: boolean
 }
 
 export type MembersCreateWithoutLedSectorsInput = {
@@ -2768,23 +2858,23 @@ export type MembersCreateWithoutLedSectorsInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutLedSectorsInput = {
@@ -2814,17 +2904,17 @@ export type MembersUncheckedCreateWithoutLedSectorsInput = {
   network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
-  ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
-  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
   ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
 }
 
 export type MembersCreateOrConnectWithoutLedSectorsInput = {
@@ -2832,94 +2922,20 @@ export type MembersCreateOrConnectWithoutLedSectorsInput = {
   create: Prisma.XOR<Prisma.MembersCreateWithoutLedSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSectorsInput>
 }
 
-export type MembersCreateWithoutSectorInput = {
-  id?: string
-  firstName: string
-  lastName: string
-  email?: string | null
-  phone?: string | null
-  age?: number | null
-  street?: string | null
-  city?: string | null
-  state?: string | null
-  zip?: string | null
-  country?: string | null
-  birthDate?: Date | string | null
-  baptismDate?: Date | string | null
-  role?: $Enums.MemberRole
-  gender?: $Enums.Gender
-  pictureUrl?: string | null
-  notes?: string | null
-  passwordHash?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
-  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
-  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
-  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
-  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
-  subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
-  ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
-  ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
-  groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
-}
-
-export type MembersUncheckedCreateWithoutSectorInput = {
-  id?: string
-  firstName: string
-  lastName: string
-  email?: string | null
-  phone?: string | null
-  age?: number | null
-  street?: string | null
-  city?: string | null
-  state?: string | null
-  zip?: string | null
-  country?: string | null
-  birthDate?: Date | string | null
-  baptismDate?: Date | string | null
-  role?: $Enums.MemberRole
-  gender?: $Enums.Gender
-  pictureUrl?: string | null
-  notes?: string | null
-  passwordHash?: string | null
-  church_id: string
-  zone_id?: string | null
-  sub_sector_id?: string | null
-  cell_id?: string | null
-  network_id?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
-  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
-  invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
-  spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
-  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
-  ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
-  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
-}
-
-export type MembersCreateOrConnectWithoutSectorInput = {
+export type MembersUpsertWithWhereUniqueWithoutSectorInput = {
   where: Prisma.MembersWhereUniqueInput
+  update: Prisma.XOR<Prisma.MembersUpdateWithoutSectorInput, Prisma.MembersUncheckedUpdateWithoutSectorInput>
   create: Prisma.XOR<Prisma.MembersCreateWithoutSectorInput, Prisma.MembersUncheckedCreateWithoutSectorInput>
 }
 
-export type MembersCreateManySectorInputEnvelope = {
-  data: Prisma.MembersCreateManySectorInput | Prisma.MembersCreateManySectorInput[]
-  skipDuplicates?: boolean
+export type MembersUpdateWithWhereUniqueWithoutSectorInput = {
+  where: Prisma.MembersWhereUniqueInput
+  data: Prisma.XOR<Prisma.MembersUpdateWithoutSectorInput, Prisma.MembersUncheckedUpdateWithoutSectorInput>
+}
+
+export type MembersUpdateManyWithWhereWithoutSectorInput = {
+  where: Prisma.MembersScalarWhereInput
+  data: Prisma.XOR<Prisma.MembersUpdateManyMutationInput, Prisma.MembersUncheckedUpdateManyWithoutSectorInput>
 }
 
 export type MembersUpsertWithoutLedSectorsInput = {
@@ -2954,23 +2970,23 @@ export type MembersUpdateWithoutLedSectorsInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutLedSectorsInput = {
@@ -3000,33 +3016,107 @@ export type MembersUncheckedUpdateWithoutLedSectorsInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
-  ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
-  groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
   ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
+  ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
 }
 
-export type MembersUpsertWithWhereUniqueWithoutSectorInput = {
+export type MembersCreateWithoutSubSectorInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email?: string | null
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
+  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
+  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
+  ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
+  ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
+}
+
+export type MembersUncheckedCreateWithoutSubSectorInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email?: string | null
+  phone?: string | null
+  age?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
+  birthDate?: Date | string | null
+  baptismDate?: Date | string | null
+  role?: $Enums.MemberRole
+  gender?: $Enums.Gender
+  pictureUrl?: string | null
+  notes?: string | null
+  passwordHash?: string | null
+  church_id: string
+  zone_id?: string | null
+  sector_id?: string | null
+  cell_id?: string | null
+  network_id?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
+  spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
+}
+
+export type MembersCreateOrConnectWithoutSubSectorInput = {
   where: Prisma.MembersWhereUniqueInput
-  update: Prisma.XOR<Prisma.MembersUpdateWithoutSectorInput, Prisma.MembersUncheckedUpdateWithoutSectorInput>
-  create: Prisma.XOR<Prisma.MembersCreateWithoutSectorInput, Prisma.MembersUncheckedCreateWithoutSectorInput>
+  create: Prisma.XOR<Prisma.MembersCreateWithoutSubSectorInput, Prisma.MembersUncheckedCreateWithoutSubSectorInput>
 }
 
-export type MembersUpdateWithWhereUniqueWithoutSectorInput = {
-  where: Prisma.MembersWhereUniqueInput
-  data: Prisma.XOR<Prisma.MembersUpdateWithoutSectorInput, Prisma.MembersUncheckedUpdateWithoutSectorInput>
-}
-
-export type MembersUpdateManyWithWhereWithoutSectorInput = {
-  where: Prisma.MembersScalarWhereInput
-  data: Prisma.XOR<Prisma.MembersUpdateManyMutationInput, Prisma.MembersUncheckedUpdateManyWithoutSectorInput>
+export type MembersCreateManySubSectorInputEnvelope = {
+  data: Prisma.MembersCreateManySubSectorInput | Prisma.MembersCreateManySubSectorInput[]
+  skipDuplicates?: boolean
 }
 
 export type MembersCreateWithoutLedSubSectorsInput = {
@@ -3050,23 +3140,23 @@ export type MembersCreateWithoutLedSubSectorsInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutLedSubSectorsInput = {
@@ -3096,17 +3186,17 @@ export type MembersUncheckedCreateWithoutLedSubSectorsInput = {
   network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
-  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
-  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
   ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
+  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
 }
 
 export type MembersCreateOrConnectWithoutLedSubSectorsInput = {
@@ -3114,94 +3204,20 @@ export type MembersCreateOrConnectWithoutLedSubSectorsInput = {
   create: Prisma.XOR<Prisma.MembersCreateWithoutLedSubSectorsInput, Prisma.MembersUncheckedCreateWithoutLedSubSectorsInput>
 }
 
-export type MembersCreateWithoutSubSectorInput = {
-  id?: string
-  firstName: string
-  lastName: string
-  email?: string | null
-  phone?: string | null
-  age?: number | null
-  street?: string | null
-  city?: string | null
-  state?: string | null
-  zip?: string | null
-  country?: string | null
-  birthDate?: Date | string | null
-  baptismDate?: Date | string | null
-  role?: $Enums.MemberRole
-  gender?: $Enums.Gender
-  pictureUrl?: string | null
-  notes?: string | null
-  passwordHash?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
-  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
-  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
-  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
-  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
-  sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
-  ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
-  ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
-  groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
-}
-
-export type MembersUncheckedCreateWithoutSubSectorInput = {
-  id?: string
-  firstName: string
-  lastName: string
-  email?: string | null
-  phone?: string | null
-  age?: number | null
-  street?: string | null
-  city?: string | null
-  state?: string | null
-  zip?: string | null
-  country?: string | null
-  birthDate?: Date | string | null
-  baptismDate?: Date | string | null
-  role?: $Enums.MemberRole
-  gender?: $Enums.Gender
-  pictureUrl?: string | null
-  notes?: string | null
-  passwordHash?: string | null
-  church_id: string
-  zone_id?: string | null
-  sector_id?: string | null
-  cell_id?: string | null
-  network_id?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
-  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
-  invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
-  spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
-  ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
-  ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
-  groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
-}
-
-export type MembersCreateOrConnectWithoutSubSectorInput = {
+export type MembersUpsertWithWhereUniqueWithoutSubSectorInput = {
   where: Prisma.MembersWhereUniqueInput
+  update: Prisma.XOR<Prisma.MembersUpdateWithoutSubSectorInput, Prisma.MembersUncheckedUpdateWithoutSubSectorInput>
   create: Prisma.XOR<Prisma.MembersCreateWithoutSubSectorInput, Prisma.MembersUncheckedCreateWithoutSubSectorInput>
 }
 
-export type MembersCreateManySubSectorInputEnvelope = {
-  data: Prisma.MembersCreateManySubSectorInput | Prisma.MembersCreateManySubSectorInput[]
-  skipDuplicates?: boolean
+export type MembersUpdateWithWhereUniqueWithoutSubSectorInput = {
+  where: Prisma.MembersWhereUniqueInput
+  data: Prisma.XOR<Prisma.MembersUpdateWithoutSubSectorInput, Prisma.MembersUncheckedUpdateWithoutSubSectorInput>
+}
+
+export type MembersUpdateManyWithWhereWithoutSubSectorInput = {
+  where: Prisma.MembersScalarWhereInput
+  data: Prisma.XOR<Prisma.MembersUpdateManyMutationInput, Prisma.MembersUncheckedUpdateManyWithoutSubSectorInput>
 }
 
 export type MembersUpsertWithoutLedSubSectorsInput = {
@@ -3236,23 +3252,23 @@ export type MembersUpdateWithoutLedSubSectorsInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutLedSubSectorsInput = {
@@ -3282,33 +3298,17 @@ export type MembersUncheckedUpdateWithoutLedSubSectorsInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
-  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
-  groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
   ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
-}
-
-export type MembersUpsertWithWhereUniqueWithoutSubSectorInput = {
-  where: Prisma.MembersWhereUniqueInput
-  update: Prisma.XOR<Prisma.MembersUpdateWithoutSubSectorInput, Prisma.MembersUncheckedUpdateWithoutSubSectorInput>
-  create: Prisma.XOR<Prisma.MembersCreateWithoutSubSectorInput, Prisma.MembersUncheckedCreateWithoutSubSectorInput>
-}
-
-export type MembersUpdateWithWhereUniqueWithoutSubSectorInput = {
-  where: Prisma.MembersWhereUniqueInput
-  data: Prisma.XOR<Prisma.MembersUpdateWithoutSubSectorInput, Prisma.MembersUncheckedUpdateWithoutSubSectorInput>
-}
-
-export type MembersUpdateManyWithWhereWithoutSubSectorInput = {
-  where: Prisma.MembersScalarWhereInput
-  data: Prisma.XOR<Prisma.MembersUpdateManyMutationInput, Prisma.MembersUncheckedUpdateManyWithoutSubSectorInput>
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
+  ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
 }
 
 export type MembersCreateWithoutLedGroupsInput = {
@@ -3332,22 +3332,22 @@ export type MembersCreateWithoutLedGroupsInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
 }
 
@@ -3378,16 +3378,16 @@ export type MembersUncheckedCreateWithoutLedGroupsInput = {
   network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
 }
 
@@ -3417,23 +3417,23 @@ export type MembersCreateWithoutGroupsInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
   cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
 }
 
 export type MembersUncheckedCreateWithoutGroupsInput = {
@@ -3463,17 +3463,17 @@ export type MembersUncheckedCreateWithoutGroupsInput = {
   network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
 }
 
 export type MembersCreateOrConnectWithoutGroupsInput = {
@@ -3513,22 +3513,22 @@ export type MembersUpdateWithoutLedGroupsInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
 }
 
@@ -3559,16 +3559,16 @@ export type MembersUncheckedUpdateWithoutLedGroupsInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
 }
 
@@ -3609,23 +3609,23 @@ export type MembersCreateWithoutMinistriesInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
-  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
   cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
+  network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutMinistriesInput = {
@@ -3655,17 +3655,17 @@ export type MembersUncheckedCreateWithoutMinistriesInput = {
   network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
   assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
   invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
   spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
+  ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersCreateOrConnectWithoutMinistriesInput = {
@@ -3705,23 +3705,23 @@ export type MembersUpdateWithoutMinistriesInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutMinistriesInput = {
@@ -3751,17 +3751,17 @@ export type MembersUncheckedUpdateWithoutMinistriesInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersCreateWithoutInvitedFriendsInput = {
@@ -3785,23 +3785,23 @@ export type MembersCreateWithoutInvitedFriendsInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
   network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
-  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
-  spiritualFriends?: Prisma.FriendsCreateNestedManyWithoutSpiritualFatherInput
-  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutInvitedFriendsInput = {
@@ -3831,17 +3831,17 @@ export type MembersUncheckedCreateWithoutInvitedFriendsInput = {
   network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
   ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
-  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
-  spiritualFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutSpiritualFatherInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
   ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersCreateOrConnectWithoutInvitedFriendsInput = {
@@ -3870,23 +3870,23 @@ export type MembersCreateWithoutSpiritualFriendsInput = {
   passwordHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
+  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
+  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
   ministries?: Prisma.MemberMinistryCreateNestedManyWithoutMemberInput
+  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
   church: Prisma.ChurchesCreateNestedOneWithoutMembersInput
   network?: Prisma.NetworksCreateNestedOneWithoutMembersInput
-  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsCreateNestedManyWithoutHostInput
-  assistedCells?: Prisma.CellsCreateNestedManyWithoutAssistantInput
-  invitedFriends?: Prisma.FriendsCreateNestedManyWithoutInvitedByInput
-  cell?: Prisma.CellsCreateNestedOneWithoutMembersInput
-  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
   sector?: Prisma.SectorsCreateNestedOneWithoutMembersInput
   subSector?: Prisma.SubSectorsCreateNestedOneWithoutMembersInput
-  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
+  zone?: Prisma.ZonesCreateNestedOneWithoutMembersInput
+  ledMinistries?: Prisma.MinistriesCreateNestedManyWithoutLeaderInput
   ledSectors?: Prisma.SectorsCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersUncheckedCreateWithoutSpiritualFriendsInput = {
@@ -3916,17 +3916,17 @@ export type MembersUncheckedCreateWithoutSpiritualFriendsInput = {
   network_id?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
+  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
+  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
+  invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
+  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
   ministries?: Prisma.MemberMinistryUncheckedCreateNestedManyWithoutMemberInput
   ledMinistries?: Prisma.MinistriesUncheckedCreateNestedManyWithoutLeaderInput
-  cells?: Prisma.CellsUncheckedCreateNestedManyWithoutLeaderInput
-  hostedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutHostInput
-  assistedCells?: Prisma.CellsUncheckedCreateNestedManyWithoutAssistantInput
-  invitedFriends?: Prisma.FriendsUncheckedCreateNestedManyWithoutInvitedByInput
-  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
   ledSectors?: Prisma.SectorsUncheckedCreateNestedManyWithoutSupervisorInput
   ledSubSectors?: Prisma.SubSectorsUncheckedCreateNestedManyWithoutSupervisorInput
+  ledZones?: Prisma.ZonesUncheckedCreateNestedManyWithoutSupervisorInput
   groups?: Prisma.GroupsUncheckedCreateNestedManyWithoutMembersInput
-  ledGroups?: Prisma.GroupsUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type MembersCreateOrConnectWithoutSpiritualFriendsInput = {
@@ -3966,23 +3966,23 @@ export type MembersUpdateWithoutInvitedFriendsInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
+  spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
+  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
   network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
-  assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
-  spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
-  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutInvitedFriendsInput = {
@@ -4012,17 +4012,17 @@ export type MembersUncheckedUpdateWithoutInvitedFriendsInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
+  spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
   ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
-  assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
-  spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUpsertWithoutSpiritualFriendsInput = {
@@ -4057,23 +4057,23 @@ export type MembersUpdateWithoutSpiritualFriendsInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
+  invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
+  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
   network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
-  assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
-  invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
-  cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutSpiritualFriendsInput = {
@@ -4103,17 +4103,17 @@ export type MembersUncheckedUpdateWithoutSpiritualFriendsInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
+  invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
   ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
   ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
-  assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
-  invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersCreateManyChurchInput = {
@@ -4165,23 +4165,23 @@ export type MembersUpdateWithoutChurchInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutChurchInput = {
@@ -4210,18 +4210,18 @@ export type MembersUncheckedUpdateWithoutChurchInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateManyWithoutChurchInput = {
@@ -4301,23 +4301,23 @@ export type MembersUpdateWithoutNetworkInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutNetworkInput = {
@@ -4346,18 +4346,18 @@ export type MembersUncheckedUpdateWithoutNetworkInput = {
   cell_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateManyWithoutNetworkInput = {
@@ -4437,23 +4437,23 @@ export type MembersUpdateWithoutCellInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
+  invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
+  spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
   ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
   network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
-  assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
-  invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
-  spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutCellInput = {
@@ -4482,18 +4482,18 @@ export type MembersUncheckedUpdateWithoutCellInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateManyWithoutCellInput = {
@@ -4573,23 +4573,23 @@ export type MembersUpdateWithoutZoneInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutZoneInput = {
@@ -4618,18 +4618,18 @@ export type MembersUncheckedUpdateWithoutZoneInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateManyWithoutZoneInput = {
@@ -4709,23 +4709,23 @@ export type MembersUpdateWithoutSectorInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutSectorInput = {
@@ -4754,18 +4754,18 @@ export type MembersUncheckedUpdateWithoutSectorInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateManyWithoutSectorInput = {
@@ -4845,23 +4845,23 @@ export type MembersUpdateWithoutSubSectorInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutSubSectorInput = {
@@ -4890,18 +4890,18 @@ export type MembersUncheckedUpdateWithoutSubSectorInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
   groups?: Prisma.GroupsUncheckedUpdateManyWithoutMembersNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type MembersUncheckedUpdateManyWithoutSubSectorInput = {
@@ -4953,23 +4953,23 @@ export type MembersUpdateWithoutGroupsInput = {
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
-  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
-  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
-  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUpdateManyWithoutSpiritualFatherNestedInput
+  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUpdateManyWithoutMemberNestedInput
   cell?: Prisma.CellsUpdateOneWithoutMembersNestedInput
-  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  church?: Prisma.ChurchesUpdateOneRequiredWithoutMembersNestedInput
+  network?: Prisma.NetworksUpdateOneWithoutMembersNestedInput
   sector?: Prisma.SectorsUpdateOneWithoutMembersNestedInput
   subSector?: Prisma.SubSectorsUpdateOneWithoutMembersNestedInput
-  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
+  zone?: Prisma.ZonesUpdateOneWithoutMembersNestedInput
+  ledMinistries?: Prisma.MinistriesUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUpdateManyWithoutSupervisorNestedInput
-  ledGroups?: Prisma.GroupsUpdateManyWithoutLeaderNestedInput
+  ledZones?: Prisma.ZonesUpdateManyWithoutSupervisorNestedInput
 }
 
 export type MembersUncheckedUpdateWithoutGroupsInput = {
@@ -4999,17 +4999,17 @@ export type MembersUncheckedUpdateWithoutGroupsInput = {
   network_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
-  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
-  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
-  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
   assistedCells?: Prisma.CellsUncheckedUpdateManyWithoutAssistantNestedInput
+  hostedCells?: Prisma.CellsUncheckedUpdateManyWithoutHostNestedInput
+  cells?: Prisma.CellsUncheckedUpdateManyWithoutLeaderNestedInput
   invitedFriends?: Prisma.FriendsUncheckedUpdateManyWithoutInvitedByNestedInput
   spiritualFriends?: Prisma.FriendsUncheckedUpdateManyWithoutSpiritualFatherNestedInput
-  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
+  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ministries?: Prisma.MemberMinistryUncheckedUpdateManyWithoutMemberNestedInput
+  ledMinistries?: Prisma.MinistriesUncheckedUpdateManyWithoutLeaderNestedInput
   ledSectors?: Prisma.SectorsUncheckedUpdateManyWithoutSupervisorNestedInput
   ledSubSectors?: Prisma.SubSectorsUncheckedUpdateManyWithoutSupervisorNestedInput
-  ledGroups?: Prisma.GroupsUncheckedUpdateManyWithoutLeaderNestedInput
+  ledZones?: Prisma.ZonesUncheckedUpdateManyWithoutSupervisorNestedInput
 }
 
 export type MembersUncheckedUpdateManyWithoutGroupsInput = {
@@ -5047,33 +5047,33 @@ export type MembersUncheckedUpdateManyWithoutGroupsInput = {
  */
 
 export type MembersCountOutputType = {
-  ministries: number
-  ledMinistries: number
-  cells: number
-  hostedCells: number
   assistedCells: number
+  hostedCells: number
+  cells: number
   invitedFriends: number
   spiritualFriends: number
-  ledZones: number
+  ledGroups: number
+  ministries: number
+  ledMinistries: number
   ledSectors: number
   ledSubSectors: number
+  ledZones: number
   groups: number
-  ledGroups: number
 }
 
 export type MembersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  ministries?: boolean | MembersCountOutputTypeCountMinistriesArgs
-  ledMinistries?: boolean | MembersCountOutputTypeCountLedMinistriesArgs
-  cells?: boolean | MembersCountOutputTypeCountCellsArgs
-  hostedCells?: boolean | MembersCountOutputTypeCountHostedCellsArgs
   assistedCells?: boolean | MembersCountOutputTypeCountAssistedCellsArgs
+  hostedCells?: boolean | MembersCountOutputTypeCountHostedCellsArgs
+  cells?: boolean | MembersCountOutputTypeCountCellsArgs
   invitedFriends?: boolean | MembersCountOutputTypeCountInvitedFriendsArgs
   spiritualFriends?: boolean | MembersCountOutputTypeCountSpiritualFriendsArgs
-  ledZones?: boolean | MembersCountOutputTypeCountLedZonesArgs
+  ledGroups?: boolean | MembersCountOutputTypeCountLedGroupsArgs
+  ministries?: boolean | MembersCountOutputTypeCountMinistriesArgs
+  ledMinistries?: boolean | MembersCountOutputTypeCountLedMinistriesArgs
   ledSectors?: boolean | MembersCountOutputTypeCountLedSectorsArgs
   ledSubSectors?: boolean | MembersCountOutputTypeCountLedSubSectorsArgs
+  ledZones?: boolean | MembersCountOutputTypeCountLedZonesArgs
   groups?: boolean | MembersCountOutputTypeCountGroupsArgs
-  ledGroups?: boolean | MembersCountOutputTypeCountLedGroupsArgs
 }
 
 /**
@@ -5089,21 +5089,7 @@ export type MembersCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
 /**
  * MembersCountOutputType without action
  */
-export type MembersCountOutputTypeCountMinistriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MemberMinistryWhereInput
-}
-
-/**
- * MembersCountOutputType without action
- */
-export type MembersCountOutputTypeCountLedMinistriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MinistriesWhereInput
-}
-
-/**
- * MembersCountOutputType without action
- */
-export type MembersCountOutputTypeCountCellsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type MembersCountOutputTypeCountAssistedCellsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CellsWhereInput
 }
 
@@ -5117,7 +5103,7 @@ export type MembersCountOutputTypeCountHostedCellsArgs<ExtArgs extends runtime.T
 /**
  * MembersCountOutputType without action
  */
-export type MembersCountOutputTypeCountAssistedCellsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type MembersCountOutputTypeCountCellsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CellsWhereInput
 }
 
@@ -5138,8 +5124,22 @@ export type MembersCountOutputTypeCountSpiritualFriendsArgs<ExtArgs extends runt
 /**
  * MembersCountOutputType without action
  */
-export type MembersCountOutputTypeCountLedZonesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ZonesWhereInput
+export type MembersCountOutputTypeCountLedGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GroupsWhereInput
+}
+
+/**
+ * MembersCountOutputType without action
+ */
+export type MembersCountOutputTypeCountMinistriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MemberMinistryWhereInput
+}
+
+/**
+ * MembersCountOutputType without action
+ */
+export type MembersCountOutputTypeCountLedMinistriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MinistriesWhereInput
 }
 
 /**
@@ -5159,14 +5159,14 @@ export type MembersCountOutputTypeCountLedSubSectorsArgs<ExtArgs extends runtime
 /**
  * MembersCountOutputType without action
  */
-export type MembersCountOutputTypeCountGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.GroupsWhereInput
+export type MembersCountOutputTypeCountLedZonesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ZonesWhereInput
 }
 
 /**
  * MembersCountOutputType without action
  */
-export type MembersCountOutputTypeCountLedGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type MembersCountOutputTypeCountGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.GroupsWhereInput
 }
 
@@ -5198,24 +5198,24 @@ export type MembersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   network_id?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  ministries?: boolean | Prisma.Members$ministriesArgs<ExtArgs>
-  church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
-  network?: boolean | Prisma.Members$networkArgs<ExtArgs>
-  ledMinistries?: boolean | Prisma.Members$ledMinistriesArgs<ExtArgs>
-  cells?: boolean | Prisma.Members$cellsArgs<ExtArgs>
-  hostedCells?: boolean | Prisma.Members$hostedCellsArgs<ExtArgs>
   assistedCells?: boolean | Prisma.Members$assistedCellsArgs<ExtArgs>
+  hostedCells?: boolean | Prisma.Members$hostedCellsArgs<ExtArgs>
+  cells?: boolean | Prisma.Members$cellsArgs<ExtArgs>
   invitedFriends?: boolean | Prisma.Members$invitedFriendsArgs<ExtArgs>
   spiritualFriends?: boolean | Prisma.Members$spiritualFriendsArgs<ExtArgs>
+  ledGroups?: boolean | Prisma.Members$ledGroupsArgs<ExtArgs>
+  ministries?: boolean | Prisma.Members$ministriesArgs<ExtArgs>
   cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
-  zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
+  church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
+  network?: boolean | Prisma.Members$networkArgs<ExtArgs>
   sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
   subSector?: boolean | Prisma.Members$subSectorArgs<ExtArgs>
-  ledZones?: boolean | Prisma.Members$ledZonesArgs<ExtArgs>
+  zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
+  ledMinistries?: boolean | Prisma.Members$ledMinistriesArgs<ExtArgs>
   ledSectors?: boolean | Prisma.Members$ledSectorsArgs<ExtArgs>
   ledSubSectors?: boolean | Prisma.Members$ledSubSectorsArgs<ExtArgs>
+  ledZones?: boolean | Prisma.Members$ledZonesArgs<ExtArgs>
   groups?: boolean | Prisma.Members$groupsArgs<ExtArgs>
-  ledGroups?: boolean | Prisma.Members$ledGroupsArgs<ExtArgs>
   _count?: boolean | Prisma.MembersCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["members"]>
 
@@ -5246,12 +5246,12 @@ export type MembersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   network_id?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
   network?: boolean | Prisma.Members$networkArgs<ExtArgs>
-  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
-  zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
   sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
   subSector?: boolean | Prisma.Members$subSectorArgs<ExtArgs>
+  zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
 }, ExtArgs["result"]["members"]>
 
 export type MembersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -5281,12 +5281,12 @@ export type MembersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   network_id?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
   network?: boolean | Prisma.Members$networkArgs<ExtArgs>
-  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
-  zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
   sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
   subSector?: boolean | Prisma.Members$subSectorArgs<ExtArgs>
+  zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
 }, ExtArgs["result"]["members"]>
 
 export type MembersSelectScalar = {
@@ -5320,64 +5320,64 @@ export type MembersSelectScalar = {
 
 export type MembersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "age" | "street" | "city" | "state" | "zip" | "country" | "birthDate" | "baptismDate" | "role" | "gender" | "pictureUrl" | "notes" | "passwordHash" | "church_id" | "zone_id" | "sector_id" | "sub_sector_id" | "cell_id" | "network_id" | "createdAt" | "updatedAt", ExtArgs["result"]["members"]>
 export type MembersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  ministries?: boolean | Prisma.Members$ministriesArgs<ExtArgs>
-  church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
-  network?: boolean | Prisma.Members$networkArgs<ExtArgs>
-  ledMinistries?: boolean | Prisma.Members$ledMinistriesArgs<ExtArgs>
-  cells?: boolean | Prisma.Members$cellsArgs<ExtArgs>
-  hostedCells?: boolean | Prisma.Members$hostedCellsArgs<ExtArgs>
   assistedCells?: boolean | Prisma.Members$assistedCellsArgs<ExtArgs>
+  hostedCells?: boolean | Prisma.Members$hostedCellsArgs<ExtArgs>
+  cells?: boolean | Prisma.Members$cellsArgs<ExtArgs>
   invitedFriends?: boolean | Prisma.Members$invitedFriendsArgs<ExtArgs>
   spiritualFriends?: boolean | Prisma.Members$spiritualFriendsArgs<ExtArgs>
+  ledGroups?: boolean | Prisma.Members$ledGroupsArgs<ExtArgs>
+  ministries?: boolean | Prisma.Members$ministriesArgs<ExtArgs>
   cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
-  zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
+  church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
+  network?: boolean | Prisma.Members$networkArgs<ExtArgs>
   sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
   subSector?: boolean | Prisma.Members$subSectorArgs<ExtArgs>
-  ledZones?: boolean | Prisma.Members$ledZonesArgs<ExtArgs>
+  zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
+  ledMinistries?: boolean | Prisma.Members$ledMinistriesArgs<ExtArgs>
   ledSectors?: boolean | Prisma.Members$ledSectorsArgs<ExtArgs>
   ledSubSectors?: boolean | Prisma.Members$ledSubSectorsArgs<ExtArgs>
+  ledZones?: boolean | Prisma.Members$ledZonesArgs<ExtArgs>
   groups?: boolean | Prisma.Members$groupsArgs<ExtArgs>
-  ledGroups?: boolean | Prisma.Members$ledGroupsArgs<ExtArgs>
   _count?: boolean | Prisma.MembersCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MembersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
   network?: boolean | Prisma.Members$networkArgs<ExtArgs>
-  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
-  zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
   sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
   subSector?: boolean | Prisma.Members$subSectorArgs<ExtArgs>
+  zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
 }
 export type MembersIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
   church?: boolean | Prisma.ChurchesDefaultArgs<ExtArgs>
   network?: boolean | Prisma.Members$networkArgs<ExtArgs>
-  cell?: boolean | Prisma.Members$cellArgs<ExtArgs>
-  zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
   sector?: boolean | Prisma.Members$sectorArgs<ExtArgs>
   subSector?: boolean | Prisma.Members$subSectorArgs<ExtArgs>
+  zone?: boolean | Prisma.Members$zoneArgs<ExtArgs>
 }
 
 export type $MembersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Members"
   objects: {
-    ministries: Prisma.$MemberMinistryPayload<ExtArgs>[]
-    church: Prisma.$ChurchesPayload<ExtArgs>
-    network: Prisma.$NetworksPayload<ExtArgs> | null
-    ledMinistries: Prisma.$MinistriesPayload<ExtArgs>[]
-    cells: Prisma.$CellsPayload<ExtArgs>[]
-    hostedCells: Prisma.$CellsPayload<ExtArgs>[]
     assistedCells: Prisma.$CellsPayload<ExtArgs>[]
+    hostedCells: Prisma.$CellsPayload<ExtArgs>[]
+    cells: Prisma.$CellsPayload<ExtArgs>[]
     invitedFriends: Prisma.$FriendsPayload<ExtArgs>[]
     spiritualFriends: Prisma.$FriendsPayload<ExtArgs>[]
+    ledGroups: Prisma.$GroupsPayload<ExtArgs>[]
+    ministries: Prisma.$MemberMinistryPayload<ExtArgs>[]
     cell: Prisma.$CellsPayload<ExtArgs> | null
-    zone: Prisma.$ZonesPayload<ExtArgs> | null
+    church: Prisma.$ChurchesPayload<ExtArgs>
+    network: Prisma.$NetworksPayload<ExtArgs> | null
     sector: Prisma.$SectorsPayload<ExtArgs> | null
     subSector: Prisma.$SubSectorsPayload<ExtArgs> | null
-    ledZones: Prisma.$ZonesPayload<ExtArgs>[]
+    zone: Prisma.$ZonesPayload<ExtArgs> | null
+    ledMinistries: Prisma.$MinistriesPayload<ExtArgs>[]
     ledSectors: Prisma.$SectorsPayload<ExtArgs>[]
     ledSubSectors: Prisma.$SubSectorsPayload<ExtArgs>[]
+    ledZones: Prisma.$ZonesPayload<ExtArgs>[]
     groups: Prisma.$GroupsPayload<ExtArgs>[]
-    ledGroups: Prisma.$GroupsPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -5800,24 +5800,24 @@ readonly fields: MembersFieldRefs;
  */
 export interface Prisma__MembersClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  ministries<T extends Prisma.Members$ministriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ministriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberMinistryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  church<T extends Prisma.ChurchesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChurchesDefaultArgs<ExtArgs>>): Prisma.Prisma__ChurchesClient<runtime.Types.Result.GetResult<Prisma.$ChurchesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  network<T extends Prisma.Members$networkArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$networkArgs<ExtArgs>>): Prisma.Prisma__NetworksClient<runtime.Types.Result.GetResult<Prisma.$NetworksPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  ledMinistries<T extends Prisma.Members$ledMinistriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ledMinistriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MinistriesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  cells<T extends Prisma.Members$cellsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$cellsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CellsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  hostedCells<T extends Prisma.Members$hostedCellsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$hostedCellsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CellsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assistedCells<T extends Prisma.Members$assistedCellsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$assistedCellsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CellsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  hostedCells<T extends Prisma.Members$hostedCellsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$hostedCellsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CellsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cells<T extends Prisma.Members$cellsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$cellsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CellsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invitedFriends<T extends Prisma.Members$invitedFriendsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$invitedFriendsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FriendsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   spiritualFriends<T extends Prisma.Members$spiritualFriendsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$spiritualFriendsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FriendsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ledGroups<T extends Prisma.Members$ledGroupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ledGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ministries<T extends Prisma.Members$ministriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ministriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberMinistryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cell<T extends Prisma.Members$cellArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$cellArgs<ExtArgs>>): Prisma.Prisma__CellsClient<runtime.Types.Result.GetResult<Prisma.$CellsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  zone<T extends Prisma.Members$zoneArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$zoneArgs<ExtArgs>>): Prisma.Prisma__ZonesClient<runtime.Types.Result.GetResult<Prisma.$ZonesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  church<T extends Prisma.ChurchesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChurchesDefaultArgs<ExtArgs>>): Prisma.Prisma__ChurchesClient<runtime.Types.Result.GetResult<Prisma.$ChurchesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  network<T extends Prisma.Members$networkArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$networkArgs<ExtArgs>>): Prisma.Prisma__NetworksClient<runtime.Types.Result.GetResult<Prisma.$NetworksPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   sector<T extends Prisma.Members$sectorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$sectorArgs<ExtArgs>>): Prisma.Prisma__SectorsClient<runtime.Types.Result.GetResult<Prisma.$SectorsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   subSector<T extends Prisma.Members$subSectorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$subSectorArgs<ExtArgs>>): Prisma.Prisma__SubSectorsClient<runtime.Types.Result.GetResult<Prisma.$SubSectorsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  ledZones<T extends Prisma.Members$ledZonesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ledZonesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ZonesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  zone<T extends Prisma.Members$zoneArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$zoneArgs<ExtArgs>>): Prisma.Prisma__ZonesClient<runtime.Types.Result.GetResult<Prisma.$ZonesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  ledMinistries<T extends Prisma.Members$ledMinistriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ledMinistriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MinistriesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ledSectors<T extends Prisma.Members$ledSectorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ledSectorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SectorsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ledSubSectors<T extends Prisma.Members$ledSubSectorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ledSubSectorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubSectorsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ledZones<T extends Prisma.Members$ledZonesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ledZonesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ZonesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   groups<T extends Prisma.Members$groupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$groupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  ledGroups<T extends Prisma.Members$ledGroupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Members$ledGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6269,76 +6269,9 @@ export type MembersDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Members.ministries
+ * Members.assistedCells
  */
-export type Members$ministriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the MemberMinistry
-   */
-  select?: Prisma.MemberMinistrySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the MemberMinistry
-   */
-  omit?: Prisma.MemberMinistryOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MemberMinistryInclude<ExtArgs> | null
-  where?: Prisma.MemberMinistryWhereInput
-  orderBy?: Prisma.MemberMinistryOrderByWithRelationInput | Prisma.MemberMinistryOrderByWithRelationInput[]
-  cursor?: Prisma.MemberMinistryWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.MemberMinistryScalarFieldEnum | Prisma.MemberMinistryScalarFieldEnum[]
-}
-
-/**
- * Members.network
- */
-export type Members$networkArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Networks
-   */
-  select?: Prisma.NetworksSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Networks
-   */
-  omit?: Prisma.NetworksOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NetworksInclude<ExtArgs> | null
-  where?: Prisma.NetworksWhereInput
-}
-
-/**
- * Members.ledMinistries
- */
-export type Members$ledMinistriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Ministries
-   */
-  select?: Prisma.MinistriesSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Ministries
-   */
-  omit?: Prisma.MinistriesOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MinistriesInclude<ExtArgs> | null
-  where?: Prisma.MinistriesWhereInput
-  orderBy?: Prisma.MinistriesOrderByWithRelationInput | Prisma.MinistriesOrderByWithRelationInput[]
-  cursor?: Prisma.MinistriesWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.MinistriesScalarFieldEnum | Prisma.MinistriesScalarFieldEnum[]
-}
-
-/**
- * Members.cells
- */
-export type Members$cellsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Members$assistedCellsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Cells
    */
@@ -6384,9 +6317,9 @@ export type Members$hostedCellsArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * Members.assistedCells
+ * Members.cells
  */
-export type Members$assistedCellsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Members$cellsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Cells
    */
@@ -6456,6 +6389,54 @@ export type Members$spiritualFriendsArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
+ * Members.ledGroups
+ */
+export type Members$ledGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Groups
+   */
+  select?: Prisma.GroupsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Groups
+   */
+  omit?: Prisma.GroupsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupsInclude<ExtArgs> | null
+  where?: Prisma.GroupsWhereInput
+  orderBy?: Prisma.GroupsOrderByWithRelationInput | Prisma.GroupsOrderByWithRelationInput[]
+  cursor?: Prisma.GroupsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GroupsScalarFieldEnum | Prisma.GroupsScalarFieldEnum[]
+}
+
+/**
+ * Members.ministries
+ */
+export type Members$ministriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MemberMinistry
+   */
+  select?: Prisma.MemberMinistrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MemberMinistry
+   */
+  omit?: Prisma.MemberMinistryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemberMinistryInclude<ExtArgs> | null
+  where?: Prisma.MemberMinistryWhereInput
+  orderBy?: Prisma.MemberMinistryOrderByWithRelationInput | Prisma.MemberMinistryOrderByWithRelationInput[]
+  cursor?: Prisma.MemberMinistryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MemberMinistryScalarFieldEnum | Prisma.MemberMinistryScalarFieldEnum[]
+}
+
+/**
  * Members.cell
  */
 export type Members$cellArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -6475,22 +6456,22 @@ export type Members$cellArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 }
 
 /**
- * Members.zone
+ * Members.network
  */
-export type Members$zoneArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Members$networkArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Zones
+   * Select specific fields to fetch from the Networks
    */
-  select?: Prisma.ZonesSelect<ExtArgs> | null
+  select?: Prisma.NetworksSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Zones
+   * Omit specific fields from the Networks
    */
-  omit?: Prisma.ZonesOmit<ExtArgs> | null
+  omit?: Prisma.NetworksOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ZonesInclude<ExtArgs> | null
-  where?: Prisma.ZonesWhereInput
+  include?: Prisma.NetworksInclude<ExtArgs> | null
+  where?: Prisma.NetworksWhereInput
 }
 
 /**
@@ -6532,9 +6513,9 @@ export type Members$subSectorArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Members.ledZones
+ * Members.zone
  */
-export type Members$ledZonesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Members$zoneArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Zones
    */
@@ -6548,11 +6529,30 @@ export type Members$ledZonesArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   include?: Prisma.ZonesInclude<ExtArgs> | null
   where?: Prisma.ZonesWhereInput
-  orderBy?: Prisma.ZonesOrderByWithRelationInput | Prisma.ZonesOrderByWithRelationInput[]
-  cursor?: Prisma.ZonesWhereUniqueInput
+}
+
+/**
+ * Members.ledMinistries
+ */
+export type Members$ledMinistriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Ministries
+   */
+  select?: Prisma.MinistriesSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Ministries
+   */
+  omit?: Prisma.MinistriesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MinistriesInclude<ExtArgs> | null
+  where?: Prisma.MinistriesWhereInput
+  orderBy?: Prisma.MinistriesOrderByWithRelationInput | Prisma.MinistriesOrderByWithRelationInput[]
+  cursor?: Prisma.MinistriesWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.ZonesScalarFieldEnum | Prisma.ZonesScalarFieldEnum[]
+  distinct?: Prisma.MinistriesScalarFieldEnum | Prisma.MinistriesScalarFieldEnum[]
 }
 
 /**
@@ -6604,33 +6604,33 @@ export type Members$ledSubSectorsArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
- * Members.groups
+ * Members.ledZones
  */
-export type Members$groupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Members$ledZonesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Groups
+   * Select specific fields to fetch from the Zones
    */
-  select?: Prisma.GroupsSelect<ExtArgs> | null
+  select?: Prisma.ZonesSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Groups
+   * Omit specific fields from the Zones
    */
-  omit?: Prisma.GroupsOmit<ExtArgs> | null
+  omit?: Prisma.ZonesOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.GroupsInclude<ExtArgs> | null
-  where?: Prisma.GroupsWhereInput
-  orderBy?: Prisma.GroupsOrderByWithRelationInput | Prisma.GroupsOrderByWithRelationInput[]
-  cursor?: Prisma.GroupsWhereUniqueInput
+  include?: Prisma.ZonesInclude<ExtArgs> | null
+  where?: Prisma.ZonesWhereInput
+  orderBy?: Prisma.ZonesOrderByWithRelationInput | Prisma.ZonesOrderByWithRelationInput[]
+  cursor?: Prisma.ZonesWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.GroupsScalarFieldEnum | Prisma.GroupsScalarFieldEnum[]
+  distinct?: Prisma.ZonesScalarFieldEnum | Prisma.ZonesScalarFieldEnum[]
 }
 
 /**
- * Members.ledGroups
+ * Members.groups
  */
-export type Members$ledGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Members$groupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Groups
    */
