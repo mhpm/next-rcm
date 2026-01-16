@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma';
 import { ReportScope, Prisma } from '@/generated/prisma/client';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import crypto from 'crypto';
 
 export async function getPublicReport(token: string) {
   const report = await prisma.reports.findUnique({
@@ -19,12 +20,19 @@ export async function getPublicReportBySlugs(
   churchSlug: string,
   reportSlug: string
 ) {
+  console.log('getPublicReportBySlugs called with:', {
+    churchSlug,
+    reportSlug,
+  });
   const church = await prisma.churches.findUnique({
     where: { slug: churchSlug },
     select: { id: true },
   });
 
-  if (!church) return null;
+  if (!church) {
+    console.log('Church not found for slug:', churchSlug);
+    return null;
+  }
 
   const report = await prisma.reports.findFirst({
     where: {
@@ -36,6 +44,29 @@ export async function getPublicReportBySlugs(
       church: { select: { name: true } },
     },
   });
+
+  if (!report) {
+    console.log(
+      'Report not found for slug:',
+      reportSlug,
+      'in church:',
+      church.id
+    );
+  } else {
+    console.log('Report found:', report.id, 'publicToken:', report.publicToken);
+
+    // Auto-fix: Generate publicToken if missing
+    if (!report.publicToken) {
+      console.log('Generating missing publicToken for report:', report.id);
+      const newToken = crypto.randomBytes(16).toString('hex');
+      await prisma.reports.update({
+        where: { id: report.id },
+        data: { publicToken: newToken },
+      });
+      report.publicToken = newToken;
+    }
+  }
+
   return report;
 }
 
