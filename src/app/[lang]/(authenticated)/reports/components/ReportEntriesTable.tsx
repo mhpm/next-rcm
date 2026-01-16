@@ -304,12 +304,126 @@ export default function ReportEntriesTable({
         };
       }
 
-      if (fieldDef?.type === 'MEMBER_SELECT') {
+      if (
+        fieldDef?.type === 'MEMBER_SELECT' ||
+        fieldDef?.type === 'MEMBER_ATTENDANCE'
+      ) {
         return {
           ...col,
-          render: (value: any) => {
+          render: (value: any, row: any) => {
             if (!Array.isArray(value) || value.length === 0) {
               return <span className="text-muted-foreground">-</span>;
+            }
+
+            if (fieldDef.type === 'MEMBER_ATTENDANCE' && row.__allMemberIds) {
+              const allMemberIds = row.__allMemberIds as string[];
+              // Since value contains names (because page.tsx maps IDs to names for display),
+              // we can't easily compare IDs here unless we passed raw IDs in value.
+              // BUT page.tsx sets base[f.id] = selectedNames (strings).
+              // And base[`raw_${f.id}`] = val (original IDs).
+              // So we should check if we can access raw value here.
+              // The DataTable passes 'value' which is row[col.key].
+              // So 'value' is the array of names.
+
+              // We need the raw IDs of attendees to calculate absentees correctly if we want to be precise.
+              // However, we can use row[`raw_${col.key}`] if available.
+              const rawAttendeeIds = (row[`raw_${col.key}`] as string[]) || [];
+              const attendeeCount = rawAttendeeIds.length;
+
+              // Calculate absentees
+              // Filter out IDs that are present in rawAttendeeIds
+              const absenteeCount = allMemberIds.length - attendeeCount;
+
+              // Get absent member names
+              const allMembers =
+                (row.__allMembers as { id: string; name: string }[]) || [];
+              const absentMembers = allMembers.filter(
+                (m) => !rawAttendeeIds.includes(m.id)
+              );
+
+              // Ensure non-negative (just in case of data inconsistency)
+              const validAbsenteeCount = Math.max(0, absenteeCount);
+
+              return (
+                <div className="flex gap-2">
+                  <TooltipProvider>
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger asChild>
+                        <Badge
+                          variant="default"
+                          className="cursor-help whitespace-nowrap"
+                        >
+                          Asistieron: {attendeeCount}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent side="left" className="p-0">
+                        <div className="flex flex-col max-h-[300px] overflow-y-auto min-w-[180px]">
+                          <div className="bg-primary/5 px-3 py-2 text-xs font-bold text-primary border-b">
+                            Asistentes
+                          </div>
+                          <div className="p-2 space-y-1">
+                            {value.map((name: string, i: number) => {
+                              const isSpecialRole =
+                                name.includes('(Líder)') ||
+                                name.includes('(Asistente)') ||
+                                name.includes('(Anfitrión)');
+
+                              return (
+                                <div
+                                  key={i}
+                                  className={`text-sm px-2 py-1.5 rounded-md hover:bg-muted transition-colors ${
+                                    isSpecialRole
+                                      ? 'text-primary font-semibold bg-primary/5'
+                                      : ''
+                                  }`}
+                                >
+                                  {name}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  <TooltipProvider>
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger asChild>
+                        <Badge
+                          variant="secondary"
+                          className="cursor-help whitespace-nowrap"
+                        >
+                          Faltaron: {validAbsenteeCount}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent side="left" className="p-0">
+                        <div className="flex flex-col max-h-[300px] overflow-y-auto min-w-[180px]">
+                          <div className="bg-muted/50 px-3 py-2 text-xs font-bold border-b">
+                            Faltantes
+                          </div>
+                          <div className="p-2 space-y-1">
+                            {absentMembers.length > 0 ? (
+                              absentMembers.map((m) => (
+                                <div
+                                  key={m.id}
+                                  className="text-sm px-2 py-1.5 rounded-md hover:bg-muted transition-colors"
+                                >
+                                  {m.name}
+                                </div>
+                              ))
+                            ) : (
+                              <div className="text-sm px-2 py-1.5 text-muted-foreground italic text-center">
+                                ¡Todos asistieron!
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              );
             }
 
             return (

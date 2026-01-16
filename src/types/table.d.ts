@@ -72,6 +72,24 @@ export interface TableColumn<T = Record<string, unknown>> {
   sortable?: boolean;
 
   /**
+   * Custom function to extract the value used for sorting.
+   * Useful when the display value (render) or the key value is not what should be sorted.
+   *
+   * @param row - The complete row data object
+   * @returns The value to use for sorting (string or number)
+   *
+   * @example
+   * ```typescript
+   * // Sort by nested property
+   * sortValue: (user) => user.address.city
+   *
+   * // Sort by derived value
+   * sortValue: (user) => `${user.lastName}, ${user.firstName}`
+   * ```
+   */
+  sortValue?: (row: T) => string | number | null | undefined;
+
+  /**
    * Custom render function to control how the cell content is displayed.
    * Receives both the cell value and the complete row data for flexible rendering.
    *
@@ -129,7 +147,7 @@ export interface TableColumn<T = Record<string, unknown>> {
    *
    * @default 'text'
    */
-  type?: "text" | "number" | "date" | "custom";
+  type?: 'text' | 'number' | 'date' | 'custom';
 }
 
 /**
@@ -183,17 +201,17 @@ export interface TableAction<T = Record<string, unknown>> {
    * - `ghost` - Minimal styling, transparent background
    */
   variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link"
-    | "primary"
-    | "success"
-    | "warning"
-    | "info"
-    | "error";
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link'
+    | 'primary'
+    | 'success'
+    | 'warning'
+    | 'info'
+    | 'error';
 
   /**
    * Additional CSS classes to apply to the action element.
@@ -432,17 +450,17 @@ export interface AddButtonConfig {
    * - `ghost` - Minimal styling, transparent background
    */
   variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link"
-    | "primary"
-    | "success"
-    | "warning"
-    | "info"
-    | "error";
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link'
+    | 'primary'
+    | 'success'
+    | 'warning'
+    | 'info'
+    | 'error';
 
   /**
    * Additional CSS classes to apply to the button element.
@@ -637,6 +655,11 @@ export interface DataTableProps<T = Record<string, unknown>> {
    * Useful for adding filter buttons or other controls.
    */
   searchEndContent?: React.ReactNode;
+
+  /**
+   * Custom filters to be displayed below the search bar.
+   */
+  customFilters?: React.ReactNode;
 
   /**
    * Whether rows can be selected with checkboxes.
@@ -1024,7 +1047,7 @@ export interface OrderData {
    * status: 'Pending'     // Awaiting payment confirmation
    * ```
    */
-  status: "Processing" | "Success" | "Failed" | "Pending";
+  status: 'Processing' | 'Success' | 'Failed' | 'Pending';
 
   /**
    * Total monetary amount of the order.

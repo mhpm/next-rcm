@@ -30,6 +30,10 @@ export default async function ViewReportEntryPage({
           name: true,
           leader: { select: { firstName: true, lastName: true } },
           assistant: { select: { firstName: true, lastName: true } },
+          members: {
+            select: { id: true, firstName: true, lastName: true },
+            orderBy: { firstName: 'asc' },
+          },
           subSector: {
             select: {
               name: true,
@@ -48,12 +52,20 @@ export default async function ViewReportEntryPage({
         select: {
           name: true,
           leader: { select: { firstName: true, lastName: true } },
+          members: {
+            select: { id: true, firstName: true, lastName: true },
+            orderBy: { firstName: 'asc' },
+          },
         },
       },
       sector: {
         select: {
           name: true,
           supervisor: { select: { firstName: true, lastName: true } },
+          members: {
+            select: { id: true, firstName: true, lastName: true },
+            orderBy: { firstName: 'asc' },
+          },
         },
       },
     },
@@ -63,12 +75,21 @@ export default async function ViewReportEntryPage({
 
   // Collect member IDs to fetch names
   const memberIds = new Set<string>();
+  const entityMembers =
+    entry.cell?.members || entry.group?.members || entry.sector?.members || [];
+
+  // Add all entity members to the set so we can resolve their names
+  entityMembers.forEach((m) => memberIds.add(m.id));
 
   entry.values.forEach((v) => {
     const field = report.fields.find((f) => f.id === v.report_field_id);
     if (!field) return;
 
     if (field.type === 'MEMBER_SELECT' && Array.isArray(v.value)) {
+      (v.value as string[]).forEach((id) => memberIds.add(id));
+    }
+
+    if (field.type === 'MEMBER_ATTENDANCE' && Array.isArray(v.value)) {
       (v.value as string[]).forEach((id) => memberIds.add(id));
     }
 
@@ -325,6 +346,7 @@ export default async function ViewReportEntryPage({
                       )?.value;
                       const isFullWidth =
                         f.type === 'MEMBER_SELECT' ||
+                        f.type === 'MEMBER_ATTENDANCE' ||
                         f.type === 'FRIEND_REGISTRATION';
 
                       return (
@@ -342,6 +364,11 @@ export default async function ViewReportEntryPage({
                               field={f}
                               value={val}
                               membersMap={membersMap}
+                              allMembers={
+                                f.type === 'MEMBER_ATTENDANCE'
+                                  ? entityMembers.map((m) => m.id)
+                                  : undefined
+                              }
                             />
                           </div>
                         </div>
@@ -362,10 +389,12 @@ function FieldValueDisplay({
   field,
   value,
   membersMap,
+  allMembers,
 }: {
   field: any;
   value: any;
   membersMap: Map<string, string>;
+  allMembers?: string[];
 }) {
   if (value === undefined || value === null || value === '') {
     return (
@@ -416,8 +445,64 @@ function FieldValueDisplay({
     );
   }
 
-  if (field.type === 'MEMBER_SELECT') {
-    const ids = value as string[];
+  if (field.type === 'MEMBER_SELECT' || field.type === 'MEMBER_ATTENDANCE') {
+    const ids = (value as string[]) || [];
+
+    if (field.type === 'MEMBER_ATTENDANCE' && allMembers) {
+      const attendedIds = new Set(ids);
+      const absentIds = allMembers.filter((id) => !attendedIds.has(id));
+      const attendedCount = attendedIds.size;
+      const absentCount = absentIds.length;
+      const totalCount = allMembers.length;
+      const attendancePercentage =
+        totalCount > 0 ? Math.round((attendedCount / totalCount) * 100) : 0;
+
+      return (
+        <div className="space-y-3">
+          <div className="flex gap-3 print:hidden flex-wrap">
+            <Badge variant="default">Asistieron: {attendedCount}</Badge>
+            <Badge variant="secondary">Faltaron: {absentCount}</Badge>
+            <Badge variant="outline" className="ml-auto">
+              {attendancePercentage}% Asistencia
+            </Badge>
+          </div>
+
+          <div className="hidden print:block text-xs mb-2">
+            Asistieron: {attendedCount} | Faltaron: {absentCount} (
+            {attendancePercentage}%)
+          </div>
+
+          <div className="flex flex-wrap gap-2 print:gap-1">
+            {ids.map((id) => (
+              <Badge
+                key={id}
+                variant="secondary"
+                className="pl-1 pr-3 py-1.5 bg-secondary/50 hover:bg-secondary/70 transition-colors print:bg-transparent print:border print:border-gray-300 print:text-black print:px-1 print:py-0 print:text-[10px] print:h-auto"
+              >
+                <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center mr-2 text-[10px] font-black border border-primary/10 print:hidden">
+                  {(membersMap.get(id) || '?').charAt(0)}
+                </div>
+                {membersMap.get(id) || 'Usuario desconocido'}
+              </Badge>
+            ))}
+
+            {absentIds.map((id) => (
+              <Badge
+                key={id}
+                variant="outline"
+                className="pl-1 pr-3 py-1.5 text-muted-foreground border-dashed bg-muted/20 print:bg-transparent print:border print:border-gray-200 print:text-gray-400 print:px-1 print:py-0 print:text-[10px] print:h-auto"
+              >
+                <div className="w-6 h-6 rounded-full bg-muted text-muted-foreground flex items-center justify-center mr-2 text-[10px] font-black border border-muted-foreground/20 print:hidden">
+                  {(membersMap.get(id) || '?').charAt(0)}
+                </div>
+                {membersMap.get(id) || 'Usuario desconocido'}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
     if (!ids.length)
       return (
         <span className="text-muted-foreground/50 italic text-sm print:text-xs">

@@ -18,6 +18,8 @@ export type Row = Record<string, unknown> & {
   subsector?: string;
   sector?: string;
   zona?: string;
+  __allMemberIds?: string[];
+  __allMembers?: { id: string; name: string }[];
 };
 
 const parseLocalFilterDate = (dateStr: string) => {
@@ -38,7 +40,8 @@ export function useReportData(
         f.type === 'NUMBER' ||
         f.type === 'CURRENCY' ||
         f.type === 'FRIEND_REGISTRATION' ||
-        f.type === 'MEMBER_SELECT'
+        f.type === 'MEMBER_SELECT' ||
+        f.type === 'MEMBER_ATTENDANCE'
     );
   }, [fields]);
 
@@ -192,6 +195,9 @@ export function useReportData(
         // Initialize sums
         numericFields.forEach((f) => {
           groups[key].values[f.id] = 0;
+          if (f.type === 'MEMBER_ATTENDANCE') {
+            groups[key].values[`${f.id}_absent`] = 0;
+          }
         });
         // Initialize boolean counts
         booleanFields.forEach((f) => {
@@ -207,9 +213,19 @@ export function useReportData(
         const rawKey = `raw_${f.id}`;
         const val = row[rawKey] ?? row[f.id];
 
-        if (f.type === 'FRIEND_REGISTRATION' || f.type === 'MEMBER_SELECT') {
-          if (Array.isArray(val)) {
-            groups[key].values[f.id] += val.length;
+        if (
+          f.type === 'FRIEND_REGISTRATION' ||
+          f.type === 'MEMBER_SELECT' ||
+          f.type === 'MEMBER_ATTENDANCE'
+        ) {
+          const valArray = Array.isArray(val) ? val : [];
+          groups[key].values[f.id] += valArray.length;
+
+          if (f.type === 'MEMBER_ATTENDANCE') {
+            const totalMembers = row.__allMemberIds?.length || 0;
+            // Ensure we don't get negative values if data is inconsistent
+            const absent = Math.max(0, totalMembers - valArray.length);
+            groups[key].values[`${f.id}_absent`] += absent;
           }
         } else {
           const num = parseFloat(String(val || '0'));
@@ -238,13 +254,21 @@ export function useReportData(
   // Calculate totals
   const totals = useMemo(() => {
     const total: Record<string, number> = { count: 0 };
-    numericFields.forEach((f) => (total[f.id] = 0));
+    numericFields.forEach((f) => {
+      total[f.id] = 0;
+      if (f.type === 'MEMBER_ATTENDANCE') {
+        total[`${f.id}_absent`] = 0;
+      }
+    });
     booleanFields.forEach((f) => (total[f.id] = 0));
 
     consolidatedData.forEach((group: any) => {
       total.count += group.count;
       numericFields.forEach((f) => {
         total[f.id] += group.values[f.id];
+        if (f.type === 'MEMBER_ATTENDANCE') {
+          total[`${f.id}_absent`] += group.values[`${f.id}_absent`];
+        }
       });
       booleanFields.forEach((f) => {
         total[f.id] += group.values[f.id];

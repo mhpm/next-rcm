@@ -362,6 +362,12 @@ export default function ConsolidatedReportView({
     const cols = [{ key: 'count', label: 'Registros' }];
     numericFields.forEach((f) => {
       cols.push({ key: f.id, label: f.label || f.key });
+      if (f.type === 'MEMBER_ATTENDANCE') {
+        cols.push({
+          key: `${f.id}_absent`,
+          label: `${f.label || f.key} (Faltantes)`,
+        });
+      }
     });
     booleanFields.forEach((f) => {
       cols.push({ key: f.id, label: `${f.label || f.key} (Sí)` });
@@ -480,6 +486,14 @@ export default function ConsolidatedReportView({
         headers.push(f.label || f.key);
         fieldsToExport.push({ id: f.id, label: f.label || f.key });
       }
+      if (
+        f.type === 'MEMBER_ATTENDANCE' &&
+        visibleColumns.has(`${f.id}_absent`)
+      ) {
+        const label = `${f.label || f.key} (Faltantes)`;
+        headers.push(label);
+        fieldsToExport.push({ id: `${f.id}_absent`, label });
+      }
     });
 
     booleanFields.forEach((f) => {
@@ -565,6 +579,9 @@ export default function ConsolidatedReportView({
       console.error('Error exporting to Excel:', error);
     }
   };
+
+  const visibleFields = allColumns.filter((c) => visibleColumns.has(c.key));
+  const lastVisibleKey = visibleFields[visibleFields.length - 1]?.key;
 
   return (
     <Card className="w-full border-0 sm:border shadow-none sm:shadow-sm">
@@ -757,16 +774,31 @@ export default function ConsolidatedReportView({
                     <span className="ml-2 font-semibold">{group.count}</span>
                   </div>
                 )}
-                {numericFields
-                  .filter((f) => visibleColumns.has(f.id))
-                  .map((f) => (
-                    <div key={f.id}>
-                      <span className="text-muted-foreground">{f.label}:</span>
-                      <span className="ml-2 font-semibold">
-                        {group.values[f.id].toLocaleString()}
-                      </span>
-                    </div>
-                  ))}
+                {numericFields.map((f) => (
+                  <React.Fragment key={f.id}>
+                    {visibleColumns.has(f.id) && (
+                      <div key={f.id}>
+                        <span className="text-muted-foreground">
+                          {f.label}:
+                        </span>
+                        <span className="ml-2 font-semibold">
+                          {group.values[f.id].toLocaleString()}
+                        </span>
+                      </div>
+                    )}
+                    {f.type === 'MEMBER_ATTENDANCE' &&
+                      visibleColumns.has(`${f.id}_absent`) && (
+                        <div key={`${f.id}_absent`}>
+                          <span className="text-muted-foreground">
+                            {f.label} (Faltantes):
+                          </span>
+                          <span className="ml-2 font-semibold">
+                            {group.values[`${f.id}_absent`].toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+                  </React.Fragment>
+                ))}
                 {booleanFields
                   .filter((f) => visibleColumns.has(f.id))
                   .map((f) => (
@@ -795,16 +827,29 @@ export default function ConsolidatedReportView({
                   <span className="ml-2 font-bold">{totals.count}</span>
                 </div>
               )}
-              {numericFields
-                .filter((f) => visibleColumns.has(f.id))
-                .map((f) => (
-                  <div key={f.id}>
-                    <span className="text-muted-foreground">{f.label}:</span>
-                    <span className="ml-2 font-bold">
-                      {totals[f.id].toLocaleString()}
-                    </span>
-                  </div>
-                ))}
+              {numericFields.map((f) => (
+                <React.Fragment key={f.id}>
+                  {visibleColumns.has(f.id) && (
+                    <div key={f.id}>
+                      <span className="text-muted-foreground">{f.label}:</span>
+                      <span className="ml-2 font-bold">
+                        {totals[f.id].toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  {f.type === 'MEMBER_ATTENDANCE' &&
+                    visibleColumns.has(`${f.id}_absent`) && (
+                      <div key={`${f.id}_absent`}>
+                        <span className="text-muted-foreground">
+                          {f.label} (Faltantes):
+                        </span>
+                        <span className="ml-2 font-bold">
+                          {totals[`${f.id}_absent`].toLocaleString()}
+                        </span>
+                      </div>
+                    )}
+                </React.Fragment>
+              ))}
               {booleanFields
                 .filter((f) => visibleColumns.has(f.id))
                 .map((f) => (
@@ -966,82 +1011,99 @@ export default function ConsolidatedReportView({
                       </div>
                     </TableHead>
                   )}
-                  {numericFields
-                    .filter((f) => visibleColumns.has(f.id))
-                    .map((f) => (
-                      <TableHead
-                        key={f.id}
-                        className="whitespace-nowrap py-2 group cursor-pointer select-none"
-                        onClick={() => handleSort(f.id)}
-                      >
-                        <div className="flex items-center gap-1 justify-between">
-                          <div className="flex items-center gap-1">
-                            {f.label || 'Campo'}
-                            {getSortIcon(f.id)}
+                  {numericFields.map((f) => (
+                    <React.Fragment key={f.id}>
+                      {visibleColumns.has(f.id) && (
+                        <TableHead
+                          key={f.id}
+                          className="whitespace-nowrap py-2 group cursor-pointer select-none"
+                          onClick={() => handleSort(f.id)}
+                        >
+                          <div className="flex items-center gap-1 justify-between">
+                            <div className="flex items-center gap-1">
+                              {f.label || 'Campo'}
+                              {getSortIcon(f.id)}
+                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <MoreVertical className="h-3 w-3" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="start">
+                                <DropdownMenuLabel>Insights</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  onClick={() => toggleInsight(f.id, 'max')}
+                                >
+                                  <div className="flex items-center gap-2 w-full">
+                                    {isInsightActive(f.id, 'max') ? (
+                                      <Trash2 className="h-3 w-3 text-red-500" />
+                                    ) : (
+                                      <ArrowUpCircle className="h-3 w-3 text-green-500" />
+                                    )}
+                                    <span
+                                      className={
+                                        isInsightActive(f.id, 'max')
+                                          ? 'text-red-500'
+                                          : ''
+                                      }
+                                    >
+                                      {isInsightActive(f.id, 'max')
+                                        ? 'Quitar Mayor'
+                                        : 'Destacar Mayor'}
+                                    </span>
+                                  </div>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => toggleInsight(f.id, 'min')}
+                                >
+                                  <div className="flex items-center gap-2 w-full">
+                                    {isInsightActive(f.id, 'min') ? (
+                                      <Trash2 className="h-3 w-3 text-red-500" />
+                                    ) : (
+                                      <ArrowDownCircle className="h-3 w-3 text-yellow-500" />
+                                    )}
+                                    <span
+                                      className={
+                                        isInsightActive(f.id, 'min')
+                                          ? 'text-red-500'
+                                          : ''
+                                      }
+                                    >
+                                      {isInsightActive(f.id, 'min')
+                                        ? 'Quitar Menor'
+                                        : 'Destacar Menor'}
+                                    </span>
+                                  </div>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <MoreVertical className="h-3 w-3" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start">
-                              <DropdownMenuLabel>Insights</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() => toggleInsight(f.id, 'max')}
-                              >
-                                <div className="flex items-center gap-2 w-full">
-                                  {isInsightActive(f.id, 'max') ? (
-                                    <Trash2 className="h-3 w-3 text-red-500" />
-                                  ) : (
-                                    <ArrowUpCircle className="h-3 w-3 text-green-500" />
-                                  )}
-                                  <span
-                                    className={
-                                      isInsightActive(f.id, 'max')
-                                        ? 'text-red-500'
-                                        : ''
-                                    }
-                                  >
-                                    {isInsightActive(f.id, 'max')
-                                      ? 'Quitar Mayor'
-                                      : 'Destacar Mayor'}
-                                  </span>
-                                </div>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => toggleInsight(f.id, 'min')}
-                              >
-                                <div className="flex items-center gap-2 w-full">
-                                  {isInsightActive(f.id, 'min') ? (
-                                    <Trash2 className="h-3 w-3 text-red-500" />
-                                  ) : (
-                                    <ArrowDownCircle className="h-3 w-3 text-yellow-500" />
-                                  )}
-                                  <span
-                                    className={
-                                      isInsightActive(f.id, 'min')
-                                        ? 'text-red-500'
-                                        : ''
-                                    }
-                                  >
-                                    {isInsightActive(f.id, 'min')
-                                      ? 'Quitar Menor'
-                                      : 'Destacar Menor'}
-                                  </span>
-                                </div>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </TableHead>
-                    ))}
+                        </TableHead>
+                      )}
+                      {f.type === 'MEMBER_ATTENDANCE' &&
+                        visibleColumns.has(`${f.id}_absent`) && (
+                          <TableHead
+                            key={`${f.id}_absent`}
+                            className="whitespace-nowrap py-2 group cursor-pointer select-none"
+                            onClick={() => handleSort(`${f.id}_absent`)}
+                          >
+                            <div className="flex items-center gap-1 justify-between">
+                              <div className="flex items-center gap-1">
+                                {f.label || 'Campo'} (Faltantes)
+                                {getSortIcon(`${f.id}_absent`)}
+                              </div>
+                            </div>
+                          </TableHead>
+                        )}
+                    </React.Fragment>
+                  ))}
                   {booleanFields
                     .filter((f) => visibleColumns.has(f.id))
                     .map((f) => (
@@ -1069,16 +1131,27 @@ export default function ConsolidatedReportView({
                         {group.count}
                       </TableCell>
                     )}
-                    {numericFields
-                      .filter((f) => visibleColumns.has(f.id))
-                      .map((f) => (
-                        <TableCell
-                          key={f.id}
-                          className="whitespace-nowrap py-2"
-                        >
-                          {group.values[f.id].toLocaleString()}
-                        </TableCell>
-                      ))}
+                    {numericFields.map((f) => (
+                      <React.Fragment key={f.id}>
+                        {visibleColumns.has(f.id) && (
+                          <TableCell
+                            key={f.id}
+                            className="whitespace-nowrap py-2"
+                          >
+                            {group.values[f.id].toLocaleString()}
+                          </TableCell>
+                        )}
+                        {f.type === 'MEMBER_ATTENDANCE' &&
+                          visibleColumns.has(`${f.id}_absent`) && (
+                            <TableCell
+                              key={`${f.id}_absent`}
+                              className="whitespace-nowrap py-2 text-muted-foreground"
+                            >
+                              {group.values[`${f.id}_absent`].toLocaleString()}
+                            </TableCell>
+                          )}
+                      </React.Fragment>
+                    ))}
                     {booleanFields
                       .filter((f) => visibleColumns.has(f.id))
                       .map((f) => (
@@ -1096,26 +1169,49 @@ export default function ConsolidatedReportView({
                     TOTAL GENERAL
                   </TableCell>
                   {visibleColumns.has('count') && (
-                    <TableCell className="whitespace-nowrap py-4 px-6 text-lg">
+                    <TableCell
+                      className={`whitespace-nowrap py-4 px-6 text-lg ${
+                        lastVisibleKey === 'count' ? 'rounded-r-lg' : ''
+                      }`}
+                    >
                       {totals.count}
                     </TableCell>
                   )}
-                  {numericFields
-                    .filter((f) => visibleColumns.has(f.id))
-                    .map((f) => (
-                      <TableCell
-                        key={f.id}
-                        className="whitespace-nowrap py-4 px-6 text-lg"
-                      >
-                        {totals[f.id].toLocaleString()}
-                      </TableCell>
-                    ))}
+                  {numericFields.map((f) => (
+                    <React.Fragment key={f.id}>
+                      {visibleColumns.has(f.id) && (
+                        <TableCell
+                          key={f.id}
+                          className={`whitespace-nowrap py-4 px-6 text-lg ${
+                            lastVisibleKey === f.id ? 'rounded-r-lg' : ''
+                          }`}
+                        >
+                          {totals[f.id].toLocaleString()}
+                        </TableCell>
+                      )}
+                      {f.type === 'MEMBER_ATTENDANCE' &&
+                        visibleColumns.has(`${f.id}_absent`) && (
+                          <TableCell
+                            key={`${f.id}_absent`}
+                            className={`whitespace-nowrap py-4 px-6 text-lg ${
+                              lastVisibleKey === `${f.id}_absent`
+                                ? 'rounded-r-lg'
+                                : ''
+                            }`}
+                          >
+                            {totals[`${f.id}_absent`].toLocaleString()}
+                          </TableCell>
+                        )}
+                    </React.Fragment>
+                  ))}
                   {booleanFields
                     .filter((f) => visibleColumns.has(f.id))
                     .map((f) => (
                       <TableCell
                         key={f.id}
-                        className="whitespace-nowrap py-4 px-6 text-lg"
+                        className={`whitespace-nowrap py-4 px-6 text-lg ${
+                          lastVisibleKey === f.id ? 'rounded-r-lg' : ''
+                        }`}
                       >
                         {totals[f.id]}
                       </TableCell>

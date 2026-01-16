@@ -252,6 +252,7 @@ export function FriendsTable({ friends }: FriendsTableProps) {
       label: 'Célula',
       sortable: true,
       render: (_, row) => row.cell?.name || '-',
+      sortValue: (row) => row.cell?.name,
     },
     {
       key: 'spiritualFather',
@@ -261,6 +262,10 @@ export function FriendsTable({ friends }: FriendsTableProps) {
         row.spiritualFather
           ? `${row.spiritualFather.firstName} ${row.spiritualFather.lastName}`
           : '-',
+      sortValue: (row) =>
+        row.spiritualFather
+          ? `${row.spiritualFather.firstName} ${row.spiritualFather.lastName}`
+          : '',
     },
     {
       key: 'invitedBy',
@@ -270,6 +275,10 @@ export function FriendsTable({ friends }: FriendsTableProps) {
         row.invitedBy
           ? `${row.invitedBy.firstName} ${row.invitedBy.lastName}`
           : '-',
+      sortValue: (row) =>
+        row.invitedBy
+          ? `${row.invitedBy.firstName} ${row.invitedBy.lastName}`
+          : '',
     },
     {
       key: 'isBaptized',
@@ -374,144 +383,9 @@ export function FriendsTable({ friends }: FriendsTableProps) {
 
   return (
     <>
-      <div className="flex flex-col gap-4 mb-4">
-        {selectedRows.size > 0 && (
-          <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-2 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-2">
-            <span className="font-medium">
-              {selectedRows.size}{' '}
-              {selectedRows.size === 1
-                ? 'amigo seleccionado'
-                : 'amigos seleccionados'}
-            </span>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setIsBulkDeleteModalOpen(true)}
-              disabled={isBulkDeleting}
-            >
-              {isBulkDeleting ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Trash2 className="mr-2 h-4 w-4" />
-              )}
-              Eliminar Seleccionados
-            </Button>
-          </div>
-        )}
-
-        <div className="flex flex-wrap items-center gap-4 p-4 border rounded-lg bg-card shadow-sm">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Zona:</span>
-            <Select value={selectedZone} onValueChange={setSelectedZone}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Todas" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas</SelectItem>
-                {uniqueZones.map((zone) => (
-                  <SelectItem key={zone} value={zone!}>
-                    {zone}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Sector:</span>
-            <Select value={selectedSector} onValueChange={setSelectedSector}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Todos" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                {uniqueSectors.map((sector) => (
-                  <SelectItem key={sector} value={sector!}>
-                    {sector}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Subsector:</span>
-            <Select
-              value={selectedSubSector}
-              onValueChange={setSelectedSubSector}
-            >
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Todos" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                {uniqueSubSectors.map((sub) => (
-                  <SelectItem key={sub} value={sub!}>
-                    {sub}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Célula:</span>
-            <Select value={selectedCell} onValueChange={setSelectedCell}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Todas" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas</SelectItem>
-                {uniqueCells.map((cell) => (
-                  <SelectItem key={cell} value={cell!}>
-                    {cell}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Líder:</span>
-            <Select value={selectedLeader} onValueChange={setSelectedLeader}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Todos" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                {uniqueLeaders.map((leader) => (
-                  <SelectItem key={leader} value={leader!}>
-                    {leader}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Bautizado:</span>
-            <Select
-              value={selectedBaptized}
-              onValueChange={setSelectedBaptized}
-            >
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Todos" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="true">Sí</SelectItem>
-                <SelectItem value="false">No</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="ml-auto text-sm text-muted-foreground">
-            Total: {filteredFriends.length}
-          </div>
-        </div>
-      </div>
-
       <DataTable
+        title="Amigos"
+        subTitle="Gestión de amigos y seguimiento evangelístico"
         data={filteredFriends}
         columns={columns}
         actions={actions}
@@ -526,8 +400,151 @@ export function FriendsTable({ friends }: FriendsTableProps) {
         onSelectRow={handleSelectRow}
         onSelectAll={handleSelectAll}
         loading={isDeleting || isBulkDeleting}
-      />
+        customFilters={
+          <div className="flex flex-col gap-4 mb-4">
+            {selectedRows.size > 0 && (
+              <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-2 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+                <span className="font-medium">
+                  {selectedRows.size}{' '}
+                  {selectedRows.size === 1
+                    ? 'amigo seleccionado'
+                    : 'amigos seleccionados'}
+                </span>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setIsBulkDeleteModalOpen(true)}
+                  disabled={isBulkDeleting}
+                >
+                  {isBulkDeleting ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="mr-2 h-4 w-4" />
+                  )}
+                  Eliminar Seleccionados
+                </Button>
+              </div>
+            )}
 
+            <div className="flex flex-wrap items-center gap-4 p-4 border rounded-lg bg-card shadow-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Zona:</span>
+                <Select value={selectedZone} onValueChange={setSelectedZone}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Todas" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas</SelectItem>
+                    {uniqueZones.map((zone) => (
+                      <SelectItem key={zone} value={zone!}>
+                        {zone}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Sector:</span>
+                <Select
+                  value={selectedSector}
+                  onValueChange={setSelectedSector}
+                >
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    {uniqueSectors.map((sector) => (
+                      <SelectItem key={sector} value={sector!}>
+                        {sector}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Subsector:</span>
+                <Select
+                  value={selectedSubSector}
+                  onValueChange={setSelectedSubSector}
+                >
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    {uniqueSubSectors.map((sub) => (
+                      <SelectItem key={sub} value={sub!}>
+                        {sub}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Célula:</span>
+                <Select value={selectedCell} onValueChange={setSelectedCell}>
+                  <SelectTrigger className="w-[160px]">
+                    <SelectValue placeholder="Todas" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas</SelectItem>
+                    {uniqueCells.map((cell) => (
+                      <SelectItem key={cell} value={cell!}>
+                        {cell}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Líder:</span>
+                <Select
+                  value={selectedLeader}
+                  onValueChange={setSelectedLeader}
+                >
+                  <SelectTrigger className="w-[160px]">
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    {uniqueLeaders.map((leader) => (
+                      <SelectItem key={leader} value={leader!}>
+                        {leader}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Bautizado:</span>
+                <Select
+                  value={selectedBaptized}
+                  onValueChange={setSelectedBaptized}
+                >
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="true">Sí</SelectItem>
+                    <SelectItem value="false">No</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="ml-auto text-sm text-muted-foreground">
+                Total: {filteredFriends.length}
+              </div>
+            </div>
+          </div>
+        }
+      />
       <DeleteConfirmationModal
         open={isDeleteModalOpen}
         onCancel={() => {

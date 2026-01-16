@@ -72,6 +72,7 @@ export const FieldEditor = React.memo(function FieldEditor({
             {field.type === 'MEMBER_SELECT' && 'Selección de Miembro'}
             {field.type === 'FRIEND_REGISTRATION' && 'Registro de Amigos'}
             {field.type === 'CYCLE_WEEK_INDICATOR' && 'Indicador de Semana'}
+            {field.type === 'MEMBER_ATTENDANCE' && 'Asistencia Miembros'}
           </span>
         </Badge>
         <div className="flex items-center gap-1">

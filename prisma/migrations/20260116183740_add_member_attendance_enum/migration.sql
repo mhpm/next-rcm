@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "ReportFieldType" ADD VALUE 'MEMBER_ATTENDANCE';

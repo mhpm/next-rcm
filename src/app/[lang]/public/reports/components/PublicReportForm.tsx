@@ -16,6 +16,7 @@ import {
   FriendRegistrationField,
   FriendRegistrationValue,
 } from '@/app/[lang]/(authenticated)/reports/components/FriendRegistrationField';
+import { MemberAttendanceField } from '@/app/[lang]/(authenticated)/reports/components/MemberAttendanceField';
 import {
   submitPublicReportEntry,
   verifyCellAccess,
@@ -653,6 +654,37 @@ export default function PublicReportForm({
             render={({ field }) => (
               <FriendRegistrationField
                 value={(field.value as FriendRegistrationValue[]) || []}
+                onChange={field.onChange}
+                label={f.label || f.key}
+                members={currentMembers}
+              />
+            )}
+          />
+        );
+      }
+      if (f.type === 'MEMBER_ATTENDANCE') {
+        return (
+          <Controller
+            key={f.id}
+            name={baseName}
+            control={control}
+            rules={{
+              validate: (v: any) => {
+                if (
+                  f.required &&
+                  (v === undefined ||
+                    v === null ||
+                    (Array.isArray(v) && v.length === 0))
+                ) {
+                  return 'Requerido';
+                }
+                return true;
+              },
+            }}
+            render={({ field }) => (
+              <MemberAttendanceField
+                id={f.id}
+                value={(field.value as string[]) || []}
                 onChange={field.onChange}
                 label={f.label || f.key}
                 members={currentMembers}

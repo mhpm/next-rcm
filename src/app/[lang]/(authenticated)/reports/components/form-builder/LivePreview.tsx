@@ -208,6 +208,40 @@ export function LivePreview({
         );
       }
 
+      if (field.type === 'MEMBER_ATTENDANCE') {
+        return (
+          <div className="space-y-4">
+            <Label className="font-medium">
+              {field.label || 'Asistencia Miembros'}
+              {field.required && (
+                <span className="text-destructive ml-1">*</span>
+              )}
+            </Label>
+            <div className="p-4 border rounded-lg bg-muted/20 space-y-4">
+              <div className="space-y-2">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between p-3 rounded-lg border bg-background"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-4 w-4 rounded border border-primary/50" />
+                      <span className="text-sm font-medium">
+                        Miembro Ejemplo {i}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between text-sm text-muted-foreground pt-2 border-t">
+                <span>Asistieron: 0</span>
+                <span>Faltaron: 3</span>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
       return null;
     })();
 

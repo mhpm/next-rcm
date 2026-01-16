@@ -38,6 +38,7 @@ export default async function ReportEntriesPage({
           leader: { select: { firstName: true, lastName: true } },
           host: { select: { firstName: true, lastName: true } },
           assistant: { select: { firstName: true, lastName: true } },
+          members: { select: { id: true, firstName: true, lastName: true } },
           subSector: {
             select: {
               name: true,
@@ -64,12 +65,14 @@ export default async function ReportEntriesPage({
         select: {
           name: true,
           leader: { select: { firstName: true, lastName: true } },
+          members: { select: { id: true, firstName: true, lastName: true } },
         },
       },
       sector: {
         select: {
           name: true,
           supervisor: { select: { firstName: true, lastName: true } },
+          members: { select: { id: true, firstName: true, lastName: true } },
           zone: {
             select: {
               name: true,
@@ -96,7 +99,8 @@ export default async function ReportEntriesPage({
           }
         });
       } else if (
-        val.field.type === 'MEMBER_SELECT' &&
+        (val.field.type === 'MEMBER_SELECT' ||
+          val.field.type === 'MEMBER_ATTENDANCE') &&
         Array.isArray(val.value)
       ) {
         (val.value as string[]).forEach((id) => {
@@ -233,6 +237,27 @@ export default async function ReportEntriesPage({
       }
     }
 
+    const entityMemberIds =
+      e.cell?.members.map((m) => m.id) ||
+      e.group?.members.map((m) => m.id) ||
+      e.sector?.members.map((m) => m.id) ||
+      [];
+
+    const entityMembers =
+      e.cell?.members.map((m) => ({
+        id: m.id,
+        name: `${m.firstName} ${m.lastName}`,
+      })) ||
+      e.group?.members.map((m) => ({
+        id: m.id,
+        name: `${m.firstName} ${m.lastName}`,
+      })) ||
+      e.sector?.members.map((m) => ({
+        id: m.id,
+        name: `${m.firstName} ${m.lastName}`,
+      })) ||
+      [];
+
     const base: Row = {
       id: e.id,
       createdAt: e.createdAt.toISOString(), // Send ISO string to client
@@ -246,6 +271,8 @@ export default async function ReportEntriesPage({
       subsector,
       sector,
       zona,
+      __allMemberIds: entityMemberIds,
+      __allMembers: entityMembers,
     };
     for (const f of report.fields) {
       const val = e.values.find((v) => v.report_field_id === f.id)
@@ -278,7 +305,10 @@ export default async function ReportEntriesPage({
             ? memberMap.get(friend.spiritualFatherId)
             : undefined,
         }));
-      } else if (f.type === 'MEMBER_SELECT' && Array.isArray(val)) {
+      } else if (
+        (f.type === 'MEMBER_SELECT' || f.type === 'MEMBER_ATTENDANCE') &&
+        Array.isArray(val)
+      ) {
         let selectedNames = (val as string[])
           .map((id) => memberMap.get(id))
           .filter(Boolean) as string[];
@@ -290,8 +320,6 @@ export default async function ReportEntriesPage({
             const index = selectedNames.findIndex((n) => n.startsWith(lider));
             if (index !== -1) {
               selectedNames[index] = `${lider} (Líder)`;
-            } else {
-              selectedNames.push(`${lider} (Líder)`);
             }
           }
 
@@ -302,8 +330,6 @@ export default async function ReportEntriesPage({
             );
             if (index !== -1) {
               selectedNames[index] = `${asistente} (Asistente)`;
-            } else {
-              selectedNames.push(`${asistente} (Asistente)`);
             }
           }
 
@@ -314,8 +340,6 @@ export default async function ReportEntriesPage({
             );
             if (index !== -1) {
               selectedNames[index] = `${anfitrion} (Anfitrión)`;
-            } else {
-              selectedNames.push(`${anfitrion} (Anfitrión)`);
             }
           }
 
@@ -334,16 +358,6 @@ export default async function ReportEntriesPage({
           });
         }
         display = selectedNames;
-
-        // Also update raw_ value if needed for counts, but be careful with IDs vs names
-        // Actually, raw_ is used for counts in useReportData, so if we want the count to include leader
-        // even if not in IDs, we should probably add the leader ID to the raw array if missing.
-        if (
-          e.cell?.leader_id &&
-          !(val as string[]).includes(e.cell.leader_id)
-        ) {
-          val.unshift(e.cell.leader_id);
-        }
       }
       base[f.id] = display;
       base[`raw_${f.id}`] = val; // Store raw value for filtering

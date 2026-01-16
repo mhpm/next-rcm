@@ -71,6 +71,7 @@ function DataTable<T extends Record<string, unknown>>({
   showColumnVisibility = false,
   headerActions,
   searchEndContent,
+  customFilters,
   selectedRows: selectedRowsProp,
   onSelectRow: onSelectRowProp,
   onSelectAll: onSelectAllProp,
@@ -129,8 +130,17 @@ function DataTable<T extends Record<string, unknown>>({
     if (!sortConfig.key) return data;
 
     return [...data].sort((a, b) => {
-      const aValue = a[sortConfig.key!];
-      const bValue = b[sortConfig.key!];
+      // Get column definition to check for custom sort value
+      const column = columns.find((col) => col.key === sortConfig.key);
+
+      let aValue: any = a[sortConfig.key!];
+      let bValue: any = b[sortConfig.key!];
+
+      // Use custom sort value if provided
+      if (column?.sortValue) {
+        aValue = column.sortValue(a);
+        bValue = column.sortValue(b);
+      }
 
       // Handle null/undefined values
       if (aValue == null && bValue == null) return 0;
@@ -526,6 +536,8 @@ function DataTable<T extends Record<string, unknown>>({
               <div className="w-full sm:w-auto">{searchEndContent}</div>
             </div>
           )}
+
+          {customFilters && <div className="mt-4">{customFilters}</div>}
         </div>
       </div>
 

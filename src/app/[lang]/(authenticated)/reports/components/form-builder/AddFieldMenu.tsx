@@ -65,6 +65,9 @@ export function AddFieldMenu({
           <DropdownMenuItem onSelect={() => onAdd('CYCLE_WEEK_INDICATOR')}>
             Indicador de Semana
           </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => onAdd('MEMBER_ATTENDANCE')}>
+            Asistencia Miembros
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -322,14 +322,20 @@ export default function ComparisonReportView({
   );
 
   const allColumns = useMemo(() => {
-    return [
-      { key: 'count', label: 'Registros' },
-      ...numericFields.map((f) => ({ key: f.id, label: f.label || f.key })),
-      ...booleanFields.map((f) => ({
-        key: f.id,
-        label: `${f.label || f.key} (Sí)`,
-      })),
-    ];
+    const cols = [{ key: 'count', label: 'Registros' }];
+    numericFields.forEach((f) => {
+      cols.push({ key: f.id, label: f.label || f.key });
+      if (f.type === 'MEMBER_ATTENDANCE') {
+        cols.push({
+          key: `${f.id}_absent`,
+          label: `${f.label || f.key} (Faltantes)`,
+        });
+      }
+    });
+    booleanFields.forEach((f) => {
+      cols.push({ key: f.id, label: `${f.label || f.key} (Sí)` });
+    });
+    return cols;
   }, [numericFields, booleanFields]);
 
   const { visibleColumns, toggleColumn, showAllColumns, hideAllColumns } =
@@ -738,6 +744,16 @@ export default function ComparisonReportView({
           PeriodoB: totalsB[f.id] || 0,
         });
       }
+      if (
+        f.type === 'MEMBER_ATTENDANCE' &&
+        visibleColumns.has(`${f.id}_absent`)
+      ) {
+        data.push({
+          name: `${f.label || f.key} (Faltantes)`,
+          PeriodoA: totalsA[`${f.id}_absent`] || 0,
+          PeriodoB: totalsB[`${f.id}_absent`] || 0,
+        });
+      }
     });
 
     booleanFields.forEach((f) => {
@@ -988,20 +1004,35 @@ export default function ComparisonReportView({
                   </TableHead>
                 )}
 
-                {numericFields
-                  .filter((f) => visibleColumns.has(f.id))
-                  .map((f) => (
-                    <TableHead
-                      key={f.id}
-                      className="text-center min-w-[120px] bg-muted/10 border-r cursor-pointer group select-none"
-                      onClick={() => handleSort(f.id)}
-                    >
-                      <div className="flex items-center gap-1 justify-center">
-                        {f.label}
-                        {getSortIcon(f.id)}
-                      </div>
-                    </TableHead>
-                  ))}
+                {numericFields.map((f) => (
+                  <React.Fragment key={f.id}>
+                    {visibleColumns.has(f.id) && (
+                      <TableHead
+                        key={f.id}
+                        className="text-center min-w-[120px] bg-muted/10 border-r cursor-pointer group select-none"
+                        onClick={() => handleSort(f.id)}
+                      >
+                        <div className="flex items-center gap-1 justify-center">
+                          {f.label}
+                          {getSortIcon(f.id)}
+                        </div>
+                      </TableHead>
+                    )}
+                    {f.type === 'MEMBER_ATTENDANCE' &&
+                      visibleColumns.has(`${f.id}_absent`) && (
+                        <TableHead
+                          key={`${f.id}_absent`}
+                          className="text-center min-w-[120px] bg-muted/10 border-r cursor-pointer group select-none"
+                          onClick={() => handleSort(`${f.id}_absent`)}
+                        >
+                          <div className="flex items-center gap-1 justify-center text-muted-foreground">
+                            {f.label} (Faltantes)
+                            {getSortIcon(`${f.id}_absent`)}
+                          </div>
+                        </TableHead>
+                      )}
+                  </React.Fragment>
+                ))}
 
                 {booleanFields
                   .filter((f) => visibleColumns.has(f.id))
@@ -1036,19 +1067,33 @@ export default function ComparisonReportView({
                     </TableCell>
                   )}
 
-                  {numericFields
-                    .filter((f) => visibleColumns.has(f.id))
-                    .map((f) => (
-                      <TableCell
-                        key={f.id}
-                        className="text-center border-r py-2"
-                      >
-                        <ComparisonCell
-                          a={row.itemA?.values[f.id] || 0}
-                          b={row.itemB?.values[f.id] || 0}
-                        />
-                      </TableCell>
-                    ))}
+                  {numericFields.map((f) => (
+                    <React.Fragment key={f.id}>
+                      {visibleColumns.has(f.id) && (
+                        <TableCell
+                          key={f.id}
+                          className="text-center border-r py-2"
+                        >
+                          <ComparisonCell
+                            a={row.itemA?.values[f.id] || 0}
+                            b={row.itemB?.values[f.id] || 0}
+                          />
+                        </TableCell>
+                      )}
+                      {f.type === 'MEMBER_ATTENDANCE' &&
+                        visibleColumns.has(`${f.id}_absent`) && (
+                          <TableCell
+                            key={`${f.id}_absent`}
+                            className="text-center border-r py-2 bg-muted/5"
+                          >
+                            <ComparisonCell
+                              a={row.itemA?.values[`${f.id}_absent`] || 0}
+                              b={row.itemB?.values[`${f.id}_absent`] || 0}
+                            />
+                          </TableCell>
+                        )}
+                    </React.Fragment>
+                  ))}
 
                   {booleanFields
                     .filter((f) => visibleColumns.has(f.id))
@@ -1081,19 +1126,33 @@ export default function ComparisonReportView({
                   </TableCell>
                 )}
 
-                {numericFields
-                  .filter((f) => visibleColumns.has(f.id))
-                  .map((f) => (
-                    <TableCell
-                      key={f.id}
-                      className="text-center border-r py-4 px-6 text-lg"
-                    >
-                      <ComparisonCell
-                        a={totalsA[f.id] || 0}
-                        b={totalsB[f.id] || 0}
-                      />
-                    </TableCell>
-                  ))}
+                {numericFields.map((f) => (
+                  <React.Fragment key={f.id}>
+                    {visibleColumns.has(f.id) && (
+                      <TableCell
+                        key={f.id}
+                        className="text-center border-r py-4 px-6 text-lg"
+                      >
+                        <ComparisonCell
+                          a={totalsA[f.id] || 0}
+                          b={totalsB[f.id] || 0}
+                        />
+                      </TableCell>
+                    )}
+                    {f.type === 'MEMBER_ATTENDANCE' &&
+                      visibleColumns.has(`${f.id}_absent`) && (
+                        <TableCell
+                          key={`${f.id}_absent`}
+                          className="text-center border-r py-4 px-6 text-lg bg-slate-600/50"
+                        >
+                          <ComparisonCell
+                            a={totalsA[`${f.id}_absent`] || 0}
+                            b={totalsB[`${f.id}_absent`] || 0}
+                          />
+                        </TableCell>
+                      )}
+                  </React.Fragment>
+                ))}
 
                 {booleanFields
                   .filter((f) => visibleColumns.has(f.id))

@@ -17,13 +17,7 @@ export default async function FriendsPage({
 
   return (
     <div className="p-4 space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Amigos</h1>
-          <p className="text-muted-foreground">
-            Gestión de amigos y seguimiento evangelístico
-          </p>
-        </div>
+      <div className="flex justify-end items-center">
         <Button asChild>
           <Link href={`/${lang}/friends/new`}>
             <Plus className="mr-2 h-4 w-4" />
