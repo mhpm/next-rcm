@@ -45,15 +45,20 @@ export function MemberAttendanceField({
 
   return (
     <div className={cn('space-y-4', className)}>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <Label className="font-medium text-base">{label}</Label>
         <div className="flex gap-2">
-          <Badge variant="default">Asistieron: {attendanceCount}</Badge>
+          <Badge variant="default" className="whitespace-nowrap">
+            Asistieron: {attendanceCount}
+          </Badge>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="cursor-help" tabIndex={0}>
-                  <Badge variant="secondary" className="hover:bg-secondary/80">
+                  <Badge
+                    variant="secondary"
+                    className="hover:bg-secondary/80 whitespace-nowrap"
+                  >
                     Faltaron: {absentCount}
                   </Badge>
                 </span>
