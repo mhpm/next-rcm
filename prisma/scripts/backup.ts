@@ -19,6 +19,7 @@ async function backup() {
   const data = {
     churches: await prisma.churches.findMany(),
     churchAdmins: await prisma.churchAdmins.findMany(),
+    churchType: await prisma.churchType.findMany(),
     networks: await prisma.networks.findMany(),
     members: await prisma.members.findMany(),
     ministries: await prisma.ministries.findMany(),
@@ -46,6 +47,7 @@ async function backup() {
   console.log(`✅ Backup created successfully at: ${backupPath}`);
   console.log(`   Churches: ${data.churches.length}`);
   console.log(`   ChurchAdmins: ${data.churchAdmins.length}`);
+  console.log(`   ChurchTypes: ${data.churchType.length}`);
   console.log(`   Networks: ${data.networks.length}`);
   console.log(`   Members: ${data.members.length}`);
   console.log(`   Ministries: ${data.ministries.length}`);

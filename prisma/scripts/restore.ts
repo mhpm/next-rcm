@@ -68,8 +68,15 @@ async function restore() {
   await prisma.members.deleteMany();
   await prisma.churchAdmins.deleteMany();
   await prisma.churches.deleteMany();
+  await prisma.churchType.deleteMany();
 
   console.log('🌱 Inserting data...');
+
+  // 0. ChurchTypes (Independent)
+  if (data.churchType?.length) {
+    await prisma.churchType.createMany({ data: reviveDates(data.churchType) });
+    console.log(`   + ${data.churchType.length} ChurchTypes`);
+  }
 
   // 1. Churches
   if (data.churches?.length) {
