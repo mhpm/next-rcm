@@ -805,6 +805,7 @@ export default function ReportEntriesTable({
   return (
     <div>
       <DataTable<Row>
+        compact
         selectable={true}
         selectedRows={selectedRows}
         onSelectRow={handleSelectRow}

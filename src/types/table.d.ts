@@ -902,6 +902,12 @@ export interface DataTableProps<T = Record<string, unknown>> {
    * Additional actions to display in the header, typically next to the export/visibility controls.
    */
   headerActions?: React.ReactNode;
+
+  /**
+   * Whether to display the table in a compact mode with reduced padding and smaller fonts.
+   * Useful for data-dense tables.
+   */
+  compact?: boolean;
 }
 
 /**

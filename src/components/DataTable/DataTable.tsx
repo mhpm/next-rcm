@@ -75,6 +75,7 @@ function DataTable<T extends Record<string, unknown>>({
   selectedRows: selectedRowsProp,
   onSelectRow: onSelectRowProp,
   onSelectAll: onSelectAllProp,
+  compact = false,
 }: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -658,9 +659,16 @@ function DataTable<T extends Record<string, unknown>>({
 
       {/* Desktop Table View */}
       <div className="hidden md:block w-full overflow-x-auto">
-        <Table className="w-full">
+        <Table className={cn('w-full', compact ? 'text-xs' : '')}>
           <TableHeader>
-            <TableRow className="hover:bg-transparent border-b border-muted/20">
+            <TableRow
+              className={cn(
+                'hover:bg-transparent',
+                compact
+                  ? 'border-b border-muted/30'
+                  : 'border-b border-muted/20'
+              )}
+            >
               {selectable && (
                 <TableHead className="w-12">
                   <Checkbox
@@ -668,6 +676,7 @@ function DataTable<T extends Record<string, unknown>>({
                     onCheckedChange={(checked) =>
                       handleSelectAll(checked as boolean)
                     }
+                    className={compact ? 'h-3 w-3' : ''}
                   />
                 </TableHead>
               )}
@@ -676,6 +685,9 @@ function DataTable<T extends Record<string, unknown>>({
                   key={String(column.key)}
                   className={cn(
                     'whitespace-nowrap',
+                    compact
+                      ? 'uppercase tracking-wider text-[10px] font-bold py-1 h-8 text-muted-foreground'
+                      : '',
                     column.className || '',
                     column.sortable
                       ? 'cursor-pointer select-none group hover:text-foreground transition-colors'
@@ -694,7 +706,14 @@ function DataTable<T extends Record<string, unknown>>({
                 </TableHead>
               ))}
               {actions.length > 0 && (
-                <TableHead className="text-right whitespace-nowrap sticky right-0 z-20 bg-muted/90 backdrop-blur-sm border-l border-muted/20 shadow-[-4px_0_8px_rgba(0,0,0,0.02)]">
+                <TableHead
+                  className={cn(
+                    'text-right whitespace-nowrap sticky right-0 z-20 bg-muted/90 backdrop-blur-sm shadow-[-4px_0_8px_rgba(0,0,0,0.02)]',
+                    compact
+                      ? 'py-1 h-8 border-l border-muted/30'
+                      : 'border-l border-muted/20'
+                  )}
+                >
                   Acciones
                 </TableHead>
               )}
@@ -729,7 +748,10 @@ function DataTable<T extends Record<string, unknown>>({
                     key={rowId}
                     data-state={isSelected ? 'selected' : undefined}
                     className={cn(
-                      'group transition-all hover:bg-muted/30 border-b border-muted/10 last:border-0',
+                      'group transition-all hover:bg-muted/30 last:border-0',
+                      compact
+                        ? 'border-b border-muted/20 h-8'
+                        : 'border-b border-muted/10',
                       selectable ? 'cursor-pointer' : ''
                     )}
                     onClick={(e) => {
@@ -749,12 +771,13 @@ function DataTable<T extends Record<string, unknown>>({
                     }}
                   >
                     {selectable && (
-                      <TableCell>
+                      <TableCell className={compact ? 'py-1 pr-2' : ''}>
                         <Checkbox
                           checked={isSelected}
                           onCheckedChange={(checked) =>
                             handleSelectRow(rowId, checked as boolean)
                           }
+                          className={compact ? 'h-3 w-3' : ''}
                         />
                       </TableCell>
                     )}
@@ -762,7 +785,8 @@ function DataTable<T extends Record<string, unknown>>({
                       <TableCell
                         key={String(column.key)}
                         className={cn(
-                          'whitespace-nowrap text-sm font-medium text-foreground',
+                          'whitespace-nowrap font-medium text-foreground',
+                          compact ? 'py-1 text-[11px] leading-none' : 'text-sm',
                           column.className || ''
                         )}
                       >
@@ -772,7 +796,10 @@ function DataTable<T extends Record<string, unknown>>({
                     {actions.length > 0 && (
                       <TableCell
                         className={cn(
-                          'text-right sticky right-0 z-10 backdrop-blur-sm border-l border-muted/10 transition-colors shadow-[-4px_0_8px_rgba(0,0,0,0.02)]',
+                          'text-right sticky right-0 z-10 backdrop-blur-sm transition-colors shadow-[-4px_0_8px_rgba(0,0,0,0.02)]',
+                          compact
+                            ? 'py-1 border-l border-muted/20'
+                            : 'border-l border-muted/10',
                           isSelected
                             ? 'bg-muted/95'
                             : 'bg-card/95 group-hover:bg-muted/50'
@@ -782,10 +809,15 @@ function DataTable<T extends Record<string, unknown>>({
                           <DropdownMenuTrigger asChild>
                             <Button
                               variant="ghost"
-                              className="h-8 w-8 p-0 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                              className={cn(
+                                'p-0 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100',
+                                compact ? 'h-6 w-6' : 'h-8 w-8'
+                              )}
                             >
                               <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
+                              <MoreHorizontal
+                                className={compact ? 'h-3 w-3' : 'h-4 w-4'}
+                              />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent

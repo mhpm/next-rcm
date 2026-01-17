@@ -27,6 +27,7 @@ import {
   ChevronDown,
   ExternalLink,
   Loader2,
+  Search,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -165,7 +166,70 @@ export default function SectorHierarchy() {
     name: string;
     type: 'SECTOR' | 'SUB_SECTOR' | 'CELL';
   } | null>(null);
-  const nodes = toNodes(data || []);
+  const [searchQuery, setSearchQuery] = React.useState('');
+
+  const nodes = React.useMemo(() => {
+    const allNodes = toNodes(data || []);
+    if (!searchQuery.trim()) return allNodes;
+
+    const query = searchQuery.toLowerCase();
+
+    // Recursive filter function
+    const filterNode = (node: SectorNode): SectorNode | null => {
+      // Check if node itself matches
+      const matches =
+        node.name.toLowerCase().includes(query) ||
+        (node.supervisorName || '').toLowerCase().includes(query);
+
+      // Check children (subsectors)
+      const filteredChildren = node.children
+        .map((child) => filterNode(child))
+        .filter((child): child is SectorNode => child !== null);
+
+      // Check cells
+      const filteredCells = node.cells?.filter(
+        (cell) =>
+          cell.name.toLowerCase().includes(query) ||
+          cell.leaderName.toLowerCase().includes(query) ||
+          cell.hostName.toLowerCase().includes(query) ||
+          cell.assistantName.toLowerCase().includes(query)
+      );
+
+      // Return node if it matches OR has matching children OR has matching cells
+      if (
+        matches ||
+        filteredChildren.length > 0 ||
+        (filteredCells && filteredCells.length > 0)
+      ) {
+        return {
+          ...node,
+          children: filteredChildren,
+          cells: filteredCells,
+        };
+      }
+
+      return null;
+    };
+
+    return allNodes
+      .map((node) => filterNode(node))
+      .filter((node): node is SectorNode => node !== null);
+  }, [data, searchQuery]);
+
+  // Auto-expand on search
+  React.useEffect(() => {
+    if (searchQuery.trim()) {
+      const allIds = new Set<string>();
+      const collectIds = (nodesList: SectorNode[]) => {
+        nodesList.forEach((node) => {
+          allIds.add(node.id);
+          if (node.children) collectIds(node.children);
+        });
+      };
+      collectIds(nodes);
+      setExpandedIds(allIds);
+    }
+  }, [searchQuery, nodes]);
 
   const queryClient = useQueryClient();
   const [editingAccessCode, setEditingAccessCode] = React.useState<{
@@ -257,36 +321,51 @@ export default function SectorHierarchy() {
             Gestiona la estructura de sectores, subsectores y células.
           </CardDescription>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <Button
-            variant="outline"
-            onClick={toggleExpandAll}
-            className="w-full sm:w-auto"
-            disabled={nodes.length === 0 || isFetching || isAnyMutationPending}
-          >
-            {isAllExpanded ? (
-              <>
-                <ChevronsUp className="mr-2 h-4 w-4" />
-                Colapsar Todo
-              </>
-            ) : (
-              <>
-                <ChevronsDown className="mr-2 h-4 w-4" />
-                Expandir Todo
-              </>
-            )}
-          </Button>
-          <Button
-            onClick={() => {
-              setCreateParentId(undefined);
-              setCreateOpen(true);
-            }}
-            className="w-full sm:w-auto"
-            disabled={isFetching || isAnyMutationPending}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo Sector
-          </Button>
+
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto items-center">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar sector, célula o líder..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+
+          <div className="flex flex-row gap-2 w-full sm:w-auto">
+            <Button
+              variant="outline"
+              onClick={toggleExpandAll}
+              className="flex-1 sm:flex-none"
+              disabled={
+                nodes.length === 0 || isFetching || isAnyMutationPending
+              }
+            >
+              {isAllExpanded ? (
+                <>
+                  <ChevronsUp className="mr-2 h-4 w-4" />
+                  Colapsar
+                </>
+              ) : (
+                <>
+                  <ChevronsDown className="mr-2 h-4 w-4" />
+                  Expandir
+                </>
+              )}
+            </Button>
+            <Button
+              onClick={() => {
+                setCreateParentId(undefined);
+                setCreateOpen(true);
+              }}
+              className="flex-1 sm:flex-none"
+              disabled={isFetching || isAnyMutationPending}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo Sector
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="p-0 sm:px-6 sm:pb-6">
