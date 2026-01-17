@@ -268,7 +268,7 @@ export default function ReportEntriesTable({
                     </Badge>
                   </TooltipTrigger>
                   <TooltipContent side="left" className="p-0">
-                    <div className="flex flex-col max-h-[300px] overflow-y-auto min-w-[200px]">
+                    <div className="flex flex-col max-h-75 overflow-y-auto min-w-50">
                       <div className="bg-muted/50 px-3 py-2 text-xs font-medium border-b">
                         Amigos Registrados
                       </div>
@@ -357,7 +357,7 @@ export default function ReportEntriesTable({
                         </Badge>
                       </TooltipTrigger>
                       <TooltipContent side="left" className="p-0">
-                        <div className="flex flex-col max-h-[300px] overflow-y-auto min-w-[180px]">
+                        <div className="flex flex-col max-h-75 overflow-y-auto min-w-45">
                           <div className="bg-primary/5 px-3 py-2 text-xs font-bold text-primary border-b">
                             Asistentes
                           </div>
@@ -398,7 +398,7 @@ export default function ReportEntriesTable({
                         </Badge>
                       </TooltipTrigger>
                       <TooltipContent side="left" className="p-0">
-                        <div className="flex flex-col max-h-[300px] overflow-y-auto min-w-[180px]">
+                        <div className="flex flex-col max-h-75 overflow-y-auto min-w-45">
                           <div className="bg-muted/50 px-3 py-2 text-xs font-bold border-b">
                             Faltantes
                           </div>
@@ -432,13 +432,13 @@ export default function ReportEntriesTable({
                   <TooltipTrigger asChild>
                     <Badge
                       variant="outline"
-                      className="cursor-help whitespace-nowrap border-primary/30 text-primary"
+                      className="cursor-help whitespace-nowrap border-primary/30 text-primary h-5 px-1.5 text-[10px]"
                     >
                       {value.length} miembro{value.length !== 1 ? 's' : ''}
                     </Badge>
                   </TooltipTrigger>
                   <TooltipContent side="left" className="p-0">
-                    <div className="flex flex-col max-h-[300px] overflow-y-auto min-w-[180px]">
+                    <div className="flex flex-col max-h-75 overflow-y-auto min-w-45">
                       <div className="bg-primary/5 px-3 py-2 text-xs font-bold text-primary border-b">
                         Miembros Seleccionados
                       </div>
@@ -917,7 +917,7 @@ export default function ReportEntriesTable({
                 value={filterType}
                 onValueChange={(v) => handleTypeChange(v as any)}
               >
-                <SelectTrigger className="h-9 flex-1 min-w-[120px] text-xs sm:text-sm">
+                <SelectTrigger className="h-9 flex-1 min-w-30 text-xs sm:text-sm">
                   <SelectValue placeholder="Tipo" />
                 </SelectTrigger>
                 <SelectContent>

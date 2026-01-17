@@ -443,7 +443,12 @@ function DataTable<T extends Record<string, unknown>>({
       )}
     >
       {/* Header */}
-      <div className="p-4 sm:p-6 border-b bg-muted/20">
+      <div
+        className={cn(
+          'border-b bg-muted/20',
+          compact ? 'p-3 sm:p-4' : 'p-4 sm:p-6'
+        )}
+      >
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -686,7 +691,7 @@ function DataTable<T extends Record<string, unknown>>({
                   className={cn(
                     'whitespace-nowrap',
                     compact
-                      ? 'uppercase tracking-wider text-[10px] font-bold py-1 h-8 text-muted-foreground'
+                      ? 'uppercase tracking-wider text-[10px] font-bold py-0 h-7 text-muted-foreground'
                       : '',
                     column.className || '',
                     column.sortable
@@ -750,7 +755,7 @@ function DataTable<T extends Record<string, unknown>>({
                     className={cn(
                       'group transition-all hover:bg-muted/30 last:border-0',
                       compact
-                        ? 'border-b border-muted/20 h-8'
+                        ? 'border-b border-muted/20 h-7'
                         : 'border-b border-muted/10',
                       selectable ? 'cursor-pointer' : ''
                     )}
@@ -786,7 +791,7 @@ function DataTable<T extends Record<string, unknown>>({
                         key={String(column.key)}
                         className={cn(
                           'whitespace-nowrap font-medium text-foreground',
-                          compact ? 'py-1 text-[11px] leading-none' : 'text-sm',
+                          compact ? 'py-0 text-[11px] leading-none' : 'text-sm',
                           column.className || ''
                         )}
                       >

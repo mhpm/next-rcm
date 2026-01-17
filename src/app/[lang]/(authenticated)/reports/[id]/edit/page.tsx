@@ -1,4 +1,4 @@
-import { getChurchPrisma } from '@/actions/churchContext';
+import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import EditReportForm from '../../components/EditReportForm';
 import { connection } from 'next/server';
@@ -10,11 +10,13 @@ export default async function EditReportPage({
 }) {
   await connection();
   const { id } = await params;
-  const prisma = await getChurchPrisma();
+  
+  // Use global prisma client to ensure we can find the report by ID regardless of context
   const report = await prisma.reports.findUnique({
     where: { id },
     include: { fields: { orderBy: [{ order: 'asc' }, { createdAt: 'asc' }] } },
   });
+
   if (!report) notFound();
 
   return (
