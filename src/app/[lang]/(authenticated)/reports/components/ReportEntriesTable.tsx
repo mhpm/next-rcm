@@ -432,7 +432,7 @@ export default function ReportEntriesTable({
                   <TooltipTrigger asChild>
                     <Badge
                       variant="outline"
-                      className="cursor-help whitespace-nowrap border-primary/30 text-primary h-5 px-1.5 text-[10px]"
+                      className="cursor-help whitespace-nowrap border-primary/30 text-primary h-5 px-1.5 text-[11px]"
                     >
                       {value.length} miembro{value.length !== 1 ? 's' : ''}
                     </Badge>

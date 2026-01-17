@@ -29,6 +29,7 @@ import {
   Loader2,
   Search,
 } from 'lucide-react';
+import { RiCloseLine } from 'react-icons/ri';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -329,8 +330,19 @@ export default function SectorHierarchy() {
               placeholder="Buscar sector, célula o líder..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8"
+              className="pl-8 pr-10"
             />
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
+                onClick={() => setSearchQuery('')}
+              >
+                <RiCloseLine className="w-4 h-4" />
+                <span className="sr-only">Limpiar búsqueda</span>
+              </Button>
+            )}
           </div>
 
           <div className="flex flex-row gap-2 w-full sm:w-auto">
@@ -635,7 +647,7 @@ function SectorItem({
               node.supervisorName !== 'Sin supervisor' && (
                 <>
                   <span className="mr-2">Supervisor:</span>
-                  <span className="font-medium text-foreground max-w-[150px] truncate">
+                  <span className="font-medium text-foreground">
                     {node.supervisorName}
                   </span>
                 </>

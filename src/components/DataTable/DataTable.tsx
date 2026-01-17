@@ -16,6 +16,7 @@ import {
   RiDownloadLine,
   RiFileExcel2Line,
   RiFileTextLine,
+  RiCloseLine,
 } from 'react-icons/ri';
 import { DataTableProps, PaginationInfo } from '@/types';
 import { ColumnVisibilityDropdown } from '../ColumnVisibilityDropdown';
@@ -75,7 +76,7 @@ function DataTable<T extends Record<string, unknown>>({
   selectedRows: selectedRowsProp,
   onSelectRow: onSelectRowProp,
   onSelectAll: onSelectAllProp,
-  compact = false,
+  compact = true,
 }: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -444,10 +445,7 @@ function DataTable<T extends Record<string, unknown>>({
     >
       {/* Header */}
       <div
-        className={cn(
-          'border-b bg-muted/20',
-          compact ? 'p-3 sm:p-4' : 'p-4 sm:p-6'
-        )}
+        className={cn('border-b bg-muted/20', compact ? 'p-3' : 'p-4 sm:p-6')}
       >
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -536,8 +534,19 @@ function DataTable<T extends Record<string, unknown>>({
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-full"
+                  className="pl-10 pr-10 w-full"
                 />
+                {searchTerm && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
+                    onClick={() => setSearchTerm('')}
+                  >
+                    <RiCloseLine className="w-4 h-4" />
+                    <span className="sr-only">Limpiar búsqueda</span>
+                  </Button>
+                )}
               </div>
               <div className="w-full sm:w-auto">{searchEndContent}</div>
             </div>
@@ -645,10 +654,15 @@ function DataTable<T extends Record<string, unknown>>({
                           key={String(column.key)}
                           className="flex flex-col gap-1 border-b border-muted/10 last:border-0 pb-2 last:pb-0"
                         >
-                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">
+                          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-tight">
                             {column.label}
                           </span>
-                          <div className="text-sm font-medium text-foreground leading-relaxed wrap-break-word">
+                          <div
+                            className={cn(
+                              'text-foreground leading-relaxed wrap-break-word',
+                              compact ? 'text-sm' : 'text-sm font-medium'
+                            )}
+                          >
                             {renderCell(column, row[column.key], row)}
                           </div>
                         </div>
@@ -681,7 +695,7 @@ function DataTable<T extends Record<string, unknown>>({
                     onCheckedChange={(checked) =>
                       handleSelectAll(checked as boolean)
                     }
-                    className={compact ? 'h-3 w-3' : ''}
+                    className={compact ? 'h-3.5 w-3.5' : ''}
                   />
                 </TableHead>
               )}
@@ -691,7 +705,7 @@ function DataTable<T extends Record<string, unknown>>({
                   className={cn(
                     'whitespace-nowrap',
                     compact
-                      ? 'uppercase tracking-wider text-[10px] font-bold py-0 h-7 text-muted-foreground'
+                      ? 'uppercase tracking-wider text-[11px] font-bold py-0 h-8 text-muted-foreground'
                       : '',
                     column.className || '',
                     column.sortable
@@ -755,7 +769,7 @@ function DataTable<T extends Record<string, unknown>>({
                     className={cn(
                       'group transition-all hover:bg-muted/30 last:border-0',
                       compact
-                        ? 'border-b border-muted/20 h-7'
+                        ? 'border-b border-muted/20 h-8'
                         : 'border-b border-muted/10',
                       selectable ? 'cursor-pointer' : ''
                     )}
@@ -782,7 +796,7 @@ function DataTable<T extends Record<string, unknown>>({
                           onCheckedChange={(checked) =>
                             handleSelectRow(rowId, checked as boolean)
                           }
-                          className={compact ? 'h-3 w-3' : ''}
+                          className={compact ? 'h-3.5 w-3.5' : ''}
                         />
                       </TableCell>
                     )}
@@ -791,7 +805,7 @@ function DataTable<T extends Record<string, unknown>>({
                         key={String(column.key)}
                         className={cn(
                           'whitespace-nowrap font-medium text-foreground',
-                          compact ? 'py-0 text-[11px] leading-none' : 'text-sm',
+                          compact ? 'py-1 text-sm leading-tight' : 'text-sm',
                           column.className || ''
                         )}
                       >
