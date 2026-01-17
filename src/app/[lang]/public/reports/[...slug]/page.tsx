@@ -142,6 +142,7 @@ export default async function PublicReportPage({ params }: Props) {
             label: `${m.firstName} ${m.lastName}`,
           }))}
           churchName={report.church.name}
+          churchId={report.church_id}
         />
       </div>
     </div>

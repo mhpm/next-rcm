@@ -186,9 +186,14 @@ export async function getPublicEntitiesBySlugs(
   return { groups, sectors, members, unlinkedMembers };
 }
 
-export async function verifyCellAccess(code: string) {
+export async function verifyCellAccess(code: string, churchId?: string) {
+  const where: any = { accessCode: code };
+  if (churchId) {
+    where.church_id = churchId;
+  }
+
   const cell = await prisma.cells.findFirst({
-    where: { accessCode: code },
+    where,
     select: {
       id: true,
       name: true,

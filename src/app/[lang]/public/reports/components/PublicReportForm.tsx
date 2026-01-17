@@ -87,6 +87,7 @@ export default function PublicReportForm({
   members,
   unlinkedMembers = [],
   churchName,
+  churchId,
 }: {
   token: string;
   title: string;
@@ -98,6 +99,7 @@ export default function PublicReportForm({
   members: Option[];
   unlinkedMembers?: Option[];
   churchName: string;
+  churchId: string;
 }) {
   const { showSuccess, showError } = useNotificationStore();
   const [submitted, setSubmitted] = useState(false);
@@ -751,7 +753,7 @@ export default function PublicReportForm({
 
     setIsVerifying(true);
     try {
-      const cell = await verifyCellAccess(accessCode);
+      const cell = await verifyCellAccess(accessCode, churchId);
       if (cell) {
         setIsAuthenticated(true);
         setCellInfo({
