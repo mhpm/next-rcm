@@ -121,6 +121,7 @@ export default async function SubmitReportPage({
                 ? (f.options as string[])
                 : undefined,
               visibilityRules: f.visibilityRules as any,
+              validation: f.validation as any,
             }))}
             cells={cellOptions}
             groups={groupOptions}

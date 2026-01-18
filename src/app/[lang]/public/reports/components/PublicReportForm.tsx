@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import {
   InputField,
@@ -22,12 +22,15 @@ import {
   verifyCellAccess,
   getDraftReportEntry,
   getPublicReportEntityMembers,
+  getPublicMembersByRole,
+  getPublicReportEntityFriends,
 } from '../../actions';
 import { calculateCycleState } from '@/lib/cycleUtils';
 import { useNotificationStore } from '@/store/NotificationStore';
 import { FaLock, FaFloppyDisk, FaPaperPlane, FaKey } from 'react-icons/fa6';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { MemberRole } from '@/generated/prisma/enums';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -125,6 +128,63 @@ export default function PublicReportForm({
   );
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [currentMembers, setCurrentMembers] = useState<Option[]>(members);
+  const [leaders, setLeaders] = useState<Option[]>([]);
+  const [supervisors, setSupervisors] = useState<Option[]>([]);
+  const [isLoadingMembers, setIsLoadingMembers] = useState(false);
+
+  const needsLeaders = useMemo(() => {
+    return fields.some(
+      (f) =>
+        f.type === 'MEMBER_ATTENDANCE' &&
+        f.validation?.attendanceSources?.leaders
+    );
+  }, [fields]);
+  const needsSupervisors = useMemo(() => {
+    return fields.some(
+      (f) =>
+        f.type === 'MEMBER_ATTENDANCE' &&
+        f.validation?.attendanceSources?.supervisors
+    );
+  }, [fields]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchRoles = async () => {
+      try {
+        if (needsLeaders) {
+          const res = await getPublicMembersByRole(token, MemberRole.LIDER);
+          if (isMounted) {
+            setLeaders(
+              res.map((m) => ({
+                value: m.id,
+                label: `${m.firstName} ${m.lastName}`,
+              }))
+            );
+          }
+        }
+        if (needsSupervisors) {
+          const res = await getPublicMembersByRole(
+            token,
+            MemberRole.SUPERVISOR
+          );
+          if (isMounted) {
+            setSupervisors(
+              res.map((m) => ({
+                value: m.id,
+                label: `${m.firstName} ${m.lastName}`,
+              }))
+            );
+          }
+        }
+      } catch (e) {
+        console.error('Error fetching members by role (public):', e);
+      }
+    };
+    fetchRoles();
+    return () => {
+      isMounted = false;
+    };
+  }, [needsLeaders, needsSupervisors, token]);
 
   const {
     register,
@@ -683,15 +743,29 @@ export default function PublicReportForm({
                 return true;
               },
             }}
-            render={({ field }) => (
-              <MemberAttendanceField
-                id={f.id}
-                value={(field.value as string[]) || []}
-                onChange={field.onChange}
-                label={f.label || f.key}
-                members={currentMembers}
-              />
-            )}
+            render={({ field }) => {
+              const src = f.validation?.attendanceSources || {};
+              const includeCell = src.cellMembers !== false;
+              const merged = [
+                ...(includeCell ? currentMembers : []),
+                ...(src.leaders ? leaders : []),
+                ...(src.supervisors ? supervisors : []),
+              ];
+              const combined = Array.from(
+                new Map(merged.map((m) => [m.value, m])).values()
+              ).sort((a, b) => a.label.localeCompare(b.label));
+
+              return (
+                <MemberAttendanceField
+                  id={f.id}
+                  value={(field.value as string[]) || []}
+                  onChange={field.onChange}
+                  label={f.label || f.key}
+                  members={combined}
+                  loading={isLoadingMembers}
+                />
+              );
+            }}
           />
         );
       }
@@ -777,15 +851,120 @@ export default function PublicReportForm({
 
         // Fetch members for this cell
         try {
+          setIsLoadingMembers(true);
           const entityMembers = await getPublicReportEntityMembers(
             token,
             scope,
             cell.id
           );
-          const memberOptions = entityMembers.map((m) => ({
-            value: m.id,
-            label: `${m.firstName} ${m.lastName}`,
-          }));
+
+          // Fetch additional members based on field configuration (leaders, supervisors, friends)
+          let additionalMembers: {
+            id: string;
+            firstName: string;
+            lastName: string;
+          }[] = [];
+
+          const attendanceFields = fields.filter(
+            (f) => f.type === 'MEMBER_ATTENDANCE' || f.type === 'MEMBER_SELECT'
+          );
+
+          if (attendanceFields.length > 0) {
+            const needsLeaders = attendanceFields.some(
+              (f) => f.validation?.attendanceSources?.leaders
+            );
+            const needsSupervisors = attendanceFields.some(
+              (f) => f.validation?.attendanceSources?.supervisors
+            );
+            const needsCellFriends = attendanceFields.some(
+              (f) => f.validation?.attendanceSources?.cellFriends
+            );
+            const needsAllFriends = attendanceFields.some(
+              (f) => f.validation?.attendanceSources?.allFriends
+            );
+
+            const promises = [];
+            if (needsLeaders)
+              promises.push(getPublicMembersByRole(token, MemberRole.LIDER));
+            if (needsSupervisors)
+              promises.push(
+                getPublicMembersByRole(token, MemberRole.SUPERVISOR)
+              );
+            if (needsCellFriends)
+              promises.push(
+                getPublicReportEntityFriends(token, scope, cell.id)
+              );
+            if (needsAllFriends)
+              promises.push(
+                getPublicReportEntityFriends(token, scope, cell.id, true)
+              );
+
+            const results = await Promise.all(promises);
+            let resultIndex = 0;
+
+            if (needsLeaders) {
+              const res = results[resultIndex++] as {
+                id: string;
+                firstName: string;
+                lastName: string;
+              }[];
+              additionalMembers = [...additionalMembers, ...res];
+            }
+            if (needsSupervisors) {
+              const res = results[resultIndex++] as {
+                id: string;
+                firstName: string;
+                lastName: string;
+              }[];
+              additionalMembers = [...additionalMembers, ...res];
+            }
+            if (needsCellFriends) {
+              const friends = results[resultIndex++] as {
+                id: string;
+                name: string;
+              }[];
+              const mappedFriends = friends.map((fr) => ({
+                id: fr.id,
+                firstName: fr.name,
+                lastName: '(Amigo)',
+              }));
+              additionalMembers = [...additionalMembers, ...mappedFriends];
+            }
+            if (needsAllFriends) {
+              const friends = results[resultIndex++] as {
+                id: string;
+                name: string;
+              }[];
+              const mappedFriends = friends.map((fr) => ({
+                id: fr.id,
+                firstName: fr.name,
+                lastName: '(Amigo)',
+              }));
+              additionalMembers = [...additionalMembers, ...mappedFriends];
+            }
+          }
+
+          const allFetchedMembers = [...entityMembers, ...additionalMembers];
+          const uniqueMembersMap = new Map();
+
+          allFetchedMembers.forEach((m) => {
+            if (!uniqueMembersMap.has(m.id)) {
+              uniqueMembersMap.set(m.id, m);
+            }
+          });
+
+          const uniqueEntityMembers = Array.from(uniqueMembersMap.values());
+
+          const memberOptions = uniqueEntityMembers
+            .map((m) => ({
+              value: m.id,
+              label:
+                m.lastName === '(Amigo)'
+                  ? `${m.firstName} (Amigo)`
+                  : `${m.firstName} ${m.lastName}`,
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label));
+
           setCurrentMembers(memberOptions);
 
           // Initialize fields
@@ -819,6 +998,8 @@ export default function PublicReportForm({
           }
         } catch (error) {
           console.error('Error fetching members:', error);
+        } finally {
+          setIsLoadingMembers(false);
         }
 
         showSuccess('Acceso correcto. Buscando borradores...');

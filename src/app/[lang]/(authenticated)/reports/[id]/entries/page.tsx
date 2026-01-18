@@ -170,6 +170,16 @@ export default async function ReportEntriesPage({
     availableEntities = zones.map((z) => z.name);
   }
 
+  // Fetch global leaders and supervisors for attendance sources
+  const globalLeaders = await prisma.members.findMany({
+    where: { church_id: report.church_id, role: 'LIDER' },
+    select: { id: true, firstName: true, lastName: true },
+  });
+  const globalSupervisors = await prisma.members.findMany({
+    where: { church_id: report.church_id, role: 'SUPERVISOR' },
+    select: { id: true, firstName: true, lastName: true },
+  });
+
   type Row = Record<string, unknown> & {
     id: string;
     createdAt: string;
@@ -379,6 +389,47 @@ export default async function ReportEntriesPage({
       }
       base[f.id] = display;
       base[`raw_${f.id}`] = val; // Store raw value for filtering
+
+      // Calculate expected members for this specific field based on sources
+      if (f.type === 'MEMBER_ATTENDANCE') {
+        const validation = (f as any).validation as any;
+        const sources = validation?.attendanceSources || {};
+        let expectedMembers: { id: string; name: string }[] = [];
+
+        // 1. Cell Members (default true)
+        if (sources.cellMembers !== false) {
+          expectedMembers = [...expectedMembers, ...entityMembers];
+        }
+
+        // 2. Leaders
+        if (sources.leaders) {
+          expectedMembers = [
+            ...expectedMembers,
+            ...globalLeaders.map((m) => ({
+              id: m.id,
+              name: `${m.firstName} ${m.lastName}`,
+            })),
+          ];
+        }
+
+        // 3. Supervisors
+        if (sources.supervisors) {
+          expectedMembers = [
+            ...expectedMembers,
+            ...globalSupervisors.map((m) => ({
+              id: m.id,
+              name: `${m.firstName} ${m.lastName}`,
+            })),
+          ];
+        }
+
+        // Deduplicate
+        const uniqueMembers = new Map();
+        expectedMembers.forEach((m) => uniqueMembers.set(m.id, m));
+
+        base[`__allMembers_${f.id}`] = Array.from(uniqueMembers.values());
+        base[`__allMemberIds_${f.id}`] = Array.from(uniqueMembers.keys());
+      }
     }
     return base;
   });

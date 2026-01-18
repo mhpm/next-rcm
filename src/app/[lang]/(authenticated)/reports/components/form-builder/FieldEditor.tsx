@@ -237,6 +237,110 @@ export const FieldEditor = React.memo(function FieldEditor({
               />
             </div>
 
+            {field.type === 'MEMBER_ATTENDANCE' && (
+              <div className="p-4 rounded-lg border border-border space-y-3 mt-4">
+                <h4 className="text-sm font-medium text-foreground">
+                  Fuente de miembros
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Controller
+                      control={control}
+                      name={
+                        `fields.${index}.validation.attendanceSources.cellMembers` as const
+                      }
+                      defaultValue={true}
+                      render={({ field: rhfField }) => (
+                        <Checkbox
+                          checked={!!rhfField.value}
+                          onCheckedChange={(checked) =>
+                            rhfField.onChange(!!checked)
+                          }
+                        />
+                      )}
+                    />
+                    <Label className="text-xs">Miembros de la célula</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Controller
+                      control={control}
+                      name={
+                        `fields.${index}.validation.attendanceSources.leaders` as const
+                      }
+                      defaultValue={false}
+                      render={({ field: rhfField }) => (
+                        <Checkbox
+                          checked={!!rhfField.value}
+                          onCheckedChange={(checked) =>
+                            rhfField.onChange(!!checked)
+                          }
+                        />
+                      )}
+                    />
+                    <Label className="text-xs">
+                      Solo líderes (todas las células)
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Controller
+                      control={control}
+                      name={
+                        `fields.${index}.validation.attendanceSources.supervisors` as const
+                      }
+                      defaultValue={false}
+                      render={({ field: rhfField }) => (
+                        <Checkbox
+                          checked={!!rhfField.value}
+                          onCheckedChange={(checked) =>
+                            rhfField.onChange(!!checked)
+                          }
+                        />
+                      )}
+                    />
+                    <Label className="text-xs">Supervisores</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Controller
+                      control={control}
+                      name={
+                        `fields.${index}.validation.attendanceSources.cellFriends` as const
+                      }
+                      defaultValue={false}
+                      render={({ field: rhfField }) => (
+                        <Checkbox
+                          checked={!!rhfField.value}
+                          onCheckedChange={(checked) =>
+                            rhfField.onChange(!!checked)
+                          }
+                        />
+                      )}
+                    />
+                    <Label className="text-xs">Amigos de la célula</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Controller
+                      control={control}
+                      name={
+                        `fields.${index}.validation.attendanceSources.allFriends` as const
+                      }
+                      defaultValue={false}
+                      render={({ field: rhfField }) => (
+                        <Checkbox
+                          checked={!!rhfField.value}
+                          onCheckedChange={(checked) =>
+                            rhfField.onChange(!!checked)
+                          }
+                        />
+                      )}
+                    />
+                    <Label className="text-xs">
+                      Amigos (Todas las células)
+                    </Label>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="pt-4 border-t mt-4">
               <LogicEditor
                 fieldIndex={index}

@@ -745,6 +745,33 @@ export async function getReportEntityMembers(
   return [];
 }
 
+export async function getReportEntityFriends(
+  scope: ReportScope,
+  entityId: string,
+  includeAll: boolean = false
+) {
+  const prisma = await getChurchPrisma();
+  const churchId = await getChurchId();
+
+  if (includeAll) {
+    return prisma.friends.findMany({
+      where: { church_id: churchId },
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  if (scope === 'CELL') {
+    return prisma.friends.findMany({
+      where: { cell_id: entityId },
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  return [];
+}
+
 export async function getReportEntityInfo(
   scope: ReportScope,
   entityId: string

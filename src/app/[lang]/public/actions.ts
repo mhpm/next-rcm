@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma';
 import { ReportScope, Prisma } from '@/generated/prisma/client';
+import { MemberRole } from '@/generated/prisma/enums';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import crypto from 'crypto';
 
@@ -562,6 +563,65 @@ export async function getPublicReportEntityMembers(
       where: { sector_id: entityId },
       select: { id: true, firstName: true, lastName: true },
       orderBy: { firstName: 'asc' },
+    });
+  }
+
+  return [];
+}
+
+export async function getPublicMembersByRole(token: string, role: MemberRole) {
+  const report = await prisma.reports.findUnique({
+    where: { publicToken: token },
+    select: { church_id: true },
+  });
+
+  if (!report) throw new Error('Reporte no encontrado');
+
+  return prisma.members.findMany({
+    where: { church_id: report.church_id, role },
+    select: { id: true, firstName: true, lastName: true },
+    orderBy: { firstName: 'asc' },
+  });
+}
+
+export async function getPublicReportEntityFriends(
+  token: string,
+  scope: ReportScope,
+  entityId: string,
+  includeAll: boolean = false
+) {
+  const report = await prisma.reports.findUnique({
+    where: { publicToken: token },
+    select: { church_id: true },
+  });
+
+  if (!report) throw new Error('Reporte no encontrado');
+
+  // Verify entity belongs to church (basic check)
+  // For includeAll=true, we don't strictly need entityId valid for that part, but good practice.
+  // If includeAll is false, we need entityId valid.
+
+  if (includeAll) {
+    return prisma.friends.findMany({
+      where: { church_id: report.church_id },
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  // Reuse verification logic? Or just check if needed.
+  // For simplicity, let's trust if scope is CELL, we fetch by cell_id.
+  if (scope === 'CELL') {
+    const cell = await prisma.cells.findFirst({
+      where: { id: entityId, church_id: report.church_id },
+      select: { id: true },
+    });
+    if (!cell) throw new Error('Entidad no válida');
+
+    return prisma.friends.findMany({
+      where: { cell_id: entityId },
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
     });
   }
 

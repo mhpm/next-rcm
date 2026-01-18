@@ -15,12 +15,14 @@ import {
   FriendRegistrationField,
   FriendRegistrationValue,
 } from './FriendRegistrationField';
+import { MemberAttendanceField } from './MemberAttendanceField';
 import {
   createReportEntry,
   updateReportEntry,
   getReportEntityInfo,
   getUnlinkedMembers,
   getReportEntityMembers,
+  getReportEntityFriends,
 } from '@/app/[lang]/(authenticated)/reports/actions/reports.actions';
 import { getAllZones } from '@/app/[lang]/(authenticated)/sectors/actions/sectors.actions';
 import { useSectorHierarchy } from '@/app/[lang]/(authenticated)/sectors/hooks/useSectors';
@@ -30,6 +32,8 @@ import { useNotificationStore } from '@/store/NotificationStore';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { MemberRole } from '@/generated/prisma/enums';
+import { getAllMembers } from '@/app/[lang]/(authenticated)/members/actions/members.actions';
 import {
   Collapsible,
   CollapsibleContent,
@@ -76,6 +80,7 @@ type FieldDef = {
   options?: string[]; // Add options
   value?: any;
   visibilityRules?: VisibilityRule[];
+  validation?: any;
 };
 
 const naturalSort = (a: string, b: string) => {
@@ -160,6 +165,67 @@ export default function SubmitReportForm({
   const [isSavingDraft, setIsSavingDraft] = React.useState(false);
   const [showConfirmation, setShowConfirmation] = React.useState(false);
   const [formKey, setFormKey] = React.useState(0);
+
+  const [leaders, setLeaders] = React.useState<Option[]>([]);
+  const [supervisors, setSupervisors] = React.useState<Option[]>([]);
+
+  const needsLeaders = React.useMemo(() => {
+    return fields.some(
+      (f) =>
+        f.type === 'MEMBER_ATTENDANCE' &&
+        f.validation?.attendanceSources?.leaders
+    );
+  }, [fields]);
+
+  const needsSupervisors = React.useMemo(() => {
+    return fields.some(
+      (f) =>
+        f.type === 'MEMBER_ATTENDANCE' &&
+        f.validation?.attendanceSources?.supervisors
+    );
+  }, [fields]);
+
+  const { data: leadersData } = useQuery({
+    queryKey: ['members', 'leaders'],
+    queryFn: async () => {
+      const res = await getAllMembers({
+        role: MemberRole.LIDER,
+        limit: 10000,
+        orderBy: 'firstName',
+        orderDirection: 'asc',
+      });
+      return res.members.map((m) => ({
+        value: m.id,
+        label: `${m.firstName} ${m.lastName}`,
+      }));
+    },
+    enabled: needsLeaders,
+  });
+
+  const { data: supervisorsData } = useQuery({
+    queryKey: ['members', 'supervisors'],
+    queryFn: async () => {
+      const res = await getAllMembers({
+        role: MemberRole.SUPERVISOR,
+        limit: 10000,
+        orderBy: 'firstName',
+        orderDirection: 'asc',
+      });
+      return res.members.map((m) => ({
+        value: m.id,
+        label: `${m.firstName} ${m.lastName}`,
+      }));
+    },
+    enabled: needsSupervisors,
+  });
+
+  React.useEffect(() => {
+    if (leadersData) setLeaders(leadersData);
+  }, [leadersData]);
+
+  React.useEffect(() => {
+    if (supervisorsData) setSupervisors(supervisorsData);
+  }, [supervisorsData]);
 
   // --- Hierarchy Filters State ---
   const [selectedZone, setSelectedZone] = React.useState<string | undefined>();
@@ -346,7 +412,100 @@ export default function SubmitReportForm({
             getReportEntityMembers(scope, entityId),
           ]);
 
+          // Fetch additional members based on field configuration (leaders, supervisors, friends)
+          let additionalMembers: {
+            id: string;
+            firstName: string;
+            lastName: string;
+          }[] = [];
+
+          // Check if any MEMBER_ATTENDANCE or MEMBER_SELECT field needs extra roles/friends
+          const attendanceFields = fields.filter(
+            (f) => f.type === 'MEMBER_ATTENDANCE' || f.type === 'MEMBER_SELECT'
+          );
+
+          if (attendanceFields.length > 0) {
+            // Collect needed roles and friend sources
+            const needsLeaders = attendanceFields.some(
+              (f) => f.validation?.attendanceSources?.leaders
+            );
+            const needsSupervisors = attendanceFields.some(
+              (f) => f.validation?.attendanceSources?.supervisors
+            );
+            const needsCellFriends = attendanceFields.some(
+              (f) => f.validation?.attendanceSources?.cellFriends
+            );
+            const needsAllFriends = attendanceFields.some(
+              (f) => f.validation?.attendanceSources?.allFriends
+            );
+
+            const promises = [];
+            if (needsLeaders)
+              promises.push(
+                getAllMembers({ role: MemberRole.LIDER, limit: 1000 })
+              );
+            if (needsSupervisors)
+              promises.push(
+                getAllMembers({ role: MemberRole.SUPERVISOR, limit: 1000 })
+              );
+            if (needsCellFriends)
+              promises.push(getReportEntityFriends(scope, entityId));
+            if (needsAllFriends)
+              promises.push(getReportEntityFriends(scope, entityId, true));
+
+            const results = await Promise.all(promises);
+            let resultIndex = 0;
+
+            if (needsLeaders) {
+              const res = results[resultIndex++] as { members: any[] };
+              additionalMembers = [...additionalMembers, ...res.members];
+            }
+            if (needsSupervisors) {
+              const res = results[resultIndex++] as { members: any[] };
+              additionalMembers = [...additionalMembers, ...res.members];
+            }
+            if (needsCellFriends) {
+              const friends = results[resultIndex++] as {
+                id: string;
+                name: string;
+              }[];
+              // Map friends to member-like structure
+              const mappedFriends = friends.map((fr) => ({
+                id: fr.id,
+                firstName: fr.name, // Use full name as firstName
+                lastName: '(Amigo)', // Distinguisher
+              }));
+              additionalMembers = [...additionalMembers, ...mappedFriends];
+            }
+            if (needsAllFriends) {
+              const friends = results[resultIndex++] as {
+                id: string;
+                name: string;
+              }[];
+              const mappedFriends = friends.map((fr) => ({
+                id: fr.id,
+                firstName: fr.name,
+                lastName: '(Amigo)',
+              }));
+              additionalMembers = [...additionalMembers, ...mappedFriends];
+            }
+          }
+
           setEntityInfo(infoData);
+
+          // Combine and deduplicate members
+          const allFetchedMembers = [...entityMembers, ...additionalMembers];
+          const uniqueMembersMap = new Map();
+
+          allFetchedMembers.forEach((m) => {
+            // Prefer entity members (real members) over friends if ID conflict (unlikely)
+            // or duplicates from multiple sources
+            if (!uniqueMembersMap.has(m.id)) {
+              uniqueMembersMap.set(m.id, m);
+            }
+          });
+
+          const uniqueEntityMembers = Array.from(uniqueMembersMap.values());
 
           // Pre-fill hierarchy filters if we're editing or a cell was just selected
           if (infoData && scope === 'CELL') {
@@ -374,6 +533,17 @@ export default function SubmitReportForm({
             }
 
             // Pre-fill members for CELL scope
+            // Only include actual cell members by default, not friends or leaders unless configured?
+            // Usually we pre-fill everyone relevant.
+            // But let's stick to entityMembers for pre-fill to avoid noise,
+            // unless we want to pre-fill everyone.
+            // Current logic: entityMembers (which now includes everyone fetched).
+            // Actually, `entityMembers` variable above was the result of `getReportEntityMembers`.
+            // We should use `uniqueEntityMembers` if we want to include everyone in the list options.
+            // But for default *selection*, maybe just the cell members?
+            // The original code used `entityMembers` (just cell members).
+            // Let's keep `entityMembers` for default selection logic if it refers to "members of this cell".
+
             if (
               scope === 'CELL' &&
               infoData &&
@@ -402,11 +572,18 @@ export default function SubmitReportForm({
               label: `${m.firstName} ${m.lastName}`,
             }))
           );
+
+          // Use the combined list for options
           setCellMembers(
-            entityMembers.map((m) => ({
-              value: m.id,
-              label: `${m.firstName} ${m.lastName}`,
-            }))
+            uniqueEntityMembers
+              .map((m) => ({
+                value: m.id,
+                label:
+                  m.lastName === '(Amigo)'
+                    ? `${m.firstName} (Amigo)`
+                    : `${m.firstName} ${m.lastName}`,
+              }))
+              .sort((a, b) => a.label.localeCompare(b.label))
           );
 
           // Default members for CELL scope
@@ -726,6 +903,51 @@ export default function SubmitReportForm({
           onStartDateChange={(date) =>
             setCycleStartDates((prev) => ({ ...prev, [f.id]: date }))
           }
+        />
+      );
+    }
+    if (f.type === 'MEMBER_ATTENDANCE') {
+      return (
+        <Controller
+          key={f.id}
+          name={baseName}
+          control={control}
+          rules={{
+            validate: (v: any) => {
+              if (
+                f.required &&
+                (v === undefined ||
+                  v === null ||
+                  (Array.isArray(v) && v.length === 0))
+              ) {
+                return 'Requerido';
+              }
+              return true;
+            },
+          }}
+          render={({ field }) => {
+            const src = f.validation?.attendanceSources || {};
+            const includeCell = src.cellMembers !== false;
+            const merged = [
+              ...(includeCell ? cellMembers : []),
+              ...(src.leaders ? leaders : []),
+              ...(src.supervisors ? supervisors : []),
+            ];
+            const combined = Array.from(
+              new Map(merged.map((m) => [m.value, m])).values()
+            ).sort((a, b) => a.label.localeCompare(b.label));
+
+            return (
+              <MemberAttendanceField
+                id={f.id}
+                value={(field.value as string[]) || []}
+                onChange={field.onChange}
+                label={f.label || f.key}
+                members={combined}
+                loading={isLoadingInfo}
+              />
+            );
+          }}
         />
       );
     }

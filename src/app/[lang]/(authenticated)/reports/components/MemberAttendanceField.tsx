@@ -8,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { Loader2 } from 'lucide-react';
 
 type Option = { value: string; label: string };
 
@@ -18,6 +19,7 @@ interface MemberAttendanceFieldProps {
   members: Option[];
   label?: string;
   className?: string;
+  loading?: boolean;
 }
 
 export function MemberAttendanceField({
@@ -27,6 +29,7 @@ export function MemberAttendanceField({
   members = [],
   label,
   className,
+  loading = false,
 }: MemberAttendanceFieldProps) {
   const handleToggle = (memberId: string, checked: boolean) => {
     // Avoid re-triggering if state is already consistent
@@ -83,40 +86,47 @@ export function MemberAttendanceField({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-1">
-        {members.map((member) => {
-          const isChecked = value.includes(member.value);
-          return (
-            <div
-              key={member.value}
-              className={cn(
-                'flex items-center space-x-3 border p-3 rounded-lg transition-colors cursor-pointer hover:bg-muted/50',
-                isChecked ? 'bg-primary/5 border-primary/30' : 'bg-card'
-              )}
-              onClick={(e) => {
-                e.preventDefault();
-                handleToggle(member.value, !isChecked);
-              }}
-            >
-              <div onClick={(e) => e.stopPropagation()}>
-                <Checkbox
-                  checked={isChecked}
-                  onCheckedChange={(checked) =>
-                    handleToggle(member.value, checked as boolean)
-                  }
-                  id={`${id}-${member.value}`}
-                />
-              </div>
-              <label
-                htmlFor={`${id}-${member.value}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1"
-                onClick={(e) => e.stopPropagation()}
+        {loading && (
+          <div className="col-span-full py-8 text-center text-muted-foreground bg-muted/20 rounded-lg border border-dashed flex flex-col items-center gap-2">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span className="text-sm">Cargando miembros...</span>
+          </div>
+        )}
+        {!loading &&
+          members.map((member) => {
+            const isChecked = value.includes(member.value);
+            return (
+              <div
+                key={member.value}
+                className={cn(
+                  'flex items-center space-x-3 border p-3 rounded-lg transition-colors cursor-pointer hover:bg-muted/50',
+                  isChecked ? 'bg-primary/5 border-primary/30' : 'bg-card'
+                )}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleToggle(member.value, !isChecked);
+                }}
               >
-                {member.label}
-              </label>
-            </div>
-          );
-        })}
-        {members.length === 0 && (
+                <div onClick={(e) => e.stopPropagation()}>
+                  <Checkbox
+                    checked={isChecked}
+                    onCheckedChange={(checked) =>
+                      handleToggle(member.value, checked as boolean)
+                    }
+                    id={`${id}-${member.value}`}
+                  />
+                </div>
+                <label
+                  htmlFor={`${id}-${member.value}`}
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {member.label}
+                </label>
+              </div>
+            );
+          })}
+        {!loading && members.length === 0 && (
           <div className="col-span-full py-8 text-center text-muted-foreground bg-muted/20 rounded-lg border border-dashed">
             No hay miembros registrados en esta célula.
           </div>

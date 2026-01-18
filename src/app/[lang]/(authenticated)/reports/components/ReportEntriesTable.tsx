@@ -315,8 +315,12 @@ export default function ReportEntriesTable({
               return <span className="text-muted-foreground">-</span>;
             }
 
-            if (fieldDef.type === 'MEMBER_ATTENDANCE' && row.__allMemberIds) {
-              const allMemberIds = row.__allMemberIds as string[];
+            if (
+              fieldDef.type === 'MEMBER_ATTENDANCE' &&
+              (row[`__allMemberIds_${fieldDef.id}`] || row.__allMemberIds)
+            ) {
+              const allMemberIds = (row[`__allMemberIds_${fieldDef.id}`] ||
+                row.__allMemberIds) as string[];
               // Since value contains names (because page.tsx maps IDs to names for display),
               // we can't easily compare IDs here unless we passed raw IDs in value.
               // BUT page.tsx sets base[f.id] = selectedNames (strings).
@@ -336,7 +340,10 @@ export default function ReportEntriesTable({
 
               // Get absent member names
               const allMembers =
-                (row.__allMembers as { id: string; name: string }[]) || [];
+                ((row[`__allMembers_${fieldDef.id}`] || row.__allMembers) as {
+                  id: string;
+                  name: string;
+                }[]) || [];
               const absentMembers = allMembers.filter(
                 (m) => !rawAttendeeIds.includes(m.id)
               );

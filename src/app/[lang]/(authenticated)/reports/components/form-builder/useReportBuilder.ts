@@ -359,6 +359,8 @@ export function useReportBuilder({ control }: UseReportBuilderProps) {
         ...field,
         id: generateTempId(),
         tempId: generateTempId(),
+        // Ensure duplicate is treated as NEW on save
+        fieldId: undefined,
         key: `${field.key}_copy_${Date.now()}`,
         label: `${field.label} (Copia)`,
       };
