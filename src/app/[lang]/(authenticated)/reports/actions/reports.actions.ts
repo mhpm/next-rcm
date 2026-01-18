@@ -955,3 +955,25 @@ export async function importReportEntriesAction(input: ImportReportEntryInput) {
   revalidatePath(`/reports/${input.reportId}/entries`);
   return { success: true, count: successCount, errors };
 }
+
+export async function getReportForDashboard(reportId: string) {
+  const prisma = await getChurchPrisma();
+
+  const report = await prisma.reports.findUnique({
+    where: { id: reportId },
+    include: {
+      fields: {
+        orderBy: { order: 'asc' },
+      },
+      entries: {
+        include: {
+          values: true,
+        },
+      },
+    },
+  });
+
+  if (!report) return null;
+
+  return report;
+}

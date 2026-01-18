@@ -1,5 +1,4 @@
 import prisma from '@/lib/prisma';
-import { notFound } from 'next/navigation';
 import EditReportForm from '../../components/EditReportForm';
 import { connection } from 'next/server';
 
@@ -10,14 +9,30 @@ export default async function EditReportPage({
 }) {
   await connection();
   const { id } = await params;
-  
+
   // Use global prisma client to ensure we can find the report by ID regardless of context
   const report = await prisma.reports.findUnique({
     where: { id },
     include: { fields: { orderBy: [{ order: 'asc' }, { createdAt: 'asc' }] } },
   });
 
-  if (!report) notFound();
+  if (!report) {
+    return (
+      <div className="p-8 text-center">
+        <h1 className="text-2xl font-bold text-red-600">Report Not Found</h1>
+        <p className="mt-4">
+          Could not find report to edit with ID:{' '}
+          <code className="bg-muted p-1 rounded">{id}</code>
+        </p>
+        <div className="mt-4">
+          {/* Simple back link */}
+          <a href="/reports" className="text-blue-500 underline">
+            Volver al listado
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4">

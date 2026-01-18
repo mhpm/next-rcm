@@ -1,9 +1,9 @@
-import { getChurchPrisma } from '@/actions/churchContext';
-import { notFound } from 'next/navigation';
+import prisma from '@/lib/prisma';
 import type { TableColumn } from '@/types';
 import ReportEntriesTable from '@/app/[lang]/(authenticated)/reports/components/ReportEntriesTable';
 import ConsolidatedReportView from '@/app/[lang]/(authenticated)/reports/components/ConsolidatedReportView';
 import ComparisonReportView from '@/app/[lang]/(authenticated)/reports/components/ComparisonReportView';
+import ReportDashboardBuilder from '@/app/[lang]/(authenticated)/reports/components/ReportDashboardBuilder';
 import { BackLink, Breadcrumbs } from '@/components';
 import { TabsContent } from '@/components/ui/tabs';
 import ReportTabsClient from '@/app/[lang]/(authenticated)/reports/components/ReportTabsClient';
@@ -16,14 +16,32 @@ export default async function ReportEntriesPage({
 }) {
   await connection();
   const { id } = await params;
-  const prisma = await getChurchPrisma();
 
+  // Use global prisma client to avoid context issues with findUnique
   const report = await prisma.reports.findUnique({
     where: { id },
     include: { fields: { orderBy: [{ order: 'asc' }, { createdAt: 'asc' }] } },
   });
 
-  if (!report) notFound();
+  if (!report) {
+    console.error(`Report not found for ID: ${id}`);
+    // Fallback debugging UI
+    return (
+      <div className="p-8 text-center">
+        <h1 className="text-2xl font-bold text-red-600">Report Not Found</h1>
+        <p className="mt-4">
+          Could not find report with ID:{' '}
+          <code className="bg-muted p-1 rounded">{id}</code>
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Please verify the URL or go back to the list.
+        </p>
+        <div className="mt-4">
+          <BackLink text="Volver al listado" fallbackHref="/reports" />
+        </div>
+      </div>
+    );
+  }
 
   const entries = await prisma.reportEntries.findMany({
     where: { report_id: id },
@@ -441,6 +459,19 @@ export default async function ReportEntriesPage({
             rows={rows}
             fields={report.fields}
             reportId={id}
+          />
+        </TabsContent>
+
+        <TabsContent value="dashboard">
+          <ReportDashboardBuilder
+            reportId={id}
+            fields={report.fields.map((f) => ({
+              id: f.id,
+              key: f.key,
+              label: f.label,
+              type: f.type,
+            }))}
+            rows={rows}
           />
         </TabsContent>
       </ReportTabsClient>

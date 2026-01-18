@@ -22,6 +22,7 @@ export default function ReportTabsClient({
         <TabsTrigger value="list">Lista Detallada</TabsTrigger>
         <TabsTrigger value="consolidated">Totales</TabsTrigger>
         <TabsTrigger value="comparison">Comparativa</TabsTrigger>
+        <TabsTrigger value="dashboard">Dashboard (Beta)</TabsTrigger>
       </TabsList>
       {children}
     </Tabs>
