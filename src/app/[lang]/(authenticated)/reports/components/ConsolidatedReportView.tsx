@@ -925,10 +925,10 @@ export default function ConsolidatedReportView({
 
         {/* Desktop Table View */}
         <div className="hidden md:block w-full overflow-hidden">
-          <div className="overflow-x-auto rounded-xl border max-w-full relative">
+          <div className="overflow-auto rounded-xl border max-w-full relative max-h-[600px]">
             <Table className="w-full">
-              <TableHeader>
-                <TableRow>
+              <TableHeader className="sticky top-0 z-20 bg-card shadow-sm">
+                <TableRow className="hover:bg-transparent border-b border-border">
                   <TableHead
                     className="w-50 whitespace-nowrap py-2 sticky left-0 bg-background z-20 border-r cursor-pointer group select-none"
                     onClick={() => handleSort('label')}

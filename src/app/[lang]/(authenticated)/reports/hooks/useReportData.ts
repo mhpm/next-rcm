@@ -80,7 +80,10 @@ export function useReportData(
       for (const field of fields) {
         const rawVal = row[`raw_${field.id}`];
 
-        if (field.type === 'TEXT' && activeFilters[field.id]) {
+        if (
+          (field.type === 'TEXT' || field.type === 'CYCLE_WEEK_INDICATOR') &&
+          activeFilters[field.id]
+        ) {
           if (
             !String(rawVal || '')
               .toLowerCase()
