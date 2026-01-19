@@ -1,9 +1,8 @@
-import Link from 'next/link';
 import { getChurchPrisma } from '@/actions/churchContext';
 import ReportCard from './components/ReportCard';
+import CloneReportButton from './components/CloneReportButton';
 import { BackLink, Breadcrumbs } from '@/components';
 import { connection } from 'next/server';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Locale } from '@/i18n/config';
 import crypto from 'crypto';
@@ -77,9 +76,7 @@ export default async function ReportsPage({
       </div>
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Formularios</h1>
-        <Button asChild>
-          <Link href={`/${lang}/reports/new`}>Crear formulario</Link>
-        </Button>
+        <CloneReportButton lang={lang} />
       </div>
       {reports.length === 0 ? (
         <Card className="border-dashed">

@@ -524,8 +524,14 @@ export default function ReportEntriesTable({
           (field.type === 'TEXT' || field.type === 'CYCLE_WEEK_INDICATOR') &&
           activeFilters[field.id]
         ) {
+          // Para campos de texto y ciclo semanal, preferimos el valor visual (row[field.id])
+          // ya que el filtro suele ser texto que busca coincidir con lo que ve el usuario.
+          // Si no hay valor visual, usamos rawVal.
+          // Esto corrige problemas donde rawVal tiene un formato diferente (ej: solo "Orar")
+          // pero el filtro busca "Semana 1: Orar".
+          const val = row[field.id] ?? rawVal;
           if (
-            !String(rawVal || '')
+            !String(val || '')
               .toLowerCase()
               .includes(activeFilters[field.id].toLowerCase())
           )
@@ -819,7 +825,12 @@ export default function ReportEntriesTable({
         onSelectAll={handleSelectAll}
         data={filteredRows}
         title={title}
-        subTitle={subTitle ?? `Total: ${filteredRows.length}`}
+        subTitle={
+          subTitle ??
+          `Total: ${filteredRows.length} ${
+            filteredRows.length !== rows.length ? `(de ${rows.length})` : ''
+          }`
+        }
         columns={visibleColumnsArray}
         actions={actions}
         addButton={

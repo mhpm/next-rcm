@@ -167,7 +167,7 @@ export default function AdvancedFilterModal({
                           const verbValue =
                             typeof verb === 'string' ? verb : verb.value;
                           return {
-                            value: `Semana ${index + 1}:`,
+                            value: `Semana ${index + 1}`,
                             label: `Semana ${index + 1}: ${verbValue}`,
                           };
                         }),

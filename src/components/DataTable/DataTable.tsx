@@ -872,7 +872,7 @@ function DataTable<T extends Record<string, unknown>>({
       </div>
 
       {/* Pagination */}
-      {pagination && paginationInfo.totalPages > 1 && (
+      {pagination && paginationInfo.totalItems > 0 && (
         <div className="p-4 border-t rounded-b-lg">
           {/* Mobile Pagination */}
           <div className="block md:hidden">

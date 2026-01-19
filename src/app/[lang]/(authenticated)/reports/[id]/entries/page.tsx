@@ -480,7 +480,6 @@ export default async function ReportEntriesPage({
             rows={rows}
             columns={columns}
             title={`Entradas del reporte: ${report.title}`}
-            subTitle={`Total: ${entries.length}`}
             reportId={id}
             fields={report.fields
               .filter((f) => f.type !== 'SECTION')

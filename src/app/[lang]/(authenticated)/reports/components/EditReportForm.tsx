@@ -8,8 +8,10 @@ import { useRouter, useParams } from 'next/navigation';
 import { ReportFormValues, FieldItem, ReportBuilder } from './form-builder';
 import { useNotificationStore } from '@/store/NotificationStore';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Copy, Check } from 'lucide-react';
 import { BackLink, Breadcrumbs } from '@/components';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
 export default function EditReportForm({
   initial,
@@ -28,6 +30,15 @@ export default function EditReportForm({
   const params = useParams();
   const lang = params?.lang as string;
   const { showSuccess, showError } = useNotificationStore();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyId = () => {
+    navigator.clipboard.writeText(initial.id);
+    setCopied(true);
+    toast.success('ID copiado al portapapeles');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const {
     control,
     register,
@@ -106,7 +117,25 @@ export default function EditReportForm({
       </div>
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold">Editar Formulario</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold">Editar Formulario</h1>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-2 py-1 rounded-md border border-border/50">
+              <span className="font-mono text-xs">{initial.id}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 hover:bg-background"
+                onClick={handleCopyId}
+                title="Copiar ID"
+              >
+                {copied ? (
+                  <Check className="h-3 w-3 text-green-500" />
+                ) : (
+                  <Copy className="h-3 w-3" />
+                )}
+              </Button>
+            </div>
+          </div>
           <p className="text-muted-foreground">
             Modifica la estructura de tu formulario.
           </p>

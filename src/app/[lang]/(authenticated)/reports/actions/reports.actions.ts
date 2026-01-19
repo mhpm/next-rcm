@@ -115,6 +115,66 @@ export async function createReport(input: CreateReportInput) {
   revalidatePath('/reports');
 }
 
+export async function cloneReportAction(sourceReportId: string) {
+  const prisma = await getChurchPrisma();
+  const targetChurchId = await getChurchId();
+  // Usamos el cliente global para evitar conflictos con el middleware del church context
+  // y para tener control explícito sobre las conexiones.
+
+  // 1. Fetch source report using global prisma client
+  const sourceReport = await prisma.reports.findUnique({
+    where: { id: sourceReportId },
+    include: { fields: true },
+  });
+
+  if (!sourceReport) {
+    throw new Error('El formulario de origen no existe.');
+  }
+
+  // 2. Prepare data for new report
+  // Generate a unique slug for the target church
+  let slug = sourceReport.slug;
+  let counter = 1;
+  while (
+    await prisma.reports.findFirst({
+      where: { church_id: targetChurchId, slug },
+    })
+  ) {
+    slug = `${sourceReport.slug}-${counter}`;
+    counter++;
+  }
+
+  // 3. Create the new report in the target church
+  await prisma.reports.create({
+    data: {
+      church: { connect: { id: targetChurchId } },
+      title: `${sourceReport.title} (Copia)`,
+      description: sourceReport.description,
+      slug: slug,
+      scope: sourceReport.scope,
+      color: sourceReport.color,
+      publicToken: crypto.randomBytes(16).toString('hex'),
+      fields: {
+        create: sourceReport.fields.map((field: any) => ({
+          key: field.key,
+          label: field.label,
+          description: field.description,
+          type: field.type,
+          required: field.required,
+          options: (field.options as Prisma.InputJsonValue) ?? undefined,
+          validation: (field.validation as Prisma.InputJsonValue) ?? undefined,
+          visibilityRules:
+            (field.visibilityRules as Prisma.InputJsonValue) ?? undefined,
+          value: (field.value as Prisma.InputJsonValue) ?? undefined,
+          order: field.order,
+        })),
+      },
+    },
+  });
+
+  revalidatePath('/reports');
+}
+
 export async function deleteReport(id: string) {
   const prisma = await getChurchPrisma();
   await prisma.reports.delete({ where: { id } });
