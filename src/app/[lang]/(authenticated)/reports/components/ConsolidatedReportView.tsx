@@ -1,14 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { TableBody, TableCell, TableRow } from '@/components/ui/table';
 import {
   Select,
   SelectContent,
@@ -689,6 +682,37 @@ export default function ConsolidatedReportView({
 
   const weekField = fields.find((f) => f.type === 'CYCLE_WEEK_INDICATOR');
 
+  const orderedVisibleKeys = useMemo(() => {
+    const keys: string[] = ['label'];
+    if (visibleColumns.has('count')) keys.push('count');
+    numericFields.forEach((f) => {
+      if (visibleColumns.has(f.id)) keys.push(f.id);
+      if (
+        f.type === 'MEMBER_ATTENDANCE' &&
+        visibleColumns.has(`${f.id}_absent`)
+      ) {
+        keys.push(`${f.id}_absent`);
+      }
+    });
+    booleanFields.forEach((f) => {
+      if (visibleColumns.has(f.id)) keys.push(f.id);
+    });
+    return keys;
+  }, [visibleColumns, numericFields, booleanFields]);
+
+  const groupEndKeys = useMemo(() => {
+    const endKeys = new Set<string>();
+    let currentIndex = 0;
+    columnGroups.forEach((group) => {
+      currentIndex += group.colSpan;
+      // The key at currentIndex - 1 is the last key of this group
+      if (currentIndex > 0 && currentIndex <= orderedVisibleKeys.length) {
+        endKeys.add(orderedVisibleKeys[currentIndex - 1]);
+      }
+    });
+    return endKeys;
+  }, [columnGroups, orderedVisibleKeys]);
+
   return (
     <Card className="w-full border-0 sm:border shadow-none sm:shadow-sm">
       <CardHeader className="px-2 sm:px-6 py-3 sm:py-4 space-y-3">
@@ -1065,17 +1089,17 @@ export default function ConsolidatedReportView({
 
         {/* Desktop Table View */}
         <div className="hidden md:block w-full overflow-hidden">
-          <div className="overflow-auto rounded-xl border max-w-full relative max-h-[600px]">
-            <Table className="w-full">
-              <TableHeader className="sticky top-0 z-20 bg-card shadow-sm">
+          <div className="relative w-full overflow-auto max-h-[600px] rounded-xl border">
+            <table className="w-full caption-bottom text-sm border-collapse">
+              <thead className="sticky top-0 z-50 bg-background shadow-md">
                 {/* Grouped Headers */}
                 <TableRow className="border-b border-muted/20 hover:bg-transparent">
                   {columnGroups.map((group, i) => (
-                    <TableHead
+                    <th
                       key={i}
                       colSpan={group.colSpan}
                       className={cn(
-                        'py-2 h-auto border-r border-foreground/10',
+                        'h-10 px-4 text-left align-middle text-xs font-bold uppercase tracking-wider text-muted-foreground py-2 border-r-2 border-foreground/20 bg-background',
                         group.className
                       )}
                       style={{
@@ -1086,22 +1110,30 @@ export default function ConsolidatedReportView({
                       }}
                     >
                       {group.title}
-                    </TableHead>
+                    </th>
                   ))}
                 </TableRow>
                 <TableRow className="hover:bg-transparent border-b border-border">
-                  <TableHead
-                    className="w-50 whitespace-nowrap py-2 sticky left-0 bg-background z-20 border-r cursor-pointer group select-none"
+                  <th
+                    className={cn(
+                      'h-10 px-4 align-middle text-xs font-bold uppercase tracking-wider text-muted-foreground w-50 whitespace-nowrap py-2 sticky left-0 bg-muted z-50 border-r border-border/50 cursor-pointer group select-none shadow-[1px_0_0_0_hsl(var(--border))] text-left',
+                      groupEndKeys.has('label') &&
+                        'border-r-2 border-foreground/20'
+                    )}
                     onClick={() => handleSort('label')}
                   >
                     <div className="flex items-center gap-1">
                       Grupo
                       {getSortIcon('label')}
                     </div>
-                  </TableHead>
+                  </th>
                   {visibleColumns.has('count') && (
-                    <TableHead
-                      className="whitespace-nowrap py-2 group cursor-pointer select-none"
+                    <th
+                      className={cn(
+                        'h-10 px-4 text-left align-middle text-xs font-bold uppercase tracking-wider text-muted-foreground whitespace-nowrap py-2 group cursor-pointer select-none bg-background border-r border-border/50',
+                        groupEndKeys.has('count') &&
+                          'border-r-2 border-foreground/20'
+                      )}
                       onClick={() => handleSort('count')}
                     >
                       <div className="flex items-center gap-1 justify-between">
@@ -1170,14 +1202,18 @@ export default function ConsolidatedReportView({
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-                    </TableHead>
+                    </th>
                   )}
                   {numericFields.map((f) => (
                     <React.Fragment key={f.id}>
                       {visibleColumns.has(f.id) && (
-                        <TableHead
+                        <th
                           key={f.id}
-                          className="whitespace-nowrap py-2 group cursor-pointer select-none"
+                          className={cn(
+                            'h-10 px-4 text-left align-middle text-xs font-bold uppercase tracking-wider text-muted-foreground whitespace-nowrap py-2 group cursor-pointer select-none bg-background border-r border-border/50',
+                            groupEndKeys.has(f.id) &&
+                              'border-r-2 border-foreground/20'
+                          )}
                           onClick={() => handleSort(f.id)}
                         >
                           <div className="flex items-center gap-1 justify-between">
@@ -1246,13 +1282,17 @@ export default function ConsolidatedReportView({
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </div>
-                        </TableHead>
+                        </th>
                       )}
                       {f.type === 'MEMBER_ATTENDANCE' &&
                         visibleColumns.has(`${f.id}_absent`) && (
-                          <TableHead
+                          <th
                             key={`${f.id}_absent`}
-                            className="whitespace-nowrap py-2 group cursor-pointer select-none"
+                            className={cn(
+                              'h-10 px-4 text-left align-middle text-xs font-bold uppercase tracking-wider text-muted-foreground whitespace-nowrap py-2 group cursor-pointer select-none bg-background border-r border-border/50',
+                              groupEndKeys.has(`${f.id}_absent`) &&
+                                'border-r-2 border-foreground/20'
+                            )}
                             onClick={() => handleSort(`${f.id}_absent`)}
                           >
                             <div className="flex items-center gap-1 justify-between">
@@ -1261,34 +1301,50 @@ export default function ConsolidatedReportView({
                                 {getSortIcon(`${f.id}_absent`)}
                               </div>
                             </div>
-                          </TableHead>
+                          </th>
                         )}
                     </React.Fragment>
                   ))}
                   {booleanFields
                     .filter((f) => visibleColumns.has(f.id))
                     .map((f) => (
-                      <TableHead
+                      <th
                         key={f.id}
-                        className="whitespace-nowrap py-2 cursor-pointer group select-none"
+                        className={cn(
+                          'h-10 px-4 text-left align-middle text-xs font-bold uppercase tracking-wider text-muted-foreground whitespace-nowrap py-2 cursor-pointer group select-none bg-background border-r border-border/50',
+                          groupEndKeys.has(f.id) &&
+                            'border-r-2 border-foreground/20'
+                        )}
                         onClick={() => handleSort(f.id)}
                       >
                         <div className="flex items-center gap-1">
                           {f.label || 'Campo'} (Sí)
                           {getSortIcon(f.id)}
                         </div>
-                      </TableHead>
+                      </th>
                     ))}
                 </TableRow>
-              </TableHeader>
+              </thead>
               <TableBody>
                 {sortedData.map((group: any) => (
                   <TableRow key={group.key}>
-                    <TableCell className="font-medium whitespace-nowrap py-2 sticky left-0 bg-background z-10 border-r">
+                    <TableCell
+                      className={cn(
+                        'font-medium whitespace-nowrap py-2 sticky left-0 bg-muted z-10 border-r shadow-[1px_0_0_0_hsl(var(--border))]',
+                        groupEndKeys.has('label') &&
+                          'border-r-2 border-foreground/20'
+                      )}
+                    >
                       {group.label}
                     </TableCell>
                     {visibleColumns.has('count') && (
-                      <TableCell className="whitespace-nowrap py-2">
+                      <TableCell
+                        className={cn(
+                          'whitespace-nowrap py-2 border-r border-border/50',
+                          groupEndKeys.has('count') &&
+                            'border-r-2 border-foreground/20'
+                        )}
+                      >
                         {group.count}
                       </TableCell>
                     )}
@@ -1297,7 +1353,11 @@ export default function ConsolidatedReportView({
                         {visibleColumns.has(f.id) && (
                           <TableCell
                             key={f.id}
-                            className="whitespace-nowrap py-2"
+                            className={cn(
+                              'whitespace-nowrap py-2 border-r border-border/50',
+                              groupEndKeys.has(f.id) &&
+                                'border-r-2 border-foreground/20'
+                            )}
                           >
                             {group.values[f.id].toLocaleString()}
                           </TableCell>
@@ -1306,7 +1366,11 @@ export default function ConsolidatedReportView({
                           visibleColumns.has(`${f.id}_absent`) && (
                             <TableCell
                               key={`${f.id}_absent`}
-                              className="whitespace-nowrap py-2 text-muted-foreground"
+                              className={cn(
+                                'whitespace-nowrap py-2 text-muted-foreground border-r border-border/50',
+                                groupEndKeys.has(`${f.id}_absent`) &&
+                                  'border-r-2 border-foreground/20'
+                              )}
                             >
                               {group.values[`${f.id}_absent`].toLocaleString()}
                             </TableCell>
@@ -1318,7 +1382,11 @@ export default function ConsolidatedReportView({
                       .map((f) => (
                         <TableCell
                           key={f.id}
-                          className="whitespace-nowrap py-2"
+                          className={cn(
+                            'whitespace-nowrap py-2 border-r border-border/50',
+                            groupEndKeys.has(f.id) &&
+                              'border-r-2 border-foreground/20'
+                          )}
                         >
                           {group.values[f.id]}
                         </TableCell>
@@ -1326,14 +1394,24 @@ export default function ConsolidatedReportView({
                   </TableRow>
                 ))}
                 <TableRow className="bg-slate-500 dark:bg-slate-800 text-white hover:bg-slate-900 dark:hover:bg-slate-700 font-black text-base shadow-lg">
-                  <TableCell className="whitespace-nowrap py-4 px-6 sticky left-0 bg-slate-500 dark:bg-slate-800 text-white z-10 border-r border-slate-800 rounded-l-lg">
+                  <TableCell
+                    className={cn(
+                      'whitespace-nowrap py-4 px-6 sticky left-0 bg-slate-500 dark:bg-slate-800 text-white z-10 border-r border-slate-800/50 rounded-l-lg',
+                      groupEndKeys.has('label') &&
+                        'border-r-2 border-foreground/20'
+                    )}
+                  >
                     TOTAL GENERAL
                   </TableCell>
                   {visibleColumns.has('count') && (
                     <TableCell
-                      className={`whitespace-nowrap py-4 px-6 text-lg ${
-                        lastVisibleKey === 'count' ? 'rounded-r-lg' : ''
-                      }`}
+                      className={cn(
+                        `whitespace-nowrap py-4 px-6 text-lg border-r border-slate-800/50 ${
+                          lastVisibleKey === 'count' ? 'rounded-r-lg' : ''
+                        }`,
+                        groupEndKeys.has('count') &&
+                          'border-r-2 border-foreground/20'
+                      )}
                     >
                       {totals.count}
                     </TableCell>
@@ -1343,9 +1421,13 @@ export default function ConsolidatedReportView({
                       {visibleColumns.has(f.id) && (
                         <TableCell
                           key={f.id}
-                          className={`whitespace-nowrap py-4 px-6 text-lg ${
-                            lastVisibleKey === f.id ? 'rounded-r-lg' : ''
-                          }`}
+                          className={cn(
+                            `whitespace-nowrap py-4 px-6 text-lg border-r border-slate-800/50 ${
+                              lastVisibleKey === f.id ? 'rounded-r-lg' : ''
+                            }`,
+                            groupEndKeys.has(f.id) &&
+                              'border-r-2 border-foreground/20'
+                          )}
                         >
                           {totals[f.id].toLocaleString()}
                         </TableCell>
@@ -1354,11 +1436,15 @@ export default function ConsolidatedReportView({
                         visibleColumns.has(`${f.id}_absent`) && (
                           <TableCell
                             key={`${f.id}_absent`}
-                            className={`whitespace-nowrap py-4 px-6 text-lg ${
-                              lastVisibleKey === `${f.id}_absent`
-                                ? 'rounded-r-lg'
-                                : ''
-                            }`}
+                            className={cn(
+                              `whitespace-nowrap py-4 px-6 text-lg border-r border-slate-800/50 ${
+                                lastVisibleKey === `${f.id}_absent`
+                                  ? 'rounded-r-lg'
+                                  : ''
+                              }`,
+                              groupEndKeys.has(`${f.id}_absent`) &&
+                                'border-r-2 border-foreground/20'
+                            )}
                           >
                             {totals[`${f.id}_absent`].toLocaleString()}
                           </TableCell>
@@ -1370,16 +1456,20 @@ export default function ConsolidatedReportView({
                     .map((f) => (
                       <TableCell
                         key={f.id}
-                        className={`whitespace-nowrap py-4 px-6 text-lg ${
-                          lastVisibleKey === f.id ? 'rounded-r-lg' : ''
-                        }`}
+                        className={cn(
+                          `whitespace-nowrap py-4 px-6 text-lg border-r border-slate-800/50 ${
+                            lastVisibleKey === f.id ? 'rounded-r-lg' : ''
+                          }`,
+                          groupEndKeys.has(f.id) &&
+                            'border-r-2 border-foreground/20'
+                        )}
                       >
                         {totals[f.id]}
                       </TableCell>
                     ))}
                 </TableRow>
               </TableBody>
-            </Table>
+            </table>
           </div>
         </div>
       </CardContent>
