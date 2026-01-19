@@ -502,6 +502,14 @@ export interface AddButtonConfig {
   icon?: React.ReactNode;
 }
 
+export interface TableColumnGroup {
+  title: string;
+  colSpan: number;
+  className?: string;
+  backgroundColor?: string;
+  textColor?: string;
+}
+
 /**
  * Props for the DataTable component, providing comprehensive configuration for table display and behavior.
  * Supports features like sorting, pagination, searching, row selection, and column visibility management.
@@ -888,6 +896,11 @@ export interface DataTableProps<T = Record<string, unknown>> {
    * ```
    */
   onHideAllColumns?: (columnKeys: string[]) => void;
+
+  /**
+   * Column groups for grouped headers.
+   */
+  columnGroups?: TableColumnGroup[];
 
   /**
    * Whether to display column visibility controls.

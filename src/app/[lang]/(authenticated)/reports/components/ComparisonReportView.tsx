@@ -26,7 +26,7 @@ import {
   RiArrowUpSLine,
   RiArrowDownSLine,
 } from 'react-icons/ri';
-import { naturalSort } from '@/lib/utils';
+import { naturalSort, cn } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
@@ -343,6 +343,109 @@ export default function ComparisonReportView({
       reportId,
       allColumns.map((c) => c.key)
     );
+
+  // Calculate grouped headers
+  const columnGroups = useMemo(() => {
+    // 1. Build map of Field ID -> Section
+    const fieldSectionMap = new Map<
+      string,
+      { title: string; color?: string }
+    >();
+    let currentSection = {
+      title: 'Detalles',
+      color: undefined as string | undefined,
+    };
+
+    fields.forEach((f) => {
+      if (f.type === 'SECTION') {
+        currentSection = {
+          title: f.label || 'Sección',
+          color: (f.options as any)?.[0] as string | undefined,
+        };
+      } else {
+        fieldSectionMap.set(f.id, currentSection);
+      }
+    });
+
+    // 2. Identify visible columns in order
+    const groups: {
+      title: string;
+      colSpan: number;
+      color?: string;
+      className?: string;
+    }[] = [];
+    let currentGroup: {
+      title: string;
+      colSpan: number;
+      color?: string;
+      className?: string;
+    } | null = null;
+
+    const addColumnToGroup = (key: string, isSystem = false) => {
+      let groupInfo;
+      if (isSystem) {
+        groupInfo = { title: 'Información General', color: undefined };
+      } else {
+        const cleanKey = key.replace('_absent', '');
+        groupInfo = fieldSectionMap.get(cleanKey) || {
+          title: 'Detalles',
+          color: undefined,
+        };
+      }
+
+      if (currentGroup && currentGroup.title === groupInfo.title) {
+        currentGroup.colSpan++;
+      } else {
+        if (currentGroup) groups.push(currentGroup);
+        currentGroup = {
+          title: groupInfo.title,
+          colSpan: 1,
+          color: groupInfo.color,
+          className: 'text-center font-bold text-xs uppercase tracking-wider',
+        };
+        // If no color, add default styling
+        if (!groupInfo.color) {
+          if (currentGroup.className) {
+            currentGroup.className += ' bg-muted/30';
+          } else {
+            currentGroup.className = 'bg-muted/30';
+          }
+        }
+      }
+    };
+
+    // Grupo
+    addColumnToGroup('label', true);
+
+    // Count
+    if (visibleColumns.has('count')) {
+      addColumnToGroup('count', true);
+    }
+
+    // Numeric Fields
+    numericFields.forEach((f) => {
+      if (visibleColumns.has(f.id)) {
+        addColumnToGroup(f.id);
+      }
+      if (
+        f.type === 'MEMBER_ATTENDANCE' &&
+        visibleColumns.has(`${f.id}_absent`)
+      ) {
+        addColumnToGroup(`${f.id}_absent`);
+      }
+    });
+
+    // Boolean Fields
+    booleanFields.forEach((f) => {
+      if (visibleColumns.has(f.id)) {
+        addColumnToGroup(f.id);
+      }
+    });
+
+    if (currentGroup) groups.push(currentGroup);
+
+    return groups;
+  }, [fields, numericFields, booleanFields, visibleColumns]);
 
   const comparisonData = useMemo(() => {
     const keys = new Set([
@@ -981,6 +1084,27 @@ export default function ComparisonReportView({
         <div className="overflow-x-auto rounded-xl border">
           <Table>
             <TableHeader>
+              {/* Grouped Headers */}
+              <TableRow className="border-b border-muted/20 hover:bg-transparent">
+                {columnGroups.map((group, i) => (
+                  <TableHead
+                    key={i}
+                    colSpan={group.colSpan}
+                    className={cn(
+                      'py-2 h-auto border-r border-foreground/10',
+                      group.className
+                    )}
+                    style={{
+                      backgroundColor: group.color
+                        ? `${group.color}20`
+                        : undefined,
+                      color: group.color,
+                    }}
+                  >
+                    {group.title}
+                  </TableHead>
+                ))}
+              </TableRow>
               <TableRow>
                 <TableHead
                   className="w-[300px] whitespace-nowrap sticky left-0 bg-muted/10 border-r z-20 cursor-pointer group select-none"

@@ -481,17 +481,18 @@ export default async function ReportEntriesPage({
             columns={columns}
             title={`Entradas del reporte: ${report.title}`}
             reportId={id}
-            fields={report.fields
-              .filter((f) => f.type !== 'SECTION')
-              .map((f) => ({
-                id: f.id,
-                key: f.key,
-                label: f.label,
-                type: f.type,
-                options: Array.isArray(f.options)
-                  ? (f.options as string[])
-                  : undefined,
-              }))}
+            fields={report.fields.map((f) => ({
+              id: f.id,
+              key: f.key,
+              label: f.label,
+              type: f.type,
+              options: Array.isArray(f.options)
+                ? (f.options as string[])
+                : undefined,
+              // Pass section info if available (e.g. for color)
+              // We assume options might hold section color if type is SECTION?
+              // Or we can rely on order.
+            }))}
             availableEntities={availableEntities}
           />
         </TabsContent>

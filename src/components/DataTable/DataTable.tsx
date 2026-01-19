@@ -77,6 +77,8 @@ function DataTable<T extends Record<string, unknown>>({
   onSelectRow: onSelectRowProp,
   onSelectAll: onSelectAllProp,
   compact = true,
+  // New prop for grouped headers
+  columnGroups,
 }: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -680,6 +682,40 @@ function DataTable<T extends Record<string, unknown>>({
       <div className="hidden md:block w-full overflow-x-auto">
         <Table className={cn('w-full', compact ? 'text-xs' : '')}>
           <TableHeader>
+            {/* Grouped Headers Row */}
+            {columnGroups && columnGroups.length > 0 && (
+              <TableRow
+                className={cn(
+                  'hover:bg-transparent',
+                  compact
+                    ? 'border-b border-muted/30'
+                    : 'border-b border-muted/20'
+                )}
+              >
+                {/* Empty cells for selection and fixed columns if needed */}
+                {selectable && <TableHead className="w-12 border-r" />}
+                {columnGroups.map((group, index) => (
+                  <TableHead
+                    key={`group-${index}`}
+                    colSpan={group.colSpan}
+                    className={cn(
+                      'text-center font-bold uppercase tracking-wider text-xs bg-muted/30',
+                      compact ? 'py-1 h-6' : 'py-2',
+                      group.className
+                    )}
+                    style={{
+                      backgroundColor: group.backgroundColor,
+                      color: group.textColor,
+                    }}
+                  >
+                    {group.title}
+                  </TableHead>
+                ))}
+                {/* Empty cell for actions if needed */}
+                {actions.length > 0 && <TableHead />}
+              </TableRow>
+            )}
+
             <TableRow
               className={cn(
                 'hover:bg-transparent',

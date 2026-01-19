@@ -6,7 +6,7 @@ import { RiFilter3Line, RiDeleteBinLine } from 'react-icons/ri';
 import { InputField, SelectField, DateField } from '@/components/FormControls';
 import { format } from 'date-fns';
 import type { ReportFieldType } from '@/generated/prisma/client';
-import { DEFAULT_VERBS } from '@/lib/cycleUtils';
+// import { DEFAULT_VERBS } from '@/lib/cycleUtils';
 import {
   Dialog,
   DialogContent,
@@ -153,7 +153,7 @@ export default function AdvancedFilterModal({
                     />
                   )}
 
-                  {field.type === 'CYCLE_WEEK_INDICATOR' && (
+                  {/* {field.type === 'CYCLE_WEEK_INDICATOR' && (
                     <SelectField
                       name={field.id}
                       label={field.label || field.key}
@@ -173,7 +173,7 @@ export default function AdvancedFilterModal({
                         }),
                       ]}
                     />
-                  )}
+                  )} */}
 
                   {(field.type === 'NUMBER' || field.type === 'CURRENCY') && (
                     <div className="space-y-2">

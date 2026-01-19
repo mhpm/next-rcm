@@ -19,7 +19,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ReportFields } from '@/generated/prisma/client';
 import { ColumnVisibilityDropdown } from '@/components/ColumnVisibilityDropdown/ColumnVisibilityDropdown';
-import { naturalSort } from '@/lib/utils';
+import { naturalSort, cn } from '@/lib/utils';
 
 type Row = Record<string, unknown> & {
   id: string;
@@ -80,6 +80,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { DEFAULT_VERBS } from '@/lib/cycleUtils';
 
 interface ConsolidatedReportViewProps {
   rows: Row[];
@@ -583,6 +584,111 @@ export default function ConsolidatedReportView({
   const visibleFields = allColumns.filter((c) => visibleColumns.has(c.key));
   const lastVisibleKey = visibleFields[visibleFields.length - 1]?.key;
 
+  // Calculate grouped headers
+  const columnGroups = useMemo(() => {
+    // 1. Build map of Field ID -> Section
+    const fieldSectionMap = new Map<
+      string,
+      { title: string; color?: string }
+    >();
+    let currentSection = {
+      title: 'Detalles',
+      color: undefined as string | undefined,
+    };
+
+    fields.forEach((f) => {
+      if (f.type === 'SECTION') {
+        currentSection = {
+          title: f.label || 'Sección',
+          color: (f.options as any)?.[0] as string | undefined,
+        };
+      } else {
+        fieldSectionMap.set(f.id, currentSection);
+      }
+    });
+
+    // 2. Identify visible columns in order
+    const groups: {
+      title: string;
+      colSpan: number;
+      color?: string;
+      className?: string;
+    }[] = [];
+    let currentGroup: {
+      title: string;
+      colSpan: number;
+      color?: string;
+      className?: string;
+    } | null = null;
+
+    const addColumnToGroup = (key: string, isSystem = false) => {
+      let groupInfo;
+      if (isSystem) {
+        groupInfo = { title: 'Información General', color: undefined };
+      } else {
+        const cleanKey = key.replace('_absent', '');
+        groupInfo = fieldSectionMap.get(cleanKey) || {
+          title: 'Detalles',
+          color: undefined,
+        };
+      }
+
+      if (currentGroup && currentGroup.title === groupInfo.title) {
+        currentGroup.colSpan++;
+      } else {
+        if (currentGroup) groups.push(currentGroup);
+        currentGroup = {
+          title: groupInfo.title,
+          colSpan: 1,
+          color: groupInfo.color,
+          className: 'text-center font-bold text-xs uppercase tracking-wider',
+        };
+        // If no color, add default styling
+        if (!groupInfo.color) {
+          if (currentGroup.className) {
+            currentGroup.className += ' bg-muted/30';
+          } else {
+            currentGroup.className = 'bg-muted/30';
+          }
+        }
+      }
+    };
+
+    // Grupo
+    addColumnToGroup('label', true);
+
+    // Count
+    if (visibleColumns.has('count')) {
+      addColumnToGroup('count', true);
+    }
+
+    // Numeric Fields
+    numericFields.forEach((f) => {
+      if (visibleColumns.has(f.id)) {
+        addColumnToGroup(f.id);
+      }
+      if (
+        f.type === 'MEMBER_ATTENDANCE' &&
+        visibleColumns.has(`${f.id}_absent`)
+      ) {
+        addColumnToGroup(`${f.id}_absent`);
+      }
+    });
+
+    // Boolean Fields
+    booleanFields.forEach((f) => {
+      if (visibleColumns.has(f.id)) {
+        addColumnToGroup(f.id);
+      }
+    });
+
+    if (currentGroup) groups.push(currentGroup);
+
+    return groups;
+  }, [fields, numericFields, booleanFields, visibleColumns]);
+
+  const weekField = fields.find((f) => f.type === 'CYCLE_WEEK_INDICATOR');
+
   return (
     <Card className="w-full border-0 sm:border shadow-none sm:shadow-sm">
       <CardHeader className="px-2 sm:px-6 py-3 sm:py-4 space-y-3">
@@ -694,6 +800,40 @@ export default function ConsolidatedReportView({
                 <SelectItem value="month">Por Mes</SelectItem>
               </SelectContent>
             </Select>
+
+            {weekField && (
+              <Select
+                value={activeFilters[weekField.id] || 'ALL'}
+                onValueChange={(v) => {
+                  const newFilters = { ...activeFilters };
+                  if (v && v !== 'ALL') {
+                    newFilters[weekField.id] = v;
+                  } else {
+                    delete newFilters[weekField.id];
+                  }
+                  setActiveFilters(newFilters);
+                }}
+              >
+                <SelectTrigger className="h-9 flex-1 min-w-[150px] text-xs sm:text-sm">
+                  <SelectValue placeholder={weekField.label || weekField.key} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">Todos</SelectItem>
+                  {((weekField.options as any[]) &&
+                  (weekField.options as any[]).length > 0
+                    ? (weekField.options as any[])
+                    : DEFAULT_VERBS
+                  ).map((verb: any, index: number) => {
+                    const val = typeof verb === 'string' ? verb : verb.value;
+                    return (
+                      <SelectItem key={index} value={`Semana ${index + 1}`}>
+                        {`Semana ${index + 1}: ${val}`}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            )}
 
             {filterType === 'cuatrimestre' && (
               <div className="flex w-full sm:w-auto gap-1">
@@ -928,6 +1068,27 @@ export default function ConsolidatedReportView({
           <div className="overflow-auto rounded-xl border max-w-full relative max-h-[600px]">
             <Table className="w-full">
               <TableHeader className="sticky top-0 z-20 bg-card shadow-sm">
+                {/* Grouped Headers */}
+                <TableRow className="border-b border-muted/20 hover:bg-transparent">
+                  {columnGroups.map((group, i) => (
+                    <TableHead
+                      key={i}
+                      colSpan={group.colSpan}
+                      className={cn(
+                        'py-2 h-auto border-r border-foreground/10',
+                        group.className
+                      )}
+                      style={{
+                        backgroundColor: group.color
+                          ? `${group.color}20`
+                          : undefined,
+                        color: group.color,
+                      }}
+                    >
+                      {group.title}
+                    </TableHead>
+                  ))}
+                </TableRow>
                 <TableRow className="hover:bg-transparent border-b border-border">
                   <TableHead
                     className="w-50 whitespace-nowrap py-2 sticky left-0 bg-background z-20 border-r cursor-pointer group select-none"

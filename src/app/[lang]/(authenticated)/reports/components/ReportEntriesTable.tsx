@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { DataTable } from '@/components';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
-import type { TableColumn, TableAction } from '@/types';
+import type { TableColumn, TableAction, TableColumnGroup } from '@/types';
 import { useNotificationStore } from '@/store/NotificationStore';
 import {
   deleteReportEntryAction,
@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { DEFAULT_VERBS } from '@/lib/cycleUtils';
 
 // Custom hook for scoped column visibility
 function useReportColumnVisibility(
@@ -489,6 +490,82 @@ export default function ReportEntriesTable({
     );
   }, [enhancedColumns, visibleColumns]);
 
+  // Calculate grouped headers
+  const columnGroups = useMemo<TableColumnGroup[]>(() => {
+    // 1. Build map of Field ID -> Section
+    const fieldSectionMap = new Map<
+      string,
+      { title: string; color?: string }
+    >();
+    let currentSection = {
+      title: 'Detalles',
+      color: undefined as string | undefined,
+    };
+
+    fields.forEach((f) => {
+      if (f.type === 'SECTION') {
+        currentSection = {
+          title: f.label || 'Sección',
+          color: (f.options as any)?.[0] as string | undefined,
+        };
+      } else {
+        fieldSectionMap.set(f.id, currentSection);
+      }
+    });
+
+    // 2. Iterate visible columns and build groups
+    const groups: TableColumnGroup[] = [];
+    let currentGroup: TableColumnGroup | null = null;
+
+    visibleColumnsArray.forEach((col) => {
+      let groupInfo;
+
+      // Check if system column
+      if (
+        ['entidad', 'supervisor', 'lider', 'createdAt'].includes(
+          String(col.key)
+        )
+      ) {
+        groupInfo = { title: 'Información General', color: undefined };
+      } else {
+        // Dynamic column
+        groupInfo = fieldSectionMap.get(String(col.key)) || {
+          title: 'Detalles',
+          color: undefined,
+        };
+      }
+
+      if (currentGroup && currentGroup.title === groupInfo.title) {
+        currentGroup.colSpan++;
+      } else {
+        // Push previous
+        if (currentGroup) {
+          groups.push(currentGroup);
+        }
+        // Start new
+        currentGroup = {
+          title: groupInfo.title,
+          colSpan: 1,
+          className:
+            'text-center font-bold text-xs uppercase tracking-wider border-r border-foreground/10',
+          backgroundColor: groupInfo.color ? `${groupInfo.color}20` : undefined,
+          textColor: groupInfo.color,
+        };
+
+        // If no color, add default styling
+        if (!groupInfo.color) {
+          currentGroup.className += ' bg-muted/30';
+        }
+      }
+    });
+
+    if (currentGroup) {
+      groups.push(currentGroup);
+    }
+
+    return groups;
+  }, [visibleColumnsArray, fields]);
+
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
       // Entidad (Célula, Grupo, etc.)
@@ -815,6 +892,8 @@ export default function ReportEntriesTable({
     'Diciembre',
   ];
 
+  const weekField = fields.find((f) => f.type === 'CYCLE_WEEK_INDICATOR');
+
   return (
     <div>
       <DataTable<Row>
@@ -832,6 +911,7 @@ export default function ReportEntriesTable({
           }`
         }
         columns={visibleColumnsArray}
+        columnGroups={columnGroups}
         actions={actions}
         addButton={
           selectedRows.size > 0
@@ -945,6 +1025,42 @@ export default function ReportEntriesTable({
                   <SelectItem value="month">Por Mes</SelectItem>
                 </SelectContent>
               </Select>
+
+              {weekField && (
+                <Select
+                  value={activeFilters[weekField.id] || 'ALL'}
+                  onValueChange={(v) => {
+                    const newFilters = { ...activeFilters };
+                    if (v && v !== 'ALL') {
+                      newFilters[weekField.id] = v;
+                    } else {
+                      delete newFilters[weekField.id];
+                    }
+                    setActiveFilters(newFilters);
+                  }}
+                >
+                  <SelectTrigger className="h-9 flex-1 min-w-[150px] text-xs sm:text-sm">
+                    <SelectValue
+                      placeholder={weekField.label || weekField.key}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">Todos</SelectItem>
+                    {((weekField.options as any[]) &&
+                    (weekField.options as any[]).length > 0
+                      ? (weekField.options as any[])
+                      : DEFAULT_VERBS
+                    ).map((verb: any, index: number) => {
+                      const val = typeof verb === 'string' ? verb : verb.value;
+                      return (
+                        <SelectItem key={index} value={`Semana ${index + 1}`}>
+                          {`Semana ${index + 1}: ${val}`}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              )}
 
               {filterType === 'cuatrimestre' && (
                 <div className="flex w-full sm:w-auto gap-1">
