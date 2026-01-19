@@ -1026,42 +1026,6 @@ export default function ReportEntriesTable({
                 </SelectContent>
               </Select>
 
-              {weekField && (
-                <Select
-                  value={activeFilters[weekField.id] || 'ALL'}
-                  onValueChange={(v) => {
-                    const newFilters = { ...activeFilters };
-                    if (v && v !== 'ALL') {
-                      newFilters[weekField.id] = v;
-                    } else {
-                      delete newFilters[weekField.id];
-                    }
-                    setActiveFilters(newFilters);
-                  }}
-                >
-                  <SelectTrigger className="h-9 flex-1 min-w-[150px] text-xs sm:text-sm">
-                    <SelectValue
-                      placeholder={weekField.label || weekField.key}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ALL">Todos</SelectItem>
-                    {((weekField.options as any[]) &&
-                    (weekField.options as any[]).length > 0
-                      ? (weekField.options as any[])
-                      : DEFAULT_VERBS
-                    ).map((verb: any, index: number) => {
-                      const val = typeof verb === 'string' ? verb : verb.value;
-                      return (
-                        <SelectItem key={index} value={`Semana ${index + 1}`}>
-                          {`Semana ${index + 1}: ${val}`}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-              )}
-
               {filterType === 'cuatrimestre' && (
                 <div className="flex w-full sm:w-auto gap-1">
                   {[1, 2, 3].map((q) => (
@@ -1108,6 +1072,42 @@ export default function ReportEntriesTable({
                         {m}
                       </SelectItem>
                     ))}
+                  </SelectContent>
+                </Select>
+              )}
+
+              {weekField && (
+                <Select
+                  value={activeFilters[weekField.id] || 'ALL'}
+                  onValueChange={(v) => {
+                    const newFilters = { ...activeFilters };
+                    if (v && v !== 'ALL') {
+                      newFilters[weekField.id] = v;
+                    } else {
+                      delete newFilters[weekField.id];
+                    }
+                    setActiveFilters(newFilters);
+                  }}
+                >
+                  <SelectTrigger className="h-9 flex-1 min-w-[150px] text-xs sm:text-sm">
+                    <SelectValue
+                      placeholder={weekField.label || weekField.key}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">Todos</SelectItem>
+                    {((weekField.options as any[]) &&
+                    (weekField.options as any[]).length > 0
+                      ? (weekField.options as any[])
+                      : DEFAULT_VERBS
+                    ).map((verb: any, index: number) => {
+                      const val = typeof verb === 'string' ? verb : verb.value;
+                      return (
+                        <SelectItem key={index} value={`Semana ${index + 1}`}>
+                          {`Semana ${index + 1}: ${val}`}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               )}
